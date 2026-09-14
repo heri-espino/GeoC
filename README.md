@@ -2,12 +2,12 @@
 
 **Predicción agroclimática del rendimiento de cebada** para el Reto AgroCebada FIRA 2026.
 
-GeoCebada busca construir un pipeline reproducible de ciencia de datos para estimar el rendimiento agrícola de parcelas de cebada a partir de información agroclimática, geoespacial y de percepción remota, y exponer los resultados mediante una aplicación web interactiva.
+GeoCebada desarrolla un pipeline reproducible de ciencia de datos para estimar el rendimiento agrícola de parcelas de cebada a partir de información agroclimática, geoespacial y de percepción remota, y exponer los resultados mediante una aplicación web interactiva.
 
 ## Objetivos
 
 1. Preparar y validar los datos proporcionados por FIRA.
-2. Explorar índices de vegetación, variables climáticas y variables geoespaciales.
+2. Explorar índices de vegetación, variables climáticas, topográficas y geoespaciales.
 3. Construir baselines estadísticos y modelos de machine learning.
 4. Evaluar el desempeño con validación reproducible y métricas como RMSE, MAE y R².
 5. Analizar importancia de variables e incertidumbre de las predicciones.
@@ -18,37 +18,65 @@ GeoCebada busca construir un pipeline reproducible de ciencia de datos para esti
 
 ```text
 GeoCebada/
-├── app/                    # aplicación / dashboard
-├── configs/                # configuración de experimentos
+├── app/                         # aplicación / dashboard
+├── configs/                     # configuración de experimentos
 ├── data/
-│   ├── raw/                # datos originales, sin modificar
-│   ├── interim/            # datos intermedios
-│   └── processed/          # tablas listas para modelado
-├── docs/                   # documentación y registro de IA/prompts
-├── models/                 # artefactos entrenados (no versionados)
-├── notebooks/              # exploración y prototipos
-├── reports/                # resultados, tablas, figuras y entregables
+│   ├── source/                  # archivos oficiales proporcionados por FIRA
+│   │   ├── tabular/
+│   │   ├── geospatial/
+│   │   ├── climate/
+│   │   │   ├── precipitation/
+│   │   │   └── temperature/
+│   │   └── topography/
+│   ├── raw/                     # ingestión local, no versionada
+│   ├── interim/                 # datos intermedios, no versionados
+│   └── processed/               # datos listos para modelado, no versionados
+├── docs/
+│   ├── official/                # bases y lineamientos FIRA
+│   ├── reference/               # diccionarios y descripción del dataset
+│   └── AI_USAGE.md              # registro de IA y prompts
+├── models/                      # artefactos entrenados
+├── notebooks/                   # exploración y prototipos
+├── reports/                     # resultados, figuras y entregables
 ├── src/geocebada/
-│   ├── data/               # carga, validación y limpieza
-│   ├── features/           # ingeniería de variables
-│   ├── models/             # entrenamiento y predicción
-│   └── evaluation/         # métricas, CV y diagnóstico
-├── tests/                  # pruebas automáticas
+│   ├── data/                    # carga, validación y limpieza
+│   ├── features/                # ingeniería de variables
+│   ├── models/                  # entrenamiento y predicción
+│   └── evaluation/              # métricas, CV y diagnóstico
+├── tests/                       # pruebas automáticas
 ├── .env.example
 ├── .gitignore
 └── pyproject.toml
 ```
 
+## Datos fuente
+
+Los archivos descargados de la plataforma de FIRA se conservan sin modificar en `data/source/`, separados por dominio:
+
+- tablas BÁSICO y PRO y archivo de rendimiento 70/30;
+- parcelas georreferenciadas;
+- precipitación CHIRPS 2022–2025;
+- temperatura 2022–2025;
+- topografía INEGI CEM 4.
+
+Los documentos oficiales de la convocatoria están en `docs/official/` y los diccionarios/descripciones técnicas del dataset en `docs/reference/`.
+
+No se deben editar manualmente los archivos de `data/source/`. Cualquier transformación debe ser reproducible y escribirse en `data/raw/`, `data/interim/` o `data/processed/`.
+
 ## Flujo de trabajo
 
 ```text
-raw data
+data/source
    ↓
-data validation / cleaning
+ingestion + validation
+   ↓
+data/raw / data/interim
    ↓
 feature engineering
    ↓
-EDA + baseline
+data/processed
+   ↓
+EDA + baselines
    ↓
 cross-validation
    ↓
@@ -60,12 +88,6 @@ predictions + explainability
    ↓
 web application + technical report
 ```
-
-## Datos
-
-Los archivos originales deben colocarse en `data/raw/` y **no deben modificarse**. Todo archivo derivado debe escribirse en `data/interim/` o `data/processed/`.
-
-Los datos del reto y los artefactos pesados no se versionan en Git. Esto evita publicar accidentalmente información proporcionada por la competencia y mantiene el repositorio liviano.
 
 ## Instalación
 
@@ -82,7 +104,7 @@ pip install -e ".[dev]"
 
 ## Convenciones de experimentos
 
-- No modificar los datos en `data/raw/`.
+- No modificar los archivos de `data/source/`.
 - Fijar semillas aleatorias cuando aplique.
 - Mantener separado el conjunto usado para evaluación final.
 - Registrar configuración, métricas y fecha de cada experimento.
@@ -91,9 +113,7 @@ pip install -e ".[dev]"
 
 ## Aplicación
 
-La interfaz se desarrollará en `app/`. El prototipo inicial está preparado para Streamlit y posteriormente podrá conectarse al pipeline de inferencia final.
-
-Ejecución local:
+La interfaz se desarrollará en `app/`. El prototipo inicial está preparado para Streamlit y posteriormente se conectará al pipeline de inferencia final.
 
 ```bash
 streamlit run app/main.py
