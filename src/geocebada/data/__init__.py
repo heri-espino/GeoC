@@ -1,6 +1,7 @@
 """Data ingestion, validation and cleaning utilities."""
 
 from geocebada.data.files import concatenate_csvs, discover_files
+from geocebada.data.filtering import filter_frame
 from geocebada.data.rasters import (
     build_raster_inventory,
     discover_geotiffs,
@@ -18,6 +19,7 @@ __all__ = [
     "concatenate_csvs",
     "discover_files",
     "discover_geotiffs",
+    "filter_frame",
     "load_yield_split",
     "parse_raster_name",
     "partition_yield_split",
