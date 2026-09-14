@@ -1,9 +1,49 @@
 # Documentación
 
-Esta carpeta concentra la documentación del proyecto y los materiales de referencia del Reto AgroCebada FIRA 2026.
+Esta carpeta concentra la documentación del proyecto, la referencia de la librería Python y los materiales oficiales del Reto AgroCebada FIRA 2026.
 
-- `official/`: bases, lineamientos y documentos oficiales de la convocatoria.
-- `reference/`: diccionarios y documentación técnica del dataset proporcionado por FIRA.
-- `AI_USAGE.md`: registro del uso de herramientas de IA generativa y de los prompts empleados durante el desarrollo.
+- `official/`: bases, lineamientos y documentos oficiales de la convocatoria. Inmutables.
+- `reference/`: diccionarios y documentación técnica del dataset proporcionado por FIRA. Conservar como evidencia fuente.
+- `AI_USAGE.md`: registro del uso de herramientas de IA generativa y prompts relevantes.
+- `FUNCTION_INDEX.md`: índice rápido y buscable de funciones/clases públicas en `src/geocebada/`.
+- `api/`: referencia API de Sphinx generada desde docstrings.
+- `conf.py` / `index.rst`: configuración y entrada de la documentación Sphinx.
 
 Los documentos oficiales y de referencia se conservan sin modificar; cualquier resumen, interpretación o documentación producida por el equipo debe mantenerse separada de las fuentes originales.
+
+## Índice rápido de funciones
+
+Después de añadir, renombrar o eliminar una función/clase pública en `src/geocebada/`, ejecutar:
+
+```bash
+python tools/generate_function_index.py
+```
+
+Esto regenera `docs/FUNCTION_INDEX.md` usando el AST de Python, sin importar módulos ni requerir dependencias opcionales.
+
+Antes de crear una función nueva, buscar primero en ese índice para evitar duplicados.
+
+## Documentación Sphinx
+
+Instalar dependencias de documentación:
+
+```bash
+pip install -e ".[docs]"
+```
+
+Construir HTML:
+
+```bash
+sphinx-build -b html docs docs/_build/html
+```
+
+Abrir después `docs/_build/html/index.html`.
+
+Sphinx genera automáticamente:
+
+- referencia de módulos y funciones desde docstrings;
+- índice general (`genindex`);
+- índice de módulos (`modindex`);
+- búsqueda full-text dentro de la documentación.
+
+La documentación de una función debe vivir principalmente en su docstring; no mantener descripciones divergentes a mano en varios lugares.
