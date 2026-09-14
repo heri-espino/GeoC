@@ -36,6 +36,12 @@ geo = [
   "geopandas>=1.0",
   "shapely>=2.0",
   "pyproj>=3.6",
+  "rasterio>=1.4",
+]
+docs = [
+  "sphinx>=8.0",
+  "furo>=2024.8",
+  "myst-parser>=4.0",
 ]
 
 [tool.setuptools.packages.find]
