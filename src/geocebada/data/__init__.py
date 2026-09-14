@@ -9,12 +9,14 @@ from geocebada.data.rasters import (
     raster_metadata,
 )
 from geocebada.data.targets import (
+    attach_yield_split_metadata,
     load_yield_split,
     partition_yield_split,
     validate_yield_split,
 )
 
 __all__ = [
+    "attach_yield_split_metadata",
     "build_raster_inventory",
     "concatenate_csvs",
     "discover_files",
