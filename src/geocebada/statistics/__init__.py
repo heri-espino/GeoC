@@ -4,6 +4,7 @@ from geocebada.statistics.inference import (
     adjust_pvalues,
     correlation_screen,
     correlation_test,
+    covariate_shift_screen,
     linear_regression_diagnostics,
     vif_table,
 )
@@ -12,6 +13,7 @@ __all__ = [
     "adjust_pvalues",
     "correlation_screen",
     "correlation_test",
+    "covariate_shift_screen",
     "linear_regression_diagnostics",
     "vif_table",
 ]
