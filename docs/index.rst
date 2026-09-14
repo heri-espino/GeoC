@@ -9,8 +9,10 @@ than duplicated across notebooks.
    :maxdepth: 2
    :caption: Contents
 
+   README
    FUNCTION_INDEX
    api/index
+   AI_USAGE
 
 Indices
 =======
