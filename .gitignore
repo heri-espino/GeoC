@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data: preserve directories, ignore contents
+/data/raw/*
+!/data/raw/.gitkeep
+/data/interim/*
+!/data/interim/.gitkeep
+/data/processed/*
+!/data/processed/.gitkeep
+
+# Trained models / artifacts
+/models/*
+!/models/.gitkeep
+
+# Experiment artifacts
+mlruns/
+wandb/
+
+# App / framework caches
+.streamlit/secrets.toml
+
+# Build / coverage
+build/
+dist/
+.coverage
+htmlcov/
