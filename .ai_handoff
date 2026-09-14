@@ -54,6 +54,10 @@ GeoCebada/
 ├── AGENTS.md
 ├── .ai_handoff
 ├── app/
+│   ├── main.py
+│   ├── visual_explorer.py
+│   └── pages/
+│       └── 1_Visual_Explorer.py
 ├── configs/
 ├── data/
 │   ├── README.md
@@ -66,6 +70,8 @@ GeoCebada/
 │   ├── official/            # immutable official challenge documents
 │   ├── reference/           # source/reference documents
 │   ├── FUNCTION_INDEX.md    # generated quick index of public library symbols
+│   ├── VISUAL_EXPLORER.md
+│   ├── DEPLOYMENT.md
 │   ├── api/                 # Sphinx API pages
 │   └── AI_USAGE.md
 ├── models/
@@ -98,16 +104,20 @@ Current public utilities include:
 
 - project/data/source path resolution and YAML config loading;
 - file discovery and multi-CSV concatenation;
-- official yield split loading, validation and partitioning;
+- declarative DataFrame filtering for categorical, numeric-range and text filters;
+- official yield split loading, validation, partitioning and safe metadata attachment;
 - climate GeoTIFF discovery, filename parsing, inventory and metadata;
 - CRS validation/reprojection safeguards;
+- official parcel-geometry loading without CRS guessing;
+- generic parcel-level aggregation for exploratory mapping;
 - declarative grouped/temporal feature recipes (`mean`, `max`, `slope`, `auc`, etc.);
 - feature-table joins;
 - Pearson/Spearman association tests;
 - multiple-testing correction (Benjamini-Hochberg/FDR, Holm, Bonferroni);
-- feature screening against a target;
+- feature screening and train-vs-prediction covariate-shift screening;
 - linear-regression diagnostics including residual metrics, Shapiro-Wilk, Breusch-Pagan and VIF;
-- reusable Plotly exploration/diagnostic figures;
+- reusable Plotly distribution, scatter, pairplot, correlation-heatmap, residual and parcel-map figures;
+- univariate IQR outlier summaries;
 - exploratory regression benchmarks using identical shuffled K-fold splits.
 
 Before writing a new helper:
@@ -129,7 +139,7 @@ Public reusable code should have type hints, docstrings, explicit assumptions an
 
 ## Documentation system
 
-Sphinx source lives under `docs/` and uses autodoc/autosummary-compatible docstrings. API pages now cover core, data, geo, features, statistics, evaluation and visualization modules.
+Sphinx source lives under `docs/` and uses autodoc/autosummary-compatible docstrings. API pages cover core, data, geo, features, statistics, evaluation and visualization modules. `docs/VISUAL_EXPLORER.md` documents the spatial/multivariate dashboard and `docs/DEPLOYMENT.md` documents Streamlit Community Cloud deployment.
 
 Install/build:
 
@@ -167,29 +177,44 @@ Never require teammates to edit `sys.path`, copy utility functions, or execute a
 
 ## GeoCebada Lab status
 
-`app/main.py` is now a functional interactive analysis laboratory, not a placeholder scaffold.
+`app/main.py` is a functional interactive analysis laboratory. The app is also multipage: `app/pages/1_Visual_Explorer.py` is the dedicated spatial and multivariate exploration dashboard.
 
-Implemented UI areas:
+Main Lab UI areas:
 
 - Overview: dataset shape, split, observed-yield distribution and missingness/schema;
-- Data Explorer: arbitrary columns, distributions and filtered CSV export;
+- Data Explorer: arbitrary columns, distributions and CSV export;
+- Prediction Set: inspection of provided prediction covariates plus train-vs-prediction distribution-shift diagnostics, never hidden targets;
 - Statistical Lab: Pearson/Spearman tests, multiple-hypothesis screening and linear-model assumption diagnostics;
 - Feature Engineering Lab: declarative parcel/group aggregations, optional date windows, temporal slope/AUC, recipe/table download;
 - Model Lab: quick Linear/Ridge/RandomForest/ExtraTrees random-CV comparison;
 - Methodology: interpretation guardrails separating description, statistical inference, prediction and causality.
 
-The app automatically excludes official `PREDICCION` rows from supervised statistics/model evaluation when the official split columns are present. This protects against hidden-target misuse.
+Visual Explorer capabilities:
+
+- load official yield/split, bundled BASIC, bundled PRO or an uploaded CSV;
+- optionally attach official parcel metadata to BASIC/PRO by `ID_POLIGONO` without exposing hidden targets;
+- shared train/prediction, parcel-ID, categorical, numeric-range and complete-case filters;
+- interactive parcel choropleth map with arbitrary color variable and hover fields;
+- pairplot/scatter matrix;
+- Pearson/Spearman/Kendall correlation heatmap;
+- arbitrary bivariate scatter with optional OLS trendline;
+- IQR outlier screening;
+- grouped descriptive summaries;
+- filtered missingness/schema and descriptive statistics.
+
+The app automatically excludes official `PREDICCION` rows from supervised statistics/model evaluation when the official split columns are present. Prediction-set covariate inspection is allowed for support/shift diagnostics, but model selection must remain based on labeled-data validation.
 
 The app is intentionally an interface over `geocebada`; reusable analysis logic must remain in `src/geocebada/`.
 
 Important limitations still to implement after data audit:
 
-- direct parcel map/spatial explorer;
 - raster overlays and zonal-stat visualization;
-- BASIC/PRO-specific temporal explorer once schemas are confirmed;
-- Moran's I/spatial residual diagnostics once parcel geometry/CRS is verified;
+- a BASIC/PRO-specific temporal explorer once exact schemas and date semantics are confirmed;
+- Moran's I and spatial residual diagnostics after parcel geometry/CRS is directly verified;
 - grouped/spatial CV in Model Lab;
 - final inference using frozen feature/model artifacts.
+
+Streamlit Cloud uses root `requirements.txt`, which installs `-e .[geo]` so the parcel-map dependencies are available.
 
 ---
 
@@ -198,6 +223,7 @@ Important limitations still to implement after data audit:
 - Statistical significance is not causality.
 - Multiple exploratory tests require correction and still remain vulnerable to confounding/post-selection bias.
 - Shapiro/Breusch-Pagan/VIF outputs are diagnostics, not binary model-acceptance rules.
+- Pairplots/correlation heatmaps are exploratory and can reflect outliers, repeated observations, spatial dependence or temporal leakage.
 - Spatial independence is a major unresolved assumption for georeferenced parcels.
 - In-sample linear diagnostics are not predictive validation.
 - Random K-fold results in the current Model Lab are exploratory only; do not cite them as final expected FIRA performance.
@@ -215,16 +241,19 @@ Known source CRS:
 
 Always inspect CRS before overlay/zonal statistics; reproject explicitly; never compute metric area/distance in geographic coordinates; preserve source geometry; assert parcel ID/row integrity after joins.
 
+The parcel-map code only reprojects if the loaded geometry already carries CRS metadata. If CRS is absent, it stops rather than assigning one.
+
 ---
 
 ## Leakage guardrails
 
 - Never fabricate hidden targets or use the 59 prediction targets for supervised tuning/scoring.
+- Prediction covariates may be inspected for support, missingness and distribution-shift diagnostics, but do not repeatedly redesign the supervised model to make the final 59 outputs look convenient.
 - Climate coverage 2022-2025 does not imply every month is temporally legal for every target.
 - Learned preprocessing must be fit inside CV folds.
 - Random CV may be optimistic under spatial autocorrelation; compare with spatial/grouped diagnostics after geometry audit.
-- Do not select models by repeatedly inspecting the final 59 predictions.
 - Interactive feature exploration must not silently promote post-harvest variables into the canonical pipeline.
+- Generic parcel aggregation in the map is visualization-only; it is not a substitute for leakage-safe temporal feature engineering.
 
 ---
 
@@ -240,13 +269,13 @@ Feature-domain ablations should quantify remote sensing, climate, topography, ge
 
 ## Immediate next steps
 
-1. Audit BASIC and PRO schemas, IDs, dates, row counts and missingness.
-2. Connect BASIC/PRO to the interactive Data/Time-Series Explorer using reusable loaders.
-3. Inspect/extract parcel archive into generated workspace; verify CRS, geometry validity and 197-ID coverage.
-4. Add parcel map, spatial train/test audit and Moran/residual diagnostics after CRS verification.
-5. Resolve target agricultural cycle/year.
-6. Define leakage-safe temporal windows and promote defensible feature recipes into stable feature modules.
-7. Add grouped/spatial CV to `geocebada.evaluation` and the Model Lab.
+1. Use the bundled BASIC/PRO views to audit exact schemas, IDs, dates, row counts and missingness; document verified findings rather than inferring semantics from column names alone.
+2. Run the parcel map locally/Cloud, inspect the actual geometry attributes/CRS and verify 197-ID coverage and geometry validity.
+3. Resolve target agricultural cycle/year from official/source evidence.
+4. Build a source-backed BASIC/PRO time-series explorer only after date semantics are confirmed.
+5. Define leakage-safe temporal windows and promote defensible feature recipes into stable feature modules.
+6. Add raster overlays/zonal-stat visualizations after geometry/CRS verification.
+7. Add Moran's I/spatial residual diagnostics and grouped/spatial CV.
 8. Build the canonical parcel-level modeling table and domain ablations.
 9. Freeze final preprocessing/model artifacts before exposing prediction in the app.
 10. Keep function index, tests, Sphinx docs and AI usage log synchronized as the library grows.
