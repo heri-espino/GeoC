@@ -4,7 +4,12 @@ from sklearn.linear_model import LinearRegression
 
 from geocebada.evaluation import benchmark_regressors, summarize_benchmark
 from geocebada.features import FeatureRecipe, apply_feature_recipe
-from geocebada.statistics import adjust_pvalues, correlation_test, linear_regression_diagnostics
+from geocebada.statistics import (
+    adjust_pvalues,
+    correlation_test,
+    covariate_shift_screen,
+    linear_regression_diagnostics,
+)
 
 
 def test_adjust_pvalues_controls_bounds() -> None:
@@ -30,6 +35,28 @@ def test_correlation_and_linear_diagnostics() -> None:
     diagnostics = linear_regression_diagnostics(frame, "y", ["x", "z"])
     assert diagnostics["r2"] > 0.999
     assert len(diagnostics["coefficients"]) == 2
+
+
+def test_covariate_shift_screen_compares_unlabeled_subsets() -> None:
+    frame = pd.DataFrame(
+        {
+            "CONJUNTO": ["ENTRENAMIENTO"] * 5 + ["PREDICCION"] * 5,
+            "x": [0.0, 1.0, 2.0, 3.0, 4.0, 10.0, 11.0, 12.0, 13.0, 14.0],
+            "stable": [1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        }
+    )
+    result = covariate_shift_screen(
+        frame,
+        "CONJUNTO",
+        "ENTRENAMIENTO",
+        "PREDICCION",
+        features=["x", "stable"],
+    ).set_index("feature")
+
+    assert result.loc["x", "smd"] > 2.0
+    assert result.loc["x", "ks_statistic"] > result.loc["stable", "ks_statistic"]
+    assert result.loc["stable", "smd"] == 0.0
+    assert result.loc["stable", "p_adjusted"] == 1.0
 
 
 def test_temporal_feature_recipe() -> None:
