@@ -33,6 +33,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `adjust_pvalues` | function | `geocebada.statistics.inference` | Adjust a collection of p-values for multiple hypothesis testing. | `src/geocebada/statistics/inference.py` |
 | `correlation_screen` | function | `geocebada.statistics.inference` | Screen numeric features against a target and adjust for multiple testing. | `src/geocebada/statistics/inference.py` |
 | `correlation_test` | function | `geocebada.statistics.inference` | Test association between two numeric series after pairwise NA removal. | `src/geocebada/statistics/inference.py` |
+| `covariate_shift_screen` | function | `geocebada.statistics.inference` | Compare numeric covariates between training and prediction subsets. | `src/geocebada/statistics/inference.py` |
 | `linear_regression_diagnostics` | function | `geocebada.statistics.inference` | Fit OLS-style linear regression and return core assumption diagnostics. | `src/geocebada/statistics/inference.py` |
 | `vif_table` | function | `geocebada.statistics.inference` | Compute variance inflation factors using auxiliary linear regressions. | `src/geocebada/statistics/inference.py` |
 | `correlation_scatter` | function | `geocebada.visualization.exploration` | Build an interactive scatter plot for exploring bivariate relationships. | `src/geocebada/visualization/exploration.py` |
