@@ -12,6 +12,7 @@ than duplicated across notebooks.
    README
    FUNCTION_INDEX
    api/index
+   VISUAL_EXPLORER
    DEPLOYMENT
    AI_USAGE
 
