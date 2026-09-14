@@ -17,9 +17,25 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `load_yield_split` | function | `geocebada.data.targets` | Load the official parcel target/split table. | `src/geocebada/data/targets.py` |
 | `partition_yield_split` | function | `geocebada.data.targets` | Return independent training and prediction DataFrames. | `src/geocebada/data/targets.py` |
 | `validate_yield_split` | function | `geocebada.data.targets` | Validate the known invariants of the official 70/30 split. | `src/geocebada/data/targets.py` |
+| `benchmark_regressors` | function | `geocebada.evaluation.regression` | Compare regression baselines using identical shuffled K-fold splits. | `src/geocebada/evaluation/regression.py` |
+| `default_regressors` | function | `geocebada.evaluation.regression` | Return lightweight baseline regressors suitable for early comparison. | `src/geocebada/evaluation/regression.py` |
+| `summarize_benchmark` | function | `geocebada.evaluation.regression` | Summarize fold-level benchmark metrics as mean and standard deviation. | `src/geocebada/evaluation/regression.py` |
+| `FeatureRecipe` | class | `geocebada.features.interactive` | Declarative recipe for one grouped feature derived from a source column. | `src/geocebada/features/interactive.py` |
+| `apply_feature_recipe` | function | `geocebada.features.interactive` | Apply a feature recipe and return one row per group with the new feature. | `src/geocebada/features/interactive.py` |
+| `feature_recipe_to_dict` | function | `geocebada.features.interactive` | Serialize a feature recipe into a plain dictionary for YAML/JSON storage. | `src/geocebada/features/interactive.py` |
+| `merge_features` | function | `geocebada.features.interactive` | Left-join one-row-per-parcel feature tables onto a base table. | `src/geocebada/features/interactive.py` |
 | `assert_crs` | function | `geocebada.geo.crs` | Require a geospatial frame to have a CRS and optionally match one. | `src/geocebada/geo/crs.py` |
 | `reproject_frame` | function | `geocebada.geo.crs` | Return ``frame`` reprojected to ``target_crs`` after validating source CRS. | `src/geocebada/geo/crs.py` |
 | `data_path` | function | `geocebada.paths` | Build a path below ``data/``. | `src/geocebada/paths.py` |
 | `find_project_root` | function | `geocebada.paths` | Return the GeoCebada repository root. | `src/geocebada/paths.py` |
 | `project_path` | function | `geocebada.paths` | Build a path relative to the repository root. | `src/geocebada/paths.py` |
 | `source_path` | function | `geocebada.paths` | Build a path below the immutable ``data/source/`` directory. | `src/geocebada/paths.py` |
+| `adjust_pvalues` | function | `geocebada.statistics.inference` | Adjust a collection of p-values for multiple hypothesis testing. | `src/geocebada/statistics/inference.py` |
+| `correlation_screen` | function | `geocebada.statistics.inference` | Screen numeric features against a target and adjust for multiple testing. | `src/geocebada/statistics/inference.py` |
+| `correlation_test` | function | `geocebada.statistics.inference` | Test association between two numeric series after pairwise NA removal. | `src/geocebada/statistics/inference.py` |
+| `linear_regression_diagnostics` | function | `geocebada.statistics.inference` | Fit OLS-style linear regression and return core assumption diagnostics. | `src/geocebada/statistics/inference.py` |
+| `vif_table` | function | `geocebada.statistics.inference` | Compute variance inflation factors using auxiliary linear regressions. | `src/geocebada/statistics/inference.py` |
+| `correlation_scatter` | function | `geocebada.visualization.exploration` | Build an interactive scatter plot for exploring bivariate relationships. | `src/geocebada/visualization/exploration.py` |
+| `distribution_figure` | function | `geocebada.visualization.exploration` | Build an interactive histogram for one numeric variable. | `src/geocebada/visualization/exploration.py` |
+| `missingness_table` | function | `geocebada.visualization.exploration` | Summarize missing values by column. | `src/geocebada/visualization/exploration.py` |
+| `residual_diagnostic_figure` | function | `geocebada.visualization.exploration` | Plot residuals against fitted values with a horizontal zero reference line. | `src/geocebada/visualization/exploration.py` |
