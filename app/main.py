@@ -15,6 +15,7 @@ from geocebada.features import FeatureRecipe, apply_feature_recipe, feature_reci
 from geocebada.statistics import (
     correlation_screen,
     correlation_test,
+    covariate_shift_screen,
     linear_regression_diagnostics,
 )
 from geocebada.visualization import (
@@ -29,6 +30,7 @@ st.set_page_config(page_title="GeoCebada Lab", page_icon="🌾", layout="wide")
 TARGET_COLUMN = "RENDIMIENTO_T_HA"
 SPLIT_COLUMN = "CONJUNTO"
 TRAIN_VALUE = "ENTRENAMIENTO"
+PREDICTION_VALUE = "PREDICCION"
 
 
 @st.cache_data
@@ -132,6 +134,119 @@ def _render_explorer(frame: pd.DataFrame) -> None:
         data=buffer.getvalue(),
         file_name="geocebada_explorer.csv",
         mime="text/csv",
+    )
+
+
+def _render_prediction_set(frame: pd.DataFrame) -> None:
+    st.subheader("Prediction Set Explorer")
+    st.caption(
+        "Covariate snooping only: inspect the provided prediction rows and compare their "
+        "feature distributions with training. Hidden yield labels are never used here."
+    )
+
+    if SPLIT_COLUMN not in frame.columns:
+        st.info(f"This view requires a {SPLIT_COLUMN!r} column.")
+        return
+
+    training = frame.loc[frame[SPLIT_COLUMN].eq(TRAIN_VALUE)].copy()
+    prediction = frame.loc[frame[SPLIT_COLUMN].eq(PREDICTION_VALUE)].copy()
+    if training.empty or prediction.empty:
+        st.info(
+            f"Both {TRAIN_VALUE!r} and {PREDICTION_VALUE!r} rows are required for this view."
+        )
+        return
+
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Training rows", f"{len(training):,}")
+    m2.metric("Prediction rows", f"{len(prediction):,}")
+    m3.metric("Prediction share", f"{len(prediction) / len(frame):.1%}")
+
+    st.warning(
+        "Use this for data quality, support overlap and covariate-shift diagnostics. "
+        "Do not repeatedly redesign the supervised model merely to make its outputs look "
+        "convenient on these 59 rows; model selection should still come from labeled-data CV."
+    )
+
+    visible_columns = [column for column in prediction.columns if column != TARGET_COLUMN]
+    selected = st.multiselect(
+        "Prediction-set columns to display",
+        visible_columns,
+        default=visible_columns[: min(10, len(visible_columns))],
+        key="prediction_columns",
+    )
+    prediction_view = prediction[selected] if selected else prediction[visible_columns]
+    st.dataframe(prediction_view, use_container_width=True, height=360)
+    st.download_button(
+        "Download prediction covariates",
+        data=prediction_view.to_csv(index=False),
+        file_name="geocebada_prediction_covariates.csv",
+        mime="text/csv",
+    )
+
+    numeric = [column for column in _numeric_columns(frame) if column != TARGET_COLUMN]
+    if not numeric:
+        st.info("No numeric covariates are available for train-vs-prediction comparison.")
+        return
+
+    st.markdown("#### Train vs prediction covariate shift")
+    correction = st.selectbox(
+        "Multiple-testing correction",
+        ["fdr_bh", "holm", "bonferroni"],
+        key="prediction_shift_correction",
+    )
+    shift = covariate_shift_screen(
+        frame,
+        SPLIT_COLUMN,
+        TRAIN_VALUE,
+        PREDICTION_VALUE,
+        features=numeric,
+        correction=correction,
+    )
+    st.dataframe(
+        shift[
+            [
+                "feature",
+                "n_train",
+                "n_prediction",
+                "train_mean",
+                "prediction_mean",
+                "smd",
+                "ks_statistic",
+                "p_value",
+                "p_adjusted",
+                "missing_train",
+                "missing_prediction",
+            ]
+        ],
+        use_container_width=True,
+        hide_index=True,
+    )
+    st.caption(
+        "SMD measures standardized mean displacement. The KS test compares full empirical "
+        "distributions; adjusted p-values are descriptive diagnostics here, not a license "
+        "to tune against the prediction set."
+    )
+
+    variable = st.selectbox(
+        "Compare one covariate",
+        numeric,
+        key="prediction_shift_variable",
+    )
+    comparison = frame.loc[
+        frame[SPLIT_COLUMN].isin([TRAIN_VALUE, PREDICTION_VALUE]),
+        [SPLIT_COLUMN, variable],
+    ].copy()
+    st.plotly_chart(
+        px.histogram(
+            comparison,
+            x=variable,
+            color=SPLIT_COLUMN,
+            marginal="box",
+            barmode="overlay",
+            opacity=0.55,
+            title=f"{variable}: training vs prediction",
+        ),
+        use_container_width=True,
     )
 
 
@@ -466,10 +581,11 @@ else:
 
 st.success(f"Loaded {len(data):,} rows × {len(data.columns):,} columns")
 
-overview, explorer, statistics_tab, feature_tab, model_tab, methodology = st.tabs(
+overview, explorer, prediction_tab, statistics_tab, feature_tab, model_tab, methodology = st.tabs(
     [
         "Overview",
         "Data Explorer",
+        "Prediction Set",
         "Statistical Lab",
         "Feature Engineering",
         "Model Lab",
@@ -481,6 +597,8 @@ with overview:
     _render_overview(data)
 with explorer:
     _render_explorer(data)
+with prediction_tab:
+    _render_prediction_set(data)
 with statistics_tab:
     _render_statistics(data)
 with feature_tab:
