@@ -1,17 +1,21 @@
 # Datos
 
-La carpeta `data/` sigue una separación estricta por etapa del pipeline.
+La carpeta `data/` separa las fuentes oficiales de los artefactos generados por el pipeline.
 
-- `raw/`: archivos originales descargados de FIRA o fuentes externas. No editar.
-- `interim/`: resultados de limpieza, uniones y transformaciones intermedias.
-- `processed/`: matrices/tablas finales listas para entrenamiento y evaluación.
+- `source/`: archivos originales proporcionados por FIRA, versionados y sin modificar.
+  - `tabular/`: conjuntos BÁSICO/PRO y tabla `ID_area_rendimiento_70_30`.
+  - `geospatial/`: parcelas georreferenciadas.
+  - `climate/precipitation/`: precipitación CHIRPS 2022–2025.
+  - `climate/temperature/`: temperatura 2022–2025.
+  - `topography/`: topografía INEGI CEM 4.
+- `raw/`: datos de trabajo obtenidos al ingerir/descomprimir/normalizar fuentes; no versionados.
+- `interim/`: resultados de limpieza, uniones y transformaciones intermedias; no versionados.
+- `processed/`: matrices/tablas finales listas para entrenamiento y evaluación; no versionados.
 
-Los contenidos de estas carpetas están ignorados por Git. Esto permite trabajar localmente con el dataset sin publicarlo accidentalmente.
+## Reglas
 
-## Regla principal
-
-Toda transformación debe ser reproducible desde código. Evitar editar CSV/XLSX manualmente.
-
-## Identificador
-
-Conservar `ID_parcela` como llave estable durante todo el pipeline. Las predicciones finales deberán poder vincularse inequívocamente con este identificador.
+1. No editar manualmente ningún archivo dentro de `data/source/`.
+2. Toda transformación debe ser reproducible desde código en `src/geocebada/`.
+3. Conservar `ID_parcela` como llave estable durante todo el pipeline.
+4. No mezclar predicciones, modelos entrenados o resultados con las fuentes oficiales.
+5. Las predicciones finales deben poder vincularse inequívocamente con `ID_parcela` y reportarse en ton/ha.
