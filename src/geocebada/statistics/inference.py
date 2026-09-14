@@ -84,6 +84,98 @@ def correlation_screen(
     ).reset_index(drop=True)
 
 
+def covariate_shift_screen(
+    frame: pd.DataFrame,
+    split_column: str,
+    train_value: str,
+    prediction_value: str,
+    *,
+    features: Iterable[str] | None = None,
+    correction: str = "fdr_bh",
+) -> pd.DataFrame:
+    """Compare numeric covariates between training and prediction subsets.
+
+    The diagnostic uses a two-sample Kolmogorov-Smirnov test, standardized mean
+    difference (SMD), and missing-value rates. It never requires target values
+    and is intended for data-quality/covariate-shift inspection rather than
+    supervised model selection.
+    """
+
+    if split_column not in frame.columns:
+        raise KeyError(split_column)
+
+    train_mask = frame[split_column].eq(train_value)
+    prediction_mask = frame[split_column].eq(prediction_value)
+    if not train_mask.any():
+        raise ValueError(f"No rows found for training value {train_value!r}.")
+    if not prediction_mask.any():
+        raise ValueError(f"No rows found for prediction value {prediction_value!r}.")
+
+    if features is None:
+        features = frame.select_dtypes(include="number").columns.tolist()
+
+    rows: list[dict[str, float | int | str]] = []
+    for feature in features:
+        if feature not in frame.columns:
+            raise KeyError(feature)
+
+        train_raw = pd.to_numeric(frame.loc[train_mask, feature], errors="coerce")
+        prediction_raw = pd.to_numeric(frame.loc[prediction_mask, feature], errors="coerce")
+        train = train_raw.dropna().astype(float)
+        prediction = prediction_raw.dropna().astype(float)
+
+        ks_statistic = float("nan")
+        p_value = float("nan")
+        smd = float("nan")
+        if len(train) >= 2 and len(prediction) >= 2:
+            ks_statistic, p_value = stats.ks_2samp(train, prediction)
+            train_variance = float(train.var(ddof=1))
+            prediction_variance = float(prediction.var(ddof=1))
+            pooled_sd = np.sqrt((train_variance + prediction_variance) / 2.0)
+            mean_difference = float(prediction.mean() - train.mean())
+            if pooled_sd > 0:
+                smd = mean_difference / pooled_sd
+            elif mean_difference == 0:
+                smd = 0.0
+            else:
+                smd = float(np.sign(mean_difference) * np.inf)
+
+        rows.append(
+            {
+                "feature": feature,
+                "n_train": int(train.notna().sum()),
+                "n_prediction": int(prediction.notna().sum()),
+                "train_mean": float(train.mean()) if len(train) else float("nan"),
+                "prediction_mean": (
+                    float(prediction.mean()) if len(prediction) else float("nan")
+                ),
+                "smd": float(smd),
+                "ks_statistic": float(ks_statistic),
+                "p_value": float(p_value),
+                "missing_train": float(train_raw.isna().mean()),
+                "missing_prediction": float(prediction_raw.isna().mean()),
+            }
+        )
+
+    result = pd.DataFrame(rows)
+    if result.empty:
+        return result
+
+    result["p_adjusted"] = np.nan
+    valid = result["p_value"].notna()
+    if valid.any():
+        result.loc[valid, "p_adjusted"] = adjust_pvalues(
+            result.loc[valid, "p_value"].to_numpy(),
+            method=correction,
+        )
+    result["abs_smd"] = result["smd"].abs()
+    return result.sort_values(
+        ["p_adjusted", "abs_smd"],
+        ascending=[True, False],
+        na_position="last",
+    ).reset_index(drop=True)
+
+
 def adjust_pvalues(
     pvalues: Iterable[float],
     *,
