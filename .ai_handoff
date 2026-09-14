@@ -1,0 +1,385 @@
+# AI Handoff — GeoCebada
+
+Updated: 2026-09-14
+Project: GeoCebada / Reto AgroCebada FIRA 2026
+Scope: project-wide operational context for AI agents/Codex.
+
+This file is the canonical short-term handoff for agents entering the repository. Read it before making project-wide changes. For dataset-specific details, also read `data/.ai_handoff` and `data/README.md`.
+
+This file is NOT the challenge AI disclosure log. Material AI use must also be recorded in `docs/AI_USAGE.md`.
+
+---
+
+## 1. Mission
+
+Build a reproducible regression system that predicts barley yield in ton/ha for georeferenced parcels using remote sensing, climate, topography and spatial information, then expose the result in a functional web application and technical deliverables for FIRA.
+
+Canonical prediction equation:
+
+`yield_hat_i = f(parcel_features_i)`
+
+Canonical target:
+
+`RENDIMIENTO_T_HA`
+
+Canonical source parcel identifier:
+
+`ID_POLIGONO`
+
+Do not silently rename the canonical ID away. Internal aliases are allowed only if `ID_POLIGONO` remains available and joins are explicit.
+
+---
+
+## 2. Confirmed challenge/data facts
+
+As of 2026-09-14:
+
+- 197 parcels total.
+- 138 rows are `ENTRENAMIENTO` and have observed `RENDIMIENTO_T_HA`.
+- 59 rows are `PREDICCION` and have hidden target values.
+- The 70/30 split is by complete parcel, not 70/30 observations within each parcel.
+- Split file: `data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv`.
+- Split columns observed: `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`.
+- Geographic scope: Hidalgo, Puebla and Tlaxcala.
+- CHIRPS precipitation: monthly accumulated precipitation, Jan 2022-Dec 2025, EPSG:4326, 0.05° (~5 km), 48 GeoTIFFs.
+- CHIRTS-ERA5 temperature: monthly Tmin/Tmax, Jan 2022-Dec 2025, EPSG:4326, 0.05° (~5 km), 96 GeoTIFFs total.
+- INEGI CEM topography: elevation and slope, 120 m, EPSG:6372.
+- Two official large tabular remote-sensing datasets exist: BASIC and PRO.
+- BASIC/PRO exact schema and semantics have NOT yet been fully audited.
+
+---
+
+## 3. Important unknowns — do not guess
+
+These are unresolved and materially affect modeling:
+
+1. Exact agricultural cycle/year represented by each observed `RENDIMIENTO_T_HA`.
+2. Exact temporal granularity and variable definitions in BASIC and PRO.
+3. Operational difference between BASIC and PRO.
+4. Whether the official 70/30 split was stratified by state, region, parcel size, year or another factor.
+5. Which months/years are causally/temporally valid inputs for each target.
+6. Best validation mechanism to approximate FIRA's hidden evaluation distribution.
+7. Exact CRS of the delivered parcel geometries until directly inspected.
+
+If an implementation depends on any of these, first inspect the source/docs or leave the assumption explicit and reversible.
+
+---
+
+## 4. Repository contract
+
+```text
+GeoCebada/
+├── AGENTS.md
+├── .ai_handoff
+├── app/
+├── configs/
+├── data/
+│   ├── .ai_handoff
+│   ├── README.md
+│   ├── source/
+│   ├── raw/
+│   ├── interim/
+│   └── processed/
+├── docs/
+│   ├── official/
+│   ├── reference/
+│   └── AI_USAGE.md
+├── models/
+├── notebooks/
+├── reports/
+├── src/geocebada/
+│   ├── data/
+│   ├── features/
+│   ├── models/
+│   └── evaluation/
+└── tests/
+```
+
+### Immutable/evidence directories
+
+Treat these as source evidence:
+
+- `data/source/`
+- `docs/official/`
+- `docs/reference/` unless explicitly correcting repository organization rather than source contents
+
+Do not edit official data to make downstream code easier. Adapt code instead.
+
+### Generated directories
+
+- `data/raw/`: generated ingestion/decompression outputs
+- `data/interim/`: joins, cleaned tables, zonal stats, intermediate features
+- `data/processed/`: model-ready datasets and derived prediction tables
+- `models/`: trained artifacts
+- `reports/`: metrics, plots, predictions and deliverables
+
+Generated heavy artifacts are generally gitignored. Preserve reproducibility through code/configuration, not manual editing.
+
+---
+
+## 5. Source-of-truth hierarchy
+
+When sources disagree, use this priority:
+
+1. Official FIRA files/documents under `docs/official/` and `data/source/`.
+2. Directly observed file schemas/metadata.
+3. `data/README.md` and `data/.ai_handoff`.
+4. Root `README.md` and this `.ai_handoff`.
+5. Notebooks/comments/conversation-derived assumptions.
+
+If a lower-priority document conflicts with source evidence, update the derived documentation rather than altering source evidence.
+
+---
+
+## 6. Spatial / CRS guardrails
+
+Known CRS:
+
+- precipitation: EPSG:4326
+- temperature: EPSG:4326
+- topography: EPSG:6372
+- parcels: verify from source before use
+
+Rules:
+
+- Always inspect `.crs` before overlay, zonal statistics or distance/area calculations.
+- Reproject explicitly; never rely on silent CRS coercion.
+- Do not compute metric area/distance directly in EPSG:4326.
+- Preserve original geometry and CRS metadata.
+- Document CRS in derived geospatial outputs.
+- Validate parcel geometries and row counts after any spatial transformation.
+- After geospatial joins, assert that parcel IDs are not duplicated unexpectedly.
+
+For raster-to-parcel features, record the statistic and source layer used, e.g. mean/min/max/std/coverage.
+
+---
+
+## 7. Leakage guardrails
+
+### Hidden-target leakage
+
+The 59 `PREDICCION` rows have no observed target available to the project. Never fabricate or impute these as labels. Do not use hidden-target rows for supervised feature selection, tuning or scoring.
+
+### Temporal leakage
+
+Climate covers 2022-2025, but target cycle is not yet confirmed. Do not aggregate all available months/years into features until the target timing is verified. Future observations relative to harvest would invalidate evaluation.
+
+### Spatial leakage
+
+Nearby parcels may share environmental conditions. Random CV may be optimistic. Compare random/repeated CV with spatial/grouped diagnostics after parcel geometry is audited.
+
+### Preprocessing leakage
+
+Any learned transformation — imputation, scaling, feature selection, PCA, target encoding, supervised filtering — must be fit within each training fold.
+
+### Model-selection leakage
+
+Do not repeatedly inspect final 59 test predictions and choose models by subjective plausibility. Model choice must be driven by training/CV evidence and documented methodology.
+
+---
+
+## 8. Modeling strategy
+
+Current stage: data audit and validation design. No final model exists.
+
+Problem type: supervised regression with small labeled sample size (`n_train = 138`).
+
+Start with reproducible baselines before complex models:
+
+- global mean/median
+- linear regression / Ridge / Elastic Net
+- Random Forest / Extra Trees
+- CatBoost / LightGBM / XGBoost
+
+Deep learning is not a default choice because of small labeled `n`. Use only with a defensible representation/pretraining strategy and CV evidence.
+
+Primary metrics:
+
+- RMSE
+- MAE
+- R²
+
+Prefer out-of-fold predictions and repeated/grouped validation summaries over a single holdout.
+
+Run feature-domain ablations to quantify the value of:
+
+- remote sensing
+- climate
+- topography
+- geometry/spatial variables
+- combinations of the above
+
+Do not assume a model family wins before experimentation.
+
+---
+
+## 9. Feature engineering principles
+
+Final model input should likely be one row per parcel unless a model explicitly consumes temporal sequences.
+
+Potential feature families, to be created only after temporal validity is established:
+
+- precipitation totals/means/maxima and dry-period summaries
+- Tmin/Tmax means/extremes/ranges and threshold counts
+- satellite index summaries, peaks, timing, slopes, variability, area under curve
+- elevation and slope zonal statistics
+- parcel area and geometry descriptors
+- spatial context/neighborhood features if leakage-safe and justified
+
+Every derived feature should retain enough naming/metadata to trace it back to source, time window and aggregation.
+
+Avoid huge unstructured feature sets when `n=138`; regularization and dimensionality control matter.
+
+---
+
+## 10. Validation protocol — provisional
+
+Do not set a single canonical CV strategy until parcel geography and source split are audited.
+
+Required diagnostics:
+
+1. repeated/random K-fold baseline for variance estimation;
+2. spatial or grouped CV to test geographic generalization;
+3. compare fold distributions by target, area, state/region and relevant temporal grouping when available.
+
+Any hyperparameter tuning must be nested or otherwise separated from unbiased performance reporting when practical.
+
+Record:
+
+- random seed
+- fold assignment
+- feature set
+- preprocessing
+- model parameters
+- commit SHA
+- metrics per fold and aggregate
+
+---
+
+## 11. App contract
+
+Current app: `app/main.py` is a Streamlit scaffold only.
+
+Final app should consume the same frozen preprocessing/model artifacts as the offline pipeline. Do not duplicate feature logic in UI code.
+
+Planned capabilities:
+
+- query/select `ID_POLIGONO`
+- show predicted yield in ton/ha
+- geospatial parcel visualization
+- explanation/feature contributions where methodologically valid
+- agroclimatic context
+- clearly distinguish observed vs predicted values
+
+No fake confidence intervals. If uncertainty is shown, define and validate the method used to compute it.
+
+---
+
+## 12. Coding conventions for agents
+
+- Python 3.11+.
+- Production logic belongs under `src/geocebada/`.
+- Notebooks are exploratory, not the production source of truth.
+- Prefer small pure/testable functions for transformations.
+- Add assertions for row counts, unique IDs, CRS, schema and missingness at key boundaries.
+- Preserve deterministic seeds when randomness is involved.
+- Do not hard-code absolute local paths.
+- Use configuration for paths/experiment parameters where appropriate.
+- Keep generated artifacts out of source directories.
+- Add/update tests when implementing stable pipeline behavior.
+- Keep changes scoped; avoid unrelated refactors during data/model experiments.
+
+Before committing substantive methodology changes, update relevant docs/handoff if the change alters assumptions or known facts.
+
+---
+
+## 13. Canonical commands
+
+Environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate   # macOS/Linux
+# .venv\Scripts\activate   # Windows
+pip install -e ".[dev]"
+```
+
+Tests:
+
+```bash
+pytest
+```
+
+Lint:
+
+```bash
+ruff check .
+```
+
+App scaffold:
+
+```bash
+streamlit run app/main.py
+```
+
+Do not claim these pass unless actually executed in the environment used for the change.
+
+---
+
+## 14. Immediate next steps
+
+Priority order:
+
+1. Audit BASIC and PRO schemas, temporal fields, row counts, IDs and missingness.
+2. Inspect parcel archive, extract safely into generated workspace, verify CRS/geometry validity and 197-ID coverage.
+3. Join parcels to state/region and audit official train/test composition.
+4. Resolve target agricultural cycle/year from official documentation or FIRA clarification.
+5. Define legal temporal windows for satellite/climate features.
+6. Build reproducible parcel-level feature table with provenance.
+7. Establish CV diagnostics and baseline models.
+8. Add model comparison + ablation framework.
+9. Freeze final pipeline before generating 59 predictions.
+10. Connect frozen artifacts to app and prepare report/video.
+
+Do not skip steps 1-5 in order to train a quick model and then treat that score as trustworthy.
+
+---
+
+## 15. Project status snapshot
+
+Completed:
+
+- repository structure established;
+- official data/docs organized;
+- detailed `data/README.md` added;
+- dataset-specific `data/.ai_handoff` added;
+- train/prediction split inspected and counts confirmed;
+- climate/topography metadata documented;
+- Streamlit scaffold created;
+- AI usage log initialized.
+
+Not completed:
+
+- BASIC/PRO audit;
+- parcel CRS/state audit;
+- target-cycle resolution;
+- final feature table;
+- canonical CV strategy;
+- baseline benchmark table;
+- trained final model;
+- final 59 predictions;
+- production-ready app;
+- final technical report/video.
+
+---
+
+## 16. Before ending an agent session
+
+If you materially change the project, leave it easier for the next agent:
+
+- update this file when known facts/status/assumptions change;
+- update `data/.ai_handoff` for data-specific discoveries;
+- update `README.md` for stable human-facing information;
+- update `docs/AI_USAGE.md` for material AI-assisted work;
+- do not mark uncertain conclusions as confirmed facts;
+- state what was tested and what remains unverified.
