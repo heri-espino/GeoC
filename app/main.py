@@ -6,7 +6,6 @@ feature pipeline and model interface are defined.
 
 import streamlit as st
 
-
 st.set_page_config(page_title="GeoCebada", page_icon="🌾", layout="wide")
 
 st.title("GeoCebada")
