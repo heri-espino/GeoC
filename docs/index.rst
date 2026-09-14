@@ -12,6 +12,7 @@ than duplicated across notebooks.
    README
    FUNCTION_INDEX
    api/index
+   DEPLOYMENT
    AI_USAGE
 
 Indices
