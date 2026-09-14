@@ -35,7 +35,9 @@ def assert_crs(frame: Any, expected: str | None = None, *, label: str = "GeoData
     actual_crs = CRS.from_user_input(crs)
     expected_crs = CRS.from_user_input(expected)
     if actual_crs != expected_crs:
-        raise ValueError(f"{label} CRS is {actual_crs.to_string()}, expected {expected_crs.to_string()}.")
+        actual_text = actual_crs.to_string()
+        expected_text = expected_crs.to_string()
+        raise ValueError(f"{label} CRS is {actual_text}, expected {expected_text}.")
 
 
 def reproject_frame(frame: Any, target_crs: str, *, label: str = "GeoDataFrame") -> Any:
