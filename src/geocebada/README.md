@@ -1,6 +1,6 @@
 # `geocebada` Python library
 
-This directory is the reusable codebase for GeoCebada. Team notebooks and the web app should **import functionality from this package** instead of copying data-loading, feature-engineering or evaluation code into notebooks.
+This directory is the reusable codebase for GeoCebada. Team notebooks and the web app should **import functionality from this package** instead of copying data-loading, feature-engineering, statistical inference, visualization or evaluation code into notebooks.
 
 ## Design rule
 
@@ -17,12 +17,16 @@ src/geocebada/
 │   └── rasters.py        # GeoTIFF discovery/inventory/metadata
 ├── geo/
 │   └── crs.py            # CRS safeguards and reprojection helpers
-├── features/             # stable feature engineering
-├── models/               # training/inference interfaces
-└── evaluation/           # CV, metrics and diagnostics
+├── features/
+│   └── interactive.py    # reproducible feature recipes and joins
+├── statistics/
+│   └── inference.py      # association tests, multiplicity and assumptions
+├── visualization/
+│   └── exploration.py    # reusable Plotly figures and data-quality views
+├── evaluation/
+│   └── regression.py     # early regression benchmark utilities
+└── models/               # final training/inference interfaces
 ```
-
-The last three packages will grow as the modeling pipeline is defined.
 
 ## Usage from notebooks
 
@@ -64,6 +68,48 @@ precip_dir = source_path("climate", "precipitation")
 inventory = build_raster_inventory(precip_dir)
 ```
 
+For statistical exploration:
+
+```python
+from geocebada.statistics import correlation_screen, linear_regression_diagnostics
+
+screen = correlation_screen(train, "RENDIMIENTO_T_HA", correction="fdr_bh")
+diagnostics = linear_regression_diagnostics(train, "RENDIMIENTO_T_HA", ["AREA_HA"])
+```
+
+For reproducible feature recipes:
+
+```python
+from geocebada.features import FeatureRecipe, apply_feature_recipe
+
+recipe = FeatureRecipe(
+    name="ndvi_mean",
+    value_column="NDVI",
+    group_column="ID_POLIGONO",
+    aggregation="mean",
+    date_column="date",
+    start="2025-05-01",
+    end="2025-08-31",
+)
+feature = apply_feature_recipe(long_table, recipe)
+```
+
+Interactive feature recipes are exploratory specifications. If a feature becomes part of the canonical model, promote its logic into the appropriate stable feature module and cover it with tests.
+
+## GeoCebada Lab contract
+
+`app/main.py` is an interface over this library, not a second implementation of the analysis pipeline. The current laboratory provides:
+
+- dataset/schema and missingness exploration;
+- bivariate Pearson/Spearman association;
+- multiple-hypothesis screening with FDR/Holm/Bonferroni correction;
+- linear-regression residual, heteroscedasticity and VIF diagnostics;
+- interactive grouped feature recipes, including temporal mean/max/slope/AUC;
+- exploratory random-CV regression benchmarks;
+- reusable Plotly visualizations.
+
+The app automatically excludes hidden official prediction targets from supervised statistical/model analyses. Random CV in the laboratory remains exploratory until the project establishes spatial/grouped validation.
+
 ## Public API and function index
 
 Before creating a helper, search:
@@ -96,6 +142,9 @@ Do not create a new helper merely to save one or two lines in one notebook. The 
 - canonical target: `RENDIMIENTO_T_HA`;
 - `data/source/` is immutable;
 - CRS and temporal assumptions must be explicit;
-- learned preprocessing must ultimately live inside leakage-safe model/CV pipelines.
+- learned preprocessing must ultimately live inside leakage-safe model/CV pipelines;
+- statistical significance is not evidence of causality;
+- multiple exploratory tests require multiplicity control and explicit interpretation;
+- spatial independence cannot be assumed for georeferenced parcels.
 
 See root `AGENTS.md`, `.ai_handoff`, and `data/.ai_handoff` for project-wide constraints.
