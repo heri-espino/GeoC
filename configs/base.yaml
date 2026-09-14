@@ -10,8 +10,20 @@ paths:
   models: models
   reports: reports
 
+data_contract:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  expected_total_parcels: 197
+  expected_train_parcels: 138
+  expected_prediction_parcels: 59
+
 validation:
-  strategy: null  # define after inspecting spatial/temporal structure
+  # Do not choose the final strategy until parcel geography and target timing
+  # are audited. Random CV must be compared with a spatial/grouped diagnostic.
+  strategy: null
   n_splits: null
 
 metrics:
@@ -19,8 +31,16 @@ metrics:
   - mae
   - r2
 
-target:
-  column: null  # set after inspecting the FIRA dataset
+temporal:
+  # Climate coverage is confirmed, but the agricultural cycle represented by
+  # RENDIMIENTO_T_HA is not yet confirmed. Do not derive final temporal windows
+  # from all available dates until this is resolved.
+  climate_start: 2022-01
+  climate_end: 2025-12
+  target_cycle: null
 
-id:
-  column: ID_parcela
+geospatial:
+  precipitation_crs: EPSG:4326
+  temperature_crs: EPSG:4326
+  topography_crs: EPSG:6372
+  parcel_crs: null  # inspect directly from delivered parcel source before use
