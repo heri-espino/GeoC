@@ -9,17 +9,17 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 |---|---|---|---|---|
 | `load_config` | function | `geocebada.config` | Load a YAML configuration file. | `src/geocebada/config.py` |
 | `concatenate_csvs` | function | `geocebada.data.files` | Read and concatenate a collection of CSV files. | `src/geocebada/data/files.py` |
-| `discover_files` | function | `geocebada.data.files` | Return sorted files matching `pattern` below `directory`. | `src/geocebada/data/files.py` |
+| `discover_files` | function | `geocebada.data.files` | Return sorted files matching ``pattern`` below ``directory``. | `src/geocebada/data/files.py` |
 | `build_raster_inventory` | function | `geocebada.data.rasters` | Build a tabular inventory of GeoTIFF files. | `src/geocebada/data/rasters.py` |
-| `discover_geotiffs` | function | `geocebada.data.rasters` | Return sorted GeoTIFF files below `directory`. | `src/geocebada/data/rasters.py` |
-| `parse_raster_name` | function | `geocebada.data.rasters` | Parse official climate raster names such as `PREC_2022_01.tif`. | `src/geocebada/data/rasters.py` |
+| `discover_geotiffs` | function | `geocebada.data.rasters` | Return sorted GeoTIFF files below ``directory``. | `src/geocebada/data/rasters.py` |
+| `parse_raster_name` | function | `geocebada.data.rasters` | Parse official climate raster names such as ``PREC_2022_01.tif``. | `src/geocebada/data/rasters.py` |
 | `raster_metadata` | function | `geocebada.data.rasters` | Return core metadata for one raster without reading its full pixel array. | `src/geocebada/data/rasters.py` |
 | `load_yield_split` | function | `geocebada.data.targets` | Load the official parcel target/split table. | `src/geocebada/data/targets.py` |
 | `partition_yield_split` | function | `geocebada.data.targets` | Return independent training and prediction DataFrames. | `src/geocebada/data/targets.py` |
 | `validate_yield_split` | function | `geocebada.data.targets` | Validate the known invariants of the official 70/30 split. | `src/geocebada/data/targets.py` |
 | `assert_crs` | function | `geocebada.geo.crs` | Require a geospatial frame to have a CRS and optionally match one. | `src/geocebada/geo/crs.py` |
-| `reproject_frame` | function | `geocebada.geo.crs` | Return `frame` reprojected to `target_crs` after validating source CRS. | `src/geocebada/geo/crs.py` |
-| `data_path` | function | `geocebada.paths` | Build a path below `data/`. | `src/geocebada/paths.py` |
+| `reproject_frame` | function | `geocebada.geo.crs` | Return ``frame`` reprojected to ``target_crs`` after validating source CRS. | `src/geocebada/geo/crs.py` |
+| `data_path` | function | `geocebada.paths` | Build a path below ``data/``. | `src/geocebada/paths.py` |
 | `find_project_root` | function | `geocebada.paths` | Return the GeoCebada repository root. | `src/geocebada/paths.py` |
 | `project_path` | function | `geocebada.paths` | Build a path relative to the repository root. | `src/geocebada/paths.py` |
-| `source_path` | function | `geocebada.paths` | Build a path below the immutable `data/source/` directory. | `src/geocebada/paths.py` |
+| `source_path` | function | `geocebada.paths` | Build a path below the immutable ``data/source/`` directory. | `src/geocebada/paths.py` |
