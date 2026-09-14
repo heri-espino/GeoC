@@ -3,6 +3,7 @@ project:
   random_seed: 42
 
 paths:
+  source: data/source
   raw: data/raw
   interim: data/interim
   processed: data/processed
