@@ -1,0 +1,25 @@
+project:
+  name: GeoCebada
+  random_seed: 42
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  models: models
+  reports: reports
+
+validation:
+  strategy: null  # define after inspecting spatial/temporal structure
+  n_splits: null
+
+metrics:
+  - rmse
+  - mae
+  - r2
+
+target:
+  column: null  # set after inspecting the FIRA dataset
+
+id:
+  column: ID_parcela
