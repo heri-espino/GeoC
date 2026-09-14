@@ -6,7 +6,9 @@ GeoCebada Lab is prepared to run from the repository with the entrypoint:
 app/main.py
 ```
 
-The root `requirements.txt` installs the local `geocebada` package and its runtime dependencies from `pyproject.toml`.
+The root `requirements.txt` installs `geocebada` with its optional geospatial dependencies (`-e .[geo]`) so the parcel map can load the official geometry archive on Streamlit Community Cloud.
+
+The application is multipage. In addition to the main laboratory, `app/pages/1_Visual_Explorer.py` provides the spatial and multivariate exploration dashboard with filters, parcel mapping, pairplots, correlation heatmaps, bivariate views, outlier screening, grouped summaries, and missingness diagnostics.
 
 ## Deploy
 
@@ -16,7 +18,22 @@ The root `requirements.txt` installs the local `geocebada` package and its runti
 4. Select repository `heri-espino/GeoCebada`, branch `main`, and entrypoint `app/main.py`.
 5. Deploy.
 
-Community Cloud runs the app from the repository root, so GeoCebada's project-relative path helpers continue to resolve `data/source/` correctly.
+Community Cloud runs the app from the repository root, so GeoCebada's project-relative path helpers continue to resolve `data/source/` correctly. Streamlit discovers the page under `app/pages/` automatically.
+
+## Visual Explorer data sources
+
+The Visual Explorer can load:
+
+- the official 197-row yield/split table;
+- the bundled BASIC CSV;
+- the bundled PRO CSV;
+- a user-uploaded CSV.
+
+For BASIC/PRO, the page can attach parcel-level `AREA_HA`, `CONJUNTO`, and the observed training target through `ID_POLIGONO`. Hidden prediction yield remains missing. BASIC/PRO temporal interpretation is still unresolved, so time-dependent conclusions must wait for a source-backed agricultural-cycle mapping.
+
+## CRS behavior
+
+The official parcel archive is read with GeoPandas. The map only reprojects geometries when the source GeoDataFrame already contains CRS metadata. If the CRS is missing, the dashboard stops with a warning instead of guessing one. This preserves the repository's CRS safety contract.
 
 ## Privacy
 
