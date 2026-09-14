@@ -10,10 +10,12 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `load_config` | function | `geocebada.config` | Load a YAML configuration file. | `src/geocebada/config.py` |
 | `concatenate_csvs` | function | `geocebada.data.files` | Read and concatenate a collection of CSV files. | `src/geocebada/data/files.py` |
 | `discover_files` | function | `geocebada.data.files` | Return sorted files matching ``pattern`` below ``directory``. | `src/geocebada/data/files.py` |
+| `filter_frame` | function | `geocebada.data.filtering` | Return a filtered copy of ``frame`` using declarative filter specifications. | `src/geocebada/data/filtering.py` |
 | `build_raster_inventory` | function | `geocebada.data.rasters` | Build a tabular inventory of GeoTIFF files. | `src/geocebada/data/rasters.py` |
 | `discover_geotiffs` | function | `geocebada.data.rasters` | Return sorted GeoTIFF files below ``directory``. | `src/geocebada/data/rasters.py` |
 | `parse_raster_name` | function | `geocebada.data.rasters` | Parse official climate raster names such as ``PREC_2022_01.tif``. | `src/geocebada/data/rasters.py` |
 | `raster_metadata` | function | `geocebada.data.rasters` | Return core metadata for one raster without reading its full pixel array. | `src/geocebada/data/rasters.py` |
+| `attach_yield_split_metadata` | function | `geocebada.data.targets` | Attach missing official area/split/target metadata by parcel ID. | `src/geocebada/data/targets.py` |
 | `load_yield_split` | function | `geocebada.data.targets` | Load the official parcel target/split table. | `src/geocebada/data/targets.py` |
 | `partition_yield_split` | function | `geocebada.data.targets` | Return independent training and prediction DataFrames. | `src/geocebada/data/targets.py` |
 | `validate_yield_split` | function | `geocebada.data.targets` | Validate the known invariants of the official 70/30 split. | `src/geocebada/data/targets.py` |
@@ -26,6 +28,8 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `merge_features` | function | `geocebada.features.interactive` | Left-join one-row-per-parcel feature tables onto a base table. | `src/geocebada/features/interactive.py` |
 | `assert_crs` | function | `geocebada.geo.crs` | Require a geospatial frame to have a CRS and optionally match one. | `src/geocebada/geo/crs.py` |
 | `reproject_frame` | function | `geocebada.geo.crs` | Return ``frame`` reprojected to ``target_crs`` after validating source CRS. | `src/geocebada/geo/crs.py` |
+| `aggregate_to_parcels` | function | `geocebada.geo.parcels` | Collapse repeated observations to one row per parcel for mapping. | `src/geocebada/geo/parcels.py` |
+| `load_parcels` | function | `geocebada.geo.parcels` | Load the official parcel geometries as a GeoDataFrame. | `src/geocebada/geo/parcels.py` |
 | `data_path` | function | `geocebada.paths` | Build a path below ``data/``. | `src/geocebada/paths.py` |
 | `find_project_root` | function | `geocebada.paths` | Return the GeoCebada repository root. | `src/geocebada/paths.py` |
 | `project_path` | function | `geocebada.paths` | Build a path relative to the repository root. | `src/geocebada/paths.py` |
@@ -36,7 +40,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `covariate_shift_screen` | function | `geocebada.statistics.inference` | Compare numeric covariates between training and prediction subsets. | `src/geocebada/statistics/inference.py` |
 | `linear_regression_diagnostics` | function | `geocebada.statistics.inference` | Fit OLS-style linear regression and return core assumption diagnostics. | `src/geocebada/statistics/inference.py` |
 | `vif_table` | function | `geocebada.statistics.inference` | Compute variance inflation factors using auxiliary linear regressions. | `src/geocebada/statistics/inference.py` |
+| `correlation_heatmap` | function | `geocebada.visualization.exploration` | Build an interactive correlation heatmap for selected numeric variables. | `src/geocebada/visualization/exploration.py` |
 | `correlation_scatter` | function | `geocebada.visualization.exploration` | Build an interactive scatter plot for exploring bivariate relationships. | `src/geocebada/visualization/exploration.py` |
 | `distribution_figure` | function | `geocebada.visualization.exploration` | Build an interactive histogram for one numeric variable. | `src/geocebada/visualization/exploration.py` |
 | `missingness_table` | function | `geocebada.visualization.exploration` | Summarize missing values by column. | `src/geocebada/visualization/exploration.py` |
+| `outlier_summary` | function | `geocebada.visualization.exploration` | Summarize univariate IQR outliers for selected numeric variables. | `src/geocebada/visualization/exploration.py` |
+| `pairplot_figure` | function | `geocebada.visualization.exploration` | Build an interactive scatter-matrix for a selected set of numeric variables. | `src/geocebada/visualization/exploration.py` |
 | `residual_diagnostic_figure` | function | `geocebada.visualization.exploration` | Plot residuals against fitted values with a horizontal zero reference line. | `src/geocebada/visualization/exploration.py` |
+| `parcel_map_figure` | function | `geocebada.visualization.geospatial` | Build an interactive choropleth map after a source-backed CRS reprojection. | `src/geocebada/visualization/geospatial.py` |
