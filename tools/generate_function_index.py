@@ -14,7 +14,6 @@ import ast
 from dataclasses import dataclass
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = ROOT / "src" / "geocebada"
 OUTPUT = ROOT / "docs" / "FUNCTION_INDEX.md"
@@ -73,9 +72,11 @@ def render_markdown(symbols: list[Symbol]) -> str:
     ]
     for symbol in symbols:
         purpose = symbol.summary.replace("|", "\\|")
-        lines.append(
-            f"| `{symbol.name}` | {symbol.kind} | `{symbol.module}` | {purpose} | `{symbol.source}` |"
+        row = (
+            f"| `{symbol.name}` | {symbol.kind} | `{symbol.module}` | "
+            f"{purpose} | `{symbol.source}` |"
         )
+        lines.append(row)
     lines.append("")
     return "\n".join(lines)
 
