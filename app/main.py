@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from geocebada.data import load_yield_split, partition_yield_split
+from geocebada.data import load_yield_split
 from geocebada.evaluation import benchmark_regressors, summarize_benchmark
 from geocebada.features import FeatureRecipe, apply_feature_recipe, feature_recipe_to_dict
 from geocebada.statistics import (
@@ -87,7 +87,6 @@ def _render_overview(frame: pd.DataFrame) -> None:
     st.dataframe(missingness_table(frame), use_container_width=True, hide_index=True)
 
 
-
 def _render_explorer(frame: pd.DataFrame) -> None:
     st.subheader("Data Explorer")
     st.caption("Interactive inspection only; this does not modify source files.")
@@ -106,8 +105,15 @@ def _render_explorer(frame: pd.DataFrame) -> None:
     if numeric:
         left, right = st.columns([1, 2])
         with left:
-            variable = st.selectbox("Distribution variable", numeric, key="distribution_variable")
-            color_candidates = ["(none)", *[column for column in frame.columns if column != variable]]
+            variable = st.selectbox(
+                "Distribution variable",
+                numeric,
+                key="distribution_variable",
+            )
+            color_candidates = [
+                "(none)",
+                *[column for column in frame.columns if column != variable],
+            ]
             color = st.selectbox("Color/group", color_candidates, key="distribution_color")
         with right:
             st.plotly_chart(
@@ -127,7 +133,6 @@ def _render_explorer(frame: pd.DataFrame) -> None:
         file_name="geocebada_explorer.csv",
         mime="text/csv",
     )
-
 
 
 def _render_statistics(frame: pd.DataFrame) -> None:
@@ -159,7 +164,10 @@ def _render_statistics(frame: pd.DataFrame) -> None:
         m2.metric("p-value", f"{result['p_value']:.4g}")
         m3.metric("Complete pairs", int(result["n"]))
 
-        group_options = ["(none)", *[column for column in analysis.columns if column not in {x, y}]]
+        group_options = [
+            "(none)",
+            *[column for column in analysis.columns if column not in {x, y}],
+        ]
         group = st.selectbox("Optional color/group", group_options, key="stats_group")
         st.plotly_chart(
             correlation_scatter(
@@ -173,8 +181,9 @@ def _render_statistics(frame: pd.DataFrame) -> None:
         )
         if method == "pearson":
             st.info(
-                "Pearson targets linear association and is sensitive to outliers. Compare with "
-                "Spearman when the relationship is monotonic but non-linear or ranks are more stable."
+                "Pearson targets linear association and is sensitive to outliers. "
+                "Compare with Spearman when the relationship is monotonic but "
+                "non-linear or ranks are more stable."
             )
 
     with screen_tab:
@@ -206,8 +215,9 @@ def _render_statistics(frame: pd.DataFrame) -> None:
             )
             st.dataframe(screen, use_container_width=True, hide_index=True)
             st.caption(
-                "Adjusted p-values help control false discoveries when many variables are explored. "
-                "They do not solve confounding, spatial dependence, or post-selection bias."
+                "Adjusted p-values help control false discoveries when many variables "
+                "are explored. They do not solve confounding, spatial dependence, "
+                "or post-selection bias."
             )
 
     with assumptions_tab:
@@ -244,23 +254,31 @@ def _render_statistics(frame: pd.DataFrame) -> None:
                 left, right = st.columns(2)
                 with left:
                     st.markdown("**Coefficients**")
-                    st.dataframe(diagnostics["coefficients"], hide_index=True, use_container_width=True)
+                    st.dataframe(
+                        diagnostics["coefficients"],
+                        hide_index=True,
+                        use_container_width=True,
+                    )
                 with right:
                     st.markdown("**Variance inflation factors**")
-                    st.dataframe(diagnostics["vif"], hide_index=True, use_container_width=True)
+                    st.dataframe(
+                        diagnostics["vif"],
+                        hide_index=True,
+                        use_container_width=True,
+                    )
 
                 st.warning(
-                    "These are diagnostics, not automatic pass/fail rules. Spatial independence and "
-                    "valid temporal ordering must be checked separately for GeoCebada."
+                    "These are diagnostics, not automatic pass/fail rules. Spatial "
+                    "independence and valid temporal ordering must be checked "
+                    "separately for GeoCebada."
                 )
-
 
 
 def _render_feature_lab(frame: pd.DataFrame) -> None:
     st.subheader("Feature Engineering Lab")
     st.caption(
-        "Create reproducible feature recipes interactively. Useful recipes should later be promoted "
-        "into src/geocebada/features/ and covered by tests."
+        "Create reproducible feature recipes interactively. Useful recipes should "
+        "later be promoted into src/geocebada/features/ and covered by tests."
     )
 
     columns = frame.columns.tolist()
@@ -291,8 +309,18 @@ def _render_feature_lab(frame: pd.DataFrame) -> None:
             min_date = parsed_dates.min().date()
             max_date = parsed_dates.max().date()
             left, right = st.columns(2)
-            start_date = left.date_input("Start", value=min_date, min_value=min_date, max_value=max_date)
-            end_date = right.date_input("End", value=max_date, min_value=min_date, max_value=max_date)
+            start_date = left.date_input(
+                "Start",
+                value=min_date,
+                min_value=min_date,
+                max_value=max_date,
+            )
+            end_date = right.date_input(
+                "End",
+                value=max_date,
+                min_value=min_date,
+                max_value=max_date,
+            )
             start = start_date.isoformat()
             end = end_date.isoformat()
 
@@ -339,12 +367,11 @@ def _render_feature_lab(frame: pd.DataFrame) -> None:
     )
 
 
-
 def _render_model_lab(frame: pd.DataFrame) -> None:
     st.subheader("Model Lab")
     st.caption(
-        "Quick random-CV baselines for exploration. They are not the final competition estimate: "
-        "GeoCebada still needs spatial/grouped validation after the parcel audit."
+        "Quick random-CV baselines for exploration. They are not the final competition "
+        "estimate: GeoCebada still needs spatial/grouped validation after the parcel audit."
     )
 
     analysis = _analysis_frame(frame)
@@ -389,10 +416,9 @@ def _render_model_lab(frame: pd.DataFrame) -> None:
         with st.expander("Fold-level scores"):
             st.dataframe(scores, hide_index=True, use_container_width=True)
         st.warning(
-            "Do not choose the final model from this random K-fold result alone. Nearby parcels may "
-            "share environmental information and make random CV optimistic."
+            "Do not choose the final model from this random K-fold result alone. "
+            "Nearby parcels may share environmental information and make random CV optimistic."
         )
-
 
 
 def _render_methodology() -> None:
@@ -403,9 +429,10 @@ This laboratory deliberately separates four questions:
 
 1. **Description:** what patterns are present in the observed data?
 2. **Statistical inference:** how uncertain are estimated relationships under explicit assumptions?
-3. **Prediction:** how well does a model generalize to unseen parcels under a defensible validation design?
-4. **Causality:** what would happen under an intervention? The current observational challenge data do
-   **not** establish causal effects by themselves.
+3. **Prediction:** how well does a model generalize to unseen parcels under a defensible
+   validation design?
+4. **Causality:** what would happen under an intervention? The current observational challenge
+   data do **not** establish causal effects by themselves.
 
 For GeoCebada, the main unresolved methodological risks remain temporal leakage, spatial dependence,
 the agricultural cycle represented by the target, and the final validation mechanism. Results shown
@@ -425,8 +452,8 @@ with st.sidebar:
         uploaded = st.file_uploader("CSV file", type=["csv"])
     st.divider()
     st.caption(
-        "Official source files remain immutable. Interactive transformations only create in-memory "
-        "or downloadable derived tables."
+        "Official source files remain immutable. Interactive transformations only create "
+        "in-memory or downloadable derived tables."
     )
 
 if source == "Official yield split":
