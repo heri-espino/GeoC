@@ -77,6 +77,8 @@ GeoCebada/
 │   ├── data/
 │   ├── geo/
 │   ├── features/
+│   ├── statistics/
+│   ├── visualization/
 │   ├── models/
 │   └── evaluation/
 ├── tests/
@@ -90,16 +92,23 @@ GeoCebada/
 
 ## Python library contract
 
-`src/geocebada/` is the reusable library used by notebooks, experiments and the web app. Stable logic must live there rather than being copied between notebooks.
+`src/geocebada/` is the reusable library used by notebooks, experiments and the web app. Stable logic must live there rather than being copied between notebooks or embedded in Streamlit callbacks.
 
 Current public utilities include:
 
-- project/data/source path resolution;
-- YAML config loading;
+- project/data/source path resolution and YAML config loading;
 - file discovery and multi-CSV concatenation;
 - official yield split loading, validation and partitioning;
 - climate GeoTIFF discovery, filename parsing, inventory and metadata;
-- CRS validation/reprojection safeguards.
+- CRS validation/reprojection safeguards;
+- declarative grouped/temporal feature recipes (`mean`, `max`, `slope`, `auc`, etc.);
+- feature-table joins;
+- Pearson/Spearman association tests;
+- multiple-testing correction (Benjamini-Hochberg/FDR, Holm, Bonferroni);
+- feature screening against a target;
+- linear-regression diagnostics including residual metrics, Shapiro-Wilk, Breusch-Pagan and VIF;
+- reusable Plotly exploration/diagnostic figures;
+- exploratory regression benchmarks using identical shuffled K-fold splits.
 
 Before writing a new helper:
 
@@ -114,15 +123,13 @@ After adding/renaming/removing a public function or class, run:
 python tools/generate_function_index.py
 ```
 
-The generated Markdown index is intended for fast GitHub/Codex lookup. Sphinx provides the deeper API reference and searchable HTML docs.
-
 Public reusable code should have type hints, docstrings, explicit assumptions and tests once behavior is stable. Keep notebook-only exploratory snippets out of the public API.
 
 ---
 
 ## Documentation system
 
-Sphinx source lives under `docs/` and uses autodoc/autosummary-compatible docstrings.
+Sphinx source lives under `docs/` and uses autodoc/autosummary-compatible docstrings. API pages now cover core, data, geo, features, statistics, evaluation and visualization modules.
 
 Install/build:
 
@@ -131,9 +138,7 @@ pip install -e ".[docs]"
 sphinx-build -b html docs docs/_build/html
 ```
 
-The Sphinx build exposes `genindex`, `modindex` and full-text search. `docs/FUNCTION_INDEX.md` is separately generated from Python AST so it can be searched quickly without building docs or importing optional dependencies.
-
-Do not maintain conflicting copies of function documentation. The docstring is the main technical source; API docs and function index derive from code.
+`docs/FUNCTION_INDEX.md` is separately generated from Python AST for fast GitHub/Codex lookup. Do not maintain conflicting copies of function documentation; docstrings are the main technical source.
 
 ---
 
@@ -149,12 +154,53 @@ Then notebooks import normally, e.g.:
 
 ```python
 from geocebada.data import load_yield_split, partition_yield_split
+from geocebada.statistics import correlation_screen
 
 split = load_yield_split()
 train, prediction = partition_yield_split(split)
+screen = correlation_screen(train, "RENDIMIENTO_T_HA")
 ```
 
 Never require teammates to edit `sys.path`, copy utility functions, or execute another notebook first. If a transformation is reused or becomes part of the pipeline, promote it into `src/geocebada/`.
+
+---
+
+## GeoCebada Lab status
+
+`app/main.py` is now a functional interactive analysis laboratory, not a placeholder scaffold.
+
+Implemented UI areas:
+
+- Overview: dataset shape, split, observed-yield distribution and missingness/schema;
+- Data Explorer: arbitrary columns, distributions and filtered CSV export;
+- Statistical Lab: Pearson/Spearman tests, multiple-hypothesis screening and linear-model assumption diagnostics;
+- Feature Engineering Lab: declarative parcel/group aggregations, optional date windows, temporal slope/AUC, recipe/table download;
+- Model Lab: quick Linear/Ridge/RandomForest/ExtraTrees random-CV comparison;
+- Methodology: interpretation guardrails separating description, statistical inference, prediction and causality.
+
+The app automatically excludes official `PREDICCION` rows from supervised statistics/model evaluation when the official split columns are present. This protects against hidden-target misuse.
+
+The app is intentionally an interface over `geocebada`; reusable analysis logic must remain in `src/geocebada/`.
+
+Important limitations still to implement after data audit:
+
+- direct parcel map/spatial explorer;
+- raster overlays and zonal-stat visualization;
+- BASIC/PRO-specific temporal explorer once schemas are confirmed;
+- Moran's I/spatial residual diagnostics once parcel geometry/CRS is verified;
+- grouped/spatial CV in Model Lab;
+- final inference using frozen feature/model artifacts.
+
+---
+
+## Statistical interpretation guardrails
+
+- Statistical significance is not causality.
+- Multiple exploratory tests require correction and still remain vulnerable to confounding/post-selection bias.
+- Shapiro/Breusch-Pagan/VIF outputs are diagnostics, not binary model-acceptance rules.
+- Spatial independence is a major unresolved assumption for georeferenced parcels.
+- In-sample linear diagnostics are not predictive validation.
+- Random K-fold results in the current Model Lab are exploratory only; do not cite them as final expected FIRA performance.
 
 ---
 
@@ -178,6 +224,7 @@ Always inspect CRS before overlay/zonal statistics; reproject explicitly; never 
 - Learned preprocessing must be fit inside CV folds.
 - Random CV may be optimistic under spatial autocorrelation; compare with spatial/grouped diagnostics after geometry audit.
 - Do not select models by repeatedly inspecting the final 59 predictions.
+- Interactive feature exploration must not silently promote post-harvest variables into the canonical pipeline.
 
 ---
 
@@ -185,28 +232,24 @@ Always inspect CRS before overlay/zonal statistics; reproject explicitly; never 
 
 Problem: small-n supervised regression (`n_train=138`). No final model exists.
 
-Start with reproducible baselines and tabular models (mean/median, linear/Ridge/Elastic Net, Extra Trees/Random Forest, CatBoost/LightGBM/XGBoost) and compare with RMSE, MAE and R² using out-of-fold evidence. Deep learning is not a default choice at this sample size.
+The current Model Lab implements exploratory baselines only. Final model selection still requires audited parcel-level features, temporal validity and spatial/grouped validation. Deep learning is not a default choice at this sample size.
 
 Feature-domain ablations should quantify remote sensing, climate, topography, geometry/spatial variables and combinations.
-
----
-
-## App contract
-
-`app/main.py` is currently a Streamlit scaffold. Final UI must call the same frozen preprocessing/model pipeline used offline; do not duplicate feature engineering in app code. Clearly distinguish observed vs predicted values and do not show unvalidated uncertainty.
 
 ---
 
 ## Immediate next steps
 
 1. Audit BASIC and PRO schemas, IDs, dates, row counts and missingness.
-2. Inspect/extract parcel archive into generated workspace; verify CRS, geometry validity and 197-ID coverage.
-3. Audit train/test composition by state/region/area once geometry is available.
-4. Resolve target agricultural cycle/year.
-5. Define leakage-safe temporal windows.
-6. Build parcel-level reusable feature functions in `src/geocebada/features/`.
-7. Establish CV diagnostics and baseline benchmark framework in `src/geocebada/evaluation/` and `src/geocebada/models/`.
-8. Keep function index, tests and Sphinx docs synchronized as the library grows.
+2. Connect BASIC/PRO to the interactive Data/Time-Series Explorer using reusable loaders.
+3. Inspect/extract parcel archive into generated workspace; verify CRS, geometry validity and 197-ID coverage.
+4. Add parcel map, spatial train/test audit and Moran/residual diagnostics after CRS verification.
+5. Resolve target agricultural cycle/year.
+6. Define leakage-safe temporal windows and promote defensible feature recipes into stable feature modules.
+7. Add grouped/spatial CV to `geocebada.evaluation` and the Model Lab.
+8. Build the canonical parcel-level modeling table and domain ablations.
+9. Freeze final preprocessing/model artifacts before exposing prediction in the app.
+10. Keep function index, tests, Sphinx docs and AI usage log synchronized as the library grows.
 
 ---
 
