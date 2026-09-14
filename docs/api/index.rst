@@ -9,3 +9,7 @@ The API reference is generated from docstrings in ``src/geocebada``.
    core
    data
    geo
+   features
+   statistics
+   evaluation
+   visualization
