@@ -40,6 +40,9 @@ wandb/
 # App / framework caches
 .streamlit/secrets.toml
 
+# Documentation build
+/docs/_build/
+
 # Build / coverage
 build/
 dist/
