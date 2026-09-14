@@ -106,6 +106,45 @@ def partition_yield_split(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFra
     return train, prediction
 
 
+def attach_yield_split_metadata(
+    frame: pd.DataFrame,
+    *,
+    id_column: str = ID_COLUMN,
+    root: str | Path | None = None,
+) -> pd.DataFrame:
+    """Attach missing official area/split/target metadata by parcel ID.
+
+    Existing columns are never overwritten. The official target remains missing
+    for ``PREDICCION`` parcels, so this helper does not reveal hidden labels.
+    A many-to-one merge allows longitudinal BASIC/PRO rows to inherit parcel-level
+    metadata without changing their observation grain.
+    """
+
+    if id_column not in frame.columns:
+        raise KeyError(id_column)
+
+    split = load_yield_split(root=root)
+    metadata_columns = [
+        column
+        for column in ["AREA_HA", TARGET_COLUMN, SPLIT_COLUMN]
+        if column not in frame.columns
+    ]
+    if not metadata_columns:
+        return frame.copy()
+
+    metadata = split[[ID_COLUMN, *metadata_columns]].copy()
+    result = frame.merge(
+        metadata,
+        left_on=id_column,
+        right_on=ID_COLUMN,
+        how="left",
+        validate="m:1",
+    )
+    if id_column != ID_COLUMN:
+        result = result.drop(columns=[ID_COLUMN])
+    return result
+
+
 def _drop_empty_unnamed_columns(frame: pd.DataFrame) -> pd.DataFrame:
     empty_unnamed = [
         column
