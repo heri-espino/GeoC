@@ -2,6 +2,32 @@
 
 Los notebooks son para exploración, visualización y experimentos iniciales. La lógica estable y reutilizable debe vivir en `src/geocebada/` y consumirse como una librería normal de Python.
 
+## Si es tu primera vez en el proyecto
+
+Sigue primero el tutorial completo:
+
+```text
+docs/GETTING_STARTED.md
+```
+
+Ese tutorial supone que ya tienes Conda instalado y deja a todo el equipo trabajando con:
+
+- ambiente Conda `geocebada`;
+- Python 3.11;
+- kernel de Jupyter `Python (GeoCebada)`;
+- paquete `geocebada` instalado en modo editable;
+- dependencias de notebooks y geoespaciales.
+
+El flujo inicial desde la raíz del repositorio es:
+
+```bash
+conda env create -f environment.yml
+conda activate geocebada
+python -m pip install -e ".[dev,geo]"
+python -m ipykernel install --user --name geocebada --display-name "Python (GeoCebada)"
+jupyter lab
+```
+
 ## Primer notebook recomendado
 
 Abrir y ejecutar de arriba hacia abajo:
@@ -10,23 +36,24 @@ Abrir y ejecutar de arriba hacia abajo:
 notebooks/01_visualizacion_datos.ipynb
 ```
 
-Está pensado para compañeros que trabajan principalmente desde notebooks. La primera celda localiza automáticamente la raíz del repositorio y ejecuta una instalación editable equivalente a:
+Está pensado para compañeros que trabajan principalmente desde notebooks. La primera celda localiza automáticamente la raíz del repositorio y ejecuta una instalación editable defensiva. Después carga el split oficial, BASIC y PRO usando la librería `geocebada`, muestra un resumen del dataset, visualizaciones del target, missingness, un pairplot triangular ligero con puntos rasterizados, una vista descriptiva por parcela para abril–octubre de 2025 y el contenido actualizado de `docs/VARIABLES.md`.
 
-```bash
-pip install -e .
-```
-
-Después carga el split oficial, BASIC y PRO usando la librería `geocebada`, muestra un resumen del dataset, visualizaciones del target, missingness, un pairplot triangular ligero con puntos rasterizados, una vista descriptiva por parcela para abril–octubre de 2025 y el contenido actualizado de `docs/VARIABLES.md`.
+Si ya seguiste `docs/GETTING_STARTED.md`, la instalación de la primera celda es redundante pero inocua.
 
 El notebook se versiona **sin outputs** para no inflar el repositorio. Cada usuario genera las figuras localmente al ejecutarlo.
 
-## Preparación manual alternativa
+## Uso normal
 
-Si se prefiere instalar el proyecto una sola vez desde el root del repositorio:
+Después de configurar la computadora una vez, normalmente basta con:
 
 ```bash
-pip install -e ".[dev,geo]"
+cd GeoCebada
+conda activate geocebada
+git pull
+jupyter lab
 ```
+
+Dentro de Jupyter selecciona siempre el kernel **Python (GeoCebada)**.
 
 Después, cualquier notebook puede importar utilidades sin modificar `sys.path` ni copiar funciones:
 
@@ -38,7 +65,7 @@ split = load_yield_split()
 train, prediction = partition_yield_split(split)
 ```
 
-Para descubrir funciones existentes antes de crear una nueva, consultar `docs/FUNCTION_INDEX.md` y la referencia Sphinx en `docs/api/`.
+Para descubrir funciones existentes antes de crear una nueva, consulta `docs/FUNCTION_INDEX.md` y la referencia Sphinx en `docs/api/`.
 
 ## Convención sugerida
 
