@@ -7,9 +7,10 @@ These instructions apply repository-wide unless a more specific handoff adds con
 1. `.ai_handoff`
 2. `README.md`
 3. `data/.ai_handoff` and `data/README.md` for data/model/geospatial work
-4. `src/geocebada/README.md` for reusable-code conventions
-5. `docs/FUNCTION_INDEX.md` before creating a new helper
-6. relevant official/reference material under `docs/`
+4. `docs/VARIABLES.md` for the source-backed variable dictionary
+5. `src/geocebada/README.md` for reusable-code conventions
+6. `docs/FUNCTION_INDEX.md` before creating a new helper
+7. relevant official/reference material under `docs/`
 
 Do not replace confirmed project facts with guesses or generic ML assumptions.
 
@@ -18,11 +19,21 @@ Do not replace confirmed project facts with guesses or generic ML assumptions.
 - Canonical parcel identifier: `ID_POLIGONO`.
 - Canonical target: `RENDIMIENTO_T_HA`.
 - Official split: 197 parcels = 138 `ENTRENAMIENTO` + 59 `PREDICCION`.
+- The target corresponds to the **April–October 2025 production cycle**.
 - Hidden prediction targets are never pseudo-ground-truth.
 - `data/source/` and `docs/official/` are immutable source evidence.
 - Generated data belongs in `data/raw/`, `data/interim/` or `data/processed/`.
 - Models belong in `models/`; metrics/figures/predictions in `reports/`.
 - Stable production/reusable logic belongs in `src/geocebada/`; notebooks are exploratory.
+
+## Confirmed remote-sensing sources
+
+- BASIC: 107,666 rows × 96 columns, 197 parcels, Sentinel-2 + Landsat, 2022–2025.
+- BASIC has 23 index families with parcel-level `promedio`, `std`, `max`, `min`; see `docs/VARIABLES.md`.
+- PRO: 47,804 rows × 20 columns, 197 parcels, Planet, 2025.
+- PRO contains NDVI, EVI, LAI and MSAVI with `promedio`, `std`, `max`, `min`.
+- BASIC/PRO are longitudinal: rows are repeated parcel/date/sensor observations, not independent yield samples.
+- Same-named indices from different sensors must not be silently treated as equivalent.
 
 ## Reusable-library rule
 
@@ -51,7 +62,7 @@ pip install -e ".[docs]"
 sphinx-build -b html docs docs/_build/html
 ```
 
-Do not maintain divergent manual descriptions of the same function. Keep the code docstring authoritative.
+`docs/VARIABLES.md` is the human-facing dictionary for dataset variables; source/reference documents remain authoritative when they conflict with derived documentation.
 
 ## Known spatial constraints
 
@@ -65,19 +76,20 @@ Never perform overlays, metric distances or area calculations without explicit C
 ## Leakage constraints
 
 - Do not use hidden targets for model selection/evaluation.
-- Do not use climate/satellite dates after the target harvest period; target cycle remains unresolved.
+- The target cycle is April–October 2025, but the **operational prediction cutoff is not yet frozen**. Do not use satellite/climate observations after the chosen forecast horizon.
 - Fit learned preprocessing inside CV folds.
-- Treat spatial autocorrelation as a validation risk; random CV alone may be optimistic.
+- Never row-random split BASIC/PRO for supervised validation; group by parcel at minimum.
+- Treat spatial autocorrelation as a validation risk; random parcel CV alone may be optimistic.
 - Do not tune against the final 59 predictions by subjective inspection.
+- Preserve sensor provenance when combining satellite sources.
 
 ## Current unresolved questions
 
 Do not silently assume:
 
-- target agricultural year/cycle;
-- BASIC/PRO exact schema and semantics;
+- exact pre-harvest prediction cutoff/window within the April–October 2025 cycle;
+- sensor-harmonization strategy between BASIC and PRO;
 - official split stratification mechanism;
-- valid temporal feature windows;
 - final CV strategy;
 - parcel source CRS until verified.
 
