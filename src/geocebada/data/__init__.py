@@ -2,6 +2,7 @@
 
 from geocebada.data.files import concatenate_csvs, discover_files
 from geocebada.data.filtering import filter_frame
+from geocebada.data.official import load_basic_data, load_official_tabular, load_pro_data
 from geocebada.data.rasters import (
     build_raster_inventory,
     discover_geotiffs,
@@ -22,6 +23,9 @@ __all__ = [
     "discover_files",
     "discover_geotiffs",
     "filter_frame",
+    "load_basic_data",
+    "load_official_tabular",
+    "load_pro_data",
     "load_yield_split",
     "parse_raster_name",
     "partition_yield_split",
