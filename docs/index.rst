@@ -10,6 +10,7 @@ than duplicated across notebooks.
    :caption: Contents
 
    README
+   GETTING_STARTED
    VARIABLES
    FUNCTION_INDEX
    api/index
