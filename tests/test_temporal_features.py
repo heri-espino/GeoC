@@ -68,6 +68,32 @@ def test_temporal_knn_exact_capture_matches_when_k_one() -> None:
     assert row["backend"] == "cpu"
 
 
+def test_temporal_knn_selects_nearest_valid_neighbor_per_variable() -> None:
+    frame = pd.DataFrame(
+        {
+            "ID_POLIGONO": ["A", "A", "A"],
+            "fecha_captura": ["2025-04-10", "2025-04-11", "2025-04-18"],
+            "sensor": ["S2", "S2", "S2"],
+            "ndvi_promedio": [np.nan, np.nan, 0.75],
+            "evi_promedio": [0.20, 0.30, 0.90],
+            "porcentaje_nubosidad": [0.0, 0.0, 0.0],
+        }
+    )
+
+    aligned = align_temporal_knn(
+        frame,
+        ["ndvi_promedio", "evi_promedio"],
+        grid=[pd.Timestamp("2025-04-11")],
+        k=1,
+        max_distance_days=10.0,
+        cloud_weighting=False,
+        backend="cpu",
+    )
+
+    assert np.isclose(aligned.loc[0, "ndvi_promedio"], 0.75)
+    assert np.isclose(aligned.loc[0, "evi_promedio"], 0.30)
+
+
 def test_cloud_weighting_downweights_cloudy_neighbor() -> None:
     frame = pd.DataFrame(
         {
