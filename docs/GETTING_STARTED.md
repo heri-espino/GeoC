@@ -59,6 +59,36 @@ La opción `-e` significa **editable**. El paquete no se copia a otro lugar: Pyt
 
 `[dev,geo]` instala además las herramientas de trabajo del equipo, incluyendo JupyterLab, pytest y dependencias geoespaciales.
 
+### Servidor con GPU NVIDIA — opcional
+
+La mayor parte del proyecto funciona perfectamente sin GPU. Para la alineación temporal y futuros modelos con soporte CUDA existe un extra opcional.
+
+Primero verifica que el servidor vea la GPU:
+
+```bash
+nvidia-smi
+```
+
+Si funciona y el servidor tiene un driver NVIDIA compatible con CUDA 12, instala:
+
+```bash
+python -m pip install -e ".[dev,geo,gpu]"
+```
+
+El extra `gpu` instala `cupy-cuda12x`. Para comprobarlo:
+
+```bash
+python -c "from geocebada.features import temporal_backend_available; print(temporal_backend_available('auto'))"
+```
+
+En una máquina CUDA correctamente configurada debería imprimir:
+
+```text
+gpu
+```
+
+Si imprime `cpu`, el resto del proyecto sigue funcionando normalmente. No instales el extra GPU en computadoras sin NVIDIA/CUDA sólo para mantener el entorno igual: el código está diseñado para que CPU y GPU produzcan la misma representación temporal.
+
 ## 4. Registrar el kernel de Jupyter
 
 Ejecuta una vez:
@@ -107,7 +137,13 @@ Empieza por:
 notebooks/01_visualizacion_datos.ipynb
 ```
 
-Ese notebook contiene además una instalación editable defensiva para que pueda ejecutarse de forma sencilla. Si ya seguiste este tutorial, esa instalación es redundante pero inocua.
+Después, para estudiar las series satelitales y construir una rejilla temporal común:
+
+```text
+notebooks/02_cobertura_alineacion_temporal.ipynb
+```
+
+Los notebooks contienen además una instalación editable defensiva para que puedan ejecutarse de forma sencilla. Si ya seguiste este tutorial, esa instalación es redundante pero inocua.
 
 Dentro de Jupyter confirma que el kernel seleccionado sea **Python (GeoCebada)**.
 
@@ -136,6 +172,12 @@ Si cambia `pyproject.toml` o se agregan nuevas dependencias del paquete:
 
 ```bash
 python -m pip install -e ".[dev,geo]"
+```
+
+En el servidor GPU usa, en cambio:
+
+```bash
+python -m pip install -e ".[dev,geo,gpu]"
 ```
 
 Después reinicia el kernel de Jupyter.
@@ -206,6 +248,22 @@ print(sys.executable)
 
 Si no apunta al ambiente `geocebada`, cambia el kernel a **Python (GeoCebada)**.
 
+### La GPU no aparece
+
+Comprueba primero fuera de Python:
+
+```bash
+nvidia-smi
+```
+
+Después verifica CuPy:
+
+```bash
+python -c "import cupy as cp; print(cp.cuda.runtime.getDeviceCount())"
+```
+
+Si falla, usa `BACKEND="cpu"` mientras se revisa CUDA/driver. No bloquea el análisis.
+
 ## Resumen mínimo
 
 Para una computadora nueva, el flujo completo es:
@@ -218,6 +276,12 @@ conda activate geocebada
 python -m pip install -e ".[dev,geo]"
 python -m ipykernel install --user --name geocebada --display-name "Python (GeoCebada)"
 jupyter lab
+```
+
+En el servidor NVIDIA puede sustituirse la instalación por:
+
+```bash
+python -m pip install -e ".[dev,geo,gpu]"
 ```
 
 Después sólo hace falta activar el ambiente antes de trabajar.
