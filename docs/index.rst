@@ -10,6 +10,7 @@ than duplicated across notebooks.
    :caption: Contents
 
    README
+   VARIABLES
    FUNCTION_INDEX
    api/index
    VISUAL_EXPLORER
