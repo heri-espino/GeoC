@@ -155,10 +155,14 @@ def align_temporal_knn(
 ) -> pd.DataFrame:
     """Align irregular parcel observations to a common grid with temporal k-NN.
 
-    For every parcel/sensor/grid-date combination, the ``k`` nearest capture
-    dates are selected. Values are averaged with exponential temporal weights,
-    optionally multiplied by a cloud-quality weight ``1 - cloud_pct / 100``.
-    Missing values are handled independently for every variable.
+    For every parcel/sensor/grid-date combination, each variable independently
+    selects its ``k`` nearest non-missing capture dates. Values are averaged with
+    exponential temporal weights, optionally multiplied by a cloud-quality
+    weight ``1 - cloud_pct / 100``.
+
+    Selecting neighbors per variable matters because BASIC/PRO missingness is
+    index-dependent: a missing NDVI on a nearby row should not prevent NDVI from
+    using the next-nearest valid capture inside ``max_distance_days``.
 
     The GPU backend uses CuPy for distance/weighted-reduction operations. Pandas
     grouping and date parsing remain on CPU, so GPU acceleration is most useful
@@ -258,49 +262,58 @@ def align_temporal_knn(
 
         for target_idx, target_day in enumerate(target_days):
             distances = xp.abs(capture_days - target_day)
-            n_candidates = int(len(group))
-            neighbor_count = min(k, n_candidates)
-            if neighbor_count == n_candidates:
-                neighbor_idx = xp.arange(n_candidates)
+            if max_distance_days is None:
+                candidate_mask = xp.ones(distances.shape, dtype=bool)
             else:
-                neighbor_idx = xp.argpartition(distances, neighbor_count - 1)[:neighbor_count]
+                candidate_mask = distances <= max_distance_days
 
-            selected_distances = distances[neighbor_idx]
-            if max_distance_days is not None:
-                within = selected_distances <= max_distance_days
-                neighbor_idx = neighbor_idx[within]
-                selected_distances = selected_distances[within]
+            if cp is not None:
+                candidate_count = int(cp.asnumpy(xp.sum(candidate_mask)))
+            else:
+                candidate_count = int(np.sum(candidate_mask))
 
             row: dict[str, object] = dict(zip(group_columns, key_tuple, strict=True))
             row["grid_date"] = grid_index[target_idx]
             row["backend"] = resolved_backend
+            row["neighbor_count"] = min(k, candidate_count)
 
-            if int(neighbor_idx.size) == 0:
-                row["neighbor_count"] = 0
+            if candidate_count == 0:
                 row["nearest_gap_days"] = np.nan
                 for column in value_columns:
                     row[column] = np.nan
                 rows.append(row)
                 continue
 
-            temporal_weights = xp.exp(-selected_distances / bandwidth_days)
-            weights = temporal_weights * cloud_quality[neighbor_idx]
-            selected_values = values[neighbor_idx]
-            valid = xp.isfinite(selected_values)
-            weighted_values = xp.where(valid, selected_values, 0.0) * weights[:, None]
-            denominators = xp.sum(valid * weights[:, None], axis=0)
-            numerators = xp.sum(weighted_values, axis=0)
-            aligned = xp.where(denominators > 0, numerators / denominators, xp.nan)
+            candidate_distances = distances[candidate_mask]
+            if cp is not None:
+                nearest_gap = float(cp.asnumpy(xp.min(candidate_distances)))
+            else:
+                nearest_gap = float(np.min(np.asarray(candidate_distances)))
+            row["nearest_gap_days"] = nearest_gap
+
+            valid_values = xp.isfinite(values)
+            allowed = valid_values & candidate_mask[:, None]
+            masked_distances = xp.where(allowed, distances[:, None], xp.inf)
+
+            n_take = min(k, candidate_count)
+            neighbor_idx = xp.argpartition(masked_distances, n_take - 1, axis=0)[:n_take, :]
+            selected_distances = xp.take_along_axis(masked_distances, neighbor_idx, axis=0)
+            selected_values = xp.take_along_axis(values, neighbor_idx, axis=0)
+            selected_cloud = cloud_quality[neighbor_idx]
+
+            usable = xp.isfinite(selected_distances) & xp.isfinite(selected_values)
+            weights = xp.exp(-selected_distances / bandwidth_days) * selected_cloud
+            weights = xp.where(usable, weights, 0.0)
+            numerators = xp.sum(xp.where(usable, selected_values, 0.0) * weights, axis=0)
+            denominators = xp.sum(weights, axis=0)
+            aligned = xp.full(len(value_columns), xp.nan, dtype=float)
+            xp.divide(numerators, denominators, out=aligned, where=denominators > 0)
 
             if cp is not None:
                 aligned_cpu = cp.asnumpy(aligned)
-                nearest_gap = float(cp.asnumpy(xp.min(selected_distances)))
             else:
                 aligned_cpu = np.asarray(aligned)
-                nearest_gap = float(np.min(np.asarray(selected_distances)))
 
-            row["neighbor_count"] = int(neighbor_idx.size)
-            row["nearest_gap_days"] = nearest_gap
             row.update(dict(zip(value_columns, aligned_cpu.tolist(), strict=True)))
             rows.append(row)
 
