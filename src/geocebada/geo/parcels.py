@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import pandas as pd
 
@@ -78,7 +79,11 @@ def aggregate_to_parcels(
     if id_column not in frame.columns:
         raise KeyError(id_column)
 
-    selected = list(columns) if columns is not None else [c for c in frame.columns if c != id_column]
+    selected = (
+        list(columns)
+        if columns is not None
+        else [column for column in frame.columns if column != id_column]
+    )
     selected = [column for column in selected if column != id_column]
     missing = [column for column in selected if column not in frame.columns]
     if missing:
