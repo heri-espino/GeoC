@@ -62,8 +62,10 @@ GeoCebada/
 │   ├── interim/             # generated intermediates
 │   └── processed/           # generated model-ready artifacts
 ├── docs/
-│   ├── VARIABLES.md         # source-backed variable dictionary
-│   ├── FUNCTION_INDEX.md    # generated public-symbol index
+│   ├── VARIABLES.md
+│   ├── TEMPORAL_ALIGNMENT.md
+│   ├── GETTING_STARTED.md
+│   ├── FUNCTION_INDEX.md
 │   ├── VISUAL_EXPLORER.md
 │   ├── DEPLOYMENT.md
 │   ├── official/
@@ -72,8 +74,13 @@ GeoCebada/
 │   └── AI_USAGE.md
 ├── models/
 ├── notebooks/
+│   ├── 01_visualizacion_datos.ipynb
+│   └── 02_cobertura_alineacion_temporal.ipynb
 ├── reports/
-├── src/geocebada/           # reusable source of truth
+├── src/geocebada/
+│   └── features/
+│       ├── interactive.py
+│       └── temporal.py
 ├── tests/
 └── tools/
 ```
@@ -98,7 +105,17 @@ If higher-ranked evidence contradicts derived docs, preserve the evidence and up
 
 `src/geocebada/` is used by notebooks, experiments and the app. Stable logic must live there rather than in copied notebook cells or Streamlit callbacks.
 
-Current reusable areas include loaders, split validation, filtering, raster inventory, CRS/reprojection, parcel geometry loading, feature recipes, statistical tests/diagnostics, visualization and regression baselines.
+Current reusable areas include loaders, split validation, filtering, raster inventory, CRS/reprojection, parcel geometry loading, feature recipes, temporal alignment, statistical tests/diagnostics, visualization and regression baselines.
+
+Temporal utilities under `src/geocebada/features/temporal.py`:
+
+- `make_temporal_grid`: construct a regular date grid;
+- `temporal_coverage_summary`: summarize captures, unique dates, gaps, cloudiness and per-month counts by parcel/sensor;
+- `temporal_backend_available`: resolve CPU vs optional CuPy/CUDA backend;
+- `align_temporal_knn`: align irregular captures using k nearest dates, exponential temporal weights and optional cloud-quality weighting;
+- `aligned_to_wide`: pivot the aligned representation to one row per parcel while keeping sensor names in feature columns.
+
+The default alignment keeps sensors separate. Never silently merge Sentinel/Landsat/Planet values with the same index name.
 
 Before creating a public helper:
 
@@ -117,20 +134,33 @@ python tools/generate_function_index.py
 
 ## Notebook/team workflow
 
-Install editable:
+Team environment is standardized around Conda environment `geocebada`, Python 3.11 and Jupyter kernel `Python (GeoCebada)`. See `docs/GETTING_STARTED.md`.
+
+Standard install:
 
 ```bash
 pip install -e ".[dev,geo]"
 ```
 
-Typical imports:
+Optional NVIDIA/CUDA 12 install:
 
-```python
-from geocebada.data import load_basic_data, load_pro_data, load_yield_split
-from geocebada.statistics import correlation_screen
+```bash
+pip install -e ".[dev,geo,gpu]"
 ```
 
+The `gpu` extra installs `cupy-cuda12x`. GPU support is optional; code must retain a CPU path and must not require CUDA for CI or ordinary team use.
+
 Do not require `sys.path` hacks, copied helpers or execution of another notebook first.
+
+---
+
+## Notebook status
+
+`notebooks/01_visualizacion_datos.ipynb` is the lightweight first-look notebook: loaders, basic summaries, lightweight/rasterized pairplot, parcel-level descriptive view and `docs/VARIABLES.md` rendering.
+
+`notebooks/02_cobertura_alineacion_temporal.ipynb` is the temporal workflow: train-vs-prediction coverage audit, weekly availability heatmap, configurable temporal grid, k-nearest-date alignment, gap/missingness diagnostics, aligned curves, one-row-per-parcel wide table and optional export to `data/interim/`.
+
+The second notebook defaults to `*_promedio` variables and a 14-day grid to stay manageable, but can align all index statistics. It supports `BACKEND="auto"`, `cpu` or `gpu`.
 
 ---
 
@@ -146,11 +176,25 @@ Prediction-set covariates may be inspected for support/shift diagnostics, but hi
 
 ## Temporal guardrails
 
-The target cycle is now source-confirmed as **April–October 2025**. This does **not** make every 2025 observation automatically legal for a forecasting model.
+The target cycle is source-confirmed as **April–October 2025**. This does **not** make every 2025 observation automatically legal for a forecasting model.
 
 Before freezing temporal features, explicitly define the operational prediction date/cutoff. Any satellite/climate observation after that cutoff is unavailable future information and must be excluded from final model training/evaluation.
 
+The current temporal alignment can use the full April–October interval for descriptive coverage analysis, but the final modeling window must be frozen before supervised comparison.
+
+Parameters such as grid frequency, `k`, `bandwidth_days`, `max_distance_days`, cloud weighting and any feature selection must be chosen from labeled-data validation, not from the hidden targets or by making the 59 final outputs look convenient.
+
 Historical 2022–2024 data may be useful for climatologies, anomalies or representation learning only if the resulting feature can also be computed consistently at inference time and does not introduce target leakage.
+
+---
+
+## GPU guardrails
+
+- GPU is optional; CPU remains the reference-compatible path.
+- Current GPU backend accelerates array distance/weighted-reduction operations with CuPy; pandas grouping/date parsing remain CPU operations.
+- Do not claim GPU is faster without benchmarking on the actual workload. ~100k rows split into many small parcel/sensor groups may be CPU-efficient already.
+- Compare CPU and GPU using identical data, parameters and output checks.
+- CI must never require CUDA hardware.
 
 ---
 
@@ -194,22 +238,24 @@ Never compute metric area/distance or raster overlays without explicit CRS check
 
 Small-n target problem: `n_train=138`. No final model exists.
 
-Current dashboard models are exploratory baselines only. Final selection requires a one-row-per-parcel feature table, legal temporal windows, grouped/spatial validation, domain ablations and frozen preprocessing.
+Temporal alignment now provides a reproducible route from irregular satellite captures to a parcel-level table, but no grid/neighbor parameters are frozen for final modeling yet.
+
+Current dashboard models are exploratory baselines only. Final selection still requires legal temporal windows, grouped/spatial validation, domain ablations and frozen preprocessing.
 
 ---
 
 ## Immediate next steps
 
-1. Inspect parcel archive: CRS, attributes, validity and 197-ID coverage.
-2. Audit BASIC/PRO date/sensor distributions and missingness specifically around 2025.
-3. Define the operational pre-harvest prediction cutoff/horizon.
-4. Build a BASIC/PRO time-series explorer using the now-audited schema.
-5. Extract climate/topography to parcels through documented zonal statistics.
-6. Promote defensible temporal/spatial feature recipes into `src/geocebada/features/`.
-7. Add Moran's I/spatial residual diagnostics and grouped/spatial CV.
-8. Build domain ablations: satellite, climate, topography/geometry, combinations.
-9. Freeze preprocessing/model artifacts before final 59 predictions.
-10. Keep tests, function index, Sphinx docs, handoffs and AI usage synchronized.
+1. Execute `02_cobertura_alineacion_temporal.ipynb` on BASIC and PRO and record train-vs-prediction coverage differences.
+2. Benchmark CPU vs RTX 4500 Ada GPU on the same alignment settings; keep GPU only where it materially helps.
+3. Compare reasonable temporal grids and neighborhood parameters within labeled-data validation, e.g. weekly vs 14-day and multiple `k`/bandwidth choices.
+4. Define the operational pre-harvest prediction cutoff/horizon before using aligned features in final supervised experiments.
+5. Add compact phenology features from aligned curves: AUC, peak, peak date, slopes, deltas and seasonal variability.
+6. Inspect parcel archive: CRS, attributes, validity and 197-ID coverage.
+7. Extract climate/topography to parcels through documented zonal statistics.
+8. Add Moran's I/spatial residual diagnostics and grouped/spatial CV.
+9. Build domain ablations: satellite, climate, topography/geometry, combinations.
+10. Freeze preprocessing/model artifacts before final 59 predictions.
 
 ---
 
