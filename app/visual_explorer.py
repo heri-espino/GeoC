@@ -95,7 +95,9 @@ def _filter_panel(frame: pd.DataFrame) -> pd.DataFrame:
             key="visual_numeric_filter_columns",
         )
         for column in range_columns:
-            values = pd.to_numeric(frame[column], errors="coerce").replace([np.inf, -np.inf], np.nan)
+            values = pd.to_numeric(frame[column], errors="coerce").replace(
+                [np.inf, -np.inf], np.nan
+            )
             values = values.dropna()
             if values.empty:
                 continue
