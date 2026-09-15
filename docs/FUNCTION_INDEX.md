@@ -29,11 +29,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `apply_feature_recipe` | function | `geocebada.features.interactive` | Apply a feature recipe and return one row per group with the new feature. | `src/geocebada/features/interactive.py` |
 | `feature_recipe_to_dict` | function | `geocebada.features.interactive` | Serialize a feature recipe into a plain dictionary for YAML/JSON storage. | `src/geocebada/features/interactive.py` |
 | `merge_features` | function | `geocebada.features.interactive` | Left-join one-row-per-parcel feature tables onto a base table. | `src/geocebada/features/interactive.py` |
-| `make_temporal_grid` | function | `geocebada.features.temporal` | Return an inclusive regular temporal grid between ``start`` and ``end``. | `src/geocebada/features/temporal.py` |
-| `temporal_coverage_summary` | function | `geocebada.features.temporal` | Summarize date coverage, temporal gaps and cloudiness by parcel/sensor. | `src/geocebada/features/temporal.py` |
-| `temporal_backend_available` | function | `geocebada.features.temporal` | Resolve ``backend`` to ``"cpu"`` or ``"gpu"`` without running alignment. | `src/geocebada/features/temporal.py` |
 | `align_temporal_knn` | function | `geocebada.features.temporal` | Align irregular parcel observations to a common grid with temporal k-NN. | `src/geocebada/features/temporal.py` |
 | `aligned_to_wide` | function | `geocebada.features.temporal` | Pivot aligned temporal values to one modeling row per parcel. | `src/geocebada/features/temporal.py` |
+| `make_temporal_grid` | function | `geocebada.features.temporal` | Return an inclusive regular temporal grid between ``start`` and ``end``. | `src/geocebada/features/temporal.py` |
+| `temporal_backend_available` | function | `geocebada.features.temporal` | Resolve ``backend`` to ``"cpu"`` or ``"gpu"`` without running alignment. | `src/geocebada/features/temporal.py` |
+| `temporal_coverage_summary` | function | `geocebada.features.temporal` | Summarize date coverage, temporal gaps and cloudiness by parcel/sensor. | `src/geocebada/features/temporal.py` |
 | `assert_crs` | function | `geocebada.geo.crs` | Require a geospatial frame to have a CRS and optionally match one. | `src/geocebada/geo/crs.py` |
 | `reproject_frame` | function | `geocebada.geo.crs` | Return ``frame`` reprojected to ``target_crs`` after validating source CRS. | `src/geocebada/geo/crs.py` |
 | `aggregate_to_parcels` | function | `geocebada.geo.parcels` | Collapse repeated observations to one row per parcel for mapping. | `src/geocebada/geo/parcels.py` |
