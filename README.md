@@ -4,89 +4,82 @@
 
 GeoCebada desarrolla un pipeline reproducible para estimar el rendimiento agrícola de parcelas de cebada a partir de percepción remota, clima, topografía y geometría espacial. El proyecto incluye una librería Python compartida (`geocebada`) y un laboratorio interactivo en Streamlit para exploración, inferencia estadística, feature engineering y comparación de modelos.
 
-> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `data/.ai_handoff` y `src/geocebada/README.md`.
+> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
 
 ## Problema
 
-La unidad de predicción es una **parcela georreferenciada**. El split oficial contiene:
+La unidad final de predicción es una **parcela georreferenciada**:
 
 - 197 parcelas totales;
-- 138 parcelas `ENTRENAMIENTO` con `RENDIMIENTO_T_HA` observado;
-- 59 parcelas `PREDICCION` cuyo rendimiento permanece oculto por FIRA.
+- 138 `ENTRENAMIENTO` con `RENDIMIENTO_T_HA` observado;
+- 59 `PREDICCION` con rendimiento oculto por FIRA.
 
-El split es por **parcela completa**, no por observaciones internas de cada parcela.
+El identificador canónico es `ID_POLIGONO`. La documentación oficial confirma que el target corresponde al **ciclo de producción abril–octubre de 2025**.
 
-Formalmente:
+Formalmente,
 
 \[
-\hat y_i = f(X_i),
+\hat y_i=f(X_i),
 \]
 
-con `ID_POLIGONO` como identificador canónico, `RENDIMIENTO_T_HA` como target en ton/ha y \(X_i\) compuesto por covariables satelitales, climáticas, topográficas, geométricas y espaciales.
+donde \(X_i\) puede integrar señal satelital, clima, topografía, geometría y features espaciales/temporales derivados.
 
-## Hechos confirmados
+## Datos confirmados
 
-A fecha de 2026-09-14:
+### Target y split
 
-- `CONJUNTO` toma los valores `ENTRENAMIENTO` y `PREDICCION`;
-- ámbito geográfico: Hidalgo, Puebla y Tlaxcala;
-- CHIRPS: precipitación mensual enero 2022–diciembre 2025, EPSG:4326, ~5 km;
-- CHIRTS-ERA5: `Tmin`/`Tmax` mensuales enero 2022–diciembre 2025, EPSG:4326, ~5 km;
-- INEGI CEM: elevación y pendiente a 120 m, EPSG:6372;
-- existen tablas satelitales oficiales `BASICO` y `PRO`;
-- el esquema/semántica temporal exacta de BASIC/PRO todavía debe auditarse antes de fijar features canónicos.
+Archivo: `data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv`.
 
-La documentación detallada del dataset vive en `data/README.md`.
+Columnas: `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`.
+
+### BASIC
+
+`Conjunto_datos_BASICO_AgroCebada2026.csv`:
+
+- 107,666 filas × 96 columnas;
+- 197 parcelas;
+- Sentinel-2 + Landsat;
+- cobertura 2022–2025;
+- 23 familias de índices con `promedio`, `std`, `max`, `min`;
+- VI6T corresponde a la señal Landsat; la mayor parte de los otros índices proviene de Sentinel-2;
+- incluye `fecha_captura`, `sensor` y `porcentaje_nubosidad`.
+
+### PRO
+
+`Conjunto_datos_PRO_AgroCebada.csv`:
+
+- 47,804 filas × 20 columnas;
+- 197 parcelas;
+- Planet;
+- cobertura 2025;
+- NDVI, EVI, LAI y MSAVI con `promedio`, `std`, `max`, `min`;
+- incluye `fecha_captura`, `sensor` y `porcentaje_nubosidad`.
+
+BASIC y PRO son longitudinales: las filas son observaciones repetidas de parcela/fecha/sensor, no muestras independientes de rendimiento. Variables con el mismo nombre provenientes de sensores diferentes no deben fusionarse automáticamente como si fueran equivalentes.
+
+El diccionario completo y source-backed está en **`docs/VARIABLES.md`**.
+
+### Clima y topografía
+
+| Fuente | Variable | Cobertura | CRS | Resolución aproximada |
+|---|---|---|---|---:|
+| CHIRPS | precipitación mensual acumulada | 2022–2025 | EPSG:4326 | 0.05° (~5 km) |
+| CHIRTS-ERA5 | Tmin/Tmax mensuales | 2022–2025 | EPSG:4326 | 0.05° (~5 km) |
+| INEGI CEM | elevación y pendiente | estática | EPSG:6372 | producto entregado a 120 m |
+
+El CRS de las geometrías de parcela sigue pendiente de verificación directa.
 
 ## Preguntas todavía abiertas
 
-No asumir respuestas hasta verificarlas en los archivos oficiales o con FIRA:
+No asumir respuestas sin evidencia:
 
-1. ciclo/año agrícola exacto representado por `RENDIMIENTO_T_HA`;
-2. granularidad temporal y semántica exacta de BASIC y PRO;
-3. diferencia operacional entre BASIC y PRO;
-4. mecanismo de estratificación del split 70/30, si existe;
-5. ventanas temporales legítimas para predicción sin post-harvest leakage;
-6. estrategia de validación que mejor aproxime la evaluación oculta de FIRA;
-7. CRS exacto de las geometrías de parcela hasta inspección directa.
+1. fecha exacta de corte/horizonte en la que debe entenderse una predicción operativa dentro del ciclo abril–octubre de 2025;
+2. estrategia de armonización entre sensores cuando se combinen BASIC y PRO;
+3. mecanismo de estratificación del split 70/30, si existe;
+4. estrategia de validación que mejor aproxime la evaluación oculta de FIRA;
+5. CRS exacto de las geometrías de parcela.
 
 ## Arquitectura
-
-```text
-GeoCebada/
-├── AGENTS.md
-├── .ai_handoff
-├── app/
-│   └── main.py                    # GeoCebada Lab (Streamlit)
-├── configs/
-├── data/
-│   ├── source/                    # fuentes oficiales, inmutables
-│   ├── raw/                       # ingestión derivada
-│   ├── interim/                   # transformaciones intermedias
-│   └── processed/                 # datasets model-ready
-├── docs/
-│   ├── FUNCTION_INDEX.md          # índice autogenerado de API pública
-│   ├── api/                       # documentación Sphinx
-│   ├── official/
-│   ├── reference/
-│   └── AI_USAGE.md
-├── models/
-├── notebooks/
-├── reports/
-├── src/geocebada/
-│   ├── data/                      # carga, inventario y contratos de datos
-│   ├── geo/                       # CRS y geoprocesamiento
-│   ├── features/                  # feature engineering reproducible
-│   ├── statistics/                # inferencia y diagnósticos estadísticos
-│   ├── visualization/             # visualización reusable
-│   ├── evaluation/                # CV, métricas y benchmarks
-│   └── models/                    # entrenamiento/inferencia final
-├── tests/
-└── tools/
-    └── generate_function_index.py
-```
-
-La regla central es:
 
 ```text
 notebooks / app / experimentos
@@ -96,235 +89,154 @@ notebooks / app / experimentos
       src/geocebada/
 ```
 
-La aplicación es una interfaz. La lógica reusable y reproducible vive en la librería.
+```text
+GeoCebada/
+├── app/                         # interfaces Streamlit
+├── configs/
+├── data/
+│   ├── source/                  # fuentes oficiales, inmutables
+│   ├── raw/                     # ingestión derivada
+│   ├── interim/                 # transformaciones intermedias
+│   └── processed/               # datos model-ready
+├── docs/
+│   ├── VARIABLES.md             # diccionario de variables
+│   ├── FUNCTION_INDEX.md        # índice autogenerado de funciones
+│   ├── VISUAL_EXPLORER.md
+│   ├── api/                     # Sphinx
+│   ├── official/
+│   ├── reference/
+│   └── AI_USAGE.md
+├── models/
+├── notebooks/
+├── reports/
+├── src/geocebada/               # lógica reusable / fuente de verdad
+└── tests/
+```
 
 ## GeoCebada Lab
 
-`app/main.py` ya implementa un laboratorio interactivo con seis áreas.
+`app/main.py` incluye Overview, Data Explorer, Prediction Set, Statistical Lab, Feature Engineering, Model Lab y Methodology.
 
-### Overview
+`app/pages/1_Visual_Explorer.py` permite cargar BASIC, PRO, el split oficial o un CSV, adjuntar metadata oficial por `ID_POLIGONO` y explorar:
 
-- tamaño y esquema del dataset;
-- missingness;
-- distribución del split oficial;
-- distribución del rendimiento observado.
+- mapa de parcelas;
+- filtros compartidos;
+- pairplot;
+- correlaciones Pearson/Spearman/Kendall;
+- relaciones bivariadas;
+- outliers;
+- resúmenes por grupo;
+- missingness.
 
-### Data Explorer
+Los targets ocultos de `PREDICCION` nunca se completan ni se usan para scoring.
 
-- selección interactiva de columnas;
-- tablas filtrables;
-- histogramas y boxplots;
-- agrupación/color por variables;
-- descarga de vistas a CSV.
+## Feature engineering
 
-### Statistical Lab
+BASIC/PRO deben convertirse en información a nivel parcela respetando fecha y sensor. Ejemplos de features potenciales:
 
-Incluye:
-
-- correlación Pearson y Spearman;
-- visualización bivariada con tendencia;
-- screening de múltiples variables contra un target;
-- corrección de multiplicidad Benjamini-Hochberg/FDR, Holm y Bonferroni;
-- diagnóstico de regresión lineal;
-- residual-vs-fitted;
-- Shapiro-Wilk para residuos;
-- diagnóstico de heterocedasticidad tipo Breusch-Pagan;
-- VIF para multicolinealidad.
-
-Estos resultados son diagnósticos, no reglas automáticas de aceptación/rechazo. Un `p < 0.05` no implica causalidad y la independencia espacial sigue siendo una hipótesis especialmente delicada en este proyecto.
-
-### Feature Engineering Lab
-
-Permite declarar recetas reproducibles, por ejemplo:
-
-```python
-from geocebada.features import FeatureRecipe, apply_feature_recipe
-
-recipe = FeatureRecipe(
-    name="ndvi_mean_may_aug",
-    value_column="NDVI",
-    group_column="ID_POLIGONO",
-    aggregation="mean",
-    date_column="date",
-    start="2025-05-01",
-    end="2025-08-31",
-)
-
-feature = apply_feature_recipe(long_table, recipe)
+```text
+ndvi_mean_apr_jun
+ndvi_peak
+ndvi_auc
+ndvi_slope
+precip_sum_apr_jun
+tmin_mean_apr_jun
+tmax_mean_apr_jun
+elevation_mean
+slope_mean
 ```
 
-Agregaciones disponibles actualmente:
-
-- `mean`, `median`, `min`, `max`, `std`, `sum`;
-- `slope` temporal;
-- `auc` temporal.
-
-El laboratorio permite descargar tanto la tabla derivada como la receta JSON. Una receta exploratoria que pase a formar parte del modelo debe promoverse después a un módulo estable bajo `src/geocebada/features/` y cubrirse con tests.
-
-### Model Lab
-
-Implementa un benchmark inicial con splits K-fold idénticos para:
-
-- Linear Regression;
-- Ridge;
-- Random Forest;
-- Extra Trees.
-
-Reporta RMSE, MAE y \(R^2\) por fold y resumen de media/desviación. **Este K-fold aleatorio es sólo exploratorio**: no sustituye la futura validación espacial/agrupada.
-
-### Methodology
-
-La interfaz distingue explícitamente:
-
-1. descripción;
-2. inferencia estadística;
-3. inferencia predictiva;
-4. inferencia causal.
-
-El dataset observacional del reto no permite convertir asociaciones en efectos causales automáticamente.
+Son features derivados de GeoCebada, no columnas originales. Las recetas exploratorias que se vuelvan estables deben promoverse a `src/geocebada/features/` y cubrirse con tests.
 
 ## Protección contra leakage
 
-### Hidden-target leakage
+- **Target:** nunca usar o reconstruir los 59 rendimientos ocultos.
+- **Temporal:** el target es abril–octubre de 2025, pero el cutoff operativo aún debe fijarse. Ningún feature final puede utilizar información posterior al horizonte de predicción elegido.
+- **Agrupación:** nunca hacer CV fila-a-fila sobre BASIC/PRO; como mínimo, las observaciones de una misma parcela deben quedar en el mismo fold.
+- **Espacial:** parcelas cercanas pueden compartir señal ambiental; random parcel CV puede ser optimista.
+- **Preprocesamiento:** imputación, escalado, selección, PCA y transformaciones aprendidas deben ajustarse dentro de cada fold.
 
-Cuando la aplicación detecta el esquema oficial (`CONJUNTO`, `RENDIMIENTO_T_HA`), los análisis supervisados y benchmarks utilizan únicamente filas `ENTRENAMIENTO`. Las 59 filas `PREDICCION` no se usan como etiquetas ni para scoring.
+## Librería y documentación
 
-### Leakage temporal
-
-Tener datos 2022–2025 no hace válidos todos esos meses para un target. Hasta resolver el ciclo agrícola, una feature temporal puede explorarse, pero no debe promoverse al pipeline final si usa información posterior a la cosecha.
-
-### Leakage espacial
-
-Parcelas cercanas pueden compartir clima, elevación y otras condiciones. El random CV puede sobreestimar desempeño. La validación final deberá incorporar un diagnóstico espacial/agrupado después de auditar las geometrías.
-
-### Leakage de preprocesamiento
-
-Imputación, escalado, selección de variables, PCA y transformaciones aprendidas deberán entrenarse dentro de cada fold cuando entren al pipeline model-ready.
-
-## CRS
-
-| Fuente | CRS conocido | Resolución aproximada |
-|---|---|---:|
-| CHIRPS precipitación | EPSG:4326 | 0.05° (~5 km) |
-| CHIRTS-ERA5 temperatura | EPSG:4326 | 0.05° (~5 km) |
-| INEGI CEM topografía | EPSG:6372 | 120 m |
-| Parcelas | por verificar | por verificar |
-
-Nunca realizar overlay, zonal statistics, áreas o distancias sin inspeccionar/reproyectar explícitamente el CRS.
-
-## Librería y documentación de funciones
-
-Instalar el proyecto en modo editable:
+Instalación editable:
 
 ```bash
 pip install -e ".[dev,geo]"
 ```
 
-Después los notebooks pueden importar normalmente:
+Ejemplo:
 
 ```python
-from geocebada.data import load_yield_split
+from geocebada.data import load_basic_data, load_yield_split
 from geocebada.statistics import correlation_screen
-from geocebada.features import FeatureRecipe
 ```
 
-Antes de crear una función nueva, buscar en:
-
-```text
-docs/FUNCTION_INDEX.md
-```
-
-Después de cambiar la API pública:
+Antes de crear una función nueva, buscar en `docs/FUNCTION_INDEX.md`. Tras modificar API pública:
 
 ```bash
 python tools/generate_function_index.py
 ```
 
-Sphinx genera la documentación profunda de API desde los docstrings:
+Sphinx:
 
 ```bash
 pip install -e ".[docs]"
 sphinx-build -b html docs docs/_build/html
 ```
 
-## Ejecutar GeoCebada Lab
+## Ejecutar la app
 
 ```bash
 pip install -e ".[dev,geo]"
 streamlit run app/main.py
 ```
 
-La app puede cargar el split oficial directamente o recibir un CSV para exploración. Los archivos de `data/source/` nunca se modifican desde la interfaz.
-
 ## Estrategia de modelado
 
-Con sólo 138 targets observados, la prioridad es bajo-\(n\), validación rigurosa y feature engineering trazable. Familias candidatas:
+Sólo existen 138 targets observados. La prioridad es controlar capacidad, construir features defendibles y validar correctamente. Baselines/candidatos incluyen media/mediana, Linear/Ridge/Elastic Net, Random Forest/Extra Trees y boosting si aporta evidencia CV estable.
 
-- baseline media/mediana;
-- Linear/Ridge/Elastic Net;
-- Random Forest / Extra Trees;
-- CatBoost / LightGBM / XGBoost;
-- otros modelos sólo con evidencia CV clara.
-
-El objetivo no es encontrar el modelo más complejo, sino el que generalice de manera estable al mecanismo de evaluación de FIRA.
+No se seleccionará un modelo final a partir del K-fold aleatorio exploratorio del dashboard. Antes deben definirse el cutoff temporal, agrupación espacial y protocolo de validación.
 
 ## Pipeline previsto
 
 ```text
 official sources
       ↓
-data audit + schema validation
+data + variable audit
       ↓
-GeoCebada Lab: EDA + hipótesis + estadística
+EDA / hipótesis / estadística
       ↓
-spatial/temporal alignment
+definir horizonte de predicción
       ↓
-feature recipes / feature engineering
+spatial + temporal alignment
       ↓
-parcel-level model-ready table
+feature engineering por parcela
       ↓
-leakage-safe spatial/grouped CV
+leakage-safe grouped/spatial CV
       ↓
-baselines + model comparison + ablations
+model comparison + ablations
       ↓
-explainability + residual diagnostics
+explainability + diagnostics
       ↓
 final frozen pipeline
       ↓
-59 hidden-target predictions
-      ↓
-GeoCebada decision dashboard + report/video
+59 predictions
 ```
 
 ## Próximos pasos
 
-1. auditar BASIC y PRO: columnas, fechas, cardinalidades, missingness y relación con `ID_POLIGONO`;
-2. conectar BASIC/PRO al explorador temporal mediante loaders reproducibles;
-3. inspeccionar geometrías, CRS, validez y cobertura de las 197 parcelas;
-4. añadir mapa interactivo de parcelas y auditoría espacial train/test;
-5. incorporar Moran's I y diagnósticos espaciales una vez validada la geometría;
-6. resolver el ciclo/año exacto del target;
-7. definir ventanas temporales leakage-safe;
-8. añadir spatial/grouped CV al Model Lab;
-9. construir y congelar la tabla/modelo final;
-10. exponer inferencia final y explicabilidad en la misma aplicación.
+1. auditar las fechas/sensores y missingness de BASIC/PRO con foco en el ciclo 2025;
+2. inspeccionar geometrías, CRS, validez y cobertura de las 197 parcelas;
+3. fijar un cutoff/horizonte de predicción pre-cosecha y ventanas temporales legales;
+4. construir el explorador temporal BASIC/PRO;
+5. extraer clima/topografía por parcela y crear features reproducibles;
+6. añadir Moran's I y diagnósticos espaciales cuando la geometría esté validada;
+7. añadir grouped/spatial CV al Model Lab;
+8. construir la tabla model-ready y realizar ablations por dominio;
+9. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
 
-## Calidad y CI
+## Calidad y trazabilidad
 
-El workflow de CI valida en cada push/PR:
+CI valida Ruff, pytest, sincronización de `FUNCTION_INDEX` y build de Sphinx con warnings como errores.
 
-```text
-Ruff
-  ↓
-pytest
-  ↓
-FUNCTION_INDEX sincronizado
-  ↓
-Sphinx build con warnings como errores
-```
-
-No considerar una nueva utilidad estable hasta que pase estas verificaciones.
-
-## Uso de IA
-
-El uso material de IA debe registrarse en `docs/AI_USAGE.md`. Los archivos `.ai_handoff` y `AGENTS.md` son handoffs operativos y no sustituyen el registro requerido por FIRA.
+El uso material de IA se registra en `docs/AI_USAGE.md`. `.ai_handoff` y `AGENTS.md` son handoffs operativos y no sustituyen el registro solicitado por FIRA.
