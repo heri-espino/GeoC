@@ -6,223 +6,201 @@ Scope: dataset understanding, ingestion, geospatial joins, feature engineering a
 
 ## Read first
 
-Before changing any data pipeline code, read:
+Before changing data pipeline code, read:
 
 1. `data/README.md`
-2. `data/source/README.md`
-3. the official challenge bases and project-registration guidelines when available under project docs/files
-4. relevant code under `src/geocebada/`
+2. `docs/VARIABLES.md`
+3. `data/source/README.md`
+4. relevant official/reference documents under `docs/`
+5. relevant code under `src/geocebada/`
 
-This handoff is operational context for AI agents. It is **not** a substitute for the official AI-use/prompt disclosure required by the challenge guidelines. Maintain a separate reproducible prompt/use log for the final report if generative AI is used.
+This handoff is operational context, not a substitute for the official AI-use disclosure.
 
 ---
 
 ## Core task
 
-Predict barley yield (`RENDIMIENTO_T_HA`, ton/ha) for parcels whose target is hidden by FIRA.
+Predict `RENDIMIENTO_T_HA` (ton/ha) for the 59 parcels whose target is hidden.
 
-Official split file:
+Official split:
 
-`data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv`
+- 197 parcels total;
+- 138 `ENTRENAMIENTO`;
+- 59 `PREDICCION`;
+- key `ID_POLIGONO`;
+- columns `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`;
+- hidden prediction yields remain missing.
 
-Observed structure:
+The official dataset description confirms that the target yield corresponds to the **April–October 2025 production cycle**.
 
-- total parcels: 197
-- training parcels: 138
-- prediction parcels: 59
-- split is by whole parcel, not 70/30 observations within each parcel
-- source identifier: `ID_POLIGONO`
-- source columns: `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`
-- `CONJUNTO ∈ {ENTRENAMIENTO, PREDICCION}`
-- prediction rows have missing `RENDIMIENTO_T_HA`
-
-Never invent or impute the hidden target as if it were observed.
+Never invent or impute hidden yield as observed ground truth.
 
 ---
 
-## Data directory contract
+## Directory contract
 
 ```text
 data/
-├── README.md
-├── .ai_handoff
 ├── source/       # immutable official sources
-├── raw/          # generated ingestion/decompression outputs; gitignored
-├── interim/      # generated cleaned/joined/intermediate features; gitignored
-└── processed/    # generated model-ready datasets/predictions; gitignored
+├── raw/          # generated ingestion/decompression outputs
+├── interim/      # generated cleaned/joined/intermediate features
+└── processed/    # generated model-ready datasets/predictions
 ```
 
-Rules:
-
-- NEVER manually modify files under `data/source/`.
-- Preserve official ZIPs and originals for traceability.
-- All derived files must be reproducible from code.
-- Put generated working artifacts in `raw/`, `interim/`, or `processed/`.
-- Keep `ID_POLIGONO` available end-to-end even if an internal alias such as `ID_parcela` is introduced.
-- Do not mix trained models or experiment outputs into `data/source/`.
+Preserve `ID_POLIGONO` end-to-end. Do not modify source files in place.
 
 ---
 
-## Known official/source data
+## Audited remote-sensing tables
 
-### Target / split
-
-`data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv`
-
-Purpose: target, area, parcel ID and train/prediction assignment.
-
-### Remote-sensing tabular data
+### BASIC
 
 `data/source/tabular/Conjunto_datos_BASICO_AgroCebada2026.csv`
 
+- 107,666 rows × 96 columns;
+- 197 unique parcels;
+- Sentinel-2 + Landsat;
+- 2022–2025;
+- common metadata: `ID_POLIGONO`, `fecha_captura`, `sensor`, `porcentaje_nubosidad`;
+- 23 index families, normally with `_promedio`, `_std`, `_max`, `_min`:
+  `ndvi`, `evi`, `crc`, `mcrc`, `ndsvi`, `srndi`, `mra`, `lai`, `fapar`, `savi`, `vi6t`, `ndti`, `sti`, `ndwi`, `endwi`, `msi`, `emsi`, `dswi2`, `dswi3`, `dswi4`, `dswi5`, `nddi`, `enddi`;
+- VI6T is associated with Landsat; most other BASIC indices are Sentinel-2;
+- substantial missingness exists for some index families.
+
+### PRO
+
 `data/source/tabular/Conjunto_datos_PRO_AgroCebada.csv`
 
-Important: do not guess their exact schema, indices, temporal frequency or BASIC-vs-PRO semantics until directly audited.
+- 47,804 rows × 20 columns;
+- 197 unique parcels;
+- Planet;
+- 2025;
+- metadata: `ID_POLIGONO`, `fecha_captura`, `sensor`, `porcentaje_nubosidad`;
+- NDVI, EVI, LAI, MSAVI, each with `_promedio`, `_std`, `_max`, `_min`.
 
-### Parcel geometries
+Both tables are longitudinal. One row is a parcel/date/sensor observation, not an independent target example.
+
+Same-named indices from different sensors are not automatically equivalent. Preserve sensor provenance and document any harmonization.
+
+See `docs/VARIABLES.md` for meanings and exact column groups.
+
+---
+
+## Climate
+
+### CHIRPS precipitation
+
+- Jan 2022–Dec 2025;
+- 48 monthly accumulated precipitation GeoTIFFs;
+- `PREC_AAAA_MM.tif`;
+- mm/month;
+- ~5 km (0.05°);
+- EPSG:4326.
+
+### CHIRTS-ERA5 temperature
+
+- Jan 2022–Dec 2025;
+- 48 Tmin + 48 Tmax rasters;
+- monthly means of daily minima/maxima;
+- °C;
+- ~5 km;
+- EPSG:4326;
+- NoData = -9999.
+
+---
+
+## Topography
+
+Delivered products:
+
+- `Elevacion_INEGI_CEM4_120m.tif`;
+- `Pendiente_INEGI_CEM4_120m_grados.tif`;
+- EPSG:6372;
+- NoData = -9999;
+- delivered raster product resolution 120 m.
+
+---
+
+## Parcel geometry
 
 `data/source/geospatial/Parcelas_Reto_AGC_CONJUNTO_70_30.zip`
 
-Contains georeferenced parcels from Hidalgo, Puebla and Tlaxcala. Use geometries to attach raster information with zonal statistics and to inspect spatial distribution of the 70/30 split.
+The official description states that the vector layer contains the 197 parcel geometries and includes parcel ID, area and `CONJUNTO`.
 
-### Precipitation
+Still inspect the actual archive before use:
 
-Location: `data/source/climate/precipitation/`
+- CRS;
+- exact field names;
+- validity;
+- duplicate/missing IDs;
+- 197-ID coverage.
 
-Verified properties:
-
-- CHIRPS
-- Jan 2022–Dec 2025
-- 48 monthly accumulated precipitation GeoTIFFs
-- `PREC_AAAA_MM.tif`
-- mm/month
-- 0.05° × 0.05° (~5 km)
-- EPSG:4326
-- raster dimensions 65 × 72
-
-### Temperature
-
-Location: `data/source/climate/temperature/`
-
-Verified properties:
-
-- CHIRTS-ERA5
-- Jan 2022–Dec 2025
-- 48 monthly Tmin rasters + 48 monthly Tmax rasters = 96
-- `Tmin_AAAA_MM.tif`, `Tmax_AAAA_MM.tif`
-- °C
-- 0.05° × 0.05° (~5 km)
-- EPSG:4326
-- raster dimensions 65 × 72
-- NoData = -9999
-
-### Topography
-
-Location: `data/source/topography/`
-
-Verified products:
-
-- `Elevacion_INEGI_CEM4_120m.tif`
-- `Pendiente_INEGI_CEM4_120m_grados.tif`
-- INEGI CEM
-- 120 m native resolution
-- slope derived with Horn 3×3
-- EPSG:6372 (México ITRF2008 / LCC)
-- NoData = -9999.0
+Never guess a missing CRS.
 
 ---
 
-## Critical unresolved issue: temporal alignment
+## Temporal alignment: what is known vs unresolved
 
-The climate data span 2022–2025, but the target table contains one yield value per parcel and no explicit year/crop-cycle column.
+Known:
 
-DO NOT assume that all 2022–2025 observations are valid predictors for the target.
+- target = April–October 2025 production cycle;
+- BASIC covers 2022–2025;
+- PRO covers 2025;
+- climate covers 2022–2025.
 
-Until clarified, the following remains unknown:
+Still unresolved:
 
-- which crop cycle/year each `RENDIMIENTO_T_HA` belongs to;
-- which satellite/climate dates were available before that yield outcome;
-- whether parcels correspond to one common harvest cycle or heterogeneous cycles.
+- exact operational date/horizon at which yield should be forecast;
+- therefore, which 2025 observations are legitimately available before prediction.
 
-Using climate/satellite observations after the relevant harvest/prediction horizon would create temporal leakage.
-
-Priority question for FIRA:
-
-> ¿A qué ciclo/año agrícola corresponde `RENDIMIENTO_T_HA` de cada parcela y qué intervalo temporal de variables satelitales/climáticas debe considerarse disponible al momento de predecir?
+Do not equate “belongs to the 2025 cycle” with “all 2025 dates are valid predictors”. Once a cutoff is frozen, every temporal feature must be computable using only information available on or before that cutoff.
 
 ---
 
-## Critical unresolved issue: split stratification
+## CRS/geospatial handling
 
-Do not state that the 70/30 split is stratified by state, year, area or any other variable unless verified.
+Climate is EPSG:4326; topography is EPSG:6372; parcel CRS must be read from source.
 
-Current split file does not contain state or year.
+For zonal statistics:
 
-Recommended audit:
+1. validate parcel geometry and CRS;
+2. reproject explicitly to the raster CRS as appropriate;
+3. mask NoData;
+4. compute documented parcel summaries;
+5. retain pixel/coverage diagnostics when useful;
+6. retain `ID_POLIGONO`.
 
-1. spatially join parcel polygons to state boundaries;
-2. count train/prediction parcels per state;
-3. compare test fraction by state;
-4. compare `AREA_HA` and other covariate distributions between train and prediction;
-5. inspect spatial clustering and possible covariate shift.
+Climate resolution is coarse relative to many parcels; do not imply field-scale climate detail that the rasters do not contain.
 
 ---
 
 ## Leakage guards
 
-Any model/feature code should satisfy all of the following:
-
-- no hidden `RENDIMIENTO_T_HA` values are available or reconstructed;
-- train/test assignment is respected;
-- preprocessing learned from data is fit inside training folds only;
-- feature selection is performed inside CV when supervised;
-- no future temporal information is used once the prediction horizon is known;
-- no target-derived aggregate leaks across folds/parcels;
-- state/spatial proximity features must be validated carefully because nearby parcels may induce optimistic random CV;
-- preserve parcel IDs through every join and aggregation.
-
-Prefer spatial/group-aware validation experiments in addition to ordinary cross-validation once state/location structure is audited.
+- no hidden target use/reconstruction;
+- respect official train/prediction assignment;
+- never row-random split BASIC/PRO in supervised validation;
+- group observations by parcel;
+- learned preprocessing/selection belongs inside folds;
+- no post-cutoff temporal information;
+- preserve sensor provenance;
+- validate spatial autocorrelation and geographic support;
+- preserve IDs through every join/aggregation.
 
 ---
 
-## CRS / geospatial handling
+## Recommended data pipeline
 
-Source rasters use different CRS:
+### Phase 1 — remaining audit
 
-- climate: EPSG:4326
-- topography: EPSG:6372
+- parse BASIC/PRO dates and sensor distributions;
+- characterize missingness/cloud relationships;
+- inspect parcel archive CRS/geometry;
+- audit train/prediction geography and covariate shift;
+- define operational forecast cutoff.
 
-Never overlay layers without explicit CRS checks/reprojection.
+### Phase 2 — deterministic features
 
-For zonal statistics:
-
-1. load and validate parcel geometry;
-2. inspect/repair invalid geometry only through deterministic documented code;
-3. reproject vector geometry to the raster CRS or vice versa as appropriate;
-4. mask NoData before aggregation;
-5. record coverage fraction / pixel count where useful;
-6. retain `ID_POLIGONO` in the result.
-
-Climate resolution (~5 km) is much coarser than many parcels, so multiple parcels may share effectively identical climate cells. Do not pretend the climate rasters provide field-scale variation that their spatial resolution cannot support.
-
----
-
-## Recommended first pipeline
-
-### Phase 1 — audit
-
-- inspect schemas/types of BASIC and PRO CSVs;
-- identify exact join keys;
-- extract date/time coverage and frequencies;
-- inspect missingness and duplicates;
-- unpack/inspect geospatial archive;
-- map parcel distribution and split;
-- verify target counts and target range;
-- resolve crop-cycle alignment.
-
-### Phase 2 — deterministic feature table
-
-Build one row per parcel with clearly namespaced features, e.g.:
+Build one row per parcel with namespaced columns:
 
 ```text
 ID_POLIGONO
@@ -232,77 +210,43 @@ topo_*
 precip_*
 tmin_*
 tmax_*
-sat_*
+sat_basic_*
+sat_pro_*
 RENDIMIENTO_T_HA
 CONJUNTO
 ```
 
-Only aggregate temporal features over intervals justified by the crop cycle.
+Temporal aggregations must use only legal pre-cutoff observations.
 
-### Phase 3 — baselines
+### Phase 3 — validation/modeling
 
-Start with low-variance, interpretable baselines before complex temporal models:
+Use only the 138 labeled parcels for model selection. Compare ordinary parcel CV with grouped/spatial diagnostics; report RMSE, MAE, R² and fold dispersion.
 
-- mean/median benchmark;
-- linear / ridge / elastic-net regression;
-- tree ensembles;
-- CatBoost / gradient boosting if justified by sample size and feature structure.
+### Phase 4 — final prediction
 
-There are only 138 observed targets, so model capacity must be controlled aggressively.
-
-### Phase 4 — validation
-
-Report at least:
-
-- RMSE
-- MAE
-- R²
-
-Also inspect:
-
-- fold dispersion,
-- residuals by yield range,
-- residuals by state/location,
-- calibration/bias,
-- feature importance/stability,
-- robustness to spatially grouped validation.
-
-### Phase 5 — final prediction
-
-Produce exactly one final `ton/ha` estimate for every parcel in `CONJUNTO=PREDICCION`, preserving the official identifier and row mapping.
+Refit the frozen pipeline on all 138 labeled parcels and output one ton/ha estimate for each of the 59 `PREDICCION` IDs.
 
 ---
 
 ## Do not do
 
-- Do not edit source files to “clean them”.
-- Do not silently rename `ID_POLIGONO` without preserving provenance.
-- Do not assume target year from climate file names.
-- Do not assume the split is stratified.
-- Do not use all 2022–2025 climate data merely because they exist.
-- Do not fit preprocessing globally before CV.
-- Do not optimize against the 59 prediction parcels using pseudo-targets.
-- Do not claim the BASIC/PRO schema until inspected.
-- Do not commit large derived files that belong in gitignored data stages.
+- do not edit source files;
+- do not treat longitudinal rows as independent yield samples;
+- do not use the full 2025 season automatically if forecasting is supposed to happen before harvest;
+- do not merge BASIC/PRO sensor measurements as equivalent without a documented method;
+- do not treat missing satellite values as zero by default;
+- do not fit preprocessing globally before CV;
+- do not optimize using pseudo-targets or subjective inspection of the 59 final predictions;
+- do not commit large generated datasets that belong in gitignored stages.
 
 ---
 
-## Immediate next actions for the next agent
+## Immediate next actions
 
-1. Programmatically read only headers + small samples of BASIC and PRO.
-2. Generate a schema report: rows, columns, dtypes, missingness, unique IDs, date range.
-3. Inspect the geospatial archive and determine its CRS/schema.
-4. Verify whether `ID_POLIGONO` is shared exactly across all sources.
-5. Compute state membership and train/test counts by state.
-6. Draft the temporal-alignment question for the 18 Sep 2026 FIRA clarification meeting if the files do not resolve it.
-7. Only after temporal alignment is established, build the first leakage-safe baseline dataset.
-
----
-
-## Challenge context relevant to data work
-
-Official challenge description states that the dataset contains 197 georeferenced barley parcels in Puebla, Hidalgo and Tlaxcala with vegetation-index, precipitation, temperature and final-harvest-yield information; yield is disclosed for 70% and withheld for 30%.
-
-Predictive performance is a major evaluation component and may use RMSE, MAE, R² or metrics defined by the committee. The final technical material must include the predicted yield associated with each evaluated parcel ID in ton/ha.
-
-When uncertain, prefer documenting an unknown over filling it with an assumption.
+1. inspect parcel archive and CRS;
+2. parse date ranges/frequencies per BASIC/PRO sensor and parcel;
+3. quantify cloud/missingness patterns;
+4. define forecast cutoff within April–October 2025;
+5. build source-backed temporal features and raster zonal summaries;
+6. audit state/spatial distribution of train vs prediction;
+7. implement grouped/spatial CV before final model selection.
