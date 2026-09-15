@@ -11,6 +11,9 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `concatenate_csvs` | function | `geocebada.data.files` | Read and concatenate a collection of CSV files. | `src/geocebada/data/files.py` |
 | `discover_files` | function | `geocebada.data.files` | Return sorted files matching ``pattern`` below ``directory``. | `src/geocebada/data/files.py` |
 | `filter_frame` | function | `geocebada.data.filtering` | Return a filtered copy of ``frame`` using declarative filter specifications. | `src/geocebada/data/filtering.py` |
+| `load_basic_data` | function | `geocebada.data.official` | Load the official BASIC remote-sensing table. | `src/geocebada/data/official.py` |
+| `load_official_tabular` | function | `geocebada.data.official` | Load the official BASIC or PRO table. | `src/geocebada/data/official.py` |
+| `load_pro_data` | function | `geocebada.data.official` | Load the official PRO remote-sensing table. | `src/geocebada/data/official.py` |
 | `build_raster_inventory` | function | `geocebada.data.rasters` | Build a tabular inventory of GeoTIFF files. | `src/geocebada/data/rasters.py` |
 | `discover_geotiffs` | function | `geocebada.data.rasters` | Return sorted GeoTIFF files below ``directory``. | `src/geocebada/data/rasters.py` |
 | `parse_raster_name` | function | `geocebada.data.rasters` | Parse official climate raster names such as ``PREC_2022_01.tif``. | `src/geocebada/data/rasters.py` |
