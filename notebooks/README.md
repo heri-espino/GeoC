@@ -28,7 +28,7 @@ python -m ipykernel install --user --name geocebada --display-name "Python (GeoC
 jupyter lab
 ```
 
-## Primer notebook recomendado
+## 01 — Visualización rápida
 
 Abrir y ejecutar de arriba hacia abajo:
 
@@ -38,9 +38,29 @@ notebooks/01_visualizacion_datos.ipynb
 
 Está pensado para compañeros que trabajan principalmente desde notebooks. La primera celda localiza automáticamente la raíz del repositorio y ejecuta una instalación editable defensiva. Después carga el split oficial, BASIC y PRO usando la librería `geocebada`, muestra un resumen del dataset, visualizaciones del target, missingness, un pairplot triangular ligero con puntos rasterizados, una vista descriptiva por parcela para abril–octubre de 2025 y el contenido actualizado de `docs/VARIABLES.md`.
 
-Si ya seguiste `docs/GETTING_STARTED.md`, la instalación de la primera celda es redundante pero inocua.
+## 02 — Cobertura y alineación temporal
 
-El notebook se versiona **sin outputs** para no inflar el repositorio. Cada usuario genera las figuras localmente al ejecutarlo.
+```text
+notebooks/02_cobertura_alineacion_temporal.ipynb
+```
+
+Esta notebook estudia la cobertura temporal de BASIC/PRO y compara `ENTRENAMIENTO` contra `PREDICCION` sin usar targets ocultos. Después alinea capturas irregulares mediante k vecinos temporales, ponderación exponencial por distancia y, opcionalmente, nubosidad.
+
+Por defecto trabaja con las columnas `*_promedio` y una rejilla cada 14 días. Puede ampliarse a todas las estadísticas. Los sensores permanecen separados.
+
+En una máquina NVIDIA/CUDA compatible puede instalarse el extra GPU:
+
+```bash
+python -m pip install -e ".[dev,geo,gpu]"
+```
+
+y usar `BACKEND="auto"` o `BACKEND="gpu"`. La aceleración usa CuPy para las operaciones matriciales; Pandas y los groupby siguen en CPU, así que conviene medir CPU vs GPU en la máquina real.
+
+La metodología está documentada en `docs/TEMPORAL_ALIGNMENT.md`.
+
+Si ya seguiste `docs/GETTING_STARTED.md`, las instalaciones editables incluidas al inicio de los notebooks son redundantes pero inocuas.
+
+Los notebooks se versionan **sin outputs** para no inflar el repositorio. Cada usuario genera las figuras localmente al ejecutarlos.
 
 ## Uso normal
 
@@ -71,7 +91,7 @@ Para descubrir funciones existentes antes de crear una nueva, consulta `docs/FUN
 
 ```text
 01_visualizacion_datos.ipynb
-02_data_audit.ipynb
+02_cobertura_alineacion_temporal.ipynb
 03_feature_engineering.ipynb
 04_baselines.ipynb
 05_model_comparison.ipynb
