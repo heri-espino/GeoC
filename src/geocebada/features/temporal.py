@@ -208,7 +208,7 @@ def align_temporal_knn(
     if sensor_column is not None:
         columns.append(sensor_column)
     use_cloud = cloud_column is not None and cloud_column in frame.columns
-    if use_cloud:
+    if use_cloud and cloud_column not in columns:
         columns.append(cloud_column)
 
     work = frame[columns].copy()
@@ -246,7 +246,9 @@ def align_temporal_knn(
     for key, group in work.groupby(group_columns, dropna=False, sort=True):
         key_tuple = key if isinstance(key, tuple) else (key,)
         group = group.sort_values(date_column)
-        capture_days_cpu = ((group[date_column] - epoch) / pd.Timedelta(days=1)).to_numpy(dtype=float)
+        capture_days_cpu = (
+            (group[date_column] - epoch) / pd.Timedelta(days=1)
+        ).to_numpy(dtype=float)
         values_cpu = group[list(value_columns)].to_numpy(dtype=float)
 
         capture_days = xp.asarray(capture_days_cpu)
