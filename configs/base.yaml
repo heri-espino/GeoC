@@ -21,8 +21,9 @@ data_contract:
   expected_prediction_parcels: 59
 
 validation:
-  # Do not choose the final strategy until parcel geography and target timing
-  # are audited. Random CV must be compared with a spatial/grouped diagnostic.
+  # Do not choose the final strategy until parcel geography and the operational
+  # prediction horizon are audited. Random CV must be compared with a
+  # spatial/grouped diagnostic.
   strategy: null
   n_splits: null
 
@@ -32,12 +33,15 @@ metrics:
   - r2
 
 temporal:
-  # Climate coverage is confirmed, but the agricultural cycle represented by
-  # RENDIMIENTO_T_HA is not yet confirmed. Do not derive final temporal windows
-  # from all available dates until this is resolved.
   climate_start: 2022-01
   climate_end: 2025-12
-  target_cycle: null
+  # Confirmed by the official dataset description: the yield target belongs to
+  # the April-October 2025 production cycle.
+  target_cycle_start: 2025-04
+  target_cycle_end: 2025-10
+  # Still unresolved: the exact date/window at which the operational forecast
+  # is meant to be made. Final predictors must not use observations after it.
+  prediction_cutoff: null
 
 geospatial:
   precipitation_crs: EPSG:4326
