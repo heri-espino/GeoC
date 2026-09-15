@@ -2,9 +2,27 @@
 
 Los notebooks son para exploración, visualización y experimentos iniciales. La lógica estable y reutilizable debe vivir en `src/geocebada/` y consumirse como una librería normal de Python.
 
-## Preparación
+## Primer notebook recomendado
 
-Desde el root del repositorio, instalar una vez en modo editable:
+Abrir y ejecutar de arriba hacia abajo:
+
+```text
+notebooks/01_visualizacion_datos.ipynb
+```
+
+Está pensado para compañeros que trabajan principalmente desde notebooks. La primera celda localiza automáticamente la raíz del repositorio y ejecuta una instalación editable equivalente a:
+
+```bash
+pip install -e .
+```
+
+Después carga el split oficial, BASIC y PRO usando la librería `geocebada`, muestra un resumen del dataset, visualizaciones del target, missingness, un pairplot triangular ligero con puntos rasterizados, una vista descriptiva por parcela para abril–octubre de 2025 y el contenido actualizado de `docs/VARIABLES.md`.
+
+El notebook se versiona **sin outputs** para no inflar el repositorio. Cada usuario genera las figuras localmente al ejecutarlo.
+
+## Preparación manual alternativa
+
+Si se prefiere instalar el proyecto una sola vez desde el root del repositorio:
 
 ```bash
 pip install -e ".[dev,geo]"
@@ -25,10 +43,10 @@ Para descubrir funciones existentes antes de crear una nueva, consultar `docs/FU
 ## Convención sugerida
 
 ```text
-01_data_audit.ipynb
-02_eda.ipynb
-03_baselines.ipynb
-04_feature_engineering.ipynb
+01_visualizacion_datos.ipynb
+02_data_audit.ipynb
+03_feature_engineering.ipynb
+04_baselines.ipynb
 05_model_comparison.ipynb
 06_explainability.ipynb
 07_final_predictions.ipynb
