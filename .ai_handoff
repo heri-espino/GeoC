@@ -4,7 +4,7 @@ Updated: 2026-09-14
 Project: GeoCebada / Reto AgroCebada FIRA 2026
 Scope: project-wide operational context for AI agents/Codex.
 
-Read this before making project-wide changes. For data work also read `data/.ai_handoff` and `data/README.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating new helpers.
+Read this before project-wide changes. For data work also read `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers.
 
 This file is not the FIRA AI disclosure log. Material AI-assisted work must also be recorded in `docs/AI_USAGE.md`.
 
@@ -14,36 +14,37 @@ This file is not the FIRA AI disclosure log. Material AI-assisted work must also
 
 Build a reproducible supervised-regression system that predicts barley yield (`RENDIMIENTO_T_HA`, ton/ha) for georeferenced parcels using remote sensing, climate, topography and spatial information, then expose the frozen pipeline through a functional web application and technical deliverables.
 
-Canonical source parcel identifier: `ID_POLIGONO`.
+Canonical parcel identifier: `ID_POLIGONO`.
 
 ---
 
-## Confirmed facts
+## Confirmed challenge/data facts
 
-- 197 parcels total.
-- 138 `ENTRENAMIENTO` parcels with observed target.
-- 59 `PREDICCION` parcels with hidden target.
-- Split is by complete parcel, not observations within a parcel.
-- Split file: `data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv`.
-- Split columns observed: `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`.
+- 197 parcels total: 138 `ENTRENAMIENTO`, 59 `PREDICCION`.
+- Split is by complete parcel.
+- Target/split columns: `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`.
+- **`RENDIMIENTO_T_HA` corresponds to the April–October 2025 production cycle.**
 - Geographic scope: Hidalgo, Puebla and Tlaxcala.
-- CHIRPS precipitation: monthly, Jan 2022-Dec 2025, EPSG:4326, ~5 km, 48 GeoTIFFs.
-- CHIRTS-ERA5 Tmin/Tmax: monthly, Jan 2022-Dec 2025, EPSG:4326, ~5 km, 96 GeoTIFFs.
-- INEGI CEM topography: elevation and slope, 120 m, EPSG:6372.
-- BASIC and PRO remote-sensing tables exist but their exact schemas/temporal semantics are not yet fully audited.
+- BASIC: 107,666 × 96, 197 parcels, Sentinel-2 + Landsat, 2022–2025, 23 index families plus date/sensor/cloud metadata.
+- PRO: 47,804 × 20, 197 parcels, Planet, 2025, NDVI/EVI/LAI/MSAVI plus date/sensor/cloud metadata.
+- BASIC/PRO are repeated parcel/date/sensor observations; they are not independent target samples.
+- Same-named indices from different sensors are not automatically equivalent.
+- CHIRPS precipitation: monthly Jan 2022–Dec 2025, EPSG:4326, ~5 km.
+- CHIRTS-ERA5 Tmin/Tmax: monthly Jan 2022–Dec 2025, EPSG:4326, ~5 km.
+- INEGI CEM delivered elevation/slope products: EPSG:6372, 120 m product resolution.
+
+The complete source-backed variable dictionary is `docs/VARIABLES.md`.
 
 ---
 
-## Unresolved — do not guess
+## Important unknowns — do not guess
 
-1. Exact agricultural cycle/year represented by `RENDIMIENTO_T_HA`.
-2. Exact BASIC/PRO schema, temporal granularity and operational difference.
-3. Whether FIRA's 70/30 split was stratified by geography, year, area or another factor.
-4. Which temporal observations are legal predictors for each target without post-harvest leakage.
+1. Exact operational prediction cutoff/horizon within the April–October 2025 cycle.
+2. Which satellite/climate observations are legal predictors under that cutoff.
+3. Whether/how BASIC and PRO should be harmonized across sensors.
+4. Whether FIRA's 70/30 split was stratified by geography, area or another factor.
 5. Final validation strategy that best approximates FIRA's hidden evaluation.
 6. Delivered parcel CRS until directly inspected.
-
-If implementation depends on one of these, inspect source evidence first or leave the assumption explicit and reversible.
 
 ---
 
@@ -54,179 +55,113 @@ GeoCebada/
 ├── AGENTS.md
 ├── .ai_handoff
 ├── app/
-│   ├── main.py
-│   ├── visual_explorer.py
-│   └── pages/
-│       └── 1_Visual_Explorer.py
 ├── configs/
 ├── data/
-│   ├── README.md
-│   ├── .ai_handoff
-│   ├── source/              # immutable official data
+│   ├── source/              # immutable official evidence
 │   ├── raw/                 # generated ingestion artifacts
-│   ├── interim/             # generated intermediate artifacts
+│   ├── interim/             # generated intermediates
 │   └── processed/           # generated model-ready artifacts
 ├── docs/
-│   ├── official/            # immutable official challenge documents
-│   ├── reference/           # source/reference documents
-│   ├── FUNCTION_INDEX.md    # generated quick index of public library symbols
+│   ├── VARIABLES.md         # source-backed variable dictionary
+│   ├── FUNCTION_INDEX.md    # generated public-symbol index
 │   ├── VISUAL_EXPLORER.md
 │   ├── DEPLOYMENT.md
-│   ├── api/                 # Sphinx API pages
+│   ├── official/
+│   ├── reference/
+│   ├── api/
 │   └── AI_USAGE.md
 ├── models/
 ├── notebooks/
 ├── reports/
-├── src/geocebada/           # reusable Python library / production source of truth
-│   ├── paths.py
-│   ├── config.py
-│   ├── data/
-│   ├── geo/
-│   ├── features/
-│   ├── statistics/
-│   ├── visualization/
-│   ├── models/
-│   └── evaluation/
+├── src/geocebada/           # reusable source of truth
 ├── tests/
 └── tools/
-    └── generate_function_index.py
 ```
 
-`data/source/`, `docs/official/` and source reference material are evidence. Do not edit them to accommodate code.
+`data/source/`, `docs/official/` and source reference documents are evidence. Do not alter them to fit code.
+
+---
+
+## Source-of-truth hierarchy
+
+1. Official/reference source files under `docs/official/`, `docs/reference/`, `data/source/`.
+2. Directly observed file schemas/metadata.
+3. `docs/VARIABLES.md`, `data/README.md`, `data/.ai_handoff`.
+4. Root `README.md`, `.ai_handoff`, `AGENTS.md`.
+5. Notebook comments/conversation assumptions.
+
+If higher-ranked evidence contradicts derived docs, preserve the evidence and update the docs.
 
 ---
 
 ## Python library contract
 
-`src/geocebada/` is the reusable library used by notebooks, experiments and the web app. Stable logic must live there rather than being copied between notebooks or embedded in Streamlit callbacks.
+`src/geocebada/` is used by notebooks, experiments and the app. Stable logic must live there rather than in copied notebook cells or Streamlit callbacks.
 
-Current public utilities include:
+Current reusable areas include loaders, split validation, filtering, raster inventory, CRS/reprojection, parcel geometry loading, feature recipes, statistical tests/diagnostics, visualization and regression baselines.
 
-- project/data/source path resolution and YAML config loading;
-- file discovery and multi-CSV concatenation;
-- declarative DataFrame filtering for categorical, numeric-range and text filters;
-- official yield split loading, validation, partitioning and safe metadata attachment;
-- climate GeoTIFF discovery, filename parsing, inventory and metadata;
-- CRS validation/reprojection safeguards;
-- official parcel-geometry loading without CRS guessing;
-- generic parcel-level aggregation for exploratory mapping;
-- declarative grouped/temporal feature recipes (`mean`, `max`, `slope`, `auc`, etc.);
-- feature-table joins;
-- Pearson/Spearman association tests;
-- multiple-testing correction (Benjamini-Hochberg/FDR, Holm, Bonferroni);
-- feature screening and train-vs-prediction covariate-shift screening;
-- linear-regression diagnostics including residual metrics, Shapiro-Wilk, Breusch-Pagan and VIF;
-- reusable Plotly distribution, scatter, pairplot, correlation-heatmap, residual and parcel-map figures;
-- univariate IQR outlier summaries;
-- exploratory regression benchmarks using identical shuffled K-fold splits.
-
-Before writing a new helper:
+Before creating a public helper:
 
 1. search `docs/FUNCTION_INDEX.md`;
-2. inspect the relevant module under `src/geocebada/`;
-3. extend an existing function/module when that is the same responsibility;
-4. create a new function only when responsibility is genuinely distinct.
+2. inspect the relevant module;
+3. reuse/extend overlapping behavior;
+4. create a new function only for genuinely new responsibility.
 
-After adding/renaming/removing a public function or class, run:
+After API changes:
 
 ```bash
 python tools/generate_function_index.py
 ```
 
-Public reusable code should have type hints, docstrings, explicit assumptions and tests once behavior is stable. Keep notebook-only exploratory snippets out of the public API.
-
----
-
-## Documentation system
-
-Sphinx source lives under `docs/` and uses autodoc/autosummary-compatible docstrings. API pages cover core, data, geo, features, statistics, evaluation and visualization modules. `docs/VISUAL_EXPLORER.md` documents the spatial/multivariate dashboard and `docs/DEPLOYMENT.md` documents Streamlit Community Cloud deployment.
-
-Install/build:
-
-```bash
-pip install -e ".[docs]"
-sphinx-build -b html docs docs/_build/html
-```
-
-`docs/FUNCTION_INDEX.md` is separately generated from Python AST for fast GitHub/Codex lookup. Do not maintain conflicting copies of function documentation; docstrings are the main technical source.
-
 ---
 
 ## Notebook/team workflow
 
-Install the package from repo root in editable mode:
+Install editable:
 
 ```bash
 pip install -e ".[dev,geo]"
 ```
 
-Then notebooks import normally, e.g.:
+Typical imports:
 
 ```python
-from geocebada.data import load_yield_split, partition_yield_split
+from geocebada.data import load_basic_data, load_pro_data, load_yield_split
 from geocebada.statistics import correlation_screen
-
-split = load_yield_split()
-train, prediction = partition_yield_split(split)
-screen = correlation_screen(train, "RENDIMIENTO_T_HA")
 ```
 
-Never require teammates to edit `sys.path`, copy utility functions, or execute another notebook first. If a transformation is reused or becomes part of the pipeline, promote it into `src/geocebada/`.
+Do not require `sys.path` hacks, copied helpers or execution of another notebook first.
 
 ---
 
 ## GeoCebada Lab status
 
-`app/main.py` is a functional interactive analysis laboratory. The app is also multipage: `app/pages/1_Visual_Explorer.py` is the dedicated spatial and multivariate exploration dashboard.
+`app/main.py` provides Overview, Data Explorer, Prediction Set, Statistical Lab, Feature Engineering, Model Lab and Methodology.
 
-Main Lab UI areas:
+`app/pages/1_Visual_Explorer.py` provides BASIC/PRO/split/upload selection, safe split metadata attachment, shared filtering, parcel map, pairplot, correlations, bivariate plots, outliers, group summaries and missingness.
 
-- Overview: dataset shape, split, observed-yield distribution and missingness/schema;
-- Data Explorer: arbitrary columns, distributions and CSV export;
-- Prediction Set: inspection of provided prediction covariates plus train-vs-prediction distribution-shift diagnostics, never hidden targets;
-- Statistical Lab: Pearson/Spearman tests, multiple-hypothesis screening and linear-model assumption diagnostics;
-- Feature Engineering Lab: declarative parcel/group aggregations, optional date windows, temporal slope/AUC, recipe/table download;
-- Model Lab: quick Linear/Ridge/RandomForest/ExtraTrees random-CV comparison;
-- Methodology: interpretation guardrails separating description, statistical inference, prediction and causality.
-
-Visual Explorer capabilities:
-
-- load official yield/split, bundled BASIC, bundled PRO or an uploaded CSV;
-- optionally attach official parcel metadata to BASIC/PRO by `ID_POLIGONO` without exposing hidden targets;
-- shared train/prediction, parcel-ID, categorical, numeric-range and complete-case filters;
-- interactive parcel choropleth map with arbitrary color variable and hover fields;
-- pairplot/scatter matrix;
-- Pearson/Spearman/Kendall correlation heatmap;
-- arbitrary bivariate scatter with optional OLS trendline;
-- IQR outlier screening;
-- grouped descriptive summaries;
-- filtered missingness/schema and descriptive statistics.
-
-The app automatically excludes official `PREDICCION` rows from supervised statistics/model evaluation when the official split columns are present. Prediction-set covariate inspection is allowed for support/shift diagnostics, but model selection must remain based on labeled-data validation.
-
-The app is intentionally an interface over `geocebada`; reusable analysis logic must remain in `src/geocebada/`.
-
-Important limitations still to implement after data audit:
-
-- raster overlays and zonal-stat visualization;
-- a BASIC/PRO-specific temporal explorer once exact schemas and date semantics are confirmed;
-- Moran's I and spatial residual diagnostics after parcel geometry/CRS is directly verified;
-- grouped/spatial CV in Model Lab;
-- final inference using frozen feature/model artifacts.
-
-Streamlit Cloud uses root `requirements.txt`, which installs `-e .[geo]` so the parcel-map dependencies are available.
+Prediction-set covariates may be inspected for support/shift diagnostics, but hidden targets are never exposed or used for supervised tuning.
 
 ---
 
-## Statistical interpretation guardrails
+## Temporal guardrails
 
-- Statistical significance is not causality.
-- Multiple exploratory tests require correction and still remain vulnerable to confounding/post-selection bias.
-- Shapiro/Breusch-Pagan/VIF outputs are diagnostics, not binary model-acceptance rules.
-- Pairplots/correlation heatmaps are exploratory and can reflect outliers, repeated observations, spatial dependence or temporal leakage.
-- Spatial independence is a major unresolved assumption for georeferenced parcels.
-- In-sample linear diagnostics are not predictive validation.
-- Random K-fold results in the current Model Lab are exploratory only; do not cite them as final expected FIRA performance.
+The target cycle is now source-confirmed as **April–October 2025**. This does **not** make every 2025 observation automatically legal for a forecasting model.
+
+Before freezing temporal features, explicitly define the operational prediction date/cutoff. Any satellite/climate observation after that cutoff is unavailable future information and must be excluded from final model training/evaluation.
+
+Historical 2022–2024 data may be useful for climatologies, anomalies or representation learning only if the resulting feature can also be computed consistently at inference time and does not introduce target leakage.
+
+---
+
+## Sensor guardrails
+
+- BASIC combines Sentinel-2 and Landsat; records remain sensor-specific.
+- VI6T is the Landsat spectral-thermal variable described by the source dictionary.
+- PRO is Planet 2025.
+- NDVI/EVI/LAI names overlap across BASIC/PRO, but values must not be naively concatenated as equivalent measurements.
+- Preserve `sensor`; document any calibration/harmonization.
+- The official satellite dictionary is conceptual: do not invent formulas for provider-specific variables such as MRA or VI6T.
 
 ---
 
@@ -237,56 +172,51 @@ Known source CRS:
 - precipitation: EPSG:4326
 - temperature: EPSG:4326
 - topography: EPSG:6372
-- parcels: verify from source
+- parcels: verify directly
 
-Always inspect CRS before overlay/zonal statistics; reproject explicitly; never compute metric area/distance in geographic coordinates; preserve source geometry; assert parcel ID/row integrity after joins.
-
-The parcel-map code only reprojects if the loaded geometry already carries CRS metadata. If CRS is absent, it stops rather than assigning one.
+Never compute metric area/distance or raster overlays without explicit CRS checks/reprojection. Preserve source geometry and `ID_POLIGONO` through joins.
 
 ---
 
 ## Leakage guardrails
 
-- Never fabricate hidden targets or use the 59 prediction targets for supervised tuning/scoring.
-- Prediction covariates may be inspected for support, missingness and distribution-shift diagnostics, but do not repeatedly redesign the supervised model to make the final 59 outputs look convenient.
-- Climate coverage 2022-2025 does not imply every month is temporally legal for every target.
-- Learned preprocessing must be fit inside CV folds.
-- Random CV may be optimistic under spatial autocorrelation; compare with spatial/grouped diagnostics after geometry audit.
-- Interactive feature exploration must not silently promote post-harvest variables into the canonical pipeline.
-- Generic parcel aggregation in the map is visualization-only; it is not a substitute for leakage-safe temporal feature engineering.
+- Never fabricate/use hidden prediction targets.
+- Never row-random split longitudinal BASIC/PRO for supervised evaluation; group by parcel at minimum.
+- Do not use observations after the frozen prediction cutoff.
+- Fit learned preprocessing/selection inside folds.
+- Random parcel CV may remain optimistic under spatial autocorrelation; compare with grouped/spatial diagnostics.
+- Do not choose models because final 59 predictions “look plausible”.
+- Generic map aggregation is visualization-only, not canonical feature engineering.
 
 ---
 
 ## Modeling status
 
-Problem: small-n supervised regression (`n_train=138`). No final model exists.
+Small-n target problem: `n_train=138`. No final model exists.
 
-The current Model Lab implements exploratory baselines only. Final model selection still requires audited parcel-level features, temporal validity and spatial/grouped validation. Deep learning is not a default choice at this sample size.
-
-Feature-domain ablations should quantify remote sensing, climate, topography, geometry/spatial variables and combinations.
+Current dashboard models are exploratory baselines only. Final selection requires a one-row-per-parcel feature table, legal temporal windows, grouped/spatial validation, domain ablations and frozen preprocessing.
 
 ---
 
 ## Immediate next steps
 
-1. Use the bundled BASIC/PRO views to audit exact schemas, IDs, dates, row counts and missingness; document verified findings rather than inferring semantics from column names alone.
-2. Run the parcel map locally/Cloud, inspect the actual geometry attributes/CRS and verify 197-ID coverage and geometry validity.
-3. Resolve target agricultural cycle/year from official/source evidence.
-4. Build a source-backed BASIC/PRO time-series explorer only after date semantics are confirmed.
-5. Define leakage-safe temporal windows and promote defensible feature recipes into stable feature modules.
-6. Add raster overlays/zonal-stat visualizations after geometry/CRS verification.
+1. Inspect parcel archive: CRS, attributes, validity and 197-ID coverage.
+2. Audit BASIC/PRO date/sensor distributions and missingness specifically around 2025.
+3. Define the operational pre-harvest prediction cutoff/horizon.
+4. Build a BASIC/PRO time-series explorer using the now-audited schema.
+5. Extract climate/topography to parcels through documented zonal statistics.
+6. Promote defensible temporal/spatial feature recipes into `src/geocebada/features/`.
 7. Add Moran's I/spatial residual diagnostics and grouped/spatial CV.
-8. Build the canonical parcel-level modeling table and domain ablations.
-9. Freeze final preprocessing/model artifacts before exposing prediction in the app.
-10. Keep function index, tests, Sphinx docs and AI usage log synchronized as the library grows.
+8. Build domain ablations: satellite, climate, topography/geometry, combinations.
+9. Freeze preprocessing/model artifacts before final 59 predictions.
+10. Keep tests, function index, Sphinx docs, handoffs and AI usage synchronized.
 
 ---
 
 ## Before ending an agent session
 
-- run relevant tests/lint/docs commands when available and state what actually passed;
+- run relevant tests/lint/docs and report only what actually passed;
 - regenerate `docs/FUNCTION_INDEX.md` after public API changes;
-- update this file when project facts/status change;
-- update `data/.ai_handoff` for data-specific discoveries;
+- update handoffs when facts/status change;
 - update `docs/AI_USAGE.md` for material AI-assisted work;
 - never promote an assumption to a confirmed fact without source evidence.
