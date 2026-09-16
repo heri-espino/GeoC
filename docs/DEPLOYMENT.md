@@ -6,7 +6,9 @@ GeoCebada Lab is prepared to run from the repository with the entrypoint:
 app/main.py
 ```
 
-The root `requirements.txt` installs `geocebada` with its optional geospatial dependencies (`-e .[geo]`) so the parcel map can load the official geometry archive on Streamlit Community Cloud.
+The root `requirements.txt` installs `geocebada` with its optional geospatial dependencies (`-e .[geo]`) and explicitly declares the Streamlit runtime dependencies used directly by the app, including `plotly` and `streamlit`.
+
+The local Conda environment is intentionally stored as `environment.dev.yml`, **not** `environment.yml`. Streamlit Community Cloud gives `environment.yml` higher priority than `requirements.txt`; keeping a recognized Conda file at the repository root can therefore cause Community Cloud to ignore `requirements.txt` and launch the app without packages such as Plotly. Do not rename `environment.dev.yml` back to `environment.yml` while this deployment strategy is in use.
 
 The application is multipage. In addition to the main laboratory, `app/pages/1_Visual_Explorer.py` provides the spatial and multivariate exploration dashboard with filters, parcel mapping, pairplots, correlation heatmaps, bivariate views, outlier screening, grouped summaries, and missingness diagnostics.
 
@@ -16,9 +18,21 @@ The application is multipage. In addition to the main laboratory, `app/pages/1_V
 2. Grant access to private repositories if GeoCebada remains private.
 3. Create a new app from an existing repository.
 4. Select repository `heri-espino/GeoCebada`, branch `main`, and entrypoint `app/main.py`.
-5. Deploy.
+5. Select **Python 3.11** in the advanced deployment settings so Cloud matches the team's development environment.
+6. Deploy.
 
 Community Cloud runs the app from the repository root, so GeoCebada's project-relative path helpers continue to resolve `data/source/` correctly. Streamlit discovers the page under `app/pages/` automatically.
+
+## Dependency troubleshooting
+
+If Cloud shows `ModuleNotFoundError` for `plotly`, `geocebada`, or another third-party package:
+
+1. Confirm the root contains `requirements.txt`.
+2. Confirm there is **no** root `environment.yml`, `Pipfile`, or `uv.lock` that can take precedence over it.
+3. In **Manage app**, reboot/redeploy the application after pulling the latest `main` commit.
+4. Inspect the build log and verify that Community Cloud processes `requirements.txt` and installs the editable `geocebada` package.
+
+A change to `requirements.txt` should trigger a dependency reinstall automatically on Community Cloud.
 
 ## Visual Explorer data sources
 
@@ -29,7 +43,7 @@ The Visual Explorer can load:
 - the bundled PRO CSV;
 - a user-uploaded CSV.
 
-For BASIC/PRO, the page can attach parcel-level `AREA_HA`, `CONJUNTO`, and the observed training target through `ID_POLIGONO`. Hidden prediction yield remains missing. BASIC/PRO temporal interpretation is still unresolved, so time-dependent conclusions must wait for a source-backed agricultural-cycle mapping.
+For BASIC/PRO, the page can attach parcel-level `AREA_HA`, `CONJUNTO`, and the observed training target through `ID_POLIGONO`. Hidden prediction yield remains missing.
 
 ## CRS behavior
 
