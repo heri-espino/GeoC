@@ -4,6 +4,8 @@ Este tutorial está pensado para integrantes del equipo que trabajan principalme
 
 La idea es que todos usemos la misma línea de Python (**3.11**) y que el repositorio se instale como paquete editable. Así, los notebooks pueden importar `geocebada` directamente y cualquier cambio en `src/geocebada/` queda disponible sin copiar funciones ni modificar `sys.path`.
 
+> El entorno local de Conda vive en `environment.dev.yml`. Se llama así deliberadamente para que Streamlit Community Cloud no lo confunda con el archivo de dependencias de producción. El despliegue web usa `requirements.txt`.
+
 ## 1. Clonar el repositorio
 
 En una terminal:
@@ -13,14 +15,14 @@ git clone https://github.com/heri-espino/GeoCebada.git
 cd GeoCebada
 ```
 
-También se puede clonar con GitHub Desktop. Lo importante es terminar dentro de la carpeta raíz del repositorio, donde existen `pyproject.toml`, `environment.yml`, `src/`, `notebooks/` y `data/`.
+También se puede clonar con GitHub Desktop. Lo importante es terminar dentro de la carpeta raíz del repositorio, donde existen `pyproject.toml`, `environment.dev.yml`, `requirements.txt`, `src/`, `notebooks/` y `data/`.
 
 ## 2. Crear el ambiente Conda
 
 Desde la raíz del repositorio:
 
 ```bash
-conda env create -f environment.yml
+conda env create -f environment.dev.yml
 ```
 
 Esto crea un ambiente llamado:
@@ -162,10 +164,10 @@ No es necesario recrear el ambiente todos los días.
 
 ## 8. Si cambian las dependencias
 
-Si alguien modifica `environment.yml`:
+Si alguien modifica `environment.dev.yml`:
 
 ```bash
-conda env update -f environment.yml --prune
+conda env update -f environment.dev.yml --prune
 ```
 
 Si cambia `pyproject.toml` o se agregan nuevas dependencias del paquete:
@@ -271,7 +273,7 @@ Para una computadora nueva, el flujo completo es:
 ```bash
 git clone https://github.com/heri-espino/GeoCebada.git
 cd GeoCebada
-conda env create -f environment.yml
+conda env create -f environment.dev.yml
 conda activate geocebada
 python -m pip install -e ".[dev,geo]"
 python -m ipykernel install --user --name geocebada --display-name "Python (GeoCebada)"
