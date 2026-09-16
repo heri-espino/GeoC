@@ -1,10 +1,10 @@
 # AI Handoff — GeoCebada
 
-Updated: 2026-09-14
+Updated: 2026-09-16
 Project: GeoCebada / Reto AgroCebada FIRA 2026
 Scope: project-wide operational context for AI agents/Codex.
 
-Read this before project-wide changes. For data work also read `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers.
+Read this before project-wide changes. For data work also read `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers. For any Streamlit/app/deployment work, read **`app/AGENTS.md`** first.
 
 This file is not the FIRA AI disclosure log. Material AI-assisted work must also be recorded in `docs/AI_USAGE.md`.
 
@@ -55,6 +55,11 @@ GeoCebada/
 ├── AGENTS.md
 ├── .ai_handoff
 ├── app/
+│   ├── AGENTS.md             # app/Streamlit-specific maintenance contract
+│   ├── main.py
+│   ├── visual_explorer.py
+│   └── pages/
+│       └── 1_Visual_Explorer.py
 ├── configs/
 ├── data/
 │   ├── source/              # immutable official evidence
@@ -97,6 +102,8 @@ GeoCebada/
 4. Root `README.md`, `.ai_handoff`, `AGENTS.md`.
 5. Notebook comments/conversation assumptions.
 
+For app/deployment implementation details, `app/AGENTS.md` and `docs/DEPLOYMENT.md` are authoritative derived operational docs.
+
 If higher-ranked evidence contradicts derived docs, preserve the evidence and update the docs.
 
 ---
@@ -136,6 +143,12 @@ python tools/generate_function_index.py
 
 Team environment is standardized around Conda environment `geocebada`, Python 3.11 and Jupyter kernel `Python (GeoCebada)`. See `docs/GETTING_STARTED.md`.
 
+Local Conda file:
+
+```text
+environment.dev.yml
+```
+
 Standard install:
 
 ```bash
@@ -164,13 +177,56 @@ The second notebook defaults to `*_promedio` variables and a 14-day grid to stay
 
 ---
 
-## GeoCebada Lab status
+## GeoCebada Lab / Streamlit status
 
-`app/main.py` provides Overview, Data Explorer, Prediction Set, Statistical Lab, Feature Engineering, Model Lab and Methodology.
+**Read `app/AGENTS.md` before changing anything under `app/` or deployment dependencies.** It contains the detailed maintenance checklist.
 
-`app/pages/1_Visual_Explorer.py` provides BASIC/PRO/split/upload selection, safe split metadata attachment, shared filtering, parcel map, pairplot, correlations, bivariate plots, outliers, group summaries and missingness.
+Current app:
+
+- `app/main.py`: Overview, Data Explorer, Prediction Set, Statistical Lab, Feature Engineering, Model Lab and Methodology.
+- `app/pages/1_Visual_Explorer.py`: BASIC/PRO/split/upload selection, safe split metadata attachment, shared filtering, parcel map, pairplot, correlations, bivariate plots, outliers, group summaries and missingness.
+- `app/visual_explorer.py`: helper layer used by the Visual Explorer page.
 
 Prediction-set covariates may be inspected for support/shift diagnostics, but hidden targets are never exposed or used for supervised tuning.
+
+Architecture invariant:
+
+```text
+src/geocebada = scientific/data/model engine
+app/           = Streamlit interface and presentation
+```
+
+Do not let important feature/model/statistical logic live only in Streamlit code.
+
+### Streamlit Community Cloud deployment contract
+
+Deployment entrypoint is `app/main.py` on branch `main`.
+
+Cloud bootstrap dependencies come from root `requirements.txt`; package dependencies live in `pyproject.toml`.
+
+Current Cloud bootstrap is conceptually:
+
+```text
+-e .[geo]
+plotly>=6.0
+streamlit>=1.38
+```
+
+**Do not reintroduce a root `environment.yml` as a local-team convenience.** A previous deployment failed with `ModuleNotFoundError: plotly.express` because Streamlit Community Cloud prioritized root `environment.yml` over `requirements.txt`; the old file contained only Python/pip and caused the package dependencies to be skipped. Local Conda setup now lives in `environment.dev.yml`.
+
+When app imports/dependencies change, future agents must:
+
+1. update `pyproject.toml`/extras as appropriate;
+2. ensure root `requirements.txt` installs the required extra/bootstrap packages;
+3. test locally with `streamlit run app/main.py`;
+4. reboot/redeploy Streamlit Cloud for dependency-sensitive changes;
+5. inspect **Manage app → logs**;
+6. exercise the main page and every page under `app/pages/`;
+7. update `docs/DEPLOYMENT.md` if the deployment contract changed.
+
+Do not claim Cloud is fixed merely because local tests pass.
+
+Streamlit reruns scripts on widget interaction: use caching and cheap defaults for BASIC/PRO. Avoid reading large CSVs and constructing expensive pairplots on every rerun.
 
 ---
 
@@ -256,6 +312,7 @@ Current dashboard models are exploratory baselines only. Final selection still r
 8. Add Moran's I/spatial residual diagnostics and grouped/spatial CV.
 9. Build domain ablations: satellite, climate, topography/geometry, combinations.
 10. Freeze preprocessing/model artifacts before final 59 predictions.
+11. Keep the Streamlit pages synchronized with new reusable analytics/model capabilities and verify Cloud after deployment-sensitive changes.
 
 ---
 
@@ -265,4 +322,5 @@ Current dashboard models are exploratory baselines only. Final selection still r
 - regenerate `docs/FUNCTION_INDEX.md` after public API changes;
 - update handoffs when facts/status change;
 - update `docs/AI_USAGE.md` for material AI-assisted work;
+- for Streamlit work, follow `app/AGENTS.md`, update `docs/DEPLOYMENT.md` when necessary, and distinguish local verification from actual Cloud verification;
 - never promote an assumption to a confirmed fact without source evidence.
