@@ -1,1 +1,3 @@
 -e .[geo]
+plotly>=6.0
+streamlit>=1.38
