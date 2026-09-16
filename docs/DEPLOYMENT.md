@@ -12,6 +12,8 @@ The local Conda environment is intentionally stored as `environment.dev.yml`, **
 
 The application is multipage. In addition to the main laboratory, `app/pages/1_Visual_Explorer.py` provides the spatial and multivariate exploration dashboard with filters, parcel mapping, pairplots, correlation heatmaps, bivariate views, outlier screening, grouped summaries, and missingness diagnostics.
 
+> AI agents/Codex must read `app/AGENTS.md` before changing app code, deployment dependencies, page structure, caching or Cloud behavior. That file is the app-specific maintenance contract.
+
 ## Deploy
 
 1. Open Streamlit Community Cloud and connect the GitHub account that owns the repository.
@@ -33,6 +35,78 @@ If Cloud shows `ModuleNotFoundError` for `plotly`, `geocebada`, or another third
 4. Inspect the build log and verify that Community Cloud processes `requirements.txt` and installs the editable `geocebada` package.
 
 A change to `requirements.txt` should trigger a dependency reinstall automatically on Community Cloud.
+
+## Maintenance contract for future agents
+
+When an AI agent changes the Streamlit app, it must keep deployment, library code and documentation synchronized.
+
+### If a third-party import is added
+
+- Add the dependency to `pyproject.toml` when it is a package/runtime dependency.
+- Ensure `requirements.txt` installs the extra that contains it.
+- Keep direct Streamlit bootstrap dependencies explicit in `requirements.txt` when that improves deployment robustness.
+- Do not install packages dynamically from `app/main.py`.
+- Do not reintroduce root `environment.yml` merely for local Conda usage; use `environment.dev.yml`.
+
+### If analytical/model logic is added
+
+- Put stable reusable logic under `src/geocebada/`.
+- Keep Streamlit code focused on widgets, filtering and rendering.
+- Reuse the same frozen inference pipeline that produces the official prediction table.
+- Add tests and regenerate `docs/FUNCTION_INDEX.md` when the public library API changes.
+
+### If data behavior changes
+
+- Preserve immutable `data/source/`.
+- Keep `PREDICCION` target values absent.
+- Do not use row-random validation on longitudinal BASIC/PRO.
+- Preserve sensor provenance and CRS checks.
+- Update `docs/VARIABLES.md` or data handoffs only when source evidence supports the interpretation change.
+
+### Before saying a deployment is healthy
+
+Local verification:
+
+```bash
+conda activate geocebada
+python -m pip install -e ".[dev,geo]"
+streamlit run app/main.py
+```
+
+Repository checks when relevant:
+
+```bash
+ruff check .
+pytest -q
+python tools/generate_function_index.py
+sphinx-build -b html -W docs docs/_build/html
+```
+
+Then verify the **actual Cloud deployment**:
+
+1. wait for build/redeploy;
+2. inspect **Manage app → logs**;
+3. open the app in a fresh browser session;
+4. open every page under `app/pages/`;
+5. verify BASIC/PRO loading and the official split;
+6. verify `Prediction Set` has no hidden yields;
+7. verify geospatial views either render safely or show an explicit CRS/data warning;
+8. check that large operations are not unnecessarily rerun after every widget interaction.
+
+Passing local tests is not evidence that Streamlit Community Cloud installed the intended dependencies.
+
+## Performance/caching guidance
+
+BASIC and PRO are large enough that careless Streamlit reruns can make the app unusable.
+
+- Cache deterministic data loads/transforms with `@st.cache_data` when safe.
+- Cache expensive reusable models/resources with `@st.cache_resource` where appropriate.
+- Avoid repeatedly loading full BASIC/PRO CSVs on each widget change.
+- Use inexpensive defaults and explicit buttons/forms for costly operations.
+- Sample or rasterize large pairplots rather than rendering all longitudinal rows.
+- Move reusable heavy transformations to `src/geocebada/` so notebooks and app use identical behavior.
+
+Never cache secrets or any unavailable hidden-target information.
 
 ## Visual Explorer data sources
 
