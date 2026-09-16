@@ -21,12 +21,14 @@ Ese tutorial supone que ya tienes Conda instalado y deja a todo el equipo trabaj
 El flujo inicial desde la raíz del repositorio es:
 
 ```bash
-conda env create -f environment.yml
+conda env create -f environment.dev.yml
 conda activate geocebada
 python -m pip install -e ".[dev,geo]"
 python -m ipykernel install --user --name geocebada --display-name "Python (GeoCebada)"
 jupyter lab
 ```
+
+`environment.dev.yml` es sólo para desarrollo local. El despliegue de Streamlit usa `requirements.txt`.
 
 ## 01 — Visualización rápida
 
