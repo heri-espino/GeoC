@@ -40,6 +40,11 @@ geo = [
   "pyproj>=3.6",
   "rasterio>=1.4",
 ]
+external = [
+  "requests>=2.31",
+  "cdsapi>=0.7",
+  "wapordl>=1.2",
+]
 gpu = [
   "cupy-cuda12x>=13.0",
 ]
