@@ -11,6 +11,7 @@ These instructions apply repository-wide unless a more specific handoff adds con
 5. `src/geocebada/README.md` for reusable-code conventions
 6. `docs/FUNCTION_INDEX.md` before creating a new helper
 7. relevant official/reference material under `docs/`
+8. **`app/AGENTS.md` before any Streamlit/app/deployment change**
 
 Do not replace confirmed project facts with guesses or generic ML assumptions.
 
@@ -52,6 +53,21 @@ python tools/generate_function_index.py
 ```
 
 Public reusable functions should have docstrings, type hints and tests when stable. Export commonly used symbols through the relevant `__init__.py`.
+
+## Streamlit maintenance rule
+
+`app/AGENTS.md` is the authoritative app-specific maintenance contract. It documents:
+
+- current pages/capabilities;
+- thin-interface architecture;
+- prediction-set and leakage guardrails;
+- CRS/map safety;
+- Streamlit Community Cloud dependency precedence;
+- local and Cloud smoke tests;
+- caching/performance conventions;
+- the checklist that must be followed when dependencies, data interpretation, model artifacts or pages change.
+
+Important deployment invariant: local Conda configuration lives in `environment.dev.yml`; do **not** reintroduce a root `environment.yml` without checking Streamlit dependency-file precedence. Cloud bootstrapping uses root `requirements.txt`, which installs the package/extras defined in `pyproject.toml`.
 
 ## Documentation rule
 
@@ -110,6 +126,7 @@ Do not silently assume:
 - regenerate `docs/FUNCTION_INDEX.md` after public API changes;
 - update `.ai_handoff` if project facts/status changed;
 - update `data/.ai_handoff` for data-specific discoveries;
-- update `docs/AI_USAGE.md` when AI materially contributed.
+- update `docs/AI_USAGE.md` when AI materially contributed;
+- for Streamlit/deployment changes, follow `app/AGENTS.md` and update `docs/DEPLOYMENT.md` when the deployment contract changes.
 
 If source evidence contradicts repository documentation, preserve source evidence and update the derived documentation.
