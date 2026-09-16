@@ -49,6 +49,14 @@ data/
 
 Preserve `ID_POLIGONO` end-to-end. Do not modify source files in place.
 
+### Local external inputs
+
+`data/raw/external/` is intentionally unversioned. It currently contains the
+locally acquired INEGI CEM 15 m inputs for Hidalgo, Puebla and Tlaxcala, and
+SIAP municipal agricultural-closure files. Keep these downloaded inputs under
+their source-named subdirectories; do not move them into `data/source/` or
+commit the large rasters/CSVs.
+
 ---
 
 ## Audited remote-sensing tables

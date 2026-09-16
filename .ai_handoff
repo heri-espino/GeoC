@@ -155,6 +155,11 @@ Standard install:
 pip install -e ".[dev,geo]"
 ```
 
+`environment.dev.yml` also installs GDAL and its NetCDF driver from conda-forge.
+They are required before installing the optional `external` extra on Windows:
+WaPOR otherwise falls back to an unsupported local C++ GDAL build and cannot
+write its NetCDF products.
+
 Optional NVIDIA/CUDA 12 install:
 
 ```bash

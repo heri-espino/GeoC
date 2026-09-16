@@ -22,8 +22,7 @@ venv/
 .ipynb_checkpoints/
 
 # Data: preserve directories, ignore contents
-/data/raw/*
-!/data/raw/.gitkeep
+/data/raw/external/
 /data/interim/*
 !/data/interim/.gitkeep
 /data/processed/*
