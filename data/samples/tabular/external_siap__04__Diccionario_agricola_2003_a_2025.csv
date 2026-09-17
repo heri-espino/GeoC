@@ -1,0 +1,44 @@
+Unnamed: 0,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+Conformación y descripción de la tabla de información estadística de cierre del año agrícola,,,,,,
+,,,,,,
+"Consecutivo
+en la base","Nombre
+de campo",Tipo,Long.,"Rangos
+válidos",Descripción,Observaciones
+1,Anio,N,4,{CCCC},Año de la información,Corresponde a la referencia temporal de los datos.
+2,Idestado,N,2,"{1,…,32 }",Código que identifica a la entidad federativa o estado de producción,"Clave geoestadística consecutiva que se asigna a los estados, formada por dos dígitos de acuerdo con el orden alfabético de sus nombres oficiales según el Marco Geoestadístico Nacional (MGN), el cual fue diseñado por el INEGI, como un sistema único y de carácter nacional para referenciar correctamente la información estadística, correspondiente a la actualización de septiembre de 2009."
+3,Nomestado,T,60,{CCC},Nombre oficial de la entidad federativa o estado,La entidad federativa es la unidad geográfica mayor de la división político-administrativa del país a la que hace referencia la información. 
+4,Idddr,N,3,"{1,…,193}",Código que identifica  al Distrito de Desarrollo Rural,"Clave interna que utiliza la Secretaría de Agricultura y Desarrollo Rural y la DGSIAP, para identificar el territorio en que se divide la entidad federativa, es un dato consecutivo a nivel nacional que consta de tres dígitos en un consecutivo por orden de entidad federativa."
+5,Nomddr,T,60,{CCC},Nombre que identifica  al Distrito de Desarrollo Rural,"Nombre que utiliza la Secretaría de Agricultura y Desarrollo Rural y la DGSIAP, para identificar la asignación de los datos de producción."
+6,Idcader,N,2,"{1,…,19}",Código que identifica  al Centro de Apoyo al Desarrollo Rural,"Clave interna que utiliza la Secretaría de Agricultura y Desarrollo Rural y la DGSIAP, para identificar el territorio en que se divide un Distrito de Desarrollo Rural, consta de dos dígitos en un consecutivo por cada DDR."
+7,Nomcader,T,90,{CCC},Nombre que identifica  al Centro de Apoyo al Desarrollo Rural,"Nombre que utiliza la Secretaría de Agricultura y Desarrollo Rural y la DGSIAP, para identificar la asignación de los datos de producción."
+8,Idmunicipio,T,3,"{1,….,570}",Código que identifica al municipio o delegación de producción de cada entidad federativa,Unidad geográfica de la División territorial político-administrativa de los estados y la Ciudad de México de la que hace referencia la información.
+9,Nommunicipio,T,45,{CCC},Nombre del municipio o delegación de producción,"El municipio refiere a la unidad geográfica de la División territorial político-administrativa de los estados y  la Ciudad de México de la que hace referencia la información de acuerdo con el orden alfabético de sus nombres oficiales según el Marco Geoestadístico Nacional (MGN), el cual fue diseñado por el INEGI, como un sistema único y de carácter nacional para referenciar correctamente la información estadística correspondiente a la actualización de octubre de 2009."
+10,Idciclo,N,1,"{1,….,3}",Código que identifica al ciclo agrícola,Código asignado en el catálogo de ciclo agrícola.
+11,Nomcicloproductivo,T,40,{CCC},Nombre del ciclo agrícola ,"Nombre que identifica al ciclo agrícola, generalmente asociado a las estaciones del año; otoño-invierno, primavera verano."
+12,Idmodalidad,N,1,"{1,2}",Código que identifica al tipo de modalidad hídrica,Clave asignada en el catálogo de modalidad hídrica.
+13,Nommodalidad,T,20,{CCC},Nombre de la modalidad hídrica,"Nombre de la modalidad hídrica que hace referencia a las vocaciones de la superficie, ya sean de temporal o de riego."
+14,Idunidadmedida,N,1,"{1,….,6}",Código que identificala unidad de medida,Código asignado en el catálogo de unidad de medida.
+15,Nomunidad,T,40,{CCC},Nombre que identificala unidad de medida,Nombre asignado en el catálogo de unidad de medida de la DGSIAP.
+16,Idcultivo,N,3,"{1,….,410}",Código que identifica al cultivo agrícola,Clave asignado en el catálogo de cultivos de la DGSIAP.
+17,Nomcultivo,T,40,{CCC},Nombre del cultivo agrícola,Nombre asignado en el catálogo de cultivos de la DGSIAP.
+18,Sembrada,D,10,{########.##},Superficie sembrada del cultivo,"La unidad de medida son hectáreas. Es la superficie agrícola en la cual se deposita la semilla de cualquier cultivo, previa preparación del suelo."
+19,Cosechada,D,10,{########.##},Superficie cosechada del cultivo,La unidad de medida son hectáreas. Es la superficie de la cual se obtuvo producción del cultivo indicado.
+20,Siniestrada,D,10,{########.##},Superficie siniestrada del cultivo,"La unidad de medida son hectáreas. Es la superficie de la cual no se obtuvo producción debido a que se perdió por alguna causa, solo aplica para cultivos anuales, ya que los perennes se pueden recuperar las plantaciones en el año siguiente."
+21,Volumenproduccion,D,10,{########.##},Volumen de producción,"Volumen de producción de la superficie cosechada cuya unidad de medida son las toneladas, con excepción del maguey pulquero y trigo ornamental, con una métrica de miles de litros y gruesas, respectivamente."
+22,Rendimiento,D,10,{########.###},Rendimiento,"Rendimiento, la unidad de medida son toneladas por hectárea, con excepción de los cultivos que tienen otra métrica la cual se señala en el nombre del cultivo (gruesa, manojo, planta, entre otros)."
+23,Precio,D,7,{#######.###},Precio medio rural,"Precio medio rural, la unidad de medida son pesos por tonelada, con excepción de los cultivos que tienen otra métrica la cual se señala en el nombre del cultivo (gruesa, manojo, planta, entre otros)."
+24,Valorproduccion,D,12,{##########.##},Valor de la producción,Valor expresado en pesos corrientes nacionales.
+,,,,,,
+T: Texto,,,,,,
+N:Numérico entero,,,,,,
+D: Numérico decimal,,,,,,
+#: Carácter numérico.,,,,,,
+A: Carácter alfanumérico.,,,,,,
+Fuente: Dirección General del Servicio de Informción Agroalimentaria y Pesquera (DGSIAP).,,,,,,
