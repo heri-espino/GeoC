@@ -5,6 +5,11 @@ The data under ``data/raw/`` remain local and ignored by Git. This utility
 records their reproducibility metadata—paths, sizes, SHA256 checksums, inferred
 dates and lightweight geospatial metadata—in ``data/external_manifest.json``.
 
+By default the utility refuses to overwrite an existing manifest when the
+current checkout contains fewer files for a previously available source. This
+prevents a partial workstation from silently replacing the canonical inventory.
+Use ``--allow-shrink`` only when a smaller inventory is intentional.
+
 Examples
 --------
 Build the standard inventory::
@@ -98,9 +103,7 @@ def netcdf_metadata(path: Path) -> dict[str, Any] | None:
             return {"inspection_error": "GDAL could not open the NetCDF file"}
         subdatasets = dataset.GetMetadata("SUBDATASETS")
         descriptions = [
-            value
-            for key, value in sorted(subdatasets.items())
-            if key.endswith("_DESC")
+            value for key, value in sorted(subdatasets.items()) if key.endswith("_DESC")
         ]
         dimensions = sorted(
             {
@@ -189,6 +192,31 @@ def build_manifest(
     }
 
 
+def manifest_shrinkage(
+    existing: Mapping[str, Any], candidate: Mapping[str, Any]
+) -> list[str]:
+    """Describe sources that would shrink relative to an existing manifest."""
+    old_sources = {
+        str(source.get("source")): source for source in existing.get("sources", [])
+    }
+    new_sources = {
+        str(source.get("source")): source for source in candidate.get("sources", [])
+    }
+    issues: list[str] = []
+    for source_name, old in old_sources.items():
+        if not old.get("available", False):
+            continue
+        new = new_sources.get(source_name)
+        old_count = int(old.get("file_count", 0))
+        if new is None or not new.get("available", False):
+            issues.append(f"{source_name}: available -> unavailable ({old_count} -> 0 files)")
+            continue
+        new_count = int(new.get("file_count", 0))
+        if new_count < old_count:
+            issues.append(f"{source_name}: file count would shrink ({old_count} -> {new_count})")
+    return issues
+
+
 def write_manifest(manifest: Mapping[str, Any], output: Path) -> None:
     """Write ``manifest`` as stable, readable UTF-8 JSON."""
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -208,6 +236,11 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_OUTPUT,
         help="Manifest path, relative to --root unless absolute.",
     )
+    parser.add_argument(
+        "--allow-shrink",
+        action="store_true",
+        help="Allow replacing an existing manifest with fewer files for a source.",
+    )
     return parser.parse_args()
 
 
@@ -219,6 +252,17 @@ def main() -> int:
     if not output.is_absolute():
         output = repo_root / output
     manifest = build_manifest(repo_root)
+
+    if output.exists() and not args.allow_shrink:
+        existing = json.loads(output.read_text(encoding="utf-8"))
+        issues = manifest_shrinkage(existing, manifest)
+        if issues:
+            print("Refusing to overwrite a more complete external-data manifest:")
+            for issue in issues:
+                print(f"- {issue}")
+            print("Use --allow-shrink only if the smaller inventory is intentional.")
+            return 2
+
     write_manifest(manifest, output)
     available = sum(source["available"] for source in manifest["sources"])
     print(f"Wrote {output} ({available}/{len(manifest['sources'])} sources available).")

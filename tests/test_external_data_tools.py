@@ -33,6 +33,42 @@ def test_manifest_tolerates_missing_sources_and_writes_portable_paths(tmp_path: 
     assert sources["soilgrids"]["available"] is False
 
 
+def test_manifest_shrinkage_detects_partial_checkout() -> None:
+    """A partial workstation must not silently replace a more complete manifest."""
+    existing = {
+        "sources": [
+            {"source": "inegi_municipios", "available": True, "file_count": 3},
+            {"source": "wapor", "available": True, "file_count": 2},
+        ]
+    }
+    candidate = {
+        "sources": [
+            {"source": "inegi_municipios", "available": True, "file_count": 1},
+            {"source": "wapor", "available": True, "file_count": 2},
+        ]
+    }
+
+    issues = MANIFEST_TOOL["manifest_shrinkage"](existing, candidate)
+
+    assert issues == ["inegi_municipios: file count would shrink (3 -> 1)"]
+
+
+def test_manifest_shrinkage_allows_equal_or_larger_inventory() -> None:
+    """Equal or more complete local inventories should be safe to write."""
+    existing = {
+        "sources": [
+            {"source": "inegi_municipios", "available": True, "file_count": 3},
+        ]
+    }
+    candidate = {
+        "sources": [
+            {"source": "inegi_municipios", "available": True, "file_count": 3},
+        ]
+    }
+
+    assert MANIFEST_TOOL["manifest_shrinkage"](existing, candidate) == []
+
+
 def test_soilgrids_bbox_uses_proj_registered_esri_crs() -> None:
     """SoilGrids' WCS pseudo-EPSG code must not be passed to PyProj."""
     bbox = DOWNLOADER["soilgrids_bbox"]((-98.7, 19.4, -98.1, 20.1))
