@@ -1,15 +1,27 @@
 {
-  "generated_at": "2026-09-17T16:59:44.083234+00:00",
+  "generated_at": "2026-09-17T14:44:45.151509+00:00",
   "repository_root": ".",
   "schema_version": 1,
   "sources": [
     {
       "available": true,
       "extensions": {
-        ".geojson": 1
+        ".geojson": 3
       },
-      "file_count": 1,
+      "file_count": 3,
       "files": [
+        {
+          "bytes": 4674224,
+          "extension": ".geojson",
+          "path": "data/raw/external/inegi_municipios/hidalgo_municipios.geojson",
+          "sha256": "979a842b8d15e21dde93efabbf259c635bb0c33ff6e014e9af8d361fae369a9e"
+        },
+        {
+          "bytes": 9769691,
+          "extension": ".geojson",
+          "path": "data/raw/external/inegi_municipios/puebla_municipios.geojson",
+          "sha256": "1bff711bc36c7cfb99b3872ca8df7bf26d9b37b9be8c52de9176e58bd471a1a8"
+        },
         {
           "bytes": 1908438,
           "extension": ".geojson",
@@ -19,7 +31,7 @@
       ],
       "path": "data/raw/external/inegi_municipios",
       "source": "inegi_municipios",
-      "total_bytes": 1908438
+      "total_bytes": 16352353
     },
     {
       "available": true,
@@ -5609,7 +5621,7 @@
       "file_count": 2,
       "files": [
         {
-          "bytes": 1079685,
+          "bytes": 1079621,
           "extension": ".nc",
           "netcdf": {
             "driver": "netCDF",
@@ -5647,10 +5659,10 @@
             ]
           },
           "path": "data/raw/external/wapor_v3/bb_L1-AETI-D_NONE_none.nc",
-          "sha256": "216fcaa6901629de9cbbe67664feb0d9c71bb489a439a302707aefa26371230b"
+          "sha256": "bded99dff8a88d0af5d579013d7f1ab08ac95b94681de13ee1b0ea16616942cd"
         },
         {
-          "bytes": 2208576,
+          "bytes": 2208512,
           "extension": ".nc",
           "netcdf": {
             "driver": "netCDF",
@@ -5688,12 +5700,12 @@
             ]
           },
           "path": "data/raw/external/wapor_v3/bb_L1-NPP-D_NONE_none.nc",
-          "sha256": "17750220a38260671625cebba8bc3641800df40529c51736ce8da33c0f380a57"
+          "sha256": "aba2dfa5b484dc51457072eb4165918ed5175f3571436524aa8b23b325944ae6"
         }
       ],
       "path": "data/raw/external/wapor_v3",
       "source": "wapor",
-      "total_bytes": 3288261
+      "total_bytes": 3288133
     },
     {
       "available": true,
