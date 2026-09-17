@@ -12,6 +12,7 @@ than duplicated across notebooks.
    README
    GETTING_STARTED
    VARIABLES
+   DATA_CATALOG
    TEMPORAL_ALIGNMENT
    FUNCTION_INDEX
    api/index
