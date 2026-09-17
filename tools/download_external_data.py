@@ -91,6 +91,8 @@ ERA5_VARIABLES = [
 
 CHIRPS_HTTP_ROOT = "https://data.source.coop/wfp/chirps-rnl-daily/v3.0"
 USER_AGENT = "GeoCebada/0.1 external-data-downloader"
+SOILGRIDS_LOCAL_CRS = "ESRI:54052"
+SOILGRIDS_WCS_CRS = "http://www.opengis.net/def/crs/EPSG/0/152160"
 
 
 def log(message: str) -> None:
@@ -316,7 +318,10 @@ def soilgrids_bbox(
         ) from exc
 
     west, south, east, north = bbox
-    transformer = Transformer.from_crs("EPSG:4326", "EPSG:152160", always_xy=True)
+    # SoilGrids calls its Homolosine CRS ``EPSG:152160`` in WCS requests, but
+    # that is a pseudo-EPSG identifier and is not present in PROJ. ESRI:54052
+    # is the equivalent CRS registered in PROJ and is therefore used locally.
+    transformer = Transformer.from_crs("EPSG:4326", SOILGRIDS_LOCAL_CRS, always_xy=True)
     corners = [
         transformer.transform(west, south),
         transformer.transform(west, north),
@@ -350,8 +355,8 @@ def download_soil_layer(
         ("FORMAT", "GEOTIFF_INT16"),
         ("SUBSET", f"X({xmin},{xmax})"),
         ("SUBSET", f"Y({ymin},{ymax})"),
-        ("SUBSETTINGCRS", "http://www.opengis.net/def/crs/EPSG/0/152160"),
-        ("OUTPUTCRS", "http://www.opengis.net/def/crs/EPSG/0/152160"),
+        ("SUBSETTINGCRS", SOILGRIDS_WCS_CRS),
+        ("OUTPUTCRS", SOILGRIDS_WCS_CRS),
     ]
 
     content = request_bytes(url, timeout=300, params=params)

@@ -64,6 +64,53 @@ data/
 
 Toda transformación reproducible debe vivir en `src/geocebada/` o scripts controlados por el proyecto. No colocar modelos entrenados, predicciones o resultados dentro de `source/`.
 
+### Datos externos locales y manifiesto reproducible
+
+Todo archivo generado o descargado bajo `data/raw/`, `data/interim/` y
+`data/processed/` está excluido de Git. En particular,
+`data/raw/external/` contiene insumos locales que pueden incluir GeoTIFF y CSV
+grandes; no se deben añadir al repositorio ni borrar para limpiar el worktree.
+
+El downloader obtiene sólo el entorno espacial de las parcelas cuando la fuente
+permite subconjuntos:
+
+```powershell
+python tools\download_external_data.py `
+  --sources inegi chirps soilgrids wapor `
+  --workers 12
+```
+
+Para reintentar exclusivamente SoilGrids después de una interrupción o error:
+
+```powershell
+python tools\download_external_data.py --sources soilgrids --workers 4
+```
+
+El estado versionable de los archivos locales se reconstruye sin versionar los
+binarios con:
+
+```powershell
+python tools\build_external_data_manifest.py
+```
+
+Este comando actualiza `data/external_manifest.json` con rutas relativas,
+conteos, tamaños, SHA256 y metadatos ligeros de ráster/NetCDF cuando están
+disponibles. El script tolera fuentes ausentes para que cualquier clon del
+repositorio pueda ejecutarlo.
+
+| Fuente | Método | Credenciales / acción manual |
+|---|---|---|
+| INEGI municipios | API pública por terminal | No requiere cuenta |
+| CHIRPS diario | COG público por terminal | No requiere cuenta |
+| SoilGrids | WCS público por terminal | No requiere cuenta |
+| WaPOR v3 | API pública mediante `wapordl` | No requiere cuenta |
+| ERA5-Land | API CDS por terminal | Requiere cuenta CDS, aceptar licencia y `.cdsapirc` local no versionado |
+| SIAP | Interfaz web | Descarga manual; conservar bajo `data/raw/external/SIAP/` |
+| FIRA Agrocostos | Interfaz web | Descarga manual si se incorpora |
+| INEGI CEM 4.0 | Área de descarga interactiva | Descarga manual; conservar bajo `data/raw/external/Inegi/` |
+
+Nunca incluir tokens, claves ni el archivo `.cdsapirc` en el repositorio.
+
 ---
 
 ## 1. Tabla oficial de objetivo y split 70/30

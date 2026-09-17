@@ -57,6 +57,11 @@ SIAP municipal agricultural-closure files. Keep these downloaded inputs under
 their source-named subdirectories; do not move them into `data/source/` or
 commit the large rasters/CSVs.
 
+Run `python tools/build_external_data_manifest.py` after external downloads to
+refresh the tracked `data/external_manifest.json` inventory. The manifest is
+metadata only (relative paths, sizes, SHA256 and lightweight file metadata),
+not a substitute for the local raw data.
+
 ---
 
 ## Audited remote-sensing tables

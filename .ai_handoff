@@ -160,6 +160,11 @@ They are required before installing the optional `external` extra on Windows:
 WaPOR otherwise falls back to an unsupported local C++ GDAL build and cannot
 write its NetCDF products.
 
+External raw-data contract: all contents below `data/raw/`, `data/interim/` and
+`data/processed/` are ignored. Regenerate the versioned external-data inventory
+with `python tools/build_external_data_manifest.py`; never commit raw rasters,
+NetCDF files or manual-download CSVs.
+
 Optional NVIDIA/CUDA 12 install:
 
 ```bash
