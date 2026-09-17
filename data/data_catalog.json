@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T18:47:37.659062+00:00",
+  "generated_at": "2026-09-17T21:28:07.148988+00:00",
   "purpose": "Structure catalog and tiny real-data fixtures; not model training data.",
   "repository_root": ".",
   "schema_version": 1,
@@ -3343,15 +3343,1098 @@
       "representative_profiles": [
         {
           "bytes": 1079685,
-          "format": "nc",
-          "inspection_error": "ImportError: No module named 'h5py', backend not available. Please install 'h5py' into your Python environment.",
-          "path": "data/raw/external/wapor_v3/bb_L1-AETI-D_NONE_none.nc"
+          "format": "netcdf",
+          "path": "data/raw/external/wapor_v3/bb_L1-AETI-D_NONE_none.nc",
+          "profile": {
+            "attributes": {
+              "Conventions": "CF-1.5",
+              "GDAL": "GDAL 3.13.3 \"Iowa City\", released 2026/08/13",
+              "GDAL_AREA_OR_POINT": "Area",
+              "history": "Thu Sep 17 10:54:09 2026: GDAL CreateCopy( C:\\Users\\herie\\OneDrive - Fundacion Universidad de las Americas Puebla\\GeoCebada\\data\\raw\\external\\wapor_v3\\bb_L1-AETI-D_NONE_none.nc, ... )"
+            },
+            "dimensions": {
+              "lat": 227,
+              "lon": 212
+            },
+            "variables": {
+              "Band1": {
+                "attributes": {
+                  "end_date": "2025-04-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-04-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band10": {
+                "attributes": {
+                  "end_date": "2025-07-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-07-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band11": {
+                "attributes": {
+                  "end_date": "2025-07-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-07-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band12": {
+                "attributes": {
+                  "end_date": "2025-07-31",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 11,
+                  "overview": "NONE",
+                  "start_date": "2025-07-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band13": {
+                "attributes": {
+                  "end_date": "2025-08-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-08-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band14": {
+                "attributes": {
+                  "end_date": "2025-08-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-08-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band15": {
+                "attributes": {
+                  "end_date": "2025-08-31",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 11,
+                  "overview": "NONE",
+                  "start_date": "2025-08-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band16": {
+                "attributes": {
+                  "end_date": "2025-09-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-09-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band17": {
+                "attributes": {
+                  "end_date": "2025-09-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-09-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band18": {
+                "attributes": {
+                  "end_date": "2025-09-30",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-09-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band19": {
+                "attributes": {
+                  "end_date": "2025-10-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-10-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band2": {
+                "attributes": {
+                  "end_date": "2025-04-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-04-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band20": {
+                "attributes": {
+                  "end_date": "2025-10-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-10-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band21": {
+                "attributes": {
+                  "end_date": "2025-10-31",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 11,
+                  "overview": "NONE",
+                  "start_date": "2025-10-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band3": {
+                "attributes": {
+                  "end_date": "2025-04-30",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-04-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band4": {
+                "attributes": {
+                  "end_date": "2025-05-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-05-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band5": {
+                "attributes": {
+                  "end_date": "2025-05-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-05-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band6": {
+                "attributes": {
+                  "end_date": "2025-05-31",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 11,
+                  "overview": "NONE",
+                  "start_date": "2025-05-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band7": {
+                "attributes": {
+                  "end_date": "2025-06-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-06-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band8": {
+                "attributes": {
+                  "end_date": "2025-06-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-06-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band9": {
+                "attributes": {
+                  "end_date": "2025-06-30",
+                  "grid_mapping": "crs",
+                  "long_name": "Actual EvapoTranspiration and Interception",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-06-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "mm/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "crs": {
+                "attributes": {
+                  "GeoTransform": "-98.7158203125 0.0029296875 0 20.0859375 0 -0.0029296875",
+                  "crs_wkt": "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]",
+                  "grid_mapping_name": "latitude_longitude",
+                  "inverse_flattening": 298.257223563,
+                  "long_name": "CRS definition",
+                  "longitude_of_prime_meridian": 0.0,
+                  "semi_major_axis": 6378137.0,
+                  "spatial_ref": "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]"
+                },
+                "dims": [],
+                "dtype": "|S1",
+                "shape": []
+              },
+              "lat": {
+                "attributes": {
+                  "long_name": "latitude",
+                  "standard_name": "latitude",
+                  "units": "degrees_north"
+                },
+                "dims": [
+                  "lat"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227
+                ]
+              },
+              "lon": {
+                "attributes": {
+                  "long_name": "longitude",
+                  "standard_name": "longitude",
+                  "units": "degrees_east"
+                },
+                "dims": [
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  212
+                ]
+              }
+            }
+          },
+          "sample": "data/samples/netcdf/external_wapor__01__bb_L1-AETI-D_NONE_none.nc"
         },
         {
           "bytes": 2208576,
-          "format": "nc",
-          "inspection_error": "ImportError: No module named 'h5py', backend not available. Please install 'h5py' into your Python environment.",
-          "path": "data/raw/external/wapor_v3/bb_L1-NPP-D_NONE_none.nc"
+          "format": "netcdf",
+          "metadata_repair_count": 21,
+          "metadata_repairs": [
+            {
+              "location": "Band1.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band2.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band3.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band4.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band5.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band6.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band7.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band8.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band9.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band10.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band11.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band12.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band13.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band14.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band15.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band16.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band17.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band18.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band19.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band20.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            },
+            {
+              "location": "Band21.attrs['units']",
+              "repaired_value": "gC/m²/day"
+            }
+          ],
+          "path": "data/raw/external/wapor_v3/bb_L1-NPP-D_NONE_none.nc",
+          "profile": {
+            "attributes": {
+              "Conventions": "CF-1.5",
+              "GDAL": "GDAL 3.13.3 \"Iowa City\", released 2026/08/13",
+              "GDAL_AREA_OR_POINT": "Area",
+              "history": "Thu Sep 17 10:50:15 2026: GDAL CreateCopy( C:\\Users\\herie\\OneDrive - Fundacion Universidad de las Americas Puebla\\GeoCebada\\data\\raw\\external\\wapor_v3\\bb_L1-NPP-D_NONE_none.nc, ... )"
+            },
+            "dimensions": {
+              "lat": 227,
+              "lon": 212
+            },
+            "variables": {
+              "Band1": {
+                "attributes": {
+                  "end_date": "2025-04-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-04-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band10": {
+                "attributes": {
+                  "end_date": "2025-07-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-07-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band11": {
+                "attributes": {
+                  "end_date": "2025-07-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-07-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band12": {
+                "attributes": {
+                  "end_date": "2025-07-31",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 11,
+                  "overview": "NONE",
+                  "start_date": "2025-07-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band13": {
+                "attributes": {
+                  "end_date": "2025-08-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-08-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band14": {
+                "attributes": {
+                  "end_date": "2025-08-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-08-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band15": {
+                "attributes": {
+                  "end_date": "2025-08-31",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 11,
+                  "overview": "NONE",
+                  "start_date": "2025-08-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band16": {
+                "attributes": {
+                  "end_date": "2025-09-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-09-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band17": {
+                "attributes": {
+                  "end_date": "2025-09-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-09-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band18": {
+                "attributes": {
+                  "end_date": "2025-09-30",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-09-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band19": {
+                "attributes": {
+                  "end_date": "2025-10-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-10-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band2": {
+                "attributes": {
+                  "end_date": "2025-04-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-04-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band20": {
+                "attributes": {
+                  "end_date": "2025-10-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-10-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band21": {
+                "attributes": {
+                  "end_date": "2025-10-31",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 11,
+                  "overview": "NONE",
+                  "start_date": "2025-10-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band3": {
+                "attributes": {
+                  "end_date": "2025-04-30",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-04-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band4": {
+                "attributes": {
+                  "end_date": "2025-05-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-05-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band5": {
+                "attributes": {
+                  "end_date": "2025-05-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-05-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band6": {
+                "attributes": {
+                  "end_date": "2025-05-31",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 11,
+                  "overview": "NONE",
+                  "start_date": "2025-05-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band7": {
+                "attributes": {
+                  "end_date": "2025-06-10",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-06-01",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band8": {
+                "attributes": {
+                  "end_date": "2025-06-20",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-06-11",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "Band9": {
+                "attributes": {
+                  "end_date": "2025-06-30",
+                  "grid_mapping": "crs",
+                  "long_name": "Net Primary Production",
+                  "number_of_days": 10,
+                  "overview": "NONE",
+                  "start_date": "2025-06-21",
+                  "temporal_resolution": "Dekad",
+                  "units": "gC/m²/day"
+                },
+                "dims": [
+                  "lat",
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227,
+                  212
+                ]
+              },
+              "crs": {
+                "attributes": {
+                  "GeoTransform": "-98.7158203125 0.0029296875 0 20.0859375 0 -0.0029296875",
+                  "crs_wkt": "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]",
+                  "grid_mapping_name": "latitude_longitude",
+                  "inverse_flattening": 298.257223563,
+                  "long_name": "CRS definition",
+                  "longitude_of_prime_meridian": 0.0,
+                  "semi_major_axis": 6378137.0,
+                  "spatial_ref": "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]"
+                },
+                "dims": [],
+                "dtype": "|S1",
+                "shape": []
+              },
+              "lat": {
+                "attributes": {
+                  "long_name": "latitude",
+                  "standard_name": "latitude",
+                  "units": "degrees_north"
+                },
+                "dims": [
+                  "lat"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  227
+                ]
+              },
+              "lon": {
+                "attributes": {
+                  "long_name": "longitude",
+                  "standard_name": "longitude",
+                  "units": "degrees_east"
+                },
+                "dims": [
+                  "lon"
+                ],
+                "dtype": "float64",
+                "shape": [
+                  212
+                ]
+              }
+            }
+          },
+          "sample": "data/samples/netcdf/external_wapor__02__bb_L1-NPP-D_NONE_none.nc"
         }
       ],
       "source": "external_wapor",
@@ -4839,7 +5922,7 @@
   ],
   "summary": {
     "available_source_count": 12,
-    "inspection_error_count": 2,
+    "inspection_error_count": 0,
     "source_count": 12
   }
 }

@@ -324,26 +324,6 @@ def inspect_vector(
     return result
 
 
-def netcdf_profile(path: Path) -> tuple[Any, dict[str, Any]]:
-    """Open a NetCDF lazily with xarray and describe dimensions/variables/dtypes."""
-    import xarray as xr
-
-    dataset = xr.open_dataset(path, decode_times=False)
-    profile = {
-        "dimensions": {name: int(size) for name, size in dataset.sizes.items()},
-        "variables": {
-            name: {
-                "dims": list(variable.dims),
-                "shape": list(variable.shape),
-                "dtype": str(variable.dtype),
-            }
-            for name, variable in dataset.variables.items()
-        },
-        "attributes": {key: json_value(value) for key, value in dataset.attrs.items()},
-    }
-    return dataset, profile
-
-
 def inspect_netcdf(
     path: Path,
     *,
@@ -352,29 +332,66 @@ def inspect_netcdf(
     sample_name: str,
     max_dim: int,
 ) -> dict[str, Any]:
-    """Inspect one NetCDF and optionally emit a tiny positional subset."""
-    dataset, profile = netcdf_profile(path)
-    try:
-        result: dict[str, Any] = {
-            "path": portable(path, root),
-            "format": "netcdf",
-            "bytes": path.stat().st_size,
-            "profile": profile,
-        }
-        if sample_dir is not None:
-            selection = {
-                dim: slice(0, min(size, max_dim))
-                for dim, size in dataset.sizes.items()
-                if size > max_dim
-            }
-            subset = dataset.isel(selection) if selection else dataset
-            output = sample_dir / "netcdf" / f"{sample_name}.nc"
-            output.parent.mkdir(parents=True, exist_ok=True)
-            subset.to_netcdf(output)
-            result["sample"] = portable(output, root)
-        return result
-    finally:
-        dataset.close()
+    """Inspect NetCDF in an isolated process and optionally emit a tiny fixture.
+
+    Isolation is intentional: GDAL/rasterio and h5py may load different HDF5
+    runtimes on Windows. The dedicated worker imports xarray/h5py independently
+    and also repairs surrogate-escaped textual metadata in the generated
+    fixture without modifying the source NetCDF.
+    """
+    import subprocess
+    import sys
+
+    output: Path | None = None
+
+    if sample_dir is not None:
+        output = sample_dir / "netcdf" / f"{sample_name}.nc"
+        output.parent.mkdir(parents=True, exist_ok=True)
+
+    worker = Path(__file__).with_name("_netcdf_catalog_worker.py")
+
+    command = [
+        sys.executable,
+        str(worker),
+        str(path),
+        "--max-dim",
+        str(max_dim),
+    ]
+
+    if output is not None:
+        command.extend(["--output", str(output)])
+
+    completed = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip()
+        raise RuntimeError(f"NetCDF worker failed: {detail}")
+
+    payload = json.loads(completed.stdout)
+
+    result: dict[str, Any] = {
+        "path": portable(path, root),
+        "format": "netcdf",
+        "bytes": path.stat().st_size,
+        "profile": payload["profile"],
+    }
+
+    repairs = payload.get("metadata_repairs", [])
+
+    if repairs:
+        result["metadata_repairs"] = repairs
+        result["metadata_repair_count"] = len(repairs)
+
+    if output is not None:
+        result["sample"] = portable(output, root)
+
+    return result
 
 
 def recognized_files(path: Path, *, include_zip: bool = False) -> list[Path]:

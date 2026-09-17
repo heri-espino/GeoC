@@ -77,3 +77,14 @@ def test_catalog_tolerates_missing_sources(tmp_path: Path) -> None:
     assert record["available"] is False
     assert record["file_count"] == 0
     assert record["representative_profiles"] == []
+
+
+def test_wapor_surrogate_units_are_repaired() -> None:
+    """WaPOR NPP metadata must recover the intended UTF-8 superscript."""
+    worker = runpy.run_path(ROOT / "tools/_netcdf_catalog_worker.py")
+
+    repaired, changed = worker["repair_text"]("gC/m\udcc2\udcb2/day")
+
+    assert changed is True
+    assert repaired == "gC/m\u00b2/day"
+
