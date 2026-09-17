@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import shutil
 from collections import Counter
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -106,7 +105,7 @@ def dataframe_profile(frame: pd.DataFrame, *, sample_limit: int) -> dict[str, An
                     "max": json_value(numeric.max()),
                 }
         if DATE_NAME_PATTERN.search(str(name)) and not non_null.empty:
-            parsed = pd.to_datetime(non_null, errors="coerce")
+            parsed = pd.to_datetime(non_null, errors="coerce", dayfirst=True)
             parsed = parsed[parsed.notna()]
             if not parsed.empty:
                 record["date_range_in_profile"] = {
@@ -536,8 +535,9 @@ def build_catalog(
     resolved_sample_dir = None
     if sample_dir is not None:
         resolved_sample_dir = sample_dir if sample_dir.is_absolute() else resolved_root / sample_dir
-        if resolved_sample_dir.exists():
-            shutil.rmtree(resolved_sample_dir)
+        # Reuse the fixture directory instead of deleting it wholesale.
+        # OneDrive/Windows may temporarily lock generated subdirectories.
+        # Fixture filenames are deterministic and are overwritten in place.
         resolved_sample_dir.mkdir(parents=True, exist_ok=True)
 
     sources = [
