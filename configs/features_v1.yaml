@@ -1,0 +1,117 @@
+schema_version: 1
+updated: 2026-09-18
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+
+windows:
+  target_start: 2025-04-01
+  target_end: 2025-10-31
+  historical_start: 2022-01-01
+  historical_end: 2024-12-31
+
+outputs:
+  directory: data/processed/features_v1
+  master_csv: parcel_features_all.csv
+  clean_csv: parcel_features_clean.csv
+  competition_csv: parcel_features_competition.csv
+  manifest_json: feature_manifest.json
+  build_report_json: build_report.json
+
+feature_modes:
+  clean:
+    description: Static or historical features using no 2025 outcome proxy and no full-season 2025 covariates.
+  competition:
+    description: Clean features plus public full-season 2025 covariates and explicit contemporaneous proxies.
+
+base:
+  projected_area_crs: EPSG:6372
+
+satellite:
+  summary_aggregations:
+    - mean
+    - std
+    - min
+    - max
+  monthly_promedio: true
+  historical_months:
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+  target_months:
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+
+official_climate:
+  historical_years:
+    - 2022
+    - 2023
+    - 2024
+  target_year: 2025
+  months:
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+
+chirps_daily:
+  rain_day_threshold_mm: 1.0
+  heavy_rain_threshold_mm: 10.0
+  rolling_window_days: 5
+
+soilgrids:
+  zonal_stats:
+    - mean
+    - std
+  depth_weights_cm:
+    0-5cm: 5
+    5-15cm: 10
+    15-30cm: 15
+    30-60cm: 30
+
+topography:
+  zonal_stats:
+    - mean
+    - std
+    - min
+    - max
+
+cem15:
+  zonal_stats:
+    - mean
+    - std
+    - min
+    - max
+
+wapor:
+  include_monthly_totals: true
+
+siap:
+  crop: Cebada grano
+  historical_end_year: 2024
+  recent_years:
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+  competition_year: 2025
+
+validation:
+  expected_full_rows: 197
+  expected_train_rows: 138
+  expected_prediction_rows: 59
