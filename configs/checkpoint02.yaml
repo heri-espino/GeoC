@@ -1,0 +1,147 @@
+schema_version: 1
+updated: 2026-09-18
+
+inputs:
+  feature_directory: data/processed/features_v1
+  feature_table: parcel_features_all.csv
+  feature_manifest: feature_manifest.json
+  build_report: build_report.json
+
+outputs:
+  directory: reports/checkpoint_02
+  feature_catalog: feature_catalog.csv
+  feature_inventory: feature_inventory.csv
+  train_prediction_diagnostics: train_prediction_diagnostics.csv
+  cv_folds: cv_folds.csv
+  ablation_features: ablation_features.json
+  baseline_fold_scores: baseline_fold_scores.csv
+  baseline_summary: baseline_summary.csv
+  run_report_json: checkpoint_02_report.json
+  run_report_markdown: checkpoint_02_report.md
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  state_column: meta_estado
+  municipality_column: meta_municipio
+
+validation:
+  random_state: 42
+  n_splits: 5
+  primary_protocol: fold_state_stratified
+  robustness_protocol: fold_municipality_grouped
+  policy: >
+    Compare every ablation/model on the same frozen state-stratified folds and
+    report municipality-grouped folds as a spatial robustness diagnostic.
+    Do not regenerate folds merely because a result is inconvenient.
+
+shift_diagnostics:
+  smd_threshold: 0.5
+  adjusted_p_threshold: 0.05
+  missing_gap_threshold: 0.10
+  outside_support_threshold: 0.10
+  policy: >
+    Prediction covariates may be inspected for support and shift because their X
+    values are public. Do not use these unlabeled diagnostics to tune a model or
+    select features for the scientific/clean track. Any transductive competition
+    use must be explicitly labeled later.
+
+ablations:
+  A0_geometry_admin:
+    description: Parcel geometry plus administrative numeric fields only.
+    clean_families:
+      - geometry
+      - admin
+    numeric_only: true
+
+  A1_static_environment:
+    description: Add static soil and terrain context.
+    clean_families:
+      - geometry
+      - admin
+      - soilgrids
+      - topography
+      - cem
+    numeric_only: true
+
+  A2_static_plus_siap_history:
+    description: Add historical municipal barley production context through 2024.
+    clean_families:
+      - geometry
+      - admin
+      - soilgrids
+      - topography
+      - cem
+      - siap
+    numeric_only: true
+
+  A3_clean_plus_climate:
+    description: Add historical official climate climatology.
+    clean_families:
+      - geometry
+      - admin
+      - soilgrids
+      - topography
+      - cem
+      - siap
+      - climate_official
+    numeric_only: true
+
+  A4_clean_plus_basic_history:
+    description: Add historical BASIC satellite summaries through 2024.
+    clean_families:
+      - geometry
+      - admin
+      - soilgrids
+      - topography
+      - cem
+      - siap
+      - climate_official
+      - basic
+    numeric_only: true
+
+  A5_clean_full:
+    description: Every clean numeric feature.
+    include_all_clean: true
+    numeric_only: true
+
+  A6_competition_remote_weather:
+    description: >
+      Clean full set plus 2025 BASIC/PRO, official climate, CHIRPS and WaPOR;
+      deliberately excludes contemporaneous SIAP 2025 outcome proxies.
+    include_all_clean: true
+    competition_families:
+      - basic
+      - pro
+      - climate_official
+      - chirps
+      - wapor
+    numeric_only: true
+
+  A7_competition_full:
+    description: >
+      Every numeric feature, including SIAP 2025 municipal outcome proxies.
+      This is a challenge/competition representation, not the clean prospective track.
+    include_all_clean: true
+    include_all_competition: true
+    numeric_only: true
+
+baseline_models:
+  policy: >
+    These are deliberately untuned baselines. Imputation is fitted inside each
+    training fold. PCA and supervised feature selection are intentionally absent
+    at this checkpoint.
+  ridge_alpha: 10.0
+  extra_trees_estimators: 300
+  extra_trees_min_samples_leaf: 3
+
+expected:
+  rows: 197
+  train_rows: 138
+  prediction_rows: 59
+  clean_features: 694
+  competition_only_features: 709
+  total_features: 1403
