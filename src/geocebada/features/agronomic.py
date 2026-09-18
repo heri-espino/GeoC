@@ -335,6 +335,9 @@ def _build_anomaly_features(
 
         prefix = historical_name.replace("hist_", "").replace("historical_", "")
         inputs = [*historical_columns, *target_columns]
+        ratio_disabled_for = {
+            str(name) for name in config["phenology"].get("ratio_disabled_for", [])
+        }
         payloads = {
             "season_mean_delta": (
                 season_delta,
@@ -367,6 +370,9 @@ def _build_anomaly_features(
                 "Shift in timing of the seasonal vegetation-index maximum.",
             ),
         }
+
+        if historical_name in ratio_disabled_for:
+            payloads.pop("season_mean_ratio", None)
 
         for name, (values, formula, meaning) in payloads.items():
             _add_feature(
