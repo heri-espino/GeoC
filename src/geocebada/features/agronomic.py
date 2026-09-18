@@ -121,7 +121,9 @@ def _row_auc(x: np.ndarray, matrix: np.ndarray) -> np.ndarray:
         finite = np.isfinite(row) & np.isfinite(x)
         if finite.sum() < 2:
             continue
-        xx = x[finite]\n        yy = row[finite]\n        result[row_index] = float(np.sum((yy[:-1] + yy[1:]) * 0.5 * np.diff(xx)))
+        xx = x[finite]
+        yy = row[finite]
+        result[row_index] = float(np.sum((yy[:-1] + yy[1:]) * 0.5 * np.diff(xx)))
     return result
 
 
