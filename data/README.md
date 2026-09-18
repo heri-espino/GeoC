@@ -52,7 +52,9 @@ data/
 │       └── Reto_AgroCebada_Topografia_INEGI_CEM4/...
 ├── raw/                    # ingestión/descompresión; no versionado
 ├── interim/                # limpieza, joins y features intermedias; no versionado
-└── processed/              # derivados; Feature Table v1 sí se versiona
+└── processed/              # derivados canónicos versionados selectivamente
+    ├── features_v1/        # tabla source-derived
+    └── agronomic_features_v1/ # capa no lineal/agronómica X-only
 ```
 
 ### Contrato de carpetas
@@ -62,16 +64,34 @@ data/
 | `source/` | Archivos oficiales exactamente como fueron entregados | No | Sí |
 | `raw/` | Copias descomprimidas, ingestión y formatos de trabajo | No; generar por código | No |
 | `interim/` | Limpieza, uniones geoespaciales, agregaciones y features intermedias | No; generar por código | No |
-| `processed/` | Derivados model-ready | No; generar por código | Sólo `processed/features_v1/` canónico |
+| `processed/` | Derivados model-ready | No; generar por código | `processed/features_v1/` y `processed/agronomic_features_v1/` canónicos |
 
 Toda transformación reproducible debe vivir en `src/geocebada/` o scripts controlados por el proyecto. No colocar modelos entrenados, predicciones o resultados dentro de `source/`.
 
+
+### Capa agronómica/no lineal canónica
+
+`data/processed/agronomic_features_v1/` fue cerrada en Checkpoint 03A:
+
+```text
+parcel_agronomic_features.csv  197 × 352
+351 variables derivadas
+123 clean
+228 competition
+missingness retenida = 0.0
+```
+
+No contiene target ni split y no utiliza CHIRPS. Las fórmulas, significado, evidencia y
+bibliografía están en `docs/AGRONOMIC_FEATURES_V1.md`. No seleccionar estas columnas mirando
+los 138 targets completos; cualquier selección supervisada debe ocurrir dentro de folds.
+
 ### Datos externos locales y manifiesto reproducible
 
-`data/raw/` y `data/interim/` permanecen fuera de Git. La excepción deliberada es
-`data/processed/features_v1/`: la tabla canónica de 197 parcelas, su manifest y su build
-report se versionan para que cualquier clon pueda reproducir el modelado sin descargar todos
-los rásteres/NetCDF/CSV externos. El resto de `data/processed/` sigue ignorado.
+`data/raw/` y `data/interim/` permanecen fuera de Git. Las excepciones deliberadas son
+`data/processed/features_v1/` y `data/processed/agronomic_features_v1/`. La primera conserva
+las covariables canónicas source-derived; la segunda contiene 351 variables agronómicas/no
+lineales construidas sin target. Ambas tienen 197 IDs y se pueden unir uno-a-uno por
+`ID_POLIGONO`, permitiendo modelar desde un clon limpio sin descargar todos los rásteres/NetCDF/CSV externos. El resto de `data/processed/` sigue ignorado.
 
 `data/raw/external/` contiene insumos locales grandes (GeoTIFF, NetCDF y CSV) y no debe
 versionarse ni borrarse sólo para limpiar el worktree.
