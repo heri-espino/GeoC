@@ -277,14 +277,16 @@ def _build_phenology_features(
                 meaning=meanings[metric_name],
                 rationale=(
                     "Barley yield relationships with remotely sensed vegetation indices depend on "
-                    "crop development stage; temporal shape can retain information lost by a single "
+                    "crop development stage; temporal shape can retain information lost by a "
+                    "single "
                     "seasonal average."
                 ),
                 evidence="literature_backed",
                 references=PHENOLOGY_REFERENCES,
                 caveats=(
                     "Monthly summaries are a coarse representation of phenology.",
-                    "AUC bridges missing months linearly across remaining observed month positions.",
+                    "AUC bridges missing months linearly across remaining observed month "
+                    "positions.",
                 ),
             )
 
@@ -378,13 +380,15 @@ def _build_anomaly_features(
                 formula=formula,
                 meaning=meaning,
                 rationale=(
-                    "Within-parcel departure from a historical remote-sensing baseline can separate "
+                    "Within-parcel departure from a historical remote-sensing baseline can "
+                    "separate "
                     "persistent site productivity from conditions specific to the 2025 crop cycle."
                 ),
                 evidence="mechanistic_proxy",
                 references=PHENOLOGY_REFERENCES,
                 caveats=(
-                    "Historical monthly values are climatological summaries, not a crop-growth model.",
+                    "Historical monthly values are climatological summaries, not a crop-growth "
+                    "model.",
                     "Ratio features are undefined when the historical denominator is near zero.",
                 ),
             )
@@ -466,7 +470,8 @@ def _build_sensor_agreement_features(
                 references=PHENOLOGY_REFERENCES,
                 caveats=(
                     "Sentinel-2 and Planet products are not assumed radiometrically equivalent.",
-                    "These features describe agreement rather than calibrating one sensor to another.",
+                    "These features describe agreement rather than calibrating one sensor to "
+                    "another.",
                 ),
             )
 
@@ -545,7 +550,9 @@ def _build_thermal_and_precip_features(
                     ),
                     evidence="literature_backed",
                     references=THERMAL_REFERENCES,
-                    caveats=("Monthly Tmin/Tmax summaries cannot reproduce daily thermal extremes.",),
+                    caveats=(
+                        "Monthly Tmin/Tmax summaries cannot reproduce daily thermal extremes.",
+                    ),
                 )
 
         for name, values, formula, meaning in [
@@ -629,7 +636,8 @@ def _build_thermal_and_precip_features(
             meaning="Coarse cumulative heat-excess proxy.",
             rationale=(
                 "High-temperature exposure can affect barley grain filling and yield; this term "
-                "allows nonlinear temperature response without choosing the threshold from target data."
+                "allows nonlinear temperature response without choosing the threshold from target "
+                "data."
             ),
             evidence="mechanistic_proxy",
             references=THERMAL_REFERENCES,
@@ -650,7 +658,12 @@ def _build_thermal_and_precip_features(
         late_fraction = _safe_divide(late_sum, season_precip, 1e-9)
 
         precip_features = [
-            ("early_sum", _safe_sum_complete(early), "sum(precip Apr-Jun)", "Early-season rainfall."),
+            (
+                "early_sum",
+                _safe_sum_complete(early),
+                "sum(precip Apr-Jun)",
+                "Early-season rainfall.",
+            ),
             ("mid_sum", _safe_sum_complete(mid), "sum(precip Jun-Aug)", "Mid-season rainfall."),
             ("late_sum", late_sum, "sum(precip Aug-Oct)", "Late-season rainfall."),
             (
@@ -678,12 +691,15 @@ def _build_thermal_and_precip_features(
                 formula=formula,
                 meaning=meaning,
                 rationale=(
-                    "Barley drought sensitivity changes by growth stage, so seasonal rainfall timing "
+                    "Barley drought sensitivity changes by growth stage, so seasonal rainfall "
+                    "timing "
                     "can be more informative than total precipitation alone."
                 ),
                 evidence="literature_backed",
                 references=WATER_REFERENCES,
-                caveats=("Monthly precipitation cannot identify short within-month drought events.",),
+                caveats=(
+                    "Monthly precipitation cannot identify short within-month drought events.",
+                ),
             )
 
     return outputs
@@ -886,7 +902,8 @@ def _build_soil_features(
             formula="depth_weighted_0_30cm - mean_30_60cm",
             meaning=f"Vertical contrast in SoilGrids {prop}.",
             rationale=(
-                "Root-zone conditions can vary with depth; a vertical contrast can carry information "
+                "Root-zone conditions can vary with depth; a vertical contrast can carry "
+                "information "
                 "not visible in either layer independently."
             ),
             evidence="mechanistic_proxy",
@@ -1279,7 +1296,8 @@ def _build_cross_domain_features(
             formula=formula,
             meaning=meaning,
             rationale=(
-                "Agronomic outcomes can depend on combinations of baseline productivity, crop state, "
+                "Agronomic outcomes can depend on combinations of baseline productivity, crop "
+                "state, "
                 "soil, terrain, temperature and water rather than independent additive effects."
             ),
             evidence=evidence,
