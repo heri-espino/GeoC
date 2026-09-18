@@ -1306,7 +1306,8 @@ def markdown_report(report: Mapping[str, Any]) -> str:
             "",
             "- FAIL blocks feature-table construction.",
             "- WARN requires an explicit documented decision before downstream use.",
-            "- SKIP is intentional or dependency/source-limited; it is not evidence of completeness.",
+            "- SKIP is intentional or dependency/source-limited; "
+            "it is not evidence of completeness.",
             "- Presence of a source is not equivalent to satisfying the contract.",
             "",
             "Machine-readable details: reports/data_audit_v2.json",
