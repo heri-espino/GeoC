@@ -1,172 +1,58 @@
-# Checkpoint 03 — Modeling
+# Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A closed; 03B next  
-**Current phase:** 03B — Model comparison  
+**Status:** In progress — 03A closed; 03B current; 03C next  
+**Current phase:** 03B — Empirical Feature Discovery  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
 
-The first phase intentionally does **not** tune CatBoost/LightGBM/Optuna yet. Before comparing
-model families, the project creates an explicit agronomic nonlinear representation that can be
-tested against the raw/source-derived Feature Table v1.
-
----
-
-## 03A — Agronomic nonlinear features
-
-### Goal
-
-Create a separate, versioned, target-free dataset of nonlinear and interaction features with
-clear agricultural interpretation.
-
-The representation must answer:
-
-1. Can biologically motivated temporal shape variables improve over monthly raw values?
-2. Do current-season anomalies relative to historical parcel behavior add signal?
-3. Do water, temperature, soil and crop-state interactions add predictive information?
-4. Can a smaller set of interpretable nonlinear basis terms help regularized models?
-5. Do these gains survive both frozen validation protocols?
-
-### Architecture
-
-Feature Table v1 remains frozen.
+The phase is intentionally split so the project can distinguish:
 
 ```text
-data/processed/features_v1/
-        |
-        | deterministic X-only transforms
-        v
-data/processed/agronomic_features_v1/
+03A  agronomic nonlinear features
+03B  empirical/data-driven feature discovery
+03C  model comparison, kernels and tuning
 ```
 
-Modeling can then evaluate:
-
-```text
-B0 = base only
-B1 = agronomic only
-B2 = base + agronomic
-B3 = selected/reduced base + agronomic
-```
-
-The join key is always `ID_POLIGONO` and must validate one-to-one.
-
-### Families
-
-Agronomic Features v1 includes:
-
-- phenology / curve shape;
-- 2025-versus-historical remote-sensing anomalies;
-- Sentinel-2/Planet agreement;
-- thermal-time and heat-excess proxies;
-- rainfall timing;
-- WaPOR water-productivity/crop-water interactions;
-- soil vertical-profile contrasts;
-- soil nonlinear interactions;
-- cross-domain productivity × crop-state × environment terms;
-- a small set of target-free log basis transforms.
-
-Full formulas, meanings, evidence classes, caveats and references are documented in
-`docs/AGRONOMIC_FEATURES_V1.md`.
-
-### Evidence policy
-
-Each feature is labeled:
-
-- `literature_backed`;
-- `mechanistic_proxy`;
-- `experimental`.
-
-No experimental feature should be described as an established agronomic law.
-
-### Target safety
-
-The 03A builder does not inspect `RENDIMIENTO_T_HA`.
-
-The output contains only:
-
-```text
-ID_POLIGONO
-agro_*
-```
-
-Target-guided interaction mining is deferred. If later used, it must run inside training folds.
-
-### CHIRPS
-
-CHIRPS is deliberately excluded from 03A v1. Checkpoint 02 showed only one surviving CHIRPS
-feature, so nonlinear CHIRPS transformations are deferred until that source receives QC.
-
-### Validation contract
-
-03A does not create new folds.
-
-All later 03B comparisons must reuse:
+The frozen validation assignments remain:
 
 ```text
 reports/checkpoint_02/cv_folds.csv
 ```
 
-with both:
-
-- `fold_state_stratified`;
-- `fold_municipality_grouped`.
-
-A feature family is not considered useful merely because it improves the easier protocol.
+with both `fold_state_stratified` and `fold_municipality_grouped`.
 
 ---
 
-## 03B — Model comparison
+## 03A — Agronomic nonlinear features — CLOSED
 
-03B starts only after 03A artifacts are built and validated.
+03A created a separate, versioned, target-free feature layer with explicit agricultural
+interpretation.
 
-Candidate families include:
-
-- Ridge / ElasticNet;
-- ExtraTrees;
-- CatBoost;
-- HistGradientBoosting;
-- LightGBM/XGBoost if justified;
-- polynomial kernel;
-- RBF kernel;
-- PCA/PLS comparisons where preprocessing is fit inside folds.
-
-Kernel matrices are **not** stored in Agronomic Features v1 because kernels are model
-representations whose scaling/hyperparameters belong inside CV.
-
----
-
-## Completion criteria for 03A
-
-03A can be marked closed when:
-
-- the builder runs from a clean clone using versioned Feature Table v1;
-- output has exactly 197 unique parcel IDs;
-- no target/split column appears in the output;
-- no infinite values exist;
-- manifest documents every retained feature;
-- clean features use no target-year competition inputs;
-- generated artifacts are versioned;
-- tests, Ruff, function index and Sphinx pass;
-- project/data/agent handoffs are synchronized;
-- AI use and bibliography are recorded.
-
-### Canonical 03A build
-
-The canonical build completed successfully from the versioned Feature Table v1.
+Canonical artifacts:
 
 ```text
-rows:                  197
-derived features:      350
-clean:                 123
-competition:           227
-missing fraction mean: 0.0
-missing fraction max:  0.0
-infinite values:       0
-target used:           false
-CHIRPS used:           false
+data/processed/agronomic_features_v1/
+  parcel_agronomic_features.csv
+  feature_manifest.json
+  build_report.json
+  README.md
 ```
 
-Retained family counts:
+Canonical build:
+
+```text
+rows                    197
+derived features        350
+clean                    123
+competition              227
+missing fraction          0.0
+infinite values           0
+target used             false
+CHIRPS used             false
+```
+
+Retained families:
 
 ```text
 phenology              162
@@ -181,17 +67,148 @@ soil_interaction         8
 nonlinear_basis          7
 ```
 
-Three candidate features were dropped because they were constant on all 197 parcels:
+See `docs/AGRONOMIC_FEATURES_V1.md` and
+`checkpoints/03a_agronomic_features/README.md`.
+
+---
+
+## 03B — Empirical Feature Discovery — CURRENT
+
+03B asks a different question:
+
+> What useful nonlinear structure can be derived from the observed covariates themselves,
+> without assuming an agronomic mechanism and without leaking the target?
+
+The phase has two parts.
+
+### 03B.1 Deterministic X-only empirical layer
+
+The materialized layer is:
 
 ```text
-agro_thermal__historical__heat_excess_25c_proxy
-agro_thermal__2025__heat_excess_25c_proxy
-agro_interaction__heat_x_positive_water_gap_2025
+data/processed/empirical_features_v1/
+  parcel_empirical_features.csv
+  feature_manifest.json
+  build_report.json
+  README.md
 ```
 
-This is an empirical property of the current monthly climate representation, not evidence that
-heat stress is agronomically irrelevant. The 25 C monthly-mean hinge simply carries no
-cross-parcel variation here.
+It contains only `ID_POLIGONO` plus deterministic row-wise predictors.
 
-The canonical generated 03A artifacts are committed; the CI builder now runs read-only and uploads a reproducibility artifact.\n\n03A completion criteria are satisfied. The next task is 03B: compare base-only, agronomic-only,
-base+agronomic and selected/reduced representations under both frozen CV protocols.
+Implemented families:
+
+- temporal-shape geometry;
+- short-baseline historical condition;
+- symmetric 2025-versus-history change;
+- Sentinel-2/Planet temporal-shape similarity;
+- normalized aggregate distribution geometry.
+
+The short-baseline NDVI score is named `emp_vci_like_short__...`. It is inspired by VCI
+normalization but is explicitly **not standard VCI**, because GeoCebada has only the short
+2022-2024 historical reference rather than a long climatology.
+
+No variable is called CWSI: the project does not have the canopy-temperature wet/dry reference
+system required by the standard CWSI formulation.
+
+Full formulas and caveats are in `docs/EMPIRICAL_FEATURES_V1.md`.
+
+### 03B.2 Fold-local target-aware expression discovery
+
+The target-aware part is **not** written to a global dataset.
+
+`FoldLocalExpressionMiner` is fitted only on the training part of a fold. It:
+
+1. median-imputes configured primitives using training rows only;
+2. ranks primitives by absolute Spearman association with training `y`;
+3. retains a small primitive set;
+4. generates simple pairwise formulas;
+5. ranks formulas using training `y`;
+6. applies the selected formulas to validation X without seeing validation y.
+
+The first-stage operation grammar is deliberately small:
+
+```text
+product
+sum
+difference, both directions
+safe ratio, both directions
+symmetric relative change
+```
+
+This is a controlled symbolic-like search, not unrestricted genetic programming.
+
+A candidate expression should not be described as a new barley index merely because it has a
+large training association. A genuinely interesting candidate must recur across fold fits and
+show held-out predictive contribution, including under municipality-grouped robustness checks.
+
+### Learned X-only representations
+
+PCA, PLS, clustering and similar transforms do not use `y`, but they learn parameters from
+multiple parcels. They therefore must also be fitted inside folds rather than materialized
+globally from all 197 rows.
+
+Kernels likewise remain model-layer representations.
+
+---
+
+## 03C — Model comparison — NEXT
+
+After 03B closes, 03C should compare representations such as:
+
+```text
+B0 = Feature Table v1
+B1 = Agronomic Features v1 only
+B2 = Empirical Features v1 only
+B3 = base + agronomic
+B4 = base + empirical
+B5 = base + agronomic + empirical
+B6 = reduced/selected representation
+B7 = fold-local discovered-expression augmentation
+```
+
+Candidate model families include:
+
+- Ridge / ElasticNet;
+- ExtraTrees;
+- CatBoost;
+- HistGradientBoosting;
+- LightGBM/XGBoost if justified;
+- polynomial kernel;
+- RBF kernel;
+- PCA/PLS variants fitted inside folds.
+
+Because only 138 targets are observed, searches should remain disciplined.
+
+All preprocessing learned from data must remain inside the training fold:
+
+- imputation;
+- scaling;
+- PCA/PLS;
+- clustering;
+- supervised feature selection;
+- target-aware expression discovery;
+- encoding;
+- model tuning.
+
+Do not regenerate the frozen folds because a result is inconvenient.
+
+---
+
+## Completion criteria for 03B
+
+03B closes when:
+
+- the deterministic empirical builder runs from a clean clone;
+- output covers exactly 197 unique parcel IDs;
+- no target or split column appears in the materialized layer;
+- no retained empirical feature contains infinities;
+- every retained feature has a manifest record;
+- clean features use no target-year competition input;
+- the short VCI-like variable is documented as nonstandard;
+- fold-local expression discovery is covered by tests;
+- configured discovery primitives exist after joining canonical layers;
+- generated empirical artifacts are committed;
+- Ruff, tests, function-index consistency and Sphinx all pass;
+- agent/data/history/AI-use handoffs are synchronized.
+
+Once these criteria are met, 03B is frozen and the project moves to 03C.
