@@ -115,7 +115,7 @@ For each series:
 
 ### Seasonal mean
 
-```math
+```{math}
 \bar x = \frac{1}{n}\sum_t x_t
 ```
 
@@ -123,7 +123,7 @@ Represents average seasonal crop state.
 
 ### Seasonal AUC
 
-```math
+```{math}
 AUC \approx \sum_t \frac{x_t+x_{t+1}}{2}(t_{t+1}-t_t)
 ```
 
@@ -131,7 +131,7 @@ Represents integrated seasonal signal.
 
 ### Amplitude
 
-```math
+```{math}
 A = \max_t x_t - \min_t x_t
 ```
 
@@ -139,7 +139,7 @@ Represents seasonal dynamic range.
 
 ### Peak month
 
-```math
+```{math}
 t_{peak}=\arg\max_t x_t
 ```
 
@@ -147,11 +147,11 @@ Represents timing of maximum observed crop signal.
 
 ### Early and late means
 
-```math
+```{math}
 \bar x_{early}=\operatorname{mean}(Apr,May,Jun)
 ```
 
-```math
+```{math}
 \bar x_{late}=\operatorname{mean}(Aug,Sep,Oct)
 ```
 
@@ -159,7 +159,7 @@ These allow early and late crop states to contribute differently.
 
 ### June-to-August change
 
-```math
+```{math}
 \Delta_{Jun\rightarrow Aug}=x_{Aug}-x_{Jun}
 ```
 
@@ -169,7 +169,7 @@ A compact mid-season growth/decline descriptor.
 
 Linear slopes are fitted across calendar month values:
 
-```math
+```{math}
 x_t = \alpha + \beta t
 ```
 
@@ -202,15 +202,15 @@ peak_month_shift
 
 Examples:
 
-```math
+```{math}
 \Delta \bar x = \operatorname{mean}_m(x_{2025,m}-x_{hist,m})
 ```
 
-```math
+```{math}
 R_x = \frac{\bar x_{2025}}{\bar x_{hist}+\epsilon}
 ```
 
-```math
+```{math}
 \Delta AUC = AUC_{2025}-AUC_{hist}
 ```
 
@@ -239,7 +239,7 @@ monthly_rmse
 
 For example:
 
-```math
+```{math}
 RMSE_{sensor}=
 \sqrt{\frac{1}{n}\sum_m
 (x^{S2}_m-x^{Planet}_m)^2}
@@ -255,13 +255,13 @@ similar or divergent story for a parcel.
 
 For historical official climate and 2025 climate, the layer derives monthly:
 
-```math
+```{math}
 T_{mean,m}=\frac{T_{max,m}+T_{min,m}}{2}
 ```
 
 and:
 
-```math
+```{math}
 DTR_m=T_{max,m}-T_{min,m}.
 ```
 
@@ -271,7 +271,7 @@ It also creates seasonal averages.
 
 The project uses two **declared scenarios**, not target-fitted thresholds:
 
-```math
+```{math}
 GDD_{proxy}(T_b)=
 \sum_m d_m
 \max(T_{mean,m}-T_b,0)
@@ -295,15 +295,16 @@ phenology is strongly linked to meteorological conditions
 
 ### Heat-excess basis
 
-A fixed, non-target-fitted 25 C scenario is included:
+A fixed, non-target-fitted 25 C scenario was proposed:
 
-```math
+```{math}
 H_{25}=
 \sum_m d_m\max(T_{mean,m}-25,0).
 ```
 
-This is labeled a **mechanistic proxy**, not a physiological critical-temperature estimate.
-Monthly means can miss short heat waves.
+This is a **mechanistic proxy**, not a physiological critical-temperature estimate. In the
+canonical 197-parcel build it was constant for both historical and 2025 monthly climate and
+was therefore removed automatically. Monthly means can also miss short heat waves.
 
 ---
 
@@ -331,7 +332,7 @@ WaPOR AETI and NPP are combined with official rainfall and satellite crop state.
 
 ### NPP per AETI
 
-```math
+```{math}
 WP_{NPP}=\frac{NPP}{AETI+\epsilon}
 ```
 
@@ -339,7 +340,7 @@ This is a remote-sensing **water-productivity proxy**, not grain water-use effic
 
 ### AETI relative to precipitation
 
-```math
+```{math}
 R_{ET/P}=\frac{AETI}{P+\epsilon}
 ```
 
@@ -348,7 +349,7 @@ soil water, irrigation and other water sources.
 
 ### Atmospheric water-balance proxy
 
-```math
+```{math}
 WB=P-AETI.
 ```
 
@@ -358,13 +359,13 @@ Again, this is a simple proxy and not a complete soil-water balance.
 
 Monthly terms include:
 
-```math
+```{math}
 NPP\times NDVI
 ```
 
 and:
 
-```math
+```{math}
 LAI\times AETI.
 ```
 
@@ -394,13 +395,13 @@ soc
 
 the layer creates a vertical contrast:
 
-```math
+```{math}
 G_p = p_{0-30}-p_{30-60}
 ```
 
 and an upper/deeper ratio:
 
-```math
+```{math}
 R_p = \frac{p_{0-30}}{p_{30-60}+\epsilon}.
 ```
 
@@ -432,19 +433,19 @@ A deliberately small set combines different biological/environmental domains.
 
 ### Historical productivity × current crop condition
 
-```math
+```{math}
 Y_{SIAP,hist}\times \Delta NDVI_{2025}
 ```
 
-```math
+```{math}
 Y_{SIAP,hist}\times \Delta EVI_{2025}
 ```
 
-```math
+```{math}
 Y_{SIAP,hist}\times NPP_{2025}
 ```
 
-```math
+```{math}
 Y_{SIAP,hist}\times WP_{NPP,2025}
 ```
 
@@ -480,11 +481,13 @@ EVI × LAI
 
 ### Combined heat/water candidate
 
-```math
+```{math}
 H_{25}\times \max(AETI-P,0)
 ```
 
-This final term is explicitly experimental. `AETI-P` is not equivalent to plant water stress.
+This candidate is explicitly experimental. `AETI-P` is not equivalent to plant water stress.
+Because the 25 C monthly-mean heat basis was constant, this combined term was also constant and
+was removed from the canonical retained layer.
 
 All of these are predictive hypotheses that must earn their place through the frozen CV
 protocols.
@@ -495,7 +498,7 @@ protocols.
 
 A small number of non-negative skewed variables receive:
 
-```math
+```{math}
 z=\log(1+x)
 ```
 
@@ -512,7 +515,7 @@ They are classified as `experimental`.
 
 Polynomial, RBF and other kernels are model transformations:
 
-```math
+```{math}
 K(x,z)
 ```
 
