@@ -536,7 +536,9 @@ Completed:
 - feature-family ablations;
 - initial untuned baseline models;
 - versioned Feature Table v1;
-- versioned Agronomic Features v1 with 350 target-free derived variables and scientific provenance.
+- versioned Agronomic Features v1 with 350 target-free derived variables and scientific provenance;
+- versioned Empirical Features v1 with 335 target-free derived variables;
+- fold-local target-aware expression-discovery infrastructure with 24 configured primitives.
 
 Not completed:
 
@@ -548,4 +550,4 @@ Not completed:
 - CHIRPS daily extraction contribution needs QC because only one feature survives;
 - the spatial validation gap needs to drive Checkpoint 03 decisions.
 
-The next milestone is **Checkpoint 03B — model/representation comparison** using the frozen Checkpoint 02 folds.
+The next milestone is **Checkpoint 03C — model/representation comparison** using the frozen Checkpoint 02 folds.
