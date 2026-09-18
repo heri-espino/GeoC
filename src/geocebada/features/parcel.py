@@ -22,7 +22,7 @@ SPLIT_COLUMN = "CONJUNTO"
 MetadataRecord = dict[str, str]
 
 
-def slug(value: object) -> str:
+def _slug(value: object) -> str:
     """Return a stable lowercase ASCII feature-name token."""
 
     text = unicodedata.normalize("NFKD", str(value))
@@ -30,7 +30,7 @@ def slug(value: object) -> str:
     return re.sub(r"[^A-Za-z0-9]+", "_", text).strip("_").lower()
 
 
-def provenance_records(
+def _provenance_records(
     columns: Iterable[str],
     *,
     source: str,
@@ -119,7 +119,7 @@ def build_base_features(
     if admin is not None:
         admin_block = admin.copy()
         rename = {
-            column: f"admin_{slug(column)}"
+            column: f"admin_{_slug(column)}"
             for column in admin_block.columns
             if column != ID_COLUMN
         }
@@ -128,7 +128,7 @@ def build_base_features(
 
     excluded = {ID_COLUMN, SPLIT_COLUMN, TARGET_COLUMN, "meta_estado", "meta_municipio"}
     columns = [column for column in base.columns if column not in excluded]
-    return base, provenance_records(
+    return base, _provenance_records(
         columns,
         source="official_split+official_parcels+admin",
         mode="clean",
@@ -146,7 +146,7 @@ def _flatten_sensor_aggregation(
         return pd.DataFrame(columns=[ID_COLUMN])
     wide = grouped.unstack(sensor_column)
     wide.columns = [
-        f"{prefix}__{slug(sensor)}__{slug(variable)}__{slug(aggregation)}"
+        f"{prefix}__{_slug(sensor)}__{_slug(variable)}__{_slug(aggregation)}"
         for variable, aggregation, sensor in wide.columns
     ]
     return wide.reset_index()
@@ -236,7 +236,7 @@ def _monthly_promedio_features(
         ].mean()
         wide = grouped.unstack(sensor_column)
         wide.columns = [
-            f"{prefix}__{slug(sensor)}__{slug(variable)}__m{month:02d}"
+            f"{prefix}__{_slug(sensor)}__{_slug(variable)}__m{month:02d}"
             for variable, sensor in wide.columns
         ]
         result = result.merge(wide.reset_index(), on=ID_COLUMN, how="left", validate="1:1")
@@ -345,7 +345,7 @@ def build_satellite_features(
         columns = [column for column in block.columns if column != ID_COLUMN]
         result = result.merge(block, on=ID_COLUMN, how="left", validate="1:1")
         records.extend(
-            provenance_records(
+            _provenance_records(
                 columns,
                 source=source_prefix,
                 mode=mode,
@@ -447,13 +447,13 @@ def build_static_raster_features(
             divisor=float(spec.get("divisor", 1.0)),
         )
         rename = {
-            stat: f"{spec['name']}__{slug(stat)}"
+            stat: f"{spec['name']}__{_slug(stat)}"
             for stat in stats
         }
         block = block.rename(columns=rename)
         result = result.merge(block, on=ID_COLUMN, how="left", validate="1:1")
         records.extend(
-            provenance_records(
+            _provenance_records(
                 rename.values(),
                 source=source,
                 mode=mode,
@@ -505,7 +505,7 @@ def build_official_climate_features(
             if history:
                 result[hist_column] = pd.concat(history, axis=1).mean(axis=1).to_numpy()
                 records.extend(
-                    provenance_records(
+                    _provenance_records(
                         [hist_column],
                         source="official_climate",
                         mode="clean",
@@ -518,7 +518,7 @@ def build_official_climate_features(
                 target_column = f"clim_official_2025__{variable}__m{month:02d}"
                 result[target_column] = values[key].to_numpy()
                 records.extend(
-                    provenance_records(
+                    _provenance_records(
                         [target_column],
                         source="official_climate",
                         mode="competition",
@@ -529,7 +529,7 @@ def build_official_climate_features(
                     anomaly = f"clim_official_2025__{variable}__m{month:02d}_anomaly"
                     result[anomaly] = result[target_column] - result[hist_column]
                     records.extend(
-                        provenance_records(
+                        _provenance_records(
                             [anomaly],
                             source="official_climate",
                             mode="competition",
@@ -566,7 +566,7 @@ def build_official_climate_features(
         else:
             result[output] = result[columns].mean(axis=1)
         records.extend(
-            provenance_records(
+            _provenance_records(
                 [output],
                 source="official_climate",
                 mode=mode,
@@ -576,7 +576,7 @@ def build_official_climate_features(
     return result, records
 
 
-def longest_true_run(values: np.ndarray) -> int:
+def _longest_true_run(values: np.ndarray) -> int:
     """Return the longest consecutive True run."""
 
     best = 0
@@ -625,7 +625,7 @@ def build_daily_chirps_features(
     for _, row in daily.iterrows():
         valid = row.notna().to_numpy()
         dry = (row.to_numpy(dtype=float) < rain_day_threshold_mm) & valid
-        dry_spell.append(float(longest_true_run(dry)))
+        dry_spell.append(float(_longest_true_run(dry)))
     result["chirps_daily_2025__max_dry_spell_days"] = dry_spell
 
     for month in sorted({timestamp.month for timestamp in daily.columns}):
@@ -636,7 +636,7 @@ def build_daily_chirps_features(
         )
 
     columns = [column for column in result.columns if column != ID_COLUMN]
-    return result, provenance_records(
+    return result, _provenance_records(
         columns,
         source="external_chirps_daily",
         mode="competition",
@@ -670,7 +670,7 @@ def build_soilgrids_features(
             divisor=float(spec.get("divisor", 1.0)),
         )
         rename = {
-            stat: f"soilgrids__{slug(prop)}__{slug(depth)}__{slug(stat)}"
+            stat: f"soilgrids__{_slug(prop)}__{_slug(depth)}__{_slug(stat)}"
             for stat in stats
         }
         block = block.rename(columns=rename)
@@ -678,7 +678,7 @@ def build_soilgrids_features(
         if "mean" in rename:
             mean_columns[(prop, depth)] = rename["mean"]
         records.extend(
-            provenance_records(
+            _provenance_records(
                 rename.values(),
                 source="external_soilgrids",
                 mode="clean",
@@ -700,10 +700,10 @@ def build_soilgrids_features(
             complete = np.isfinite(matrix).all(axis=1)
             values = np.full(len(result), np.nan)
             values[complete] = np.average(matrix[complete], axis=1, weights=weights)
-            output = f"soilgrids__{slug(prop)}__depth_weighted_{label}"
+            output = f"soilgrids__{_slug(prop)}__depth_weighted_{label}"
             result[output] = values
             records.extend(
-                provenance_records(
+                _provenance_records(
                     [output],
                     source="external_soilgrids",
                     mode="clean",
@@ -713,7 +713,7 @@ def build_soilgrids_features(
     return result, records
 
 
-def safe_trend(years: pd.Series, values: pd.Series) -> float:
+def _safe_trend(years: pd.Series, values: pd.Series) -> float:
     """Return a linear trend per year for finite pairs."""
 
     x = pd.to_numeric(years, errors="coerce").to_numpy(dtype=float)
@@ -779,10 +779,10 @@ def build_siap_features(
         row: dict[str, float | str] = {"cvegeo": str(cvegeo).zfill(5)}
         row["siap_hist__yield_mean_all"] = float(hist["yield_t_ha"].mean())
         row["siap_hist__yield_std_all"] = float(hist["yield_t_ha"].std(ddof=0))
-        row["siap_hist__yield_trend_all"] = safe_trend(hist["Anio"], hist["yield_t_ha"])
+        row["siap_hist__yield_trend_all"] = _safe_trend(hist["Anio"], hist["yield_t_ha"])
         row["siap_hist__yield_mean_recent"] = float(recent["yield_t_ha"].mean())
         row["siap_hist__yield_std_recent"] = float(recent["yield_t_ha"].std(ddof=0))
-        row["siap_hist__yield_trend_recent"] = safe_trend(
+        row["siap_hist__yield_trend_recent"] = _safe_trend(
             recent["Anio"],
             recent["yield_t_ha"],
         )
@@ -818,14 +818,14 @@ def build_siap_features(
     competition = [
         column for column in result if column.startswith(f"siap_{competition_year}__")
     ]
-    records = provenance_records(
+    records = _provenance_records(
         clean,
         source="external_siap",
         mode="clean",
         description="Historical municipal Cebada grano feature through 2024.",
     )
     records.extend(
-        provenance_records(
+        _provenance_records(
             competition,
             source="external_siap",
             mode="competition",
@@ -862,11 +862,11 @@ def build_cem15_features(
     combined = pd.concat(pieces, ignore_index=True)
     if combined[ID_COLUMN].duplicated().any():
         raise ValueError("CEM extraction produced duplicate parcel IDs.")
-    rename = {stat: f"cem15__elevation__{slug(stat)}" for stat in stats}
+    rename = {stat: f"cem15__elevation__{_slug(stat)}" for stat in stats}
     combined = combined.rename(columns=rename)
     combined["cem15__elevation__range"] = combined[rename["max"]] - combined[rename["min"]]
     columns = [*rename.values(), "cem15__elevation__range"]
-    return combined[[ID_COLUMN, *columns]], provenance_records(
+    return combined[[ID_COLUMN, *columns]], _provenance_records(
         columns,
         source="external_inegi_cem",
         mode="clean",
@@ -975,7 +975,7 @@ def build_wapor_features(
             columns = [column for column in block if column != ID_COLUMN]
             result = result.merge(block, on=ID_COLUMN, how="left", validate="1:1")
             records.extend(
-                provenance_records(
+                _provenance_records(
                     columns,
                     source="external_wapor",
                     mode="competition",
