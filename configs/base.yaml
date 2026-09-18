@@ -47,4 +47,4 @@ geospatial:
   precipitation_crs: EPSG:4326
   temperature_crs: EPSG:4326
   topography_crs: EPSG:6372
-  parcel_crs: null  # inspect directly from delivered parcel source before use
+  parcel_crs: EPSG:4326  # directly inspected from the delivered parcel archive
