@@ -13,7 +13,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import shutil
+import subprocess
+import sys
 import unicodedata
 from collections.abc import Iterable, Mapping
 from datetime import UTC, datetime
@@ -530,6 +531,30 @@ def write_masked_raster(
             target.write(array)
 
 
+def write_sanitized_netcdf(source: Path, output: Path, root: Path) -> None:
+    """Copy a full NetCDF through the isolated metadata-sanitizing worker."""
+    worker = root / "tools" / "_netcdf_catalog_worker.py"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(worker),
+            str(source),
+            "--output",
+            str(output),
+            "--max-dim",
+            "1000000",
+        ],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip()
+        raise RuntimeError(f"NetCDF fixture worker failed for {source.name}: {detail}")
+
+
 def find_by_name(root: Path, names: Iterable[str]) -> list[Path]:
     """Resolve exact filenames recursively and fail on missing/ambiguous names."""
     paths = list(root.rglob("*"))
@@ -725,8 +750,7 @@ def build_fixtures(root: Path, contract: Mapping[str, Any]) -> dict[str, Any]:
     for name in contract["external"]["wapor"]["expected_files"]:
         source = wapor_root / name
         target = output / "wapor" / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, target)
+        write_sanitized_netcdf(source, target, root)
 
     files = relative_file_list(output)
     total_bytes = sum((output / path).stat().st_size for path in files)
