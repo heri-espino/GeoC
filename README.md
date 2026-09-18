@@ -4,7 +4,7 @@
 
 GeoCebada desarrolla un pipeline reproducible para estimar el rendimiento agrícola de parcelas de cebada a partir de percepción remota, clima, topografía y geometría espacial. El proyecto incluye una librería Python compartida (`geocebada`) y un laboratorio interactivo en Streamlit para exploración, inferencia estadística, feature engineering y comparación de modelos.
 
-> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `docs/DATA_SOURCES.md`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
+> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
 
 ## Problema
 
@@ -57,7 +57,7 @@ Columnas: `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`.
 
 BASIC y PRO son longitudinales: las filas son observaciones repetidas de parcela/fecha/sensor, no muestras independientes de rendimiento. Variables con el mismo nombre provenientes de sensores diferentes no deben fusionarse automáticamente como si fueran equivalentes.
 
-El diccionario completo y source-backed está en **`docs/VARIABLES.md`**. El inventario actualizado de fuentes oficiales/externas, reglas de integración, caveats y plan Data Contract v2 está en **`docs/DATA_SOURCES.md`**.
+El diccionario completo y source-backed está en **`docs/VARIABLES.md`**. El inventario actualizado de fuentes oficiales/externas está en **`docs/DATA_SOURCES.md`**. El contrato ejecutable previo a feature engineering está en **`docs/DATA_CONTRACT_V2.md`** y **`configs/data_contract_v2.yaml`**.
 
 ### Clima y topografía
 
@@ -77,7 +77,6 @@ No asumir respuestas sin evidencia:
 2. estrategia de armonización entre sensores cuando se combinen BASIC y PRO;
 3. mecanismo de estratificación del split 70/30, si existe;
 4. estrategia de validación que mejor aproxime la evaluación oculta de FIRA;
-5. CRS exacto de las geometrías de parcela.
 
 ## Arquitectura
 
@@ -100,6 +99,7 @@ GeoCebada/
 │   └── processed/               # datos model-ready
 ├── docs/
 │   ├── DATA_SOURCES.md          # inventario e integración de datos
+│   ├── DATA_CONTRACT_V2.md      # audit gate antes de features
 │   ├── VARIABLES.md             # diccionario de variables
 │   ├── FUNCTION_INDEX.md        # índice autogenerado de funciones
 │   ├── VISUAL_EXPLORER.md
@@ -226,7 +226,7 @@ final frozen pipeline
 
 ## Próximos pasos
 
-1. ejecutar **Audit + Data Contract v2** sobre las fuentes oficiales y externas;
+1. ejecutar `python tools/audit_data_contract_v2.py` y resolver todos los `FAIL`/`WARN`;
 2. distinguir en el catálogo entre fuente disponible y fuente completa, y certificar 197 IDs / 138+59;
 3. crear fixtures de integración con las mismas ~12 parcelas a través de todas las fuentes;
 4. resolver CRS/geometrías, joins de municipio, duplicados SIAP, etiquetas reales de cebada y escalas/unidades SoilGrids;
