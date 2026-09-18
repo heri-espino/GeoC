@@ -6,14 +6,15 @@ These instructions apply repository-wide unless a more specific handoff adds con
 
 1. `.ai_handoff`
 2. `README.md`
-3. `docs/DATA_SOURCES.md` for the current data inventory and integration rules
-4. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before feature engineering
-5. `data/.ai_handoff` and `data/README.md` for data/model/geospatial work
-6. `docs/VARIABLES.md` for the source-backed variable dictionary
-7. `src/geocebada/README.md` for reusable-code conventions
-8. `docs/FUNCTION_INDEX.md` before creating a new helper
-9. relevant official/reference material under `docs/`
-10. **`app/AGENTS.md` before any Streamlit/app/deployment change**
+3. `checkpoints/01_data/README.md` for the completed data-foundation milestone
+4. `docs/DATA_SOURCES.md` for the current data inventory and integration rules
+5. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before feature engineering
+6. `data/.ai_handoff` and `data/README.md` for data/model/geospatial work
+7. `docs/VARIABLES.md` for the source-backed variable dictionary
+8. `src/geocebada/README.md` for reusable-code conventions
+9. `docs/FUNCTION_INDEX.md` before creating a new helper
+10. relevant official/reference material under `docs/`
+11. **`app/AGENTS.md` before any Streamlit/app/deployment change**
 
 Do not replace confirmed project facts with guesses or generic ML assumptions.
 
@@ -80,7 +81,7 @@ pip install -e ".[docs]"
 sphinx-build -b html docs docs/_build/html
 ```
 
-`docs/DATA_SOURCES.md` is the operational inventory. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` define the executable feature-engineering gate. `docs/VARIABLES.md` is the human-facing variable dictionary; source/reference documents remain authoritative when they conflict with derived documentation.
+`checkpoints/01_data/README.md` is the completed data-foundation checkpoint. `docs/DATA_SOURCES.md` is the operational inventory. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` define the executable feature-engineering gate. `docs/VARIABLES.md` is the human-facing variable dictionary; source/reference documents remain authoritative when they conflict with derived documentation.
 
 ## Known spatial constraints
 
@@ -109,7 +110,6 @@ Do not silently assume:
 - sensor-harmonization strategy between BASIC and PRO;
 - official split stratification mechanism;
 - final CV strategy;
-- parcel source CRS until verified.
 
 ## Implementation style
 
