@@ -33,6 +33,30 @@ def test_select_tabular_sample_preserves_multiple_parcels() -> None:
     assert sample["fecha_captura"].min() < sample["fecha_captura"].max()
 
 
+def test_select_tabular_sample_sorts_day_first_dates_chronologically() -> None:
+    frame = pd.DataFrame(
+        {
+            "ID_POLIGONO": ["AGC_001"] * 8,
+            "fecha_captura": [
+                "01/12/2025",
+                "15/01/2025",
+                "02/11/2025",
+                "31/01/2025",
+                "01/02/2025",
+                "30/06/2025",
+                "05/03/2025",
+                "20/04/2025",
+            ],
+            "ndvi_promedio": range(8),
+        }
+    )
+
+    sample = CATALOG_TOOL["select_tabular_sample"](frame, 5)
+    parsed = pd.to_datetime(sample["fecha_captura"], format="%d/%m/%Y")
+
+    assert parsed.is_monotonic_increasing
+
+
 def test_catalog_profiles_csv_and_writes_versionable_sample(tmp_path: Path) -> None:
     source = tmp_path / "data/source/tabular/example.csv"
     source.parent.mkdir(parents=True)
