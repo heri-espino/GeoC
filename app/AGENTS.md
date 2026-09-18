@@ -2,7 +2,7 @@
 
 These instructions apply to everything under `app/` and supplement the repository-wide `AGENTS.md` and `.ai_handoff`.
 
-Future AI agents/Codex working on the Streamlit application must read this file **before modifying the app**.
+Future AI agents/Codex working on the Streamlit application must read this file **before modifying the app**. Also read `docs/AGENT_GUIDE.md` for the current project phase and frozen modeling artifacts.
 
 ## Purpose of the app
 
@@ -214,7 +214,7 @@ Do not catch broad exceptions merely to hide programming bugs. Unexpected failur
 
 ## UI/model status language
 
-Until a final model/pipeline is frozen, label dashboard model results as **exploratory**. Do not imply that random K-fold baselines are the official model.
+Until a final model/pipeline is frozen, label dashboard model results as **exploratory**. Checkpoint 02 now provides the project-level frozen state-stratified and municipality-grouped folds; do not imply that the dashboard's generic random K-fold baseline is the official validation result.
 
 When the final model exists, expose at minimum:
 
