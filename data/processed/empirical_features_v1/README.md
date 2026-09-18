@@ -30,11 +30,11 @@ data/processed/empirical_features_v1/
 └── README.md
 ```
 
-The final row/feature counts are recorded in `build_report.json` after the canonical build.
+The canonical validated build contains **197 parcels × 336 columns** = `ID_POLIGONO` plus **335 derived features**: **91 clean** and **244 competition**. Retained missingness is 0.0 and no infinite values are present.
 
 ## Families
 
-The deterministic layer includes:
+The deterministic layer includes 335 retained features:
 
 - temporal curve geometry;
 - short-baseline historical condition;
@@ -46,6 +46,8 @@ The short-baseline NDVI condition feature is explicitly named
 `emp_vci_like_short__...`. It is inspired by VCI-style historical normalization, but it is
 **not standard VCI** because the historical reference is only 2022-2024 and is not a long
 climatology.
+
+One candidate was dropped as constant: `emp_histpos__landsat_vi6t__above_history_fraction`. This means no parcel exceeded that short historical upper range under this specific summary; it is not a biological conclusion.
 
 ## Target-aware discovery
 
