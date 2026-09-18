@@ -27,6 +27,8 @@ Registrar cada uso relevante en la tabla siguiente.
 
 | 2026-09-17 | ChatGPT | Consolidación de documentación de datos para continuidad entre agentes | Solicitud de documentar todo lo conocido de las fuentes antes de Audit + Data Contract v2 y tabla maestra | `docs/DATA_SOURCES.md`; sincronización de `data/.ai_handoff`, `.ai_handoff`, `data/README.md`, `README.md`, `AGENTS.md`, `docs/README.md` y navegación Sphinx. Se documentaron fuentes oficiales/externas, estado local, joins, CRS, SIAP, SoilGrids, WaPOR, CHIRPS, ERA5 parcial, modos clean/competition y próximos pasos | Hechos consolidados desde archivos/catálogos ya inspeccionados y estado local reportado por el usuario; los puntos marcados para audit no se promovieron a hechos confirmados |
 
+| 2026-09-17 | ChatGPT | Audit + Data Contract v2 | Solicitud de ejecutar el paso inmediato de auditoría antes de construir la tabla maestra | `configs/data_contract_v2.yaml`, `tools/audit_data_contract_v2.py`, `docs/DATA_CONTRACT_V2.md`, tests y sincronización de handoffs/documentación; el audit valida IDs, fechas, sensores, CRS, municipios, CHIRPS, WaPOR, SoilGrids, SIAP, CEM y política ERA5 | Contrato oficial contrastado con archivos/catálogo existentes; factores/unidades SoilGrids contrastados con documentación oficial ISRIC; la auditoría externa completa debe ejecutarse en la workstation que contiene `data/raw/external/` |
+
 ## Criterio de registro
 
 Registrar prompts que hayan contribuido materialmente a:
