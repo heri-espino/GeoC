@@ -1,0 +1,34 @@
+{
+  "chirps_used_for_feature_construction": false,
+  "configured_fold_local_primitive_count": 24,
+  "dropped_all_null": [],
+  "dropped_constant": [
+    "emp_histpos__landsat_vi6t__above_history_fraction"
+  ],
+  "family_counts": {
+    "aggregate_geometry": 72,
+    "sensor_shape_similarity": 18,
+    "short_baseline_condition": 41,
+    "symmetric_change": 42,
+    "temporal_shape": 162
+  },
+  "features": 335,
+  "generated_at": "2026-09-18T19:11:14.138647+00:00",
+  "git_commit": "3e3ae67f18ae1cf6450dcf6372fd8edef0dcbc6c",
+  "infinite_values": 0,
+  "missing_fraction_max": 0.0,
+  "missing_fraction_mean": 0.0,
+  "mode_counts": {
+    "clean": 91,
+    "competition": 244
+  },
+  "rows": 197,
+  "schema_version": 1,
+  "short_vci_like_is_standard_vci": false,
+  "source_agronomic_manifest_sha256": "8f1dbb8d20c4f56813c375dc2c8e1153d4433387868068788273a813a1d89f60",
+  "source_agronomic_table_sha256": "58434250cde5729be20d558a10044799eb69d2b31b36f07ba693eb0598215f91",
+  "source_feature_manifest_sha256": "4bce7954fdc1093f567b15f811cfe335e957e764fef273da0ff108d0b66c6901",
+  "source_feature_table_sha256": "0814ed035dd2a19fe77ca1306e9dd3b858cdc90dd25abd3d2baa59940caf4d0d",
+  "supervised_discovery_materialized_globally": false,
+  "target_used_for_materialized_features": false
+}
