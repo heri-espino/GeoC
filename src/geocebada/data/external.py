@@ -148,8 +148,8 @@ def build_admin_mapping(
     for _, parcel in parcels.sort_values(ID_COLUMN).iterrows():
         parcel_id = str(parcel[ID_COLUMN])
         official = municipalities.loc[
-            municipalities["state_name"].map(normalize_label).eq(_normalize_label(parcel["Estado"]))
-            & municipalities["nomgeo"].map(normalize_label).eq(
+            municipalities["state_name"].map(_normalize_label).eq(_normalize_label(parcel["Estado"]))
+            & municipalities["nomgeo"].map(_normalize_label).eq(
                 _normalize_label(parcel["Municipio"])
             )
         ]
