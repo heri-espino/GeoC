@@ -9,12 +9,17 @@ on:
       - "data/processed/features_v1/**"
       - ".github/workflows/build_agronomic_features.yml"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,3 +39,17 @@ jobs:
           name: agronomic-features-v1
           path: data/processed/agronomic_features_v1/
           if-no-files-found: error
+
+      - name: Commit canonical generated artifacts
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            data/processed/agronomic_features_v1/parcel_agronomic_features.csv \
+            data/processed/agronomic_features_v1/feature_manifest.json \
+            data/processed/agronomic_features_v1/build_report.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Rebuild canonical Agronomic Features v1 artifacts"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
