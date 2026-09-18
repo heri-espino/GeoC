@@ -364,15 +364,15 @@ El objetivo oficial corresponde al **ciclo abril–octubre 2025**. BASIC cubre 2
 
 La unidad objetivo sigue siendo:
 
-$
-\\text{1 parcela} \\rightarrow \\text{1 rendimiento observado u oculto}.
-$
+$$
+\text{1 parcela} \rightarrow \text{1 rendimiento observado u oculto}.
+$$
 
 Las covariables satelitales y climáticas son longitudinales:
 
-$
-\\text{1 parcela} \\rightarrow \\{X_{i,t}\\}.
-$
+$$
+\text{1 parcela} \rightarrow \{X_{i,t}\}.
+$$
 
 Para evaluación científicamente prospectiva todavía debe declararse un **cutoff operativo de predicción** y excluir información posterior a ese cutoff. Para el reto también se mantendrá un modo de features **competition** separado, donde puede evaluarse información pública de temporada completa si las reglas lo permiten y se documenta explícitamente.
 
