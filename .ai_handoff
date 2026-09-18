@@ -1,357 +1,172 @@
 # AI Handoff — GeoCebada
 
-Updated: 2026-09-16
-Project: GeoCebada / Reto AgroCebada FIRA 2026
-Scope: project-wide operational context for AI agents/Codex.
+**Updated:** 2026-09-18  
+**Current phase:** Checkpoint 02 is closed. Checkpoint 03 — Modeling is next.
 
-Read this before project-wide changes. For data work also read `checkpoints/01_data/README.md`, `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `configs/data_contract_v2.yaml`, `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers. For any Streamlit/app/deployment work, read **`app/AGENTS.md`** first.
-
-This file is not the FIRA AI disclosure log. Material AI-assisted work must also be recorded in `docs/AI_USAGE.md`.
-
----
+Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
+only a compact operational summary.
 
 ## Mission
 
-Build a reproducible supervised-regression system that predicts barley yield (`RENDIMIENTO_T_HA`, ton/ha) for georeferenced parcels using remote sensing, climate, topography and spatial information, then expose the frozen pipeline through a functional web application and technical deliverables.
+Predict barley parcel yield `RENDIMIENTO_T_HA` for the 59 hidden-target parcels using a
+reproducible combination of remote sensing, climate, soil, topography and spatial/admin
+information.
 
-Canonical parcel identifier: `ID_POLIGONO`.
-
----
-
-## Confirmed challenge/data facts
-
-- 197 parcels total: 138 `ENTRENAMIENTO`, 59 `PREDICCION`.
-- Split is by complete parcel.
-- Target/split columns: `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`.
-- **`RENDIMIENTO_T_HA` corresponds to the April–October 2025 production cycle.**
-- Geographic scope: Hidalgo, Puebla and Tlaxcala.
-- BASIC: 107,666 × 96, 197 parcels, Sentinel-2 + Landsat, 2022–2025, 23 index families plus date/sensor/cloud metadata.
-- PRO: 47,804 × 20, 197 parcels, Planet, 2025, NDVI/EVI/LAI/MSAVI plus date/sensor/cloud metadata.
-- BASIC/PRO are repeated parcel/date/sensor observations; they are not independent target samples.
-- Same-named indices from different sensors are not automatically equivalent.
-- CHIRPS precipitation: monthly Jan 2022–Dec 2025, EPSG:4326, ~5 km.
-- CHIRTS-ERA5 Tmin/Tmax: monthly Jan 2022–Dec 2025, EPSG:4326, ~5 km.
-- INEGI CEM delivered elevation/slope products: EPSG:6372, 120 m product resolution.
-
-The complete source-backed variable dictionary is `docs/VARIABLES.md`. The comprehensive current inventory is `docs/DATA_SOURCES.md`. The machine-readable audit gate is `configs/data_contract_v2.yaml`, documented in `docs/DATA_CONTRACT_V2.md` and executed by `tools/audit_data_contract_v2.py`.
-
-### Checkpoint status
-
-The data-foundation milestone is frozen in `checkpoints/01_data/README.md`. It records the official/external sources, acquisition rationale, audit/normalization decisions, validated 12-parcel integration fixtures and what is intentionally not yet built. The next planned checkpoint is `02_features`, after the deterministic 197-row master feature table exists.
-
-### Current external-data status
-
-The prioritized external set is now locally acquired: INEGI municipal boundaries for Hidalgo/Puebla/Tlaxcala, CHIRPS v3 daily Apr–Oct 2025, WaPOR AETI/NPP, SoilGrids 9 properties × 4 depths, high-resolution INEGI CEM state rasters, and SIAP municipal agricultural closure history including 2023. ERA5-Land is optional and may be partial/incomplete after CDS failures; downstream code must not assume ERA5 completeness unless a later audit certifies it.
-
----
-
-## Important unknowns — do not guess
-
-1. Exact operational prediction cutoff/horizon within the April–October 2025 cycle.
-2. Which satellite/climate observations are legal predictors under that cutoff.
-3. Whether/how BASIC and PRO should be harmonized across sensors.
-4. Whether FIRA's 70/30 split was stratified by geography, area or another factor.
-5. Final validation strategy that best approximates FIRA's hidden evaluation.
-
----
-
-## Repository contract
+Canonical contract:
 
 ```text
-GeoCebada/
-├── AGENTS.md
-├── .ai_handoff
-├── app/
-│   ├── AGENTS.md             # app/Streamlit-specific maintenance contract
-│   ├── main.py
-│   ├── visual_explorer.py
-│   └── pages/
-│       └── 1_Visual_Explorer.py
-├── configs/
-├── data/
-│   ├── source/              # immutable official evidence
-│   ├── raw/                 # generated ingestion artifacts
-│   ├── interim/             # generated intermediates
-│   └── processed/           # generated model-ready artifacts
-├── docs/
-│   ├── VARIABLES.md
-│   ├── TEMPORAL_ALIGNMENT.md
-│   ├── GETTING_STARTED.md
-│   ├── FUNCTION_INDEX.md
-│   ├── VISUAL_EXPLORER.md
-│   ├── DEPLOYMENT.md
-│   ├── official/
-│   ├── reference/
-│   ├── api/
-│   └── AI_USAGE.md
-├── models/
-├── notebooks/
-│   ├── 01_visualizacion_datos.ipynb
-│   └── 02_cobertura_alineacion_temporal.ipynb
-├── reports/
-├── src/geocebada/
-│   └── features/
-│       ├── interactive.py
-│       └── temporal.py
-├── tests/
-└── tools/
+ID_POLIGONO
+RENDIMIENTO_T_HA
+CONJUNTO
+197 parcels = 138 ENTRENAMIENTO + 59 PREDICCION
+target cycle = April–October 2025
+states = Hidalgo, Puebla, Tlaxcala
 ```
 
-`data/source/`, `docs/official/` and source reference documents are evidence. Do not alter them to fit code.
+Never reconstruct or use the 59 hidden targets.
 
----
+## Current reproducible state
 
-## Source-of-truth hierarchy
+Completed milestones:
 
-1. Official/reference source files under `docs/official/`, `docs/reference/`, `data/source/`.
-2. Directly observed file schemas/metadata.
-3. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `configs/data_contract_v2.yaml`, `docs/VARIABLES.md`, `data/README.md`, `data/.ai_handoff`.
-4. Root `README.md`, `.ai_handoff`, `AGENTS.md`.
-5. Notebook comments/conversation assumptions.
+- Checkpoint 01 — data acquisition/audit/integration fixtures: closed.
+- Data Contract v2: PASS (46 pass, 0 warn, 0 fail, 1 intentional skip).
+- Feature Table v1: built and independently validated.
+- Checkpoint 02 — feature inventory, train/prediction diagnostics, frozen CV, ablations,
+  untuned baselines: closed.
+- Canonical Feature Table v1 artifacts are committed to Git.
 
-For app/deployment implementation details, `app/AGENTS.md` and `docs/DEPLOYMENT.md` are authoritative derived operational docs.
-
-If higher-ranked evidence contradicts derived docs, preserve the evidence and update the docs.
-
----
-
-## Python library contract
-
-`src/geocebada/` is used by notebooks, experiments and the app. Stable logic must live there rather than in copied notebook cells or Streamlit callbacks.
-
-Current reusable areas include loaders, split validation, filtering, raster inventory, CRS/reprojection, parcel geometry loading, feature recipes, temporal alignment, statistical tests/diagnostics, visualization and regression baselines.
-
-Temporal utilities under `src/geocebada/features/temporal.py`:
-
-- `make_temporal_grid`: construct a regular date grid;
-- `temporal_coverage_summary`: summarize captures, unique dates, gaps, cloudiness and per-month counts by parcel/sensor;
-- `temporal_backend_available`: resolve CPU vs optional CuPy/CUDA backend;
-- `align_temporal_knn`: align irregular captures using k nearest dates, exponential temporal weights and optional cloud-quality weighting;
-- `aligned_to_wide`: pivot the aligned representation to one row per parcel while keeping sensor names in feature columns.
-
-The default alignment keeps sensors separate. Never silently merge Sentinel/Landsat/Planet values with the same index name.
-
-Before creating a public helper:
-
-1. search `docs/FUNCTION_INDEX.md`;
-2. inspect the relevant module;
-3. reuse/extend overlapping behavior;
-4. create a new function only for genuinely new responsibility.
-
-After API changes:
-
-```bash
-python tools/generate_function_index.py
-```
-
----
-
-## Notebook/team workflow
-
-Team environment is standardized around Conda environment `geocebada`, Python 3.11 and Jupyter kernel `Python (GeoCebada)`. See `docs/GETTING_STARTED.md`.
-
-Local Conda file:
+Canonical model-ready inputs:
 
 ```text
-environment.dev.yml
+data/processed/features_v1/
+  parcel_features_clean.csv       197 × 699
+  parcel_features_competition.csv 197 × 1408
+  parcel_features_all.csv         197 × 1408
+  feature_manifest.json
+  build_report.json
 ```
 
-Standard install:
-
-```bash
-pip install -e ".[dev,geo]"
-```
-
-`environment.dev.yml` also installs GDAL and its NetCDF driver from conda-forge.
-They are required before installing the optional `external` extra on Windows:
-WaPOR otherwise falls back to an unsupported local C++ GDAL build and cannot
-write its NetCDF products.
-
-External raw-data contract: all contents below `data/raw/`, `data/interim/` and
-`data/processed/` are ignored. Regenerate the versioned external-data inventory
-with `python tools/build_external_data_manifest.py`; never commit raw rasters,
-NetCDF files or manual-download CSVs.
-
-Optional NVIDIA/CUDA 12 install:
-
-```bash
-pip install -e ".[dev,geo,gpu]"
-```
-
-The `gpu` extra installs `cupy-cuda12x`. GPU support is optional; code must retain a CPU path and must not require CUDA for CI or ordinary team use.
-
-Do not require `sys.path` hacks, copied helpers or execution of another notebook first.
-
----
-
-## Notebook status
-
-`notebooks/01_visualizacion_datos.ipynb` is the lightweight first-look notebook: loaders, basic summaries, lightweight/rasterized pairplot, parcel-level descriptive view and `docs/VARIABLES.md` rendering.
-
-`notebooks/02_cobertura_alineacion_temporal.ipynb` is the temporal workflow: train-vs-prediction coverage audit, weekly availability heatmap, configurable temporal grid, k-nearest-date alignment, gap/missingness diagnostics, aligned curves, one-row-per-parcel wide table and optional export to `data/interim/`.
-
-The second notebook defaults to `*_promedio` variables and a 14-day grid to stay manageable, but can align all index statistics. It supports `BACKEND="auto"`, `cpu` or `gpu`.
-
----
-
-## GeoCebada Lab / Streamlit status
-
-**Read `app/AGENTS.md` before changing anything under `app/` or deployment dependencies.** It contains the detailed maintenance checklist.
-
-Current app:
-
-- `app/main.py`: Overview, Data Explorer, Prediction Set, Statistical Lab, Feature Engineering, Model Lab and Methodology.
-- `app/pages/1_Visual_Explorer.py`: BASIC/PRO/split/upload selection, safe split metadata attachment, shared filtering, parcel map, pairplot, correlations, bivariate plots, outliers, group summaries and missingness.
-- `app/visual_explorer.py`: helper layer used by the Visual Explorer page.
-
-Prediction-set covariates may be inspected for support/shift diagnostics, but hidden targets are never exposed or used for supervised tuning.
-
-Architecture invariant:
+Manifest counts:
 
 ```text
-src/geocebada = scientific/data/model engine
-app/           = Streamlit interface and presentation
+clean features             694
+competition-only features  709
+total features            1403
+numeric features          1401
 ```
 
-Do not let important feature/model/statistical logic live only in Streamlit code.
-
-### Streamlit Community Cloud deployment contract
-
-Deployment entrypoint is `app/main.py` on branch `main`.
-
-Cloud bootstrap dependencies come from root `requirements.txt`; package dependencies live in `pyproject.toml`.
-
-Current Cloud bootstrap is conceptually:
+Frozen validation artifacts:
 
 ```text
--e .[geo]
-plotly>=6.0
-streamlit>=1.38
+reports/checkpoint_02/cv_folds.csv
+reports/checkpoint_02/baseline_fold_scores.csv
+reports/checkpoint_02/baseline_summary.csv
+reports/checkpoint_02/train_prediction_diagnostics.csv
+reports/checkpoint_02/checkpoint_02_report.md
 ```
 
-**Do not reintroduce a root `environment.yml` as a local-team convenience.** A previous deployment failed with `ModuleNotFoundError: plotly.express` because Streamlit Community Cloud prioritized root `environment.yml` over `requirements.txt`; the old file contained only Python/pip and caused the package dependencies to be skipped. Local Conda setup now lives in `environment.dev.yml`.
+## Validation finding that must carry forward
 
-When app imports/dependencies change, future agents must:
+Two five-fold protocols are frozen:
 
-1. update `pyproject.toml`/extras as appropriate;
-2. ensure root `requirements.txt` installs the required extra/bootstrap packages;
-3. test locally with `streamlit run app/main.py`;
-4. reboot/redeploy Streamlit Cloud for dependency-sensitive changes;
-5. inspect **Manage app → logs**;
-6. exercise the main page and every page under `app/pages/`;
-7. update `docs/DEPLOYMENT.md` if the deployment contract changed.
+- `fold_state_stratified` — primary.
+- `fold_municipality_grouped` — spatial/generalization robustness.
 
-Do not claim Cloud is fixed merely because local tests pass.
+The municipality-grouped protocol is much harder. Representative baseline RMSE:
 
-Streamlit reruns scripts on widget interaction: use caching and cheap defaults for BASIC/PRO. Avoid reading large CSVs and constructing expensive pairplots on every rerun.
+```text
+state-stratified ExtraTrees A7   0.4966
+municipality-grouped Ridge A3    0.7426
+municipality-grouped ExtraTrees A6 0.8835
+```
 
----
+Do not optimize only the easier state-stratified metric. Spatial/municipal generalization is a
+first-class risk.
 
-## Temporal guardrails
+## Clean vs competition
 
-The target cycle is source-confirmed as **April–October 2025**. This does **not** make every 2025 observation automatically legal for a forecasting model.
+Keep the two tracks explicit.
 
-Before freezing temporal features, explicitly define the operational prediction date/cutoff. Any satellite/climate observation after that cutoff is unavailable future information and must be excluded from final model training/evaluation.
+`clean`
+: historical/static, intended for defensible prospective-style modeling.
 
-The current temporal alignment can use the full April–October interval for descriptive coverage analysis, but the final modeling window must be frozen before supervised comparison.
+`competition`
+: clean plus rule-permitted 2025/full-season/contemporaneous public covariates.
 
-Parameters such as grid frequency, `k`, `bandwidth_days`, `max_distance_days`, cloud weighting and any feature selection must be chosen from labeled-data validation, not from the hidden targets or by making the 59 final outputs look convenient.
+The exact operational forecast cutoff is still unresolved. Do not describe competition-mode
+features as a strict prospective forecast.
 
-Historical 2022–2024 data may be useful for climatologies, anomalies or representation learning only if the resulting feature can also be computed consistently at inference time and does not introduce target leakage.
+SIAP 2025 is a competition-only municipal outcome proxy and must stay explicitly labeled.
 
----
+## Feature QC finding
 
-## GPU guardrails
+Only one CHIRPS daily competition feature survives in Feature Table v1. Most candidate CHIRPS
+daily aggregates were dropped as all-null by the builder. Investigate before claiming a rich
+CHIRPS contribution.
 
-- GPU is optional; CPU remains the reference-compatible path.
-- Current GPU backend accelerates array distance/weighted-reduction operations with CuPy; pandas grouping/date parsing remain CPU operations.
-- Do not claim GPU is faster without benchmarking on the actual workload. ~100k rows split into many small parcel/sensor groups may be CPU-efficient already.
-- Compare CPU and GPU using identical data, parameters and output checks.
-- CI must never require CUDA hardware.
+Train-versus-prediction screening flagged only 6/1401 numeric features under the configured
+descriptive shift/support thresholds. These X-only diagnostics are not labels and must not be
+used as a hidden-test tuning target.
 
----
+## Modeling rules for Checkpoint 03
 
-## Sensor guardrails
+Reuse `reports/checkpoint_02/cv_folds.csv`.
 
-- BASIC combines Sentinel-2 and Landsat; records remain sensor-specific.
-- VI6T is the Landsat spectral-thermal variable described by the source dictionary.
-- PRO is Planet 2025.
-- NDVI/EVI/LAI names overlap across BASIC/PRO, but values must not be naively concatenated as equivalent measurements.
-- Preserve `sensor`; document any calibration/harmonization.
-- The official satellite dictionary is conceptual: do not invent formulas for provider-specific variables such as MRA or VI6T.
+Candidate families may include CatBoost, Ridge/ElasticNet, ExtraTrees/RandomForest,
+HistGradientBoosting and LightGBM/XGBoost if justified.
 
----
+Because n=138 and p is large, keep searches disciplined.
 
-## CRS guardrails
+Any learned preprocessing must be inside folds:
 
-Known source CRS:
+- imputation;
+- scaling;
+- PCA/PLS;
+- supervised feature selection;
+- encoding;
+- target-aware transforms.
 
-- precipitation: EPSG:4326
-- temperature: EPSG:4326
-- topography: EPSG:6372
-- parcels: verify directly
+Keep fold-level RMSE/MAE/R² and machine-readable experiment records.
 
-Never compute metric area/distance or raster overlays without explicit CRS checks/reprojection. Preserve source geometry and `ID_POLIGONO` through joins.
+Do not regenerate folds because a result is inconvenient.
 
----
+## Repository rules
 
-## Leakage guardrails
+Source evidence:
 
-- Never fabricate/use hidden prediction targets.
-- Never row-random split longitudinal BASIC/PRO for supervised evaluation; group by parcel at minimum.
-- Do not use observations after the frozen prediction cutoff.
-- Fit learned preprocessing/selection inside folds.
-- Random parcel CV may remain optimistic under spatial autocorrelation; compare with grouped/spatial diagnostics.
-- Do not choose models because final 59 predictions “look plausible”.
-- Generic map aggregation is visualization-only, not canonical feature engineering.
+```text
+data/source/
+docs/official/
+docs/reference/
+```
 
----
+must not be edited to fit code.
 
-## Modeling status
+Stable reusable logic belongs under `src/geocebada/`.
 
-Small-n/high-p target problem: `n_train=138`. No final model exists.
+Notebooks orchestrate exploration; they are not the canonical implementation.
 
-Feature Table v1 has been built and independently validated on the full workstation:
+Before adding a public helper, inspect `docs/FUNCTION_INDEX.md`.
 
-- 197 rows = 138 `ENTRENAMIENTO` + 59 `PREDICCION`;
-- 694 `clean` features;
-- 709 competition-only features;
-- 1,403 manifest features total;
-- 1,408 columns including metadata/target;
-- WaPOR included;
-- hidden prediction targets remain absent.
+For Streamlit/deployment work, read `app/AGENTS.md` first.
 
-Checkpoint 02 now defines the pre-modeling contract in `configs/checkpoint02.yaml`,
-`src/geocebada/evaluation/parcel_modeling.py` and
-`tools/build_checkpoint_02.py`. It freezes feature-family inventory, train-vs-prediction
-support diagnostics, five state-stratified folds, municipality-grouped robustness folds,
-interpretable ablations and deliberately untuned Dummy/Ridge/ExtraTrees baselines.
+Large external raw/interim data remain gitignored. The deliberate exception is canonical
+`data/processed/features_v1/`, which is versioned.
 
-Checkpoint 02 has now been executed and closed on the full workstation. The generated `reports/checkpoint_02/` artifacts are committed. The run screened 1,401 numeric features, flagged 6 for descriptive train-vs-prediction shift/support diagnostics, and evaluated A0-A7 under both frozen five-fold protocols. The municipality-grouped protocol is materially harder than state-stratified CV, so spatial/municipal generalization sensitivity must remain explicit in all later model selection.
+Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
-Canonical Feature Table v1 artifacts are intentionally versioned under `data/processed/features_v1/`; large external raw/interim sources remain local/gitignored.
+## Known maintenance items
 
----
+- pandas fragmentation warning in daily CHIRPS construction: performance issue, build still
+  validated;
+- h5py/HDF5 build/runtime mismatch warning on workstation: environment issue, WaPOR build still
+  completed;
+- operational prediction cutoff remains unresolved;
+- CHIRPS daily feature survival needs QC.
 
-## Immediate next steps
+## Immediate next action
 
-1. Re-run Data Contract v2 after any raw/source change; the latest full audit passed with no FAIL/WARN findings.
-2. Preserve Feature Table v1 and its manifest as the frozen input to Checkpoint 02.
-3. Keep `data/processed/features_v1/` versioned and use it as the canonical model-ready input.
-4. Reuse `reports/checkpoint_02/cv_folds.csv` without regeneration for all Checkpoint 03 comparisons.
-5. Open Checkpoint 03 with CatBoost, regularized linear models and boosting, comparing both frozen validation protocols.
-6. Treat municipality-grouped degradation as a first-class spatial generalization risk.
-7. Fit PCA/feature selection/tuning only inside folds and only retain them if out-of-sample evidence improves.
-8. Keep Streamlit synchronized with frozen reusable pipeline artifacts rather than duplicating logic in the app.
-
-
----
-
-## Before ending an agent session
-
-- run relevant tests/lint/docs and report only what actually passed;
-- regenerate `docs/FUNCTION_INDEX.md` after public API changes;
-- update handoffs when facts/status change;
-- update `docs/AI_USAGE.md` for material AI-assisted work;
-- for Streamlit work, follow `app/AGENTS.md`, update `docs/DEPLOYMENT.md` when necessary, and distinguish local verification from actual Cloud verification;
-- never promote an assumption to a confirmed fact without source evidence.
+Open Checkpoint 03 — Modeling. Compare controlled model families on the frozen Feature Table v1
+and both frozen validation protocols, document every experiment, and only then freeze the final
+pipeline for the 59 predictions.
