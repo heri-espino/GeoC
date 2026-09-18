@@ -4,7 +4,7 @@ Updated: 2026-09-16
 Project: GeoCebada / Reto AgroCebada FIRA 2026
 Scope: project-wide operational context for AI agents/Codex.
 
-Read this before project-wide changes. For data work also read `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers. For any Streamlit/app/deployment work, read **`app/AGENTS.md`** first.
+Read this before project-wide changes. For data work also read `docs/DATA_SOURCES.md`, `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers. For any Streamlit/app/deployment work, read **`app/AGENTS.md`** first.
 
 This file is not the FIRA AI disclosure log. Material AI-assisted work must also be recorded in `docs/AI_USAGE.md`.
 
@@ -33,7 +33,11 @@ Canonical parcel identifier: `ID_POLIGONO`.
 - CHIRTS-ERA5 Tmin/Tmax: monthly Jan 2022–Dec 2025, EPSG:4326, ~5 km.
 - INEGI CEM delivered elevation/slope products: EPSG:6372, 120 m product resolution.
 
-The complete source-backed variable dictionary is `docs/VARIABLES.md`.
+The complete source-backed variable dictionary is `docs/VARIABLES.md`. The comprehensive current inventory of official/external data, join rules, caveats and the Data Contract v2 plan is `docs/DATA_SOURCES.md`.
+
+### Current external-data status
+
+The prioritized external set is now locally acquired: INEGI municipal boundaries for Hidalgo/Puebla/Tlaxcala, CHIRPS v3 daily Apr–Oct 2025, WaPOR AETI/NPP, SoilGrids 9 properties × 4 depths, high-resolution INEGI CEM state rasters, and SIAP municipal agricultural closure history including 2023. ERA5-Land is optional and may be partial/incomplete after CDS failures; downstream code must not assume ERA5 completeness unless a later audit certifies it.
 
 ---
 
@@ -98,7 +102,7 @@ GeoCebada/
 
 1. Official/reference source files under `docs/official/`, `docs/reference/`, `data/source/`.
 2. Directly observed file schemas/metadata.
-3. `docs/VARIABLES.md`, `data/README.md`, `data/.ai_handoff`.
+3. `docs/DATA_SOURCES.md`, `docs/VARIABLES.md`, `data/README.md`, `data/.ai_handoff`.
 4. Root `README.md`, `.ai_handoff`, `AGENTS.md`.
 5. Notebook comments/conversation assumptions.
 
@@ -312,17 +316,17 @@ Current dashboard models are exploratory baselines only. Final selection still r
 
 ## Immediate next steps
 
-1. Execute `02_cobertura_alineacion_temporal.ipynb` on BASIC and PRO and record train-vs-prediction coverage differences.
-2. Benchmark CPU vs RTX 4500 Ada GPU on the same alignment settings; keep GPU only where it materially helps.
-3. Compare reasonable temporal grids and neighborhood parameters within labeled-data validation, e.g. weekly vs 14-day and multiple `k`/bandwidth choices.
-4. Define the operational pre-harvest prediction cutoff/horizon before using aligned features in final supervised experiments.
-5. Add compact phenology features from aligned curves: AUC, peak, peak date, slopes, deltas and seasonal variability.
-6. Inspect parcel archive: CRS, attributes, validity and 197-ID coverage.
-7. Extract climate/topography to parcels through documented zonal statistics.
-8. Add Moran's I/spatial residual diagnostics and grouped/spatial CV.
-9. Build domain ablations: satellite, climate, topography/geometry, combinations.
-10. Freeze preprocessing/model artifacts before final 59 predictions.
-11. Keep the Streamlit pages synchronized with new reusable analytics/model capabilities and verify Cloud after deployment-sensitive changes.
+1. Run **Audit + Data Contract v2** before building final features.
+2. Upgrade the catalog to distinguish `available` from `complete`, verify full ID/date coverage and explicitly mark ERA5 partial/unused.
+3. Create joinable integration fixtures using the same ~12 parcels across split/geometry/BASIC/PRO/SIAP/raster/NetCDF samples.
+4. Audit parcel CRS/field normalization and map every parcel to municipality by largest polygon overlap.
+5. Audit SIAP duplicate years, confirm 2023, discover exact barley labels/cycles/modalities and build stable CVEGEO keys.
+6. Verify SoilGrids units/scale factors before using its INT16 values.
+7. Audit CHIRPS daily continuity (214 days), WaPOR band/day semantics and external raster coverage.
+8. Build the deterministic **197-row parcel master feature table** with source-prefixed columns, provenance and explicit clean-vs-competition feature groups.
+9. Only after that, compare feature/model families using consistent parcel folds and spatial diagnostics.
+10. Keep Streamlit synchronized with frozen reusable pipeline artifacts rather than duplicating logic in the app.
+
 
 ---
 
