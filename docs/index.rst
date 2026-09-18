@@ -10,6 +10,8 @@ than duplicated across notebooks.
    :caption: Contents
 
    README
+   AGENT_GUIDE
+   PROJECT_HISTORY
    GETTING_STARTED
    DATA_SOURCES
    DATA_CONTRACT_V2
