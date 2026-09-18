@@ -9,15 +9,16 @@ These instructions apply repository-wide unless a more specific handoff adds con
 3. `docs/PROJECT_HISTORY.md` — chronological record of what happened and why.
 4. `README.md`.
 5. `checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` — completed milestones.
-6. `data/processed/features_v1/README.md` and `reports/checkpoint_02/checkpoint_02_report.md` before modeling.
-7. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before data/feature changes.
-8. `data/.ai_handoff` and `data/README.md` for data/geospatial work.
-9. `docs/VARIABLES.md` for the source-backed variable dictionary.
-10. `src/geocebada/README.md` and `docs/FUNCTION_INDEX.md` before creating reusable helpers.
-11. relevant official/reference material under `docs/`.
-12. **`app/AGENTS.md` before any Streamlit/app/deployment change**.
+6. `checkpoints/03_modeling/README.md` — 03A closed; 03B current phase.
+7. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md`, `docs/AGRONOMIC_FEATURES_V1.md` and `reports/checkpoint_02/checkpoint_02_report.md` before modeling.
+8. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before data/feature changes.
+9. `data/.ai_handoff` and `data/README.md` for data/geospatial work.
+10. `docs/VARIABLES.md` for the source-backed variable dictionary.
+11. `src/geocebada/README.md` and `docs/FUNCTION_INDEX.md` before creating reusable helpers.
+12. relevant official/reference material under `docs/`.
+13. **`app/AGENTS.md` before any Streamlit/app/deployment change**.
 
-Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoint 01 and Checkpoint 02 are closed; do not redo them unless source/code changes invalidate a check. The current next phase is Checkpoint 03 — Modeling.
+Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoint 01, Checkpoint 02 and Checkpoint 03A are closed; do not redo them unless source/code changes invalidate a check. The current phase is Checkpoint 03B — model/representation comparison.
 
 ## Core invariants
 
@@ -27,7 +28,7 @@ Do not replace confirmed project facts with guesses or generic ML assumptions. C
 - The target corresponds to the **April–October 2025 production cycle**.
 - Hidden prediction targets are never pseudo-ground-truth.
 - `data/source/` and `docs/official/` are immutable source evidence.
-- Generated data belongs in `data/raw/`, `data/interim/` or `data/processed/`; the canonical `data/processed/features_v1/` artifacts are intentionally versioned, while other raw/interim/processed outputs remain ignored unless explicitly promoted.
+- Generated data belongs in `data/raw/`, `data/interim/` or `data/processed/`; the canonical `data/processed/features_v1/` and `data/processed/agronomic_features_v1/` artifacts are intentionally versioned, while other raw/interim/processed outputs remain ignored unless explicitly promoted.
 - Models belong in `models/`; metrics/figures/predictions in `reports/`.
 - Stable production/reusable logic belongs in `src/geocebada/`; notebooks are exploratory.
 
