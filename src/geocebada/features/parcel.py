@@ -145,10 +145,19 @@ def _flatten_sensor_aggregation(
     if grouped.empty:
         return pd.DataFrame(columns=[ID_COLUMN])
     wide = grouped.unstack(sensor_column)
-    wide.columns = [
-        f"{prefix}__{_slug(sensor)}__{_slug(variable)}__{_slug(aggregation)}"
-        for variable, aggregation, sensor in wide.columns
-    ]
+    labels: list[str] = []
+    for column in wide.columns:
+        if len(column) == 3:
+            variable, aggregation, sensor = column
+            labels.append(
+                f"{prefix}__{_slug(sensor)}__{_slug(variable)}__{_slug(aggregation)}"
+            )
+        elif len(column) == 2:
+            variable, sensor = column
+            labels.append(f"{prefix}__{_slug(sensor)}__{_slug(variable)}")
+        else:
+            raise ValueError(f"Unexpected grouped column shape: {column!r}")
+    wide.columns = labels
     return wide.reset_index()
 
 
