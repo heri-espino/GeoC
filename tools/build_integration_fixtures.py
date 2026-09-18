@@ -516,6 +516,8 @@ def write_masked_raster(
             nodata=nodata,
         )
         profile = dataset.profile.copy()
+        for key in ("blockxsize", "blockysize"):
+            profile.pop(key, None)
         profile.update(
             height=array.shape[1],
             width=array.shape[2],
@@ -523,6 +525,7 @@ def write_masked_raster(
             crs=target_crs,
             nodata=nodata,
             compress="deflate",
+            tiled=False,
         )
         with rasterio.open(output, "w", **profile) as target:
             target.write(array)
@@ -547,6 +550,36 @@ def find_by_name(root: Path, names: Iterable[str]) -> list[Path]:
     return result
 
 
+def clear_previous_fixture(output: Path) -> None:
+    """Remove files recorded by the previous fixture manifest, preserving sibling samples."""
+    manifest_path = output / "fixture_manifest.json"
+    if not manifest_path.is_file():
+        return
+
+    try:
+        previous = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        previous = {}
+
+    for relative in previous.get("files", []):
+        path = output / str(relative)
+        if path.is_file():
+            path.unlink()
+
+    if manifest_path.is_file():
+        manifest_path.unlink()
+
+    for directory in sorted(
+        (path for path in output.rglob("*") if path.is_dir()),
+        key=lambda path: len(path.parts),
+        reverse=True,
+    ):
+        try:
+            directory.rmdir()
+        except OSError:
+            pass
+
+
 def relative_file_list(output: Path) -> list[str]:
     """Return deterministic fixture file listing relative to fixture root."""
     return sorted(
@@ -563,6 +596,7 @@ def build_fixtures(root: Path, contract: Mapping[str, Any]) -> dict[str, Any]:
     settings = contract["integration_fixtures"]
     output = root / settings["output"]
     output.mkdir(parents=True, exist_ok=True)
+    clear_previous_fixture(output)
 
     split = pd.read_csv(root / contract["official"]["split"]["path"], low_memory=False)
     basic = pd.read_csv(root / contract["official"]["basic"]["path"], low_memory=False)
