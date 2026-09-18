@@ -709,16 +709,45 @@ def audit_municipalities(
     winners["_overlap_fraction"] = winners["_overlap_area_m2"] / winners["_parcel_area_m2"]
     missing_ids = sorted(set(parcels[id_col].astype(str)) - set(winners[id_col].astype(str)))
     minimum_overlap = float(winners["_overlap_fraction"].min())
+
+    low_overlap_details: list[dict[str, Any]] = []
+    low_overlap_ids = set(
+        winners.loc[winners["_overlap_fraction"] < 0.99, id_col].astype(str)
+    )
+    for parcel_id in sorted(low_overlap_ids):
+        candidates = intersections.loc[
+            intersections[id_col].astype(str).eq(parcel_id)
+        ].copy()
+        candidates["_overlap_fraction"] = (
+            candidates["_overlap_area_m2"] / candidates["_parcel_area_m2"]
+        )
+        candidates = candidates.sort_values("_overlap_fraction", ascending=False)
+        low_overlap_details.append(
+            {
+                "ID_POLIGONO": parcel_id,
+                "candidates": [
+                    {
+                        "cvegeo": str(row["cvegeo"]),
+                        "municipio": str(row["nomgeo"]),
+                        "state_code": str(row["state_code"]),
+                        "overlap_fraction": round(float(row["_overlap_fraction"]), 6),
+                    }
+                    for _, row in candidates.head(3).iterrows()
+                ],
+            }
+        )
+
     checks.append(
         bool_check(
             "external_municipios.parcel_join",
             not missing_ids and minimum_overlap >= 0.99,
             "Every parcel maps by largest overlap with >=99% polygon coverage.",
-            "Some parcels lack a robust municipality assignment.",
+            "Some parcels cross municipality boundaries or have <99% overlap with one municipality.",
             details={
                 "assigned_parcels": len(winners),
                 "missing_ids": missing_ids,
                 "min_overlap_fraction": round(minimum_overlap, 6),
+                "low_overlap_parcels": low_overlap_details,
             },
             failure_status="warn",
         )
@@ -914,7 +943,12 @@ def audit_siap(
         return [check("external_siap.exists", "fail", f"Missing {portable(directory, root)}")]
 
     pattern = re.compile(spec["yearly_file_regex"])
+    all_csvs = sorted(directory.glob("*.csv"))
     files_by_year = siap_year_files(directory, pattern)
+    unmatched_csvs = [path.name for path in all_csvs if pattern.match(path.name) is None]
+    yearlike_unmatched = [
+        name for name in unmatched_csvs if re.search(r"20\\d{2}", name)
+    ]
     expected_years = set(range(int(spec["year_min"]), int(spec["year_max"]) + 1))
     observed_years = set(files_by_year)
     missing_years = sorted(expected_years - observed_years)
@@ -933,6 +967,8 @@ def audit_siap(
                 "observed_years": sorted(observed_years),
                 "missing_years": missing_years,
                 "duplicate_years": duplicate_years,
+                "unmatched_csvs": unmatched_csvs,
+                "yearlike_unmatched_csvs": yearlike_unmatched,
             },
         )
     ]
@@ -980,7 +1016,7 @@ def audit_siap(
     )
 
     required = list(spec["required_columns"])
-    schema_issues: dict[str, list[str]] = {}
+    schema_issues: dict[str, Any] = {}
     barley_labels: set[str] = set()
     barley_cycles: set[str] = set()
     barley_modalities: set[str] = set()
@@ -993,7 +1029,16 @@ def audit_siap(
         header = read_csv_flexible(path, nrows=0)
         missing = sorted(set(required).difference(header.columns))
         if missing:
-            schema_issues[path.name] = missing
+            schema_issues[path.name] = {
+                "missing": missing,
+                "observed_columns": list(map(str, header.columns)),
+                "crop_like_columns": [
+                    str(column)
+                    for column in header.columns
+                    if "cult" in normalize_text(column)
+                    or "producto" in normalize_text(column)
+                ],
+            }
             continue
 
         useful = [
