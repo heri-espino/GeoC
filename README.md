@@ -4,7 +4,7 @@
 
 GeoCebada desarrolla un pipeline reproducible para estimar el rendimiento agrícola de parcelas de cebada a partir de percepción remota, clima, topografía y geometría espacial. El proyecto incluye una librería Python compartida (`geocebada`) y un laboratorio interactivo en Streamlit para exploración, inferencia estadística, feature engineering y comparación de modelos.
 
-> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `checkpoints/01_data/README.md`, `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
+> Para trabajo asistido por agentes/Codex, empezar por **`docs/AGENT_GUIDE.md`**, luego `.ai_handoff` y **`docs/PROJECT_HISTORY.md`**. Ahí está el estado actual, qué ya se cerró, qué artifacts son canónicos y qué no debe repetirse.
 
 ## Problema
 
@@ -100,6 +100,8 @@ GeoCebada/
 │   ├── interim/                 # transformaciones intermedias
 │   └── processed/               # derivados; features_v1 canónico sí se versiona
 ├── docs/
+│   ├── AGENT_GUIDE.md           # entrada operativa para agentes
+│   ├── PROJECT_HISTORY.md       # historia cronológica del proyecto
 │   ├── DATA_SOURCES.md          # inventario e integración de datos
 │   ├── DATA_CONTRACT_V2.md      # audit gate antes de features
 │   ├── VARIABLES.md             # diccionario de variables
@@ -118,7 +120,7 @@ GeoCebada/
 
 ## Checkpoints
 
-El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** registra históricamente este estado y congela el pipeline de inventario, covariate shift, folds fijos, ablations y baselines iniciales.
+El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. La siguiente fase es **Checkpoint 03 — Modeling**.
 
 ## GeoCebada Lab
 

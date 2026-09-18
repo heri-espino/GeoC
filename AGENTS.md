@@ -4,19 +4,20 @@ These instructions apply repository-wide unless a more specific handoff adds con
 
 ## Read before changing code
 
-1. `.ai_handoff`
-2. `README.md`
-3. `checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` for completed milestones
-4. `docs/DATA_SOURCES.md` for the current data inventory and integration rules
-5. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before feature engineering
-6. `data/.ai_handoff` and `data/README.md` for data/model/geospatial work
-7. `docs/VARIABLES.md` for the source-backed variable dictionary
-8. `src/geocebada/README.md` for reusable-code conventions
-9. `docs/FUNCTION_INDEX.md` before creating a new helper
-10. relevant official/reference material under `docs/`
-11. **`app/AGENTS.md` before any Streamlit/app/deployment change**
+1. `docs/AGENT_GUIDE.md` — operational project entry point.
+2. `.ai_handoff` — compact current-state handoff.
+3. `docs/PROJECT_HISTORY.md` — chronological record of what happened and why.
+4. `README.md`.
+5. `checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` — completed milestones.
+6. `data/processed/features_v1/README.md` and `reports/checkpoint_02/checkpoint_02_report.md` before modeling.
+7. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before data/feature changes.
+8. `data/.ai_handoff` and `data/README.md` for data/geospatial work.
+9. `docs/VARIABLES.md` for the source-backed variable dictionary.
+10. `src/geocebada/README.md` and `docs/FUNCTION_INDEX.md` before creating reusable helpers.
+11. relevant official/reference material under `docs/`.
+12. **`app/AGENTS.md` before any Streamlit/app/deployment change**.
 
-Do not replace confirmed project facts with guesses or generic ML assumptions.
+Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoint 01 and Checkpoint 02 are closed; do not redo them unless source/code changes invalidate a check. The current next phase is Checkpoint 03 — Modeling.
 
 ## Core invariants
 
