@@ -286,7 +286,7 @@ Manifest counts:
 ```text
 clean          123
 competition    227
-total          351
+total          350
 missingness    0.0
 ```
 
