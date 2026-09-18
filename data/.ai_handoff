@@ -8,12 +8,13 @@ Scope: dataset understanding, ingestion, geospatial joins, feature engineering, 
 
 For any data work, read in this order:
 
-1. `docs/DATA_SOURCES.md` — comprehensive current inventory and integration contract.
-2. `docs/VARIABLES.md` — source-backed variable/index dictionary.
-3. `data/README.md` — directory contract.
-4. `data/data_catalog.json` and `docs/DATA_CATALOG.md`.
-5. official/reference evidence under `docs/official/`, `docs/reference/`, `data/source/`.
-6. relevant code under `src/geocebada/`.
+1. `docs/DATA_SOURCES.md` — comprehensive current inventory.
+2. `docs/DATA_CONTRACT_V2.md` + `configs/data_contract_v2.yaml` — executable audit contract.
+3. `docs/VARIABLES.md` — source-backed variable/index dictionary.
+4. `data/README.md` — directory contract.
+5. `data/data_catalog.json` and `docs/DATA_CATALOG.md`.
+6. official/reference evidence under `docs/official/`, `docs/reference/`, `data/source/`.
+7. relevant code under `src/geocebada/`.
 
 If this handoff conflicts with official files or directly inspected metadata, preserve the source evidence and update the handoff.
 
@@ -52,7 +53,7 @@ Normalize in loaders:
 - `ID_POLIGON` -> `ID_POLIGONO`
 - `área_ha` -> `area_ha`
 
-Do not guess CRS; read it from source.
+Direct inspection records the parcel CRS as `EPSG:4326`; loaders must still read and validate it rather than assigning it blindly.
 
 ### BASIC
 `data/source/tabular/Conjunto_datos_BASICO_AgroCebada2026.csv`
@@ -151,7 +152,7 @@ Depths:
 
 Downloaded TIFF CRS metadata may be null. For files positively identified as these SoilGrids WCS downloads, use local `ESRI:54052`; WCS requests use pseudo identifier 152160.
 
-Before modeling, verify SoilGrids scale factors and physical units. Do not treat raw INT16 values as final physical values.
+SoilGrids scale factors/units are now frozen in `configs/data_contract_v2.yaml` from the official ISRIC documentation. Apply the declared divisors explicitly; do not treat raw INT16 values as final physical values.
 
 ### SIAP
 
@@ -202,9 +203,16 @@ Rule-permitted public/transductive information that may lower hidden-test error 
 
 Never use hidden parcel targets in either mode.
 
-## Data Contract v2 — immediate next task
+## Data Contract v2 — current gate
 
-Do this **before** building the final master feature table.
+Implementation now exists in `tools/audit_data_contract_v2.py`. Run the full workstation audit before building the final master feature table:
+
+```powershell
+python tools\audit_data_contract_v2.py
+```
+
+Do not proceed while the report contains `FAIL`; every `WARN` requires an explicit resolution/policy.
+
 
 Audit must verify:
 
@@ -219,7 +227,7 @@ Audit must verify:
 - parcel-to-municipality largest-overlap assignment.
 - SIAP year inventory, duplicate hashes and 2023.
 - actual barley labels/cycles/modalities.
-- SoilGrids units/scales.
+- SoilGrids inventory, CRS fallback behavior and declared conversion semantics.
 - raster intersection coverage.
 - CHIRPS daily continuity/count = 214.
 - WaPOR band/date/day-count semantics.
@@ -273,16 +281,16 @@ Recommended namespaces:
 
 Record feature provenance and clean/competition membership.
 
-## Known catalog improvements
+## Catalog vs contract
 
-Current catalog needs v2 changes:
+`data/data_catalog.json` remains a structural catalog. Completeness is now owned by the Data Contract v2 audit. Remaining catalog/fixture improvements:
 
 - distinguish `available` from `complete`.
 - record expected/observed counts and missing files.
 - inspect full critical ID/date coverage.
 - parse BASIC/PRO dates explicitly as `%d/%m/%Y`; do not string-sort dates.
 - create joinable integration fixtures.
-- record SoilGrids semantic units/scales after verification.
+- keep SoilGrids semantics synchronized with the machine-readable contract.
 - prevent partial ERA5 from appearing complete.
 
 ## Non-negotiable guards
