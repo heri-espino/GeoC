@@ -174,7 +174,26 @@ def select_tabular_sample(frame: pd.DataFrame, max_rows: int) -> pd.DataFrame:
         for parcel_id in chosen_ids:
             part = frame.loc[frame["ID_POLIGONO"].astype(str) == parcel_id].copy()
             if "fecha_captura" in part.columns:
-                part = part.sort_values("fecha_captura")
+                parsed_dates = pd.to_datetime(
+                    part["fecha_captura"],
+                    format="%d/%m/%Y",
+                    errors="coerce",
+                )
+                if parsed_dates.isna().any():
+                    fallback = pd.to_datetime(
+                        part["fecha_captura"],
+                        errors="coerce",
+                        dayfirst=True,
+                    )
+                    parsed_dates = parsed_dates.fillna(fallback)
+                part = (
+                    part.assign(_catalog_sort_date=parsed_dates)
+                    .sort_values(
+                        ["_catalog_sort_date", "fecha_captura"],
+                        na_position="last",
+                    )
+                    .drop(columns="_catalog_sort_date")
+                )
             indices = evenly_spaced_indices(len(part), min(rows_per_id, len(part)))
             pieces.append(part.iloc[indices])
         result = pd.concat(pieces, ignore_index=True) if pieces else frame.head(max_rows)
