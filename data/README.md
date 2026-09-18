@@ -505,7 +505,7 @@ Nunca usar las 59 parcelas de predicción para selección supervisada de hiperpa
 
 Data Contract v2, las integration fixtures y Feature Table v1 ya fueron construidos y validados. La tabla canónica contiene **197 filas, una por `ID_POLIGONO`**, con 694 features `clean`, 709 features `competition` adicionales y 1,403 features totales. Los artefactos canónicos deben versionarse bajo `data/processed/features_v1/` para que el modelado sea reproducible desde un clon limpio.
 
-Checkpoint 02 ya generó inventario por familia, diagnóstico train-vs-prediction, folds fijos y ablations. Ver `checkpoints/02_features/README.md` y `reports/checkpoint_02/`.
+Checkpoint 02 ya generó inventario por familia, diagnóstico train-vs-prediction, folds fijos y ablations. Checkpoint 03A añadió `data/processed/agronomic_features_v1/`: 197 parcelas × 351 variables derivadas target-free, guardadas separadamente para unir por `ID_POLIGONO` sólo cuando el experimento las requiera. Ver `docs/AGRONOMIC_FEATURES_V1.md`, `checkpoints/03a_agronomic_features/README.md` y `checkpoints/03_modeling/README.md`.
 
 
 ---
