@@ -190,6 +190,43 @@ All 138 training targets are present. All 59 prediction targets are missing.
 
 Use `feature_manifest.json` for feature provenance/mode instead of guessing from names.
 
+## Agronomic Features v1 — completed and versioned
+
+Checkpoint 03A adds a separate target-free nonlinear layer:
+
+```text
+data/processed/agronomic_features_v1/
+  parcel_agronomic_features.csv  197 × 352
+  feature_manifest.json          351 derived features
+  build_report.json
+  README.md
+```
+
+Validated canonical build:
+
+```text
+197 unique ID_POLIGONO
+351 derived numeric features
+123 clean
+228 competition
+mean/max missing fraction = 0.0
+no infinite values
+no target or split column
+target used for construction = false
+CHIRPS used = false
+```
+
+The layer is joined one-to-one to Feature Table v1 by `ID_POLIGONO`; it does not duplicate
+the 1,403 base manifest features. Every derived feature records parents, formula, meaning,
+rationale, evidence class, references and caveats.
+
+Three proposed 25 C heat-derived variables were constant on the canonical table and were
+dropped automatically. Treat this as a property of the monthly climate representation, not as
+evidence against barley heat sensitivity.
+
+Read `docs/AGRONOMIC_FEATURES_V1.md` and
+`checkpoints/03_modeling/README.md` before changing this layer.
+
 ## Feature namespaces
 
 Expected namespaces include:
@@ -239,6 +276,7 @@ Versioned:
 - official source evidence;
 - integration fixtures;
 - canonical `data/processed/features_v1/`;
+- canonical `data/processed/agronomic_features_v1/`;
 - manifests/contracts/reports.
 
 Not versioned:
