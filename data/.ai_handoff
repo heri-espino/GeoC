@@ -203,15 +203,9 @@ Rule-permitted public/transductive information that may lower hidden-test error 
 
 Never use hidden parcel targets in either mode.
 
-## Data Contract v2 — current gate
+## Data Contract v2 — closed locally
 
-Implementation now exists in `tools/audit_data_contract_v2.py`. Run the full workstation audit before building the final master feature table:
-
-```powershell
-python tools\audit_data_contract_v2.py
-```
-
-Do not proceed while the report contains `FAIL`; every `WARN` requires an explicit resolution/policy.
+Implementation exists in `tools/audit_data_contract_v2.py`. The complete local workstation audit was rerun after resolving SIAP and municipality policies and the user confirmed **no FAIL findings remain**. Re-run the audit after any raw/source change, but feature-engineering work may now proceed.
 
 
 Audit must verify:
@@ -236,9 +230,9 @@ Audit must verify:
 
 ### Integration fixtures
 
-Current `data/samples/` are schema fixtures, not cross-source join fixtures. Create ~12 fixed parcels shared by all integration samples, spanning all states, train/prediction, area sizes, sensors, cloud levels and missingness.
+The integration-fixture builder now exists at `tools/build_integration_fixtures.py`; its contract lives under `integration_fixtures` in `configs/data_contract_v2.yaml`. It deterministically selects 12 shared parcels (two per Estado × CONJUNTO stratum), uses only target-free area/cloud/missingness/coverage metadata, and forces AGC_020, AGC_048 and AGC_129 so known spatial edge cases are exercised. Generate locally with `python tools\build_integration_fixtures.py`.
 
-Recommended structure:
+Generated structure:
 
 ```text
 data/samples/
@@ -260,7 +254,7 @@ data/samples/
     cem/
 ```
 
-## Master table — task after Data Contract v2
+## Master table — task after integration fixtures
 
 Build one deterministic row per parcel, exactly 197 rows and unique `ID_POLIGONO`.
 
