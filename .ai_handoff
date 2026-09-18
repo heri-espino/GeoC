@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 and 03B Empirical Features v1 are closed. Checkpoint 03C model comparison is next.
+**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 is closed. Checkpoint 03B code is ready and must now be run/reviewed on the workstation before 03C.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -36,7 +36,7 @@ Completed milestones:
   untuned baselines: closed.
 - Canonical Feature Table v1 artifacts are committed to Git.
 - Checkpoint 03A — Agronomic Features v1: built, validated and committed as a separate target-free nonlinear layer.
-- Checkpoint 03B — Empirical Features v1: built, validated and committed as a separate target-free data-driven layer; fold-local target-aware expression discovery is implemented but never materialized globally.
+- Checkpoint 03B — deterministic Empirical Features v1 is built and committed; fold-local target-aware expression discovery is implemented. Workstation execution/review of the discovery audit is still pending.
 
 Canonical model-ready inputs:
 
@@ -221,4 +221,4 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
 ## Immediate next action
 
-Start Checkpoint 03C. Compare base-only, agronomic-only, empirical-only and joined representations under both frozen validation protocols. Include fold-local discovered-expression augmentation as a separate leakage-safe representation. Then compare controlled model families and fold-fitted PCA/PLS/kernels. Do not rebuild 03A or 03B unless their inputs or formulas change.
+Run Checkpoint 03B locally with `python tools/run_checkpoint_03b.py`, review `reports/checkpoint_03b/expression_discovery_report.md` and `expression_stability.csv`, and only then close 03B / start 03C.
