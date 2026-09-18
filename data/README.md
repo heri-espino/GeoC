@@ -74,10 +74,10 @@ Toda transformación reproducible debe vivir en `src/geocebada/` o scripts contr
 `data/processed/agronomic_features_v1/` fue cerrada en Checkpoint 03A:
 
 ```text
-parcel_agronomic_features.csv  197 × 352
+parcel_agronomic_features.csv  197 × 351
 351 variables derivadas
 123 clean
-228 competition
+227 competition
 missingness retenida = 0.0
 ```
 
