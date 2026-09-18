@@ -21,7 +21,9 @@ src/geocebada/
 │   ├── interactive.py    # reproducible feature recipes and joins
 │   ├── temporal.py       # temporal coverage/alignment utilities
 │   ├── parcel.py         # canonical parcel-level Feature Table v1 extraction
-│   └── agronomic.py      # additive target-free agronomic/nonlinear feature layer
+│   ├── agronomic.py      # additive target-free agronomic/nonlinear feature layer
+│   ├── empirical.py      # deterministic X-only empirical geometry layer
+│   └── discovery.py      # fold-local target-aware expression discovery
 ├── statistics/
 │   └── inference.py      # association tests, multiplicity and assumptions
 ├── visualization/
@@ -158,3 +160,20 @@ See `docs/AGENT_GUIDE.md`, `docs/PROJECT_HISTORY.md`, root `AGENTS.md`, `.ai_han
 
 Checkpoint 03A derives an additive target-free layer in `features/agronomic.py`.
 Use `build_agronomic_feature_layer` to construct it, `validate_agronomic_feature_layer` to enforce the 197-ID/numeric contract, and `join_agronomic_features` for a validated one-to-one merge with Feature Table v1. The formulas and evidence policy are documented in `docs/AGRONOMIC_FEATURES_V1.md`.
+
+
+## Empirical Features v1
+
+Checkpoint 03B derives a second additive layer in `features/empirical.py`.
+
+Use `build_empirical_feature_layer` to construct deterministic target-free temporal geometry,
+historical-range condition, symmetric-change, sensor-shape and aggregate-geometry features.
+Use `validate_empirical_feature_layer` and `join_empirical_features` for the one-row-per-parcel
+contract.
+
+Target-aware formula search is separate. `FoldLocalExpressionMiner` in
+`features/discovery.py` may use `RENDIMIENTO_T_HA` only during `fit` on a training fold.
+It must never be fitted globally before cross-validation.
+
+See `docs/EMPIRICAL_FEATURES_V1.md` and
+`checkpoints/03b_empirical_feature_discovery/README.md`.
