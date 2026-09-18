@@ -409,7 +409,7 @@ on CHIRPS as a modeled family.
 
 ---
 
-## 13. Clean vs competition semantics
+## 11. Clean vs competition semantics
 
 `clean` is the defensible historical/static track. It avoids full-season target-year
 information and contemporaneous outcome proxies.
@@ -424,7 +424,7 @@ must not be described as a strict prospective forecast.
 
 ---
 
-## 11. Frozen Checkpoint 02 validation
+## 12. Frozen Checkpoint 02 validation
 
 Always reuse:
 
@@ -449,7 +449,7 @@ generalization is a major project risk.
 
 ---
 
-## 12. Frozen ablations
+## 13. Frozen ablations
 
 Use the same names in future reports:
 
@@ -471,7 +471,7 @@ Do not redefine these labels halfway through a modeling study.
 
 ---
 
-## 13. Checkpoint 02 baseline evidence
+## 14. Checkpoint 02 baseline evidence
 
 These are historical baseline results, not a final-model declaration.
 
@@ -502,7 +502,7 @@ validated protocol is being added.
 
 ---
 
-## 14. Train-versus-prediction diagnostics
+## 15. Train-versus-prediction diagnostics
 
 Checkpoint 02 screened 1,401 numeric features.
 
@@ -519,35 +519,52 @@ final predictions look plausible.
 
 ---
 
-## 15. What Checkpoint 03B should do
+## 16. What Checkpoint 03C should do
 
-Checkpoint 03A is already closed. Do not recreate or target-select the 350 agronomic features outside CV. Checkpoint 03B should first compare feature representations (base only, agronomic only, base + agronomic, and controlled reduced/selected variants), then compare controlled model families on the already frozen data/folds.
+Checkpoints 03A and 03B are closed. Do not recreate or target-select their canonical materialized
+features outside CV.
 
-Good candidates:
+03C should compare the following representations under both frozen validation protocols before
+heavy tuning:
+
+```text
+B0 = Feature Table v1
+B1 = Agronomic Features v1 only
+B2 = Empirical Features v1 only
+B3 = base + agronomic
+B4 = base + empirical
+B5 = base + agronomic + empirical
+B6 = reduced/selected representation
+B7 = fold-local discovered-expression augmentation
+```
+
+Good candidate model families:
 
 - CatBoost;
 - Ridge/ElasticNet with tuned regularization;
 - ExtraTrees/RandomForest refinements;
 - HistGradientBoosting;
 - LightGBM/XGBoost if justified;
-- optional PCA/PLS or other dimension reduction as a comparison, never as an assumption.
+- polynomial/RBF kernels;
+- PCA/PLS variants as comparisons, never as assumptions.
 
 Because n=138 and p is large, keep hyperparameter search disciplined. Prefer small,
-interpretable search spaces and repeated evidence over huge optimizer sweeps.
+interpretable search spaces and repeated held-out evidence over huge optimizer sweeps.
 
 Any learned operation must be inside the CV pipeline:
 
 - imputation;
 - scaling;
-- PCA;
+- PCA/PLS;
+- clustering;
 - supervised feature selection;
 - encoding;
-- dimensionality reduction;
-- target-aware transforms.
+- target-aware expression discovery;
+- kernel/model hyperparameters.
 
 ---
 
-## 16. Modeling implementation rules
+## 17. Modeling implementation rules
 
 Stable shared logic belongs under `src/geocebada/`, not inside a notebook.
 
@@ -577,7 +594,7 @@ Do not overwrite historical Checkpoint 02 outputs with Checkpoint 03 experiments
 
 ---
 
-## 17. Spatial caution
+## 18. Spatial caution
 
 The municipality-grouped degradation is a first-class project finding.
 
@@ -593,7 +610,7 @@ CV look easier than geographic generalization really is.
 
 ---
 
-## 18. Temporal caution
+## 19. Temporal caution
 
 The target corresponds to April–October 2025, but the exact operational forecasting time is not
 frozen.
@@ -608,7 +625,7 @@ Do not retroactively label competition-mode features as leakage-free prospective
 
 ---
 
-## 19. Known technical maintenance items
+## 20. Known technical maintenance items
 
 The feature-table build passed, but two non-fatal warnings were observed:
 
