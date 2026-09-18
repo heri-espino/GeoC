@@ -219,6 +219,10 @@ Interpretation:
 > persistent parcel/site signal is separated from how unusual the 2025 crop appears relative
 > to its own historical remote-sensing profile.
 
+The NDWI seasonal ratio is deliberately omitted. NDWI is a signed normalized index and its
+historical seasonal mean can approach or cross zero, making a ratio numerically unstable and
+difficult to interpret. For NDWI the layer keeps difference/AUC/timing anomaly terms instead.
+
 These variables are `competition` because they use full-season 2025 covariates.
 
 ---
