@@ -12,9 +12,9 @@ metadata, the source evidence wins and the checkpoint must be corrected.
 | Checkpoint | Status | State captured |
 |---|---|---|
 | [01_data](01_data/README.md) | Closed | Official/external data acquisition, Data Contract v2 audit, normalization decisions and validated shared integration fixtures. |
-| [02_features](02_features/README.md) | Closed | Validated/versioned 197-row feature table, feature-family inventory, train-vs-prediction diagnostics, frozen CV folds, ablations and baseline results. |
+| [02_features](02_features/README.md) | Closed | Validated/versioned 197-row feature table, feature-family inventory, train-vs-prediction diagnostics, frozen CV folds, ablations and baseline results. |\n| [03_modeling](03_modeling/README.md) | In progress | 03A builds the target-free agronomic nonlinear feature layer; 03B will compare model families on the frozen folds. |
 
-The next milestone is **03_modeling**. Future checkpoints should continue the numeric sequence, for example:
+Checkpoint **03_modeling** is now open. Future checkpoints should continue the numeric sequence, for example:
 
 ```text
 checkpoints/
