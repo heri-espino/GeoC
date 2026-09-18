@@ -35,6 +35,8 @@ Registrar cada uso relevante en la tabla siguiente.
 
 | 2026-09-18 | ChatGPT | Checkpoint 01 — Data foundation | Solicitud de crear un checkpoint narrativo de todo lo realizado en datos | `checkpoints/README.md` y `checkpoints/01_data/README.md`; se documentaron fuentes, razones de adquisición, normalizaciones, audit, fixtures, qué está/no está en Git y próximos pasos | Basado en Data Contract v2, archivos versionados, manifests y resultados del audit/fixture validados localmente |
 
+| 2026-09-18 | ChatGPT | Checkpoint 02 — diagnóstico y modelado inicial | Solicitud de crear el checkpoint histórico posterior a Feature Table v1, inventariar features por familia, comparar train vs prediction, congelar folds, definir ablations y documentar las razones | `configs/checkpoint02.yaml`, `src/geocebada/evaluation/parcel_modeling.py`, `tools/build_checkpoint_02.py`, tests y `checkpoints/02_features/README.md`; el diseño separa clean/competition, congela CV state-stratified + municipality-grouped y difiere PCA/tuning serio | Basado en el build local validado por el usuario: 197 filas, 138/59, 694 clean, 709 competition-only, 1,403 features totales; los resultados diagnósticos/modelos deben ejecutarse y revisarse en la workstation antes de cerrar el checkpoint |
+
 ## Criterio de registro
 
 Registrar prompts que hayan contribuido materialmente a:
