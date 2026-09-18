@@ -136,6 +136,10 @@ supervised_discovery:
     - agro_water__2025__precip_minus_aeti_season
     - agro_thermal__2025__gdd_proxy_base5p0c
     - agro_soil__soc_x_cec
+    - emp_vci_like_short__s2_ndvi__season_mean
+    - emp_shape__y2025_s2_ndvi__shape_entropy
+    - emp_symchange__s2_ndvi__season_mean
+    - emp_sensor_shape__s2_vs_planet__ndvi__pearson_r
 
 validation:
   expected_rows: 197
