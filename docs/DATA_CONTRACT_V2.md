@@ -158,9 +158,17 @@ cve_mun
 nomgeo
 ```
 
-Parcel-to-municipality assignment is defined by **largest polygon intersection** in a
-projected CRS. The audit records the overlap fraction and cross-checks the result against
-the municipality label already delivered with the parcel geometry.
+Administrative municipality features use the **official Estado/Municipio labels delivered
+with each parcel** as the primary source. INEGI polygons are a spatial QA/fallback layer:
+the audit computes largest polygon intersection in a projected CRS and requires a dominant
+spatial municipality with at least 80% overlap.
+
+The audit identified two genuine boundary-crossing parcels but both have a clear dominant
+municipality: AGC_020 (98.65% Emiliano Zapata, Hidalgo) and AGC_129 (85.43% Singuilucan,
+Hidalgo). One documented source discrepancy exists: AGC_048 is labelled
+`Nanacamilpa de Mariano Arista` in the official parcel attributes while the INEGI spatial
+overlay places it in `Calpulalpan`. Preserve the official label for administrative/SIAP
+joins and retain the spatial assignment as QA metadata rather than silently overwriting it.
 
 ## CHIRPS daily
 
@@ -249,6 +257,11 @@ inside the actual SIAP files for state codes 13, 21 and 29 and reports:
 - productive cycles;
 - modalities;
 - production unit labels.
+
+SIAP schema changes are normalized source-aware: `Nomcultivo` is the standard crop-name
+field, while 2015–2020 use `Nomcultivo Sin Um`; both map to canonical `Nomcultivo`.
+The audit currently discovers `Cebada grano` and `Cebada forrajera en verde`; downstream
+grain-yield features must not mix those crop categories.
 
 Municipal joins must construct:
 
