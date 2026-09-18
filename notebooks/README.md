@@ -1,5 +1,7 @@
 # Notebooks
 
+> Estado actual: Checkpoint 02 está cerrado. Para modelado nuevo, leer `docs/AGENT_GUIDE.md`, usar `data/processed/features_v1/` y reutilizar `reports/checkpoint_02/cv_folds.csv`.
+
 Los notebooks son para exploración, visualización y experimentos iniciales. La lógica estable y reutilizable debe vivir en `src/geocebada/` y consumirse como una librería normal de Python.
 
 ## Si es tu primera vez en el proyecto
@@ -91,15 +93,7 @@ Para descubrir funciones existentes antes de crear una nueva, consulta `docs/FUN
 
 ## Convención sugerida
 
-```text
-01_visualizacion_datos.ipynb
-02_cobertura_alineacion_temporal.ipynb
-03_feature_engineering.ipynb
-04_baselines.ipynb
-05_model_comparison.ipynb
-06_explainability.ipynb
-07_final_predictions.ipynb
-```
+Los notebooks 01–02 ya existen y son exploratorios. La Feature Table v1 y los baselines de Checkpoint 02 ya se construyeron por scripts reproducibles, así que no se deben recrear como única lógica en notebooks. Para Checkpoint 03 pueden añadirse notebooks de análisis/visualización que importen el pipeline estable desde `src/geocebada/`.
 
 ## Regla de promoción a librería
 
