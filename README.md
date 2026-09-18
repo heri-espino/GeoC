@@ -226,14 +226,12 @@ final frozen pipeline
 
 ## Próximos pasos
 
-1. ejecutar `python tools/audit_data_contract_v2.py` y resolver todos los `FAIL`/`WARN`;
-2. distinguir en el catálogo entre fuente disponible y fuente completa, y certificar 197 IDs / 138+59;
-3. crear fixtures de integración con las mismas ~12 parcelas a través de todas las fuentes;
-4. resolver CRS/geometrías, joins de municipio, duplicados SIAP, etiquetas reales de cebada y escalas/unidades SoilGrids;
-5. verificar continuidad CHIRPS diario, semántica temporal WaPOR y cobertura espacial de todos los rásteres;
-6. construir una tabla maestra determinista de **197 filas**, una por `ID_POLIGONO`, con namespaces, procedencia y grupos `clean` vs `competition`;
-7. después comparar representaciones temporales y modelos con folds de parcela consistentes y diagnósticos espaciales;
-8. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
+1. mantener cerrado el **Data Contract v2** reejecutando el audit cuando cambien fuentes/raw;
+2. generar y versionar las **12 integration fixtures compartidas** con `python tools/build_integration_fixtures.py`;
+3. usar esas fixtures para probar joins y extractores end-to-end;
+4. construir una tabla maestra determinista de **197 filas**, una por `ID_POLIGONO`, con namespaces, procedencia y grupos `clean` vs `competition`;
+5. después comparar representaciones temporales y modelos con folds de parcela consistentes y diagnósticos espaciales;
+6. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
 
 
 ## Calidad y trazabilidad
