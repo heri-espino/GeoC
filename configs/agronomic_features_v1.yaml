@@ -29,6 +29,7 @@ months:
 phenology:
   metrics:
     - auc
+    - season_mean
     - amplitude
     - peak_month
     - early_mean
