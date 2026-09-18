@@ -98,7 +98,7 @@ GeoCebada/
 │   ├── source/                  # fuentes oficiales, inmutables
 │   ├── raw/                     # ingestión derivada
 │   ├── interim/                 # transformaciones intermedias
-│   └── processed/               # datos model-ready
+│   └── processed/               # derivados; features_v1 canónico sí se versiona
 ├── docs/
 │   ├── DATA_SOURCES.md          # inventario e integración de datos
 │   ├── DATA_CONTRACT_V2.md      # audit gate antes de features
@@ -233,11 +233,11 @@ final frozen pipeline
 ## Próximos pasos
 
 1. mantener cerrado el **Data Contract v2** reejecutando el audit cuando cambien fuentes/raw;
-2. conservar reproducible **Feature Table v1** y su `feature_manifest.json`;
-3. ejecutar `python tools/build_checkpoint_02.py` sobre la workstation completa;
-4. revisar y congelar `reports/checkpoint_02/cv_folds.csv` y los diagnósticos train-vs-prediction;
-5. comparar los ablations bajo los dos protocolos fijos antes de abrir tuning serio;
-6. abrir Checkpoint 03 sólo después de revisar los resultados de Ridge/ExtraTrees/Dummy y decidir qué familias justifican CatBoost/boosting/PCA u otros modelos;
+2. mantener versionada la **Feature Table v1** canónica bajo `data/processed/features_v1/`;
+3. reutilizar siempre `reports/checkpoint_02/cv_folds.csv` para comparaciones de modelos;
+4. abrir **Checkpoint 03 — Modeling** con CatBoost, modelos lineales regularizados y boosting bajo los mismos folds;
+5. tratar la gran brecha entre CV state-stratified y municipality-grouped como riesgo espacial explícito;
+6. probar reducción/selección de dimensionalidad sólo dentro de folds y sólo si mejora evidencia fuera de muestra;
 7. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
 
 
