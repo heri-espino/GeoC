@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phase 03A (Agronomic Features v1) is closed; start from 03B — model comparison.
+**Current phase:** Checkpoint 03 is open. Phases 03A (Agronomic Features v1) and 03B (Empirical Features v1) are closed; start from 03C — model/representation comparison.
 
 ---
 
@@ -20,13 +20,14 @@ Read in this order before substantial work:
 3. `docs/PROJECT_HISTORY.md` — what happened and why.
 4. `checkpoints/01_data/README.md` — closed data-foundation milestone.
 5. `checkpoints/02_features/README.md` — closed feature/validation milestone.
-6. `checkpoints/03_modeling/README.md` — 03A closed; 03B current modeling milestone.
-7. `data/processed/features_v1/README.md` and `data/processed/agronomic_features_v1/README.md` — canonical model-ready representations.
-8. `reports/checkpoint_02/checkpoint_02_report.md` — frozen diagnostics/baselines/folds.
-9. `docs/AGRONOMIC_FEATURES_V1.md` before changing derived agronomic variables.
-10. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `docs/FEATURE_TABLE_V1.md`.
-11. `docs/FUNCTION_INDEX.md` before adding reusable code.
-12. `app/AGENTS.md` before touching Streamlit/deployment.
+6. `checkpoints/03_modeling/README.md` — 03A/03B closed; 03C current modeling milestone.
+7. `checkpoints/03b_empirical_feature_discovery/README.md` — closed empirical-discovery contract.
+8. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md` and `data/processed/empirical_features_v1/README.md` — canonical representations.
+9. `reports/checkpoint_02/checkpoint_02_report.md` — frozen diagnostics/baselines/folds.
+10. `docs/AGRONOMIC_FEATURES_V1.md` and `docs/EMPIRICAL_FEATURES_V1.md` before changing derived variables.
+11. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `docs/FEATURE_TABLE_V1.md`.
+12. `docs/FUNCTION_INDEX.md` before adding reusable code.
+13. `app/AGENTS.md` before touching Streamlit/deployment.
 
 Do not start by re-deriving facts from scratch unless a source changed or a validation check
 fails.
@@ -66,20 +67,23 @@ GeoCebada/
 ├── checkpoints/
 │   ├── 01_data/
 │   ├── 02_features/
-│   └── 03_modeling/
+│   ├── 03_modeling/
+│   └── 03b_empirical_feature_discovery/
 ├── configs/
 │   ├── base.yaml
 │   ├── data_contract_v2.yaml
 │   ├── features_v1.yaml
 │   ├── checkpoint02.yaml
-│   └── agronomic_features_v1.yaml
+│   ├── agronomic_features_v1.yaml
+│   └── empirical_features_v1.yaml
 ├── data/
 │   ├── source/                       # immutable official challenge sources
 │   ├── raw/                          # local/generated, mostly gitignored
 │   ├── interim/                      # local/generated, gitignored
 │   ├── samples/integration/          # committed integration fixtures
 │   ├── processed/features_v1/        # committed canonical source-derived tables
-│   └── processed/agronomic_features_v1/ # committed target-free nonlinear layer
+│   ├── processed/agronomic_features_v1/ # committed target-free nonlinear layer
+│   └── processed/empirical_features_v1/ # committed target-free empirical layer
 ├── docs/
 │   ├── AGENT_GUIDE.md
 │   ├── PROJECT_HISTORY.md
@@ -154,6 +158,9 @@ tools/build_checkpoint_02.py
 tools/build_agronomic_features_v1.py
     197-row target-free phenology/thermal/water/soil/nonlinear layer for Checkpoint 03A
 
+tools/build_empirical_features_v1.py
+    197-row target-free temporal-geometry/relative-condition layer for Checkpoint 03B
+
 tools/generate_function_index.py
     regenerate docs/FUNCTION_INDEX.md from public package symbols
 
@@ -218,6 +225,7 @@ The following are intentionally in Git:
 - integration fixtures;
 - `data/processed/features_v1/`;
 - `data/processed/agronomic_features_v1/`;
+- `data/processed/empirical_features_v1/`;
 - Checkpoint 02 reports/folds.
 
 ### Local or ignored
@@ -321,7 +329,53 @@ Read `docs/AGRONOMIC_FEATURES_V1.md` for the formulas and references.
 
 ---
 
-## 9. Feature families
+## 9. Empirical Features v1
+
+Checkpoint 03B is complete. The additive X-only table is:
+
+```text
+data/processed/empirical_features_v1/parcel_empirical_features.csv
+197 rows × 336 columns
+= ID_POLIGONO + 335 derived features
+```
+
+Manifest counts:
+
+```text
+clean           91
+competition    244
+total          335
+missingness    0.0
+infinities       0
+```
+
+Families:
+
+```text
+temporal_shape              162
+aggregate_geometry           72
+symmetric_change             42
+short_baseline_condition     41
+sensor_shape_similarity      18
+```
+
+The materialized table is target-free. The short-baseline NDVI normalization is named
+`emp_vci_like_short__*` and must not be described as standard VCI because its parcel-level
+historical reference spans only 2022–2024. One Landsat VI6T exceedance candidate was constant
+and dropped.
+
+Target-aware discovery is separate. `FoldLocalExpressionMiner` uses a configured pool of 24
+primitives and may inspect yield only inside `fit(X_train, y_train)` for one training fold.
+Never pre-discover expressions on all 138 labels before scoring frozen folds.
+
+PCA, clustering, PLS and kernels also learn cross-row/model parameters and belong inside
+Checkpoint 03C fold pipelines rather than canonical processed tables.
+
+Read `docs/EMPIRICAL_FEATURES_V1.md` for formulas, literature context and leakage rules.
+
+---
+
+## 10. Feature families
 
 Observed Feature Table v1 inventory:
 
@@ -355,7 +409,7 @@ on CHIRPS as a modeled family.
 
 ---
 
-## 10. Clean vs competition semantics
+## 13. Clean vs competition semantics
 
 `clean` is the defensible historical/static track. It avoids full-season target-year
 information and contemporaneous outcome proxies.
