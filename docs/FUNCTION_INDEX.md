@@ -25,6 +25,16 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `load_yield_split` | function | `geocebada.data.targets` | Load the official parcel target/split table. | `src/geocebada/data/targets.py` |
 | `partition_yield_split` | function | `geocebada.data.targets` | Return independent training and prediction DataFrames. | `src/geocebada/data/targets.py` |
 | `validate_yield_split` | function | `geocebada.data.targets` | Validate the known invariants of the official 70/30 split. | `src/geocebada/data/targets.py` |
+| `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `evaluate_fixed_folds` | function | `geocebada.evaluation.parcel_modeling` | Evaluate fixed feature ablations and baseline models on one frozen fold protocol. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `initial_regressors` | function | `geocebada.evaluation.parcel_modeling` | Return deliberately untuned baseline regressors for Checkpoint 02. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `resolve_ablation_features` | function | `geocebada.evaluation.parcel_modeling` | Resolve one declarative ablation specification into concrete feature names. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `summarize_feature_inventory` | function | `geocebada.evaluation.parcel_modeling` | Summarize feature counts by family, mode and provenance source. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `summarize_fixed_fold_scores` | function | `geocebada.evaluation.parcel_modeling` | Summarize fixed-fold benchmark scores without declaring a model winner. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `train_prediction_diagnostics` | function | `geocebada.evaluation.parcel_modeling` | Compare numeric feature support/distributions between train and prediction rows. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `validate_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Validate that a frozen fold file covers each training parcel exactly once. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `benchmark_regressors` | function | `geocebada.evaluation.regression` | Compare regression baselines using identical shuffled K-fold splits. | `src/geocebada/evaluation/regression.py` |
 | `default_regressors` | function | `geocebada.evaluation.regression` | Return lightweight baseline regressors suitable for early comparison. | `src/geocebada/evaluation/regression.py` |
 | `summarize_benchmark` | function | `geocebada.evaluation.regression` | Summarize fold-level benchmark metrics as mean and standard deviation. | `src/geocebada/evaluation/regression.py` |
