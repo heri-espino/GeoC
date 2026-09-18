@@ -99,7 +99,92 @@ The repository is private.
 
 ---
 
-## 4. Sources of truth
+## 4. Component map
+
+### Reusable Python package
+
+`src/geocebada/` is the shared implementation layer.
+
+```text
+config.py          YAML/config loading
+paths.py           repository/data path resolution
+data/              file discovery, targets/split, raster/data loading
+geo/               CRS and geospatial safeguards
+features/          interactive recipes, temporal alignment, parcel feature construction
+statistics/        statistical inference and diagnostics
+evaluation/        regression baselines + Checkpoint 02 fixed-fold evaluation
+models/            reserved for frozen/final modeling interfaces
+visualization/     reusable plotting/exploration helpers
+```
+
+Search `docs/FUNCTION_INDEX.md` before adding public helpers.
+
+### Main CLI tools
+
+```text
+tools/audit_official_tabular.py
+    quick CI/schema check for official tabular files
+
+tools/audit_data_contract_v2.py
+    complete source/external data contract audit
+
+tools/build_data_catalog.py
+    structural data catalog generation
+
+tools/build_external_data_manifest.py
+    versionable manifest of local external/raw files
+
+tools/download_external_data.py
+    reproducible external-source downloader
+
+tools/build_integration_fixtures.py
+    deterministic 12-parcel end-to-end fixtures
+
+tools/build_parcel_feature_table.py
+    canonical 197-row Feature Table v1 builder
+
+tools/build_checkpoint_02.py
+    feature inventory, shift diagnostics, frozen folds, ablations and baselines
+
+tools/generate_function_index.py
+    regenerate docs/FUNCTION_INDEX.md from public package symbols
+
+tools/inspect_reference_docx.py
+    inspect source/reference DOCX material without manually rewriting it
+
+tools/_netcdf_catalog_worker.py
+    internal helper for NetCDF catalog inspection; not a user-facing entry point
+```
+
+### Notebooks
+
+`notebooks/01_visualizacion_datos.ipynb`
+: first-look/exploration notebook for teammates.
+
+`notebooks/02_cobertura_alineacion_temporal.ipynb`
+: temporal coverage/alignment exploration; its temporal parameters are not frozen final model
+  choices.
+
+Notebooks must not become alternate sources of truth for reusable logic.
+
+### Streamlit
+
+`app/main.py` and `app/pages/` provide the interactive laboratory.
+
+`app/AGENTS.md` is mandatory reading before app/deployment changes.
+
+The application must call shared `geocebada` functions rather than fork modeling/data logic.
+
+### Reports and models
+
+`reports/` stores experiment metrics, figures, predictions and checkpoint outputs.
+
+`models/` is reserved for promoted/frozen model artifacts. Do not place exploratory metrics or
+raw data there.
+
+---
+
+## 5. Sources of truth
 
 Use this precedence order when facts conflict:
 
@@ -114,7 +199,7 @@ Never silently alter source evidence to make documentation consistent.
 
 ---
 
-## 5. Data policy
+## 6. Data policy
 
 ### Versioned
 
@@ -142,7 +227,7 @@ Do not commit secrets, credentials, `.cdsapirc`, arbitrary caches or machine-spe
 
 ---
 
-## 6. Canonical model-ready input
+## 7. Canonical model-ready input
 
 Use:
 
@@ -177,7 +262,7 @@ Use the manifest instead of guessing from prefixes whenever possible.
 
 ---
 
-## 7. Feature families
+## 8. Feature families
 
 Observed Feature Table v1 inventory:
 
@@ -211,7 +296,7 @@ on CHIRPS as a modeled family.
 
 ---
 
-## 8. Clean vs competition semantics
+## 9. Clean vs competition semantics
 
 `clean` is the defensible historical/static track. It avoids full-season target-year
 information and contemporaneous outcome proxies.
@@ -226,7 +311,7 @@ must not be described as a strict prospective forecast.
 
 ---
 
-## 9. Frozen Checkpoint 02 validation
+## 10. Frozen Checkpoint 02 validation
 
 Always reuse:
 
@@ -251,7 +336,7 @@ generalization is a major project risk.
 
 ---
 
-## 10. Frozen ablations
+## 11. Frozen ablations
 
 Use the same names in future reports:
 
@@ -273,7 +358,7 @@ Do not redefine these labels halfway through a modeling study.
 
 ---
 
-## 11. Checkpoint 02 baseline evidence
+## 12. Checkpoint 02 baseline evidence
 
 These are historical baseline results, not a final-model declaration.
 
@@ -304,7 +389,7 @@ validated protocol is being added.
 
 ---
 
-## 12. Train-versus-prediction diagnostics
+## 13. Train-versus-prediction diagnostics
 
 Checkpoint 02 screened 1,401 numeric features.
 
@@ -321,7 +406,7 @@ final predictions look plausible.
 
 ---
 
-## 13. What Checkpoint 03 should do
+## 14. What Checkpoint 03 should do
 
 Checkpoint 03 should compare controlled model families on the already frozen data/folds.
 
@@ -349,7 +434,7 @@ Any learned operation must be inside the CV pipeline:
 
 ---
 
-## 14. Modeling implementation rules
+## 15. Modeling implementation rules
 
 Stable shared logic belongs under `src/geocebada/`, not inside a notebook.
 
@@ -379,7 +464,7 @@ Do not overwrite historical Checkpoint 02 outputs with Checkpoint 03 experiments
 
 ---
 
-## 15. Spatial caution
+## 16. Spatial caution
 
 The municipality-grouped degradation is a first-class project finding.
 
@@ -395,7 +480,7 @@ CV look easier than geographic generalization really is.
 
 ---
 
-## 16. Temporal caution
+## 17. Temporal caution
 
 The target corresponds to April–October 2025, but the exact operational forecasting time is not
 frozen.
@@ -410,7 +495,7 @@ Do not retroactively label competition-mode features as leakage-free prospective
 
 ---
 
-## 17. Known technical maintenance items
+## 18. Known technical maintenance items
 
 The feature-table build passed, but two non-fatal warnings were observed:
 
@@ -428,7 +513,7 @@ Do not confuse either warning with failed validation.
 
 ---
 
-## 18. Commands that define the current pipeline
+## 19. Commands that define the current pipeline
 
 From the repository root:
 
@@ -450,7 +535,7 @@ artifacts are already versioned.
 
 ---
 
-## 19. CI and code quality
+## 20. CI and code quality
 
 CI checks:
 
@@ -466,7 +551,7 @@ If CI fails, inspect the failing step rather than bypassing it.
 
 ---
 
-## 20. Streamlit rules
+## 21. Streamlit rules
 
 Before any app change, read `app/AGENTS.md`.
 
@@ -480,7 +565,7 @@ The app is an interface over `geocebada`, not a second implementation.
 
 ---
 
-## 21. AI-use documentation
+## 22. AI-use documentation
 
 Material AI contributions are logged in `docs/AI_USAGE.md`.
 
@@ -491,7 +576,7 @@ Do not put secrets or personal credentials in the AI log.
 
 ---
 
-## 22. Things an agent should not redo
+## 23. Things an agent should not redo
 
 Do not redo the following unless source data/code changed or a validation fails:
 
@@ -512,7 +597,7 @@ Build on these artifacts instead.
 
 ---
 
-## 23. Things still open
+## 24. Things still open
 
 These are legitimate next questions:
 
@@ -529,7 +614,7 @@ These are legitimate next questions:
 
 ---
 
-## 24. Definition of a good agent handoff
+## 25. Definition of a good agent handoff
 
 Before ending a substantial agent session:
 
