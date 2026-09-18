@@ -1,6 +1,6 @@
 # Checkpoint 03A — Agronomic Feature Layer
 
-**Status:** implementation complete; generated-artifact validation pending.  
+**Status:** **Closed**.  
 **Opened:** 2026-09-18
 
 Checkpoint 03A adds an **additive, target-free nonlinear/agronomic representation** over the
@@ -151,9 +151,50 @@ python tools\build_agronomic_features_v1.py
 The builder validates parcel coverage, removes all-null/constant derived columns, rejects
 infinite values, emits a machine-readable provenance manifest and records source hashes.
 
+## Canonical build result
+
+The versioned build from Feature Table v1 passed with:
+
+```text
+rows                         197
+derived features             351
+clean                        123
+competition                  228
+mean/max missing fraction    0.0
+infinite values              0
+target used                  false
+CHIRPS used                  false
+```
+
+Retained family counts:
+
+```text
+phenology              162
+phenology_anomaly       42
+water_productivity      40
+thermal                 36
+cross_domain            19
+soil_profile            18
+water_timing            10
+sensor_agreement         9
+soil_interaction         8
+nonlinear_basis          7
+```
+
+Three proposed 25 C monthly-mean heat features were constant and therefore removed:
+
+```text
+agro_thermal__historical__heat_excess_25c_proxy
+agro_thermal__2025__heat_excess_25c_proxy
+agro_interaction__heat_x_positive_water_gap_2025
+```
+
+This only shows that this monthly-mean hinge has no cross-parcel variation in the current
+representation. It is not evidence that heat stress is irrelevant to barley.
+
 ## Acceptance criteria
 
-Checkpoint 03A closes when:
+Checkpoint 03A closed after confirming that:
 
 1. CI passes Ruff, tests, function-index consistency and Sphinx;
 2. the builder returns exactly 197 unique parcel IDs;
@@ -164,5 +205,4 @@ Checkpoint 03A closes when:
 7. generated CSV, manifest and build report are committed;
 8. project handoffs/history are updated with the final observed counts.
 
-After closure, the next phase is **Checkpoint 03B — Modeling**, initially comparing the base
-table, agronomic-only and joined representations with the frozen Checkpoint 02 folds.
+All acceptance criteria are satisfied. The next phase is **Checkpoint 03B — Modeling**, initially comparing the base table, agronomic-only and joined representations with the frozen Checkpoint 02 folds.
