@@ -67,6 +67,7 @@ def test_agronomic_layer_contains_expected_scientific_feature_families() -> None
     assert "agro_water__2025__npp_per_aeti_season" in columns
     assert "agro_soil__soc_x_cec" in columns
     assert "agro_interaction__siap_recent_yield_x_ndvi_anomaly" in columns
+    assert "agro_anomaly__s2_ndwi__season_mean_ratio" not in columns
 
     families = {record["family"] for record in records}
     assert {
