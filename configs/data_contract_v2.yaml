@@ -108,6 +108,15 @@ external:
       - cve_ent
       - cve_mun
       - nomgeo
+    assignment_policy:
+      administrative_join: official_parcel_estado_municipio
+      spatial_qc: largest_polygon_overlap
+      minimum_dominant_overlap: 0.80
+      known_name_discrepancies:
+        AGC_048:
+          official_municipio: Nanacamilpa de Mariano Arista
+          spatial_municipio: Calpulalpan
+          policy: preserve_official_for_admin_join_keep_spatial_as_qc
 
   chirps_daily:
     root: data/raw/external/chirps_v3_daily
@@ -203,12 +212,14 @@ external:
       - Idmodalidad
       - Nommodalidad
       - Idcultivo
-      - Nomcultivo
       - Sembrada
       - Cosechada
       - Siniestrada
       - Volumenproduccion
       - Rendimiento
+    crop_name_aliases:
+      - Nomcultivo
+      - Nomcultivo Sin Um
     target_state_codes:
       - 13
       - 21
