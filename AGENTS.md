@@ -6,12 +6,13 @@ These instructions apply repository-wide unless a more specific handoff adds con
 
 1. `.ai_handoff`
 2. `README.md`
-3. `data/.ai_handoff` and `data/README.md` for data/model/geospatial work
-4. `docs/VARIABLES.md` for the source-backed variable dictionary
-5. `src/geocebada/README.md` for reusable-code conventions
-6. `docs/FUNCTION_INDEX.md` before creating a new helper
-7. relevant official/reference material under `docs/`
-8. **`app/AGENTS.md` before any Streamlit/app/deployment change**
+3. `docs/DATA_SOURCES.md` for the current data inventory, joins, external-source caveats and Data Contract v2 plan
+4. `data/.ai_handoff` and `data/README.md` for data/model/geospatial work
+5. `docs/VARIABLES.md` for the source-backed variable dictionary
+6. `src/geocebada/README.md` for reusable-code conventions
+7. `docs/FUNCTION_INDEX.md` before creating a new helper
+8. relevant official/reference material under `docs/`
+9. **`app/AGENTS.md` before any Streamlit/app/deployment change**
 
 Do not replace confirmed project facts with guesses or generic ML assumptions.
 
@@ -78,7 +79,7 @@ pip install -e ".[docs]"
 sphinx-build -b html docs docs/_build/html
 ```
 
-`docs/VARIABLES.md` is the human-facing dictionary for dataset variables; source/reference documents remain authoritative when they conflict with derived documentation.
+`docs/DATA_SOURCES.md` is the current operational inventory for official/external data and integration rules. `docs/VARIABLES.md` is the human-facing dictionary for dataset variables; source/reference documents remain authoritative when they conflict with derived documentation.
 
 ## Known spatial constraints
 
