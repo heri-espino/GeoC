@@ -54,7 +54,8 @@ data/
 ├── interim/                # limpieza, joins y features intermedias; no versionado
 └── processed/              # derivados canónicos versionados selectivamente
     ├── features_v1/        # tabla source-derived
-    └── agronomic_features_v1/ # capa no lineal/agronómica X-only
+    ├── agronomic_features_v1/ # capa no lineal/agronómica X-only
+    └── empirical_features_v1/ # geometría/contrastes empíricos X-only
 ```
 
 ### Contrato de carpetas
@@ -64,7 +65,7 @@ data/
 | `source/` | Archivos oficiales exactamente como fueron entregados | No | Sí |
 | `raw/` | Copias descomprimidas, ingestión y formatos de trabajo | No; generar por código | No |
 | `interim/` | Limpieza, uniones geoespaciales, agregaciones y features intermedias | No; generar por código | No |
-| `processed/` | Derivados model-ready | No; generar por código | `processed/features_v1/` y `processed/agronomic_features_v1/` canónicos |
+| `processed/` | Derivados model-ready | No; generar por código | `processed/features_v1/`, `processed/agronomic_features_v1/` y `processed/empirical_features_v1/` canónicos |
 
 Toda transformación reproducible debe vivir en `src/geocebada/` o scripts controlados por el proyecto. No colocar modelos entrenados, predicciones o resultados dentro de `source/`.
 
@@ -85,12 +86,35 @@ No contiene target ni split y no utiliza CHIRPS. Las fórmulas, significado, evi
 bibliografía están en `docs/AGRONOMIC_FEATURES_V1.md`. No seleccionar estas columnas mirando
 los 138 targets completos; cualquier selección supervisada debe ocurrir dentro de folds.
 
+
+### Capa empírica X-only canónica
+
+`data/processed/empirical_features_v1/` fue cerrada en Checkpoint 03B:
+
+```text
+parcel_empirical_features.csv  197 × 336
+335 variables derivadas
+91 clean
+244 competition
+missingness retenida = 0.0
+infinities = 0
+```
+
+Esta capa contiene geometría de curvas temporales, posición relativa contra el histórico corto,
+cambio simétrico 2025-vs-histórico, similitud temporal Sentinel-2/Planet y geometría normalizada
+de resúmenes. No contiene target ni split. `emp_vci_like_short__*` es explícitamente una
+normalización VCI-like de histórico corto, **no VCI climatológico estándar**.
+
+La búsqueda supervisada de fórmulas no está guardada en este dataset:
+`FoldLocalExpressionMiner` debe ajustarse sólo con `X_train, y_train` dentro de cada fold.
+
 ### Datos externos locales y manifiesto reproducible
 
 `data/raw/` y `data/interim/` permanecen fuera de Git. Las excepciones deliberadas son
-`data/processed/features_v1/` y `data/processed/agronomic_features_v1/`. La primera conserva
-las covariables canónicas source-derived; la segunda contiene 350 variables agronómicas/no
-lineales construidas sin target. Ambas tienen 197 IDs y se pueden unir uno-a-uno por
+`data/processed/features_v1/`, `data/processed/agronomic_features_v1/` y
+`data/processed/empirical_features_v1/`. Conservan, respectivamente, las covariables
+source-derived, 350 variables agronómicas X-only y 335 variables empíricas X-only. Las tres
+tienen 197 IDs y se pueden unir uno-a-uno por
 `ID_POLIGONO`, permitiendo modelar desde un clon limpio sin descargar todos los rásteres/NetCDF/CSV externos. El resto de `data/processed/` sigue ignorado.
 
 `data/raw/external/` contiene insumos locales grandes (GeoTIFF, NetCDF y CSV) y no debe
