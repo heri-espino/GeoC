@@ -228,7 +228,7 @@ Read `docs/AGRONOMIC_FEATURES_V1.md` and
 `checkpoints/03_modeling/README.md` before changing this layer.
 
 
-## Empirical Features v1 — deterministic layer versioned; local 03B audit pending
+## Empirical Features v1 — completed and versioned
 
 Checkpoint 03B adds a separate deterministic X-only data-driven layer:
 
@@ -264,8 +264,7 @@ Target-aware expression discovery is separate: `FoldLocalExpressionMiner` has 24
 primitive variables and may use `RENDIMIENTO_T_HA` only inside a training fold. Learned
 cross-row representations such as PCA/clustering likewise belong inside CV.
 
-Read `docs/EMPIRICAL_FEATURES_V1.md` and
-`checkpoints/03b_empirical_feature_discovery/README.md`. Run `python tools/run_checkpoint_03b.py` before treating 03B as closed.
+Read `docs/EMPIRICAL_FEATURES_V1.md`, `checkpoints/03b_empirical_feature_discovery/README.md` and `reports/checkpoint_03b/README.md`.
 
 ## Feature namespaces
 
