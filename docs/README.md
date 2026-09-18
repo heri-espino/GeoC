@@ -7,6 +7,7 @@ Esta carpeta concentra la documentación del proyecto, la referencia de la libre
 - `DATA_SOURCES.md`: inventario operativo de fuentes oficiales/externas, reglas de joins, caveats y estado de adquisición.
 - `DATA_CONTRACT_V2.md`: contrato machine-readable/auditable que debe pasar antes de construir features.
 - `INTEGRATION_FIXTURES.md`: selección y generación de las 12 parcelas compartidas para pruebas end-to-end.
+- `FEATURE_TABLE_V1.md`: contrato, fuentes y transformaciones de la tabla parcel-level model-ready.
 - `VARIABLES.md`: diccionario source-backed de variables e índices.
 - `AI_USAGE.md`: registro del uso de herramientas de IA generativa y prompts relevantes.
 - `FUNCTION_INDEX.md`: índice rápido y buscable de funciones/clases públicas en `src/geocebada/`.
