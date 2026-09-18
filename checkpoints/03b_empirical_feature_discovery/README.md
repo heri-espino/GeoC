@@ -1,6 +1,6 @@
 # Checkpoint 03B — Empirical Feature Discovery
 
-**Status:** implementation in progress  
+**Status:** **Closed**  
 **Opened:** 2026-09-18
 
 Checkpoint 03B follows the closed Agronomic Features v1 layer.
@@ -85,9 +85,48 @@ dataset because they learn cross-row parameters.
 
 They must be fitted inside CV and belong to the next modeling phase.
 
+## Canonical build result
+
+The versioned build from Feature Table v1 passed with:
+
+```text
+rows                         197
+derived features             335
+clean                         91
+competition                  244
+mean/max missing fraction    0.0
+infinite values              0
+target used                  false
+supervised formulas global  false
+short VCI-like standard VCI false
+CHIRPS used                  false
+```
+
+Retained family counts:
+
+```text
+temporal_shape              162
+aggregate_geometry           72
+symmetric_change             42
+short_baseline_condition     41
+sensor_shape_similarity      18
+```
+
+One candidate was constant and therefore removed:
+
+```text
+emp_histpos__landsat_vi6t__above_history_fraction
+```
+
+This only states that the specific 2025 Landsat VI6T historical-range exceedance fraction has
+no cross-parcel variation in the current representation.
+
+The fold-local discovery pool contains 24 configured primitives drawn from source-derived,
+agronomic and empirical variables.
+
 ## Acceptance criteria
 
-03B closes when:
+03B closed after confirming that:
 
 1. deterministic empirical builder runs from a clean clone;
 2. output covers exactly the same 197 parcel IDs;
@@ -102,6 +141,4 @@ They must be fitted inside CV and belong to the next modeling phase.
 11. Ruff, tests, function-index consistency and Sphinx pass;
 12. agent handoffs/history/AI-use docs are synchronized.
 
-After 03B closes, **Checkpoint 03C — Modeling** should compare the source, agronomic and
-empirical representations and then test fold-fitted PCA/PLS, kernels and controlled model
-families using the frozen Checkpoint 02 folds.
+All acceptance criteria are satisfied. **Checkpoint 03C — Modeling** is next: compare source, agronomic and empirical representations, then test fold-fitted PCA/PLS, kernels and controlled model families using the frozen Checkpoint 02 folds.
