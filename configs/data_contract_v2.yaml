@@ -1,0 +1,264 @@
+schema_version: 2
+updated: 2026-09-17
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  expected_total_parcels: 197
+  expected_train_parcels: 138
+  expected_prediction_parcels: 59
+  target_cycle_start: 2025-04-01
+  target_cycle_end: 2025-10-31
+
+official:
+  split:
+    path: data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv
+    expected_rows: 197
+    required_columns:
+      - ID_POLIGONO
+      - AREA_HA
+      - RENDIMIENTO_T_HA
+      - CONJUNTO
+
+  parcels:
+    path: data/source/geospatial/Parcelas_Reto_AGC_CONJUNTO_70_30.zip
+    expected_features: 197
+    expected_crs: EPSG:4326
+    id_aliases:
+      - ID_POLIGONO
+      - ID_POLIGON
+    area_aliases:
+      - AREA_HA
+      - área_ha
+      - area_ha
+    expected_geometry_types:
+      - Polygon
+
+  basic:
+    path: data/source/tabular/Conjunto_datos_BASICO_AgroCebada2026.csv
+    expected_rows: 107666
+    expected_columns: 96
+    expected_parcels: 197
+    date_column: fecha_captura
+    date_format: "%d/%m/%Y"
+    expected_date_min: 2022-01-01
+    expected_date_max: 2025-12-31
+    expected_sensors:
+      - Landsat
+      - Sentinel-2
+    required_columns:
+      - ID_POLIGONO
+      - fecha_captura
+      - sensor
+      - porcentaje_nubosidad
+
+  pro:
+    path: data/source/tabular/Conjunto_datos_PRO_AgroCebada.csv
+    expected_rows: 47804
+    expected_columns: 20
+    expected_parcels: 197
+    date_column: fecha_captura
+    date_format: "%d/%m/%Y"
+    expected_date_min: 2025-01-01
+    expected_date_max: 2025-12-31
+    expected_sensors:
+      - Planet
+    required_columns:
+      - ID_POLIGONO
+      - fecha_captura
+      - sensor
+      - porcentaje_nubosidad
+
+  climate:
+    root: data/source/climate
+    expected_precip_months: 48
+    expected_tmin_months: 48
+    expected_tmax_months: 48
+    start: 2022-01
+    end: 2025-12
+    expected_crs: EPSG:4326
+
+  topography:
+    root: data/source/topography
+    expected_tif_count: 2
+    expected_crs: EPSG:6372
+
+external:
+  inegi_municipios:
+    root: data/raw/external/inegi_municipios
+    required: true
+    files:
+      "13":
+        path: hidalgo_municipios.geojson
+        state: Hidalgo
+        expected_municipalities: 84
+      "21":
+        path: puebla_municipios.geojson
+        state: Puebla
+        expected_municipalities: 217
+      "29":
+        path: tlaxcala_municipios.geojson
+        state: Tlaxcala
+        expected_municipalities: 60
+    required_fields:
+      - cvegeo
+      - cve_ent
+      - cve_mun
+      - nomgeo
+
+  chirps_daily:
+    root: data/raw/external/chirps_v3_daily
+    required: true
+    filename_regex: '^chirps_v3_(\d{4}-\d{2}-\d{2})\.tif$'
+    start: 2025-04-01
+    end: 2025-10-31
+    expected_count: 214
+    expected_crs: EPSG:4326
+
+  wapor:
+    root: data/raw/external/wapor_v3
+    required: true
+    expected_files:
+      - bb_L1-AETI-D_NONE_none.nc
+      - bb_L1-NPP-D_NONE_none.nc
+    expected_dekads: 21
+    products:
+      AETI:
+        filename_contains: L1-AETI-D
+        expected_units: mm/day
+        expected_long_name: Actual EvapoTranspiration and Interception
+      NPP:
+        filename_contains: L1-NPP-D
+        expected_units: gC/m²/day
+        expected_long_name: Net Primary Production
+
+  soilgrids:
+    root: data/raw/external/soilgrids_250m
+    required: true
+    expected_count: 36
+    quantile: Q0.5
+    depths:
+      - 0-5cm
+      - 5-15cm
+      - 15-30cm
+      - 30-60cm
+    source_crs_when_header_missing: ESRI:54052
+    wcs_pseudo_crs: 152160
+    semantics_source: https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs_01.html
+    properties:
+      bdod:
+        divisor: 100
+        mapped_unit: cg/cm3
+        conventional_unit: kg/dm3
+      cec:
+        divisor: 10
+        mapped_unit: mmol(c)/kg
+        conventional_unit: cmol(c)/kg
+      cfvo:
+        divisor: 10
+        mapped_unit: cm3/dm3
+        conventional_unit: vol%
+      clay:
+        divisor: 10
+        mapped_unit: g/kg
+        conventional_unit: "%"
+      nitrogen:
+        divisor: 100
+        mapped_unit: cg/kg
+        conventional_unit: g/kg
+      phh2o:
+        divisor: 10
+        mapped_unit: pH_x_10
+        conventional_unit: pH
+      sand:
+        divisor: 10
+        mapped_unit: g/kg
+        conventional_unit: "%"
+      silt:
+        divisor: 10
+        mapped_unit: g/kg
+        conventional_unit: "%"
+      soc:
+        divisor: 10
+        mapped_unit: dg/kg
+        conventional_unit: g/kg
+
+  siap:
+    root: data/raw/external/SIAP
+    required: true
+    year_min: 2003
+    year_max: 2025
+    yearly_file_regex: '^Cierre_agricola_mun_(\d{4})(?: \(\d+\))?\.csv$'
+    required_columns:
+      - Anio
+      - Idestado
+      - Nomestado
+      - Idmunicipio
+      - Nommunicipio
+      - Idciclo
+      - Nomcicloproductivo
+      - Idmodalidad
+      - Nommodalidad
+      - Idcultivo
+      - Nomcultivo
+      - Sembrada
+      - Cosechada
+      - Siniestrada
+      - Volumenproduccion
+      - Rendimiento
+    target_state_codes:
+      - 13
+      - 21
+      - 29
+    crop_discovery_regex: '(?i)cebada'
+
+  inegi_cem_15m:
+    root: data/raw/external/Inegi
+    required: true
+    expected_tif_count: 3
+    expected_state_codes:
+      - "13"
+      - "21"
+      - "29"
+    expected_crs: EPSG:6365
+
+  era5_land:
+    root: data/raw/external/era5_land
+    required: false
+    policy: optional_partial_do_not_consume_without_complete_audit
+
+feature_modes:
+  clean:
+    description: Prospective/scientifically defensible features available by a declared prediction cutoff.
+    may_use_hidden_targets: false
+  competition:
+    description: Rule-permitted public/transductive information kept separate from clean features.
+    may_use_hidden_targets: false
+    examples:
+      - full-season 2025 public covariates
+      - SIAP 2025 municipal yield proxy
+      - unsupervised transforms fitted on all 197 predictor rows
+
+master_table:
+  expected_rows: 197
+  unique_key: ID_POLIGONO
+  required_metadata:
+    - ID_POLIGONO
+    - CONJUNTO
+    - RENDIMIENTO_T_HA
+  namespaces:
+    - base_
+    - admin_
+    - sat_basic_
+    - sat_pro_
+    - clim_official_
+    - chirps_daily_
+    - wapor_
+    - soilgrids_
+    - topo_official_
+    - cem15_
+    - siap_hist_
+    - siap_2025_
