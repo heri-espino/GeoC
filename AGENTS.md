@@ -6,7 +6,7 @@ These instructions apply repository-wide unless a more specific handoff adds con
 
 1. `.ai_handoff`
 2. `README.md`
-3. `checkpoints/01_data/README.md` for the completed data-foundation milestone
+3. `checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` for completed milestones
 4. `docs/DATA_SOURCES.md` for the current data inventory and integration rules
 5. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before feature engineering
 6. `data/.ai_handoff` and `data/README.md` for data/model/geospatial work
@@ -26,7 +26,7 @@ Do not replace confirmed project facts with guesses or generic ML assumptions.
 - The target corresponds to the **April–October 2025 production cycle**.
 - Hidden prediction targets are never pseudo-ground-truth.
 - `data/source/` and `docs/official/` are immutable source evidence.
-- Generated data belongs in `data/raw/`, `data/interim/` or `data/processed/`.
+- Generated data belongs in `data/raw/`, `data/interim/` or `data/processed/`; the canonical `data/processed/features_v1/` artifacts are intentionally versioned, while other raw/interim/processed outputs remain ignored unless explicitly promoted.
 - Models belong in `models/`; metrics/figures/predictions in `reports/`.
 - Stable production/reusable logic belongs in `src/geocebada/`; notebooks are exploratory.
 
@@ -81,7 +81,7 @@ pip install -e ".[docs]"
 sphinx-build -b html docs docs/_build/html
 ```
 
-`checkpoints/01_data/README.md` is the completed data-foundation checkpoint. `docs/DATA_SOURCES.md` is the operational inventory. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` define the executable feature-engineering gate. `docs/VARIABLES.md` is the human-facing variable dictionary; source/reference documents remain authoritative when they conflict with derived documentation.
+`checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` are completed checkpoints. `docs/DATA_SOURCES.md` is the operational inventory. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` define the executable feature-engineering gate. `docs/VARIABLES.md` is the human-facing variable dictionary; source/reference documents remain authoritative when they conflict with derived documentation.
 
 ## Known spatial constraints
 
@@ -109,7 +109,7 @@ Do not silently assume:
 - exact pre-harvest prediction cutoff/window within the April–October 2025 cycle;
 - sensor-harmonization strategy between BASIC and PRO;
 - official split stratification mechanism;
-- final CV strategy;
+- final model-selection decision after comparing the frozen state-stratified and municipality-grouped protocols;
 
 ## Implementation style
 

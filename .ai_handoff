@@ -327,9 +327,9 @@ Checkpoint 02 now defines the pre-modeling contract in `configs/checkpoint02.yam
 support diagnostics, five state-stratified folds, municipality-grouped robustness folds,
 interpretable ablations and deliberately untuned Dummy/Ridge/ExtraTrees baselines.
 
-The full Checkpoint 02 run still must be executed on the workstation and its generated
-`reports/checkpoint_02/` artifacts reviewed/committed before serious CatBoost/boosting/PCA
-model selection begins.
+Checkpoint 02 has now been executed and closed on the full workstation. The generated `reports/checkpoint_02/` artifacts are committed. The run screened 1,401 numeric features, flagged 6 for descriptive train-vs-prediction shift/support diagnostics, and evaluated A0-A7 under both frozen five-fold protocols. The municipality-grouped protocol is materially harder than state-stratified CV, so spatial/municipal generalization sensitivity must remain explicit in all later model selection.
+
+Canonical Feature Table v1 artifacts are intentionally versioned under `data/processed/features_v1/`; large external raw/interim sources remain local/gitignored.
 
 ---
 
@@ -337,11 +337,11 @@ model selection begins.
 
 1. Re-run Data Contract v2 after any raw/source change; the latest full audit passed with no FAIL/WARN findings.
 2. Preserve Feature Table v1 and its manifest as the frozen input to Checkpoint 02.
-3. Run `python tools/build_checkpoint_02.py` on the full workstation.
-4. Review feature-family counts, train-vs-prediction shift/support diagnostics and the generated `cv_folds.csv`.
-5. Commit the reviewed `reports/checkpoint_02/` artifacts so every later model reuses the same folds.
-6. Compare ablation deltas under both state-stratified and municipality-grouped protocols before adding tuning capacity.
-7. Open Checkpoint 03 only after the baseline evidence justifies which feature/model families deserve CatBoost/boosting/PCA experiments.
+3. Keep `data/processed/features_v1/` versioned and use it as the canonical model-ready input.
+4. Reuse `reports/checkpoint_02/cv_folds.csv` without regeneration for all Checkpoint 03 comparisons.
+5. Open Checkpoint 03 with CatBoost, regularized linear models and boosting, comparing both frozen validation protocols.
+6. Treat municipality-grouped degradation as a first-class spatial generalization risk.
+7. Fit PCA/feature selection/tuning only inside folds and only retain them if out-of-sample evidence improves.
 8. Keep Streamlit synchronized with frozen reusable pipeline artifacts rather than duplicating logic in the app.
 
 
