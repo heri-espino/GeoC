@@ -157,9 +157,9 @@ The versioned build from Feature Table v1 passed with:
 
 ```text
 rows                         197
-derived features             351
+derived features             350
 clean                        123
-competition                  228
+competition                  227
 mean/max missing fraction    0.0
 infinite values              0
 target used                  false
@@ -170,7 +170,7 @@ Retained family counts:
 
 ```text
 phenology              162
-phenology_anomaly       42
+phenology_anomaly       41
 water_productivity      40
 thermal                 36
 cross_domain            19
@@ -191,6 +191,10 @@ agro_interaction__heat_x_positive_water_gap_2025
 
 This only shows that this monthly-mean hinge has no cross-parcel variation in the current
 representation. It is not evidence that heat stress is irrelevant to barley.
+
+One historical-to-2025 NDWI ratio candidate is intentionally not emitted because NDWI is a
+signed index whose historical denominator can cross or approach zero. The corresponding delta
+feature is retained; this avoids an unstable ratio without using the target.
 
 ## Acceptance criteria
 
