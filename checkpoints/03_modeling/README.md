@@ -193,5 +193,5 @@ This is an empirical property of the current monthly climate representation, not
 heat stress is agronomically irrelevant. The 25 C monthly-mean hinge simply carries no
 cross-parcel variation here.
 
-03A completion criteria are satisfied. The next task is 03B: compare base-only, agronomic-only,
+The canonical generated 03A artifacts are committed; the CI builder now runs read-only and uploads a reproducibility artifact.\n\n03A completion criteria are satisfied. The next task is 03B: compare base-only, agronomic-only,
 base+agronomic and selected/reduced representations under both frozen CV protocols.
