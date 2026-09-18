@@ -1,6 +1,6 @@
 """Feature engineering utilities."""
 
-from geocebada.features.interactive import (
+from geocebada.features.agronomic import (\n    build_agronomic_feature_layer,\n    join_agronomic_features,\n    validate_agronomic_feature_layer,\n)\nfrom geocebada.features.interactive import (
     FeatureRecipe,
     apply_feature_recipe,
     feature_recipe_to_dict,
