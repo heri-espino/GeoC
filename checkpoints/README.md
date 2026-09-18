@@ -13,8 +13,8 @@ metadata, the source evidence wins and the checkpoint must be corrected.
 |---|---|---|
 | [01_data](01_data/README.md) | Closed | Official/external data acquisition, Data Contract v2 audit, normalization decisions and validated shared integration fixtures. |
 | [02_features](02_features/README.md) | Closed | Validated/versioned 197-row feature table, feature-family inventory, train-vs-prediction diagnostics, frozen CV folds, ablations and baseline results. |
-| [03_modeling](03_modeling/README.md) | In progress | 03A closed; 03B is empirical/data-driven feature discovery; 03C will compare representations and model families on the frozen folds. |
-| [03b_empirical_feature_discovery](03b_empirical_feature_discovery/README.md) | In progress | Deterministic X-only empirical layer plus fold-local target-aware expression discovery. |
+| [03_modeling](03_modeling/README.md) | In progress | 03A/03B closed; 03C compares source/agronomic/empirical representations and model families on the frozen folds. |
+| [03b_empirical_feature_discovery](03b_empirical_feature_discovery/README.md) | Closed | Canonical 335-feature X-only empirical layer plus leakage-safe fold-local target-aware expression discovery. |
 
 Checkpoint **03_modeling** is now open. Future checkpoints should continue the numeric sequence, for example:
 
