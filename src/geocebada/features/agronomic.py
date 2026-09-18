@@ -1490,8 +1490,26 @@ def join_agronomic_features(
     *,
     id_column: str = ID_COLUMN,
 ) -> pd.DataFrame:
-    """Join the additive agronomic feature layer to a parcel-level base table."""
+    """Join the additive agronomic layer after exact parcel-coverage validation."""
 
+    if id_column not in base.columns or id_column not in agronomic.columns:
+        raise KeyError(id_column)
     if base[id_column].duplicated().any() or agronomic[id_column].duplicated().any():
         raise ValueError("Both inputs must be one row per parcel before joining.")
-    return base.merge(agronomic, on=id_column, how="left", validate="one_to_one")
+
+    validate_agronomic_feature_layer(
+        agronomic,
+        expected_ids=base[id_column],
+        id_column=id_column,
+    )
+    overlapping = sorted((set(base.columns) & set(agronomic.columns)) - {id_column})
+    if overlapping:
+        raise ValueError(
+            "Agronomic columns overlap existing base columns: "
+            f"{overlapping[:10]}"
+        )
+
+    joined = base.merge(agronomic, on=id_column, how="left", validate="one_to_one")
+    if len(joined) != len(base):
+        raise ValueError("Agronomic join changed the number of parcel rows.")
+    return joined
