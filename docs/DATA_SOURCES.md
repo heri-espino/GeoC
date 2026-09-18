@@ -211,7 +211,11 @@ Tlaxcala was previously inspected with 60 MultiPolygon features and fields inclu
 
 Hidalgo and Puebla must be schema-checked during the audit rather than assumed identical.
 
-Parcel-to-municipality assignment should use **largest polygon overlap/intersection**, not parcel centroid, so boundary parcels are handled robustly.
+For administrative/SIAP joins, preserve the official parcel `Estado`/`Municipio`
+attributes as primary. Use INEGI largest-overlap assignment as spatial QA/fallback, not
+centroid. The v2 audit found clear dominant overlaps for boundary-crossing AGC_020 and
+AGC_129, and one documented official-vs-spatial mismatch for AGC_048
+(`Nanacamilpa de Mariano Arista` official vs `Calpulalpan` spatial).
 
 ## CHIRPS v3 daily
 
@@ -336,7 +340,11 @@ Never join on `Idmunicipio` alone.
 
 Historical local inventory originally contained duplicate file copies for 2004, 2005 and 2025 and was missing 2023. The 2023 file has now been downloaded, but duplicate-year files still need checksum/content comparison and a deterministic keep/drop rule during the audit. Do not concatenate duplicate copies blindly.
 
-The exact barley labels in `Nomcultivo`, cycles and modalities must be discovered from the actual data. Do not guess strings.
+The audit discovers the exact barley labels `Cebada grano` and
+`Cebada forrajera en verde`, with `Otoño-Invierno` / `Primavera-Verano` and
+`Riego` / `Temporal` represented in the target states. Do not mix grain and forage
+barley. SIAP 2015–2020 use `Nomcultivo Sin Um`, which is a source alias normalized to
+canonical `Nomcultivo`.
 
 ### Competition-mode caution
 
