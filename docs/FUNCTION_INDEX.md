@@ -8,6 +8,9 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | Symbol | Kind | Module | Purpose | Source |
 |---|---|---|---|---|
 | `load_config` | function | `geocebada.config` | Load a YAML configuration file. | `src/geocebada/config.py` |
+| `build_admin_mapping` | function | `geocebada.data.external` | Resolve official administrative keys and spatial-overlap QA per parcel. | `src/geocebada/data/external.py` |
+| `load_inegi_municipalities` | function | `geocebada.data.external` | Load and normalize the three INEGI municipality layers from Data Contract v2. | `src/geocebada/data/external.py` |
+| `load_siap_barley_history` | function | `geocebada.data.external` | Load only target-state barley rows from the canonical SIAP yearly files. | `src/geocebada/data/external.py` |
 | `concatenate_csvs` | function | `geocebada.data.files` | Read and concatenate a collection of CSV files. | `src/geocebada/data/files.py` |
 | `discover_files` | function | `geocebada.data.files` | Return sorted files matching ``pattern`` below ``directory``. | `src/geocebada/data/files.py` |
 | `filter_frame` | function | `geocebada.data.filtering` | Return a filtered copy of ``frame`` using declarative filter specifications. | `src/geocebada/data/filtering.py` |
@@ -29,6 +32,19 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `apply_feature_recipe` | function | `geocebada.features.interactive` | Apply a feature recipe and return one row per group with the new feature. | `src/geocebada/features/interactive.py` |
 | `feature_recipe_to_dict` | function | `geocebada.features.interactive` | Serialize a feature recipe into a plain dictionary for YAML/JSON storage. | `src/geocebada/features/interactive.py` |
 | `merge_features` | function | `geocebada.features.interactive` | Left-join one-row-per-parcel feature tables onto a base table. | `src/geocebada/features/interactive.py` |
+| `build_base_features` | function | `geocebada.features.parcel` | Build identity, geometry and administrative parcel features. | `src/geocebada/features/parcel.py` |
+| `build_cem15_features` | function | `geocebada.features.parcel` | Build one state-appropriate high-resolution CEM elevation block. | `src/geocebada/features/parcel.py` |
+| `build_daily_chirps_features` | function | `geocebada.features.parcel` | Build full-season 2025 daily precipitation/extreme features. | `src/geocebada/features/parcel.py` |
+| `build_official_climate_features` | function | `geocebada.features.parcel` | Build 2022-2024 climatology and full-season 2025 climate features. | `src/geocebada/features/parcel.py` |
+| `build_satellite_features` | function | `geocebada.features.parcel` | Build historical-clean and full-season-2025 satellite features. | `src/geocebada/features/parcel.py` |
+| `build_siap_features` | function | `geocebada.features.parcel` | Build municipal grain-barley history and 2025 proxy features. | `src/geocebada/features/parcel.py` |
+| `build_soilgrids_features` | function | `geocebada.features.parcel` | Build scaled depth-specific and depth-weighted SoilGrids features. | `src/geocebada/features/parcel.py` |
+| `build_static_raster_features` | function | `geocebada.features.parcel` | Build named static-raster zonal-stat feature blocks. | `src/geocebada/features/parcel.py` |
+| `build_wapor_features` | function | `geocebada.features.parcel` | Build duration-weighted WaPOR AETI/NPP parcel features. | `src/geocebada/features/parcel.py` |
+| `canonicalize_parcels` | function | `geocebada.features.parcel` | Normalize official parcel ID/area aliases without editing source evidence. | `src/geocebada/features/parcel.py` |
+| `merge_feature_blocks` | function | `geocebada.features.parcel` | Left-join unique one-row-per-parcel feature blocks. | `src/geocebada/features/parcel.py` |
+| `validate_parcel_feature_table` | function | `geocebada.features.parcel` | Validate one-row-per-parcel model-table invariants. | `src/geocebada/features/parcel.py` |
+| `zonal_stats_for_raster` | function | `geocebada.features.parcel` | Compute parcel zonal statistics for one raster. | `src/geocebada/features/parcel.py` |
 | `align_temporal_knn` | function | `geocebada.features.temporal` | Align irregular parcel observations to a common grid with temporal k-NN. | `src/geocebada/features/temporal.py` |
 | `aligned_to_wide` | function | `geocebada.features.temporal` | Pivot aligned temporal values to one modeling row per parcel. | `src/geocebada/features/temporal.py` |
 | `make_temporal_grid` | function | `geocebada.features.temporal` | Return an inclusive regular temporal grid between ``start`` and ``end``. | `src/geocebada/features/temporal.py` |
