@@ -47,11 +47,8 @@ Independent validation confirmed:
 - all 138 training targets exist;
 - all 59 prediction targets remain hidden.
 
-Thus the supervised problem is small-n/high-p:
-
-[
-n_{train}=138,qquad p_{clean}=694,qquad p_{competition}=1403.
-]
+Thus the supervised problem is small-n/high-p: `n_train = 138`,
+`p_clean = 694` and `p_competition = 1,403`.
 
 This is why the project does **not** jump directly to a large tuned CatBoost run.
 
@@ -115,12 +112,10 @@ for every numeric feature:
 
 Default descriptive flags are:
 
-[
-|SMD|ge0.5,quad q_{FDR}<0.05,quad
-|Delta missingness|ge0.10,quad
-P(X_{pred}
-otin range(X_{train}))ge0.10.
-]
+- absolute SMD >= 0.5;
+- FDR-adjusted p-value < 0.05;
+- absolute train/prediction missingness gap >= 0.10;
+- prediction values outside the observed training range >= 10%.
 
 These flags are **diagnostic only**. They are not allowed to become an unlabeled-test feature
 selector for the clean/scientific track.
