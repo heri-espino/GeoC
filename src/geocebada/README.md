@@ -18,13 +18,16 @@ src/geocebada/
 ├── geo/
 │   └── crs.py            # CRS safeguards and reprojection helpers
 ├── features/
-│   └── interactive.py    # reproducible feature recipes and joins
+│   ├── interactive.py    # reproducible feature recipes and joins
+│   ├── temporal.py       # temporal coverage/alignment utilities
+│   └── parcel.py         # canonical parcel-level Feature Table v1 extraction
 ├── statistics/
 │   └── inference.py      # association tests, multiplicity and assumptions
 ├── visualization/
 │   └── exploration.py    # reusable Plotly figures and data-quality views
 ├── evaluation/
-│   └── regression.py     # early regression benchmark utilities
+│   ├── regression.py     # early exploratory regression utilities
+│   └── parcel_modeling.py # frozen-fold diagnostics/ablations for Checkpoint 02
 └── models/               # final training/inference interfaces
 ```
 
@@ -108,7 +111,7 @@ Interactive feature recipes are exploratory specifications. If a feature becomes
 - exploratory random-CV regression benchmarks;
 - reusable Plotly visualizations.
 
-The app automatically excludes hidden official prediction targets from supervised statistical/model analyses. Random CV in the laboratory remains exploratory until the project establishes spatial/grouped validation.
+The app automatically excludes hidden official prediction targets from supervised statistical/model analyses. Checkpoint 02 has now established frozen state-stratified and municipality-grouped parcel folds under `reports/checkpoint_02/cv_folds.csv`; generic random CV in the laboratory remains exploratory and must not replace those project-level protocols.
 
 ## Public API and function index
 
@@ -147,4 +150,4 @@ Do not create a new helper merely to save one or two lines in one notebook. The 
 - multiple exploratory tests require multiplicity control and explicit interpretation;
 - spatial independence cannot be assumed for georeferenced parcels.
 
-See root `AGENTS.md`, `.ai_handoff`, and `data/.ai_handoff` for project-wide constraints.
+See `docs/AGENT_GUIDE.md`, `docs/PROJECT_HISTORY.md`, root `AGENTS.md`, `.ai_handoff`, and `data/.ai_handoff` for project-wide constraints. Checkpoint 03 modeling should extend this package rather than create a parallel implementation.
