@@ -11,6 +11,7 @@ than duplicated across notebooks.
 
    README
    GETTING_STARTED
+   DATA_SOURCES
    VARIABLES
    DATA_CATALOG
    TEMPORAL_ALIGNMENT
