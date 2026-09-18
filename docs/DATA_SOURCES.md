@@ -51,7 +51,7 @@ Observed catalog facts:
 - the vector field `ID_POLIGON` is a truncated form of the canonical `ID_POLIGONO`.
 - `área_ha` should be normalized internally to `area_ha`.
 - observed WGS84-like geographic extent is approximately longitude -98.613 to -98.197 and latitude 19.524 to 19.984.
-- sample GeoJSON material generated from the source uses CRS84; the archive CRS must still be read directly by the loader and never guessed.
+- direct catalog inspection records the official parcel archive as `EPSG:4326`; loaders must still read and validate this CRS rather than assigning it blindly.
 
 Canonical internal parcel contract should become:
 
@@ -295,11 +295,14 @@ Important CRS caveat:
 - locally, PROJ recognizes the equivalent Interrupted Goode Homolosine CRS as `ESRI:54052`.
 - assign `ESRI:54052` **only when the file is positively identified as this SoilGrids download**. Never guess that CRS for arbitrary CRS-less rasters.
 
-Important semantic caveat:
+Verified SoilGrids semantics:
 
-- raw rasters are integer-valued.
-- property scale factors and units must be verified from SoilGrids documentation/source metadata before modeling.
-- do not feed raw INT16 values into the final model while pretending they already have physical units.
+- raw rasters are integer-valued;
+- Data Contract v2 freezes the official ISRIC divisors and conventional units in `configs/data_contract_v2.yaml`;
+- `phh2o/clay/sand/silt/soc/cec/cfvo` divide by 10; `nitrogen/bdod` divide by 100;
+- do not feed raw INT16 values into the final model without applying/documenting those conversions.
+
+Official source: https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs_01.html
 
 Candidate features:
 
@@ -355,7 +358,7 @@ Local state directories under:
 
 `data/raw/external/Inegi/`
 
-Known local state products cover Hidalgo, Puebla and Tlaxcala at approximately 15 m.
+Known local state products cover Hidalgo, Puebla and Tlaxcala at approximately 15 m. Direct raster inspection records CRS `EPSG:6365`.
 
 Potential features:
 
@@ -477,9 +480,9 @@ Known catalog limitations to fix in Data Contract v2:
 5. SoilGrids scale factors/units need semantic metadata.
 6. partial ERA5 files must not make ERA5 appear complete.
 
-# Data Contract v2 — next task
+# Data Contract v2 — executable audit gate
 
-Before building the master feature table, implement a formal audit and contract.
+The formal machine-readable contract now exists at `configs/data_contract_v2.yaml`, with executable audit `tools/audit_data_contract_v2.py` and documentation in `docs/DATA_CONTRACT_V2.md`. Run the full local audit and resolve its findings before the master feature table.
 
 ## Integration fixtures
 
