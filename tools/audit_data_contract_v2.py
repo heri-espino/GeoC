@@ -1008,8 +1008,9 @@ def audit_siap(
     conflicts = []
     canonical_files: dict[str, str] = {}
     for year, paths in files_by_year.items():
+        canonical_pattern = rf"Cierre_agricola_mun_{year}\.csv"
         canonical = next(
-            (path for path in paths if re.fullmatch(rf"Cierre_agricola_mun_{year}\.csv", path.name)),
+            (path for path in paths if re.fullmatch(canonical_pattern, path.name)),
             paths[0],
         )
         canonical_files[str(year)] = canonical.name
@@ -1027,7 +1028,8 @@ def audit_siap(
         )
     elif duplicate_years:
         duplicate_summary = (
-            "Duplicate SIAP yearly copies are byte-identical; canonical unsuffixed files are safe to use."
+            "Duplicate SIAP yearly copies are byte-identical; canonical "
+            "unsuffixed files are safe to use."
         )
     else:
         duplicate_summary = "No duplicate SIAP yearly copies detected."
