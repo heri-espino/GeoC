@@ -52,7 +52,7 @@ data/
 │       └── Reto_AgroCebada_Topografia_INEGI_CEM4/...
 ├── raw/                    # ingestión/descompresión; no versionado
 ├── interim/                # limpieza, joins y features intermedias; no versionado
-└── processed/              # tablas/matrices finales para modelado; no versionado
+└── processed/              # derivados; Feature Table v1 sí se versiona
 ```
 
 ### Contrato de carpetas
@@ -62,16 +62,19 @@ data/
 | `source/` | Archivos oficiales exactamente como fueron entregados | No | Sí |
 | `raw/` | Copias descomprimidas, ingestión y formatos de trabajo | No; generar por código | No |
 | `interim/` | Limpieza, uniones geoespaciales, agregaciones y features intermedias | No; generar por código | No |
-| `processed/` | Dataset final model-ready y tablas de evaluación/predicción | No; generar por código | No |
+| `processed/` | Derivados model-ready | No; generar por código | Sólo `processed/features_v1/` canónico |
 
 Toda transformación reproducible debe vivir en `src/geocebada/` o scripts controlados por el proyecto. No colocar modelos entrenados, predicciones o resultados dentro de `source/`.
 
 ### Datos externos locales y manifiesto reproducible
 
-Todo archivo generado o descargado bajo `data/raw/`, `data/interim/` y
-`data/processed/` está excluido de Git. En particular,
-`data/raw/external/` contiene insumos locales que pueden incluir GeoTIFF y CSV
-grandes; no se deben añadir al repositorio ni borrar para limpiar el worktree.
+`data/raw/` y `data/interim/` permanecen fuera de Git. La excepción deliberada es
+`data/processed/features_v1/`: la tabla canónica de 197 parcelas, su manifest y su build
+report se versionan para que cualquier clon pueda reproducir el modelado sin descargar todos
+los rásteres/NetCDF/CSV externos. El resto de `data/processed/` sigue ignorado.
+
+`data/raw/external/` contiene insumos locales grandes (GeoTIFF, NetCDF y CSV) y no debe
+versionarse ni borrarse sólo para limpiar el worktree.
 
 El downloader obtiene sólo el entorno espacial de las parcelas cuando la fuente
 permite subconjuntos:
@@ -478,11 +481,11 @@ Nunca usar las 59 parcelas de predicción para selección supervisada de hiperpa
 
 ---
 
-## 12. Siguiente fase: Audit + Data Contract v2
+## 12. Estado actual del pipeline
 
-Antes de construir la tabla maestra, ejecutar el audit descrito en `docs/DATA_SOURCES.md`. Debe incluir IDs/CRS/geometrías, cobertura temporal BASIC/PRO, municipios, duplicados SIAP, etiquetas reales de cebada, unidades/escalas SoilGrids, continuidad CHIRPS, semántica temporal WaPOR y cobertura espacial de todos los rásteres.
+Data Contract v2, las integration fixtures y Feature Table v1 ya fueron construidos y validados. La tabla canónica contiene **197 filas, una por `ID_POLIGONO`**, con 694 features `clean`, 709 features `competition` adicionales y 1,403 features totales. Los artefactos canónicos deben versionarse bajo `data/processed/features_v1/` para que el modelado sea reproducible desde un clon limpio.
 
-Después crear fixtures de integración con las mismas ~12 parcelas en todas las fuentes y construir la tabla maestra de **197 filas, una por `ID_POLIGONO`**, con namespaces por fuente, trazabilidad y separación explícita entre features `clean` y `competition`.
+Checkpoint 02 ya generó inventario por familia, diagnóstico train-vs-prediction, folds fijos y ablations. Ver `checkpoints/02_features/README.md` y `reports/checkpoint_02/`.
 
 
 ---
