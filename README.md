@@ -120,7 +120,7 @@ GeoCebada/
 
 ## Checkpoints
 
-El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 351 variables agronómicas/no lineales target-free (123 clean, 228 competition) para las 197 parcelas. La fase actual es **Checkpoint 03B — comparación de representaciones y modelos**.
+El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 350 variables agronómicas/no lineales target-free (123 clean, 227 competition) para las 197 parcelas. La fase actual es **Checkpoint 03B — comparación de representaciones y modelos**.
 
 ## Agronomic Features v1
 
@@ -128,7 +128,7 @@ Checkpoint 03A creó una capa aditiva separada de Feature Table v1:
 
 ```text
 data/processed/agronomic_features_v1/
-  parcel_agronomic_features.csv   197 × 352
+  parcel_agronomic_features.csv   197 × 351
   feature_manifest.json           351 variables derivadas
   build_report.json
 ```
