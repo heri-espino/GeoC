@@ -63,7 +63,7 @@ official:
     date_column: fecha_captura
     date_format: "%d/%m/%Y"
     expected_date_min: 2025-01-01
-    expected_date_max: 2025-12-31
+    expected_date_max: 2025-12-30
     expected_sensors:
       - Planet
     required_columns:
