@@ -413,11 +413,13 @@ def initial_regressors(
 ) -> dict[str, RegressorMixin]:
     """Return deliberately untuned baseline regressors for Checkpoint 02."""
 
-    imputer = lambda: SimpleImputer(
-        strategy="median",
-        add_indicator=True,
-        keep_empty_features=True,
-    )
+    def imputer() -> SimpleImputer:
+        return SimpleImputer(
+            strategy="median",
+            add_indicator=True,
+            keep_empty_features=True,
+        )
+
     return {
         "DummyMean": make_pipeline(
             imputer(),
