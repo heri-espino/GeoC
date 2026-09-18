@@ -2,8 +2,7 @@
 
 **Checkpoint opened:** 2026-09-18  
 **Project:** GeoCebada — Reto AgroCebada FIRA 2026  
-**Status:** Feature Table v1 validated; diagnostic/fold/ablation pipeline implemented; full local
-Checkpoint 02 run must still be executed and its generated report reviewed.
+**Status:** **Closed.** Feature Table v1, train-vs-prediction diagnostics, frozen folds, ablations and baseline runs were executed on the full workstation and the generated artifacts were committed.
 
 This checkpoint records the transition from data engineering to controlled modeling. It is
 deliberately historical: each decision is tied to what was known at that moment, so future
@@ -68,6 +67,41 @@ The generated run artifacts live under:
 ```text
 reports/checkpoint_02/
 ```
+
+
+### 2026-09-18 — Full Checkpoint 02 run completed
+
+The full workstation run returned `Checkpoint 02 pipeline: PASS` after 53/53 tests passed.
+
+Observed results:
+
+- 1,401 numeric features screened;
+- 6 features crossed at least one descriptive train-vs-prediction shift/support threshold;
+- `cv_folds.csv` was generated and committed;
+- both five-fold protocols were evaluated for A0–A7 with DummyMean, Ridge and ExtraTrees;
+- all generated reports were committed under `reports/checkpoint_02/`.
+
+The two validation protocols tell materially different stories. Under state-stratified folds,
+ExtraTrees is around RMSE 0.50 for the richer ablations, while municipality-grouped validation
+is substantially harder (roughly RMSE 0.88–0.91 for the richer ExtraTrees variants; Ridge is
+best around A3 at roughly 0.74). This is treated as evidence of strong spatial/municipal
+generalization sensitivity, not as a reason to discard either protocol.
+
+The six shift/support flags are limited: four historical Sentinel-2 August variables exceed the
+configured absolute-SMD threshold, one SoilGrids variable has >10% prediction values outside
+the observed training range, and one 2025 BASIC variable crosses the same support threshold.
+No FDR-adjusted KS result is significant under the configured 0.05 threshold.
+
+A6 versus A7 changes performance only slightly in the state-stratified benchmark and slightly
+worsens the municipality-grouped benchmark. SIAP 2025 therefore does not show a large,
+consistent baseline gain at this stage.
+
+### 2026-09-18 — Canonical Feature Table v1 selected for version control
+
+The team chose to version the small canonical model-ready artifacts under
+`data/processed/features_v1/`, while keeping large external raw/interim inputs out of Git.
+This allows a clean clone, collaborator or AI agent to reproduce Checkpoint 02+ modeling
+without re-downloading CHIRPS, SoilGrids, WaPOR, CEM and SIAP raw sources.
 
 ---
 
@@ -224,7 +258,7 @@ The Markdown report is the dated run record. Results should be committed only af
 
 ## 7. Completion criterion
 
-Checkpoint 02 becomes closed when:
+Checkpoint 02 is closed because:
 
 1. the full local pipeline passes on the 197-row table;
 2. feature-family counts are reviewed;
@@ -232,8 +266,6 @@ Checkpoint 02 becomes closed when:
 4. `cv_folds.csv` is frozen and committed;
 5. baseline ablation results are reviewed under **both** fold protocols;
 6. generated run report is committed;
-7. only then is Checkpoint 03 — Modeling opened.
+7. the generated run report and supporting artifacts are committed.
 
-The next modeling stage may compare CatBoost, regularized linear models, boosting and optional
-dimension-reduction pipelines, but all comparisons must reuse the frozen folds and preserve
-clean-versus-competition provenance.
+Checkpoint 03 — Modeling may now open. It may compare CatBoost, regularized linear models, boosting and optional dimension-reduction pipelines, but all comparisons must reuse the frozen folds and preserve clean-versus-competition provenance.
