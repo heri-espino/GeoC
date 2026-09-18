@@ -122,6 +122,22 @@ GeoCebada/
 
 El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 351 variables agronómicas/no lineales target-free (123 clean, 228 competition) para las 197 parcelas. La fase actual es **Checkpoint 03B — comparación de representaciones y modelos**.
 
+## Agronomic Features v1
+
+Checkpoint 03A creó una capa aditiva separada de Feature Table v1:
+
+```text
+data/processed/agronomic_features_v1/
+  parcel_agronomic_features.csv   197 × 352
+  feature_manifest.json           351 variables derivadas
+  build_report.json
+```
+
+La capa no contiene target ni split y no fue seleccionada mirando rendimiento. Incluye forma
+fenológica, anomalías 2025 vs histórico, acuerdo entre sensores, tiempo térmico, timing de
+lluvia, productividad hídrica WaPOR, perfiles/interacciones de suelo y cruces agronómicos.
+CHIRPS está excluido hasta resolver su QC. Ver `docs/AGRONOMIC_FEATURES_V1.md`.
+
 ## GeoCebada Lab
 
 `app/main.py` incluye Overview, Data Explorer, Prediction Set, Statistical Lab, Feature Engineering, Model Lab y Methodology.
