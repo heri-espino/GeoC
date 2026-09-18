@@ -11,7 +11,7 @@ It contains only:
 - deterministic X-only agronomic/nonlinear predictors.
 
 Canonical validated build (2026-09-18): **197 parcels × 352 columns** = `ID_POLIGONO`
-plus **351 derived features**. The manifest contains **123 clean** and **228 competition**
+plus **350 derived features**. The manifest contains **123 clean** and **227 competition**
 features. No retained derived feature is missing on the canonical 197 rows.
 
 It does **not** contain:
