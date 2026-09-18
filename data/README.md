@@ -2,7 +2,7 @@
 
 Esta carpeta contiene las fuentes oficiales del reto y los artefactos derivados del pipeline de datos. El objetivo predictivo es estimar el rendimiento agrícola de parcelas de cebada en Hidalgo, Puebla y Tlaxcala.
 
-> **Estado actual:** para el inventario completo y actualizado de fuentes oficiales/externas, joins, caveats, adquisición local y plan Data Contract v2, leer primero `docs/DATA_SOURCES.md`. Ese documento corrige y amplía cualquier descripción histórica de este README.
+> **Estado actual:** el cierre reproducible de la fase de datos está documentado en `checkpoints/01_data/README.md`. Para el inventario operativo actualizado de fuentes oficiales/externas, joins y caveats, leer `docs/DATA_SOURCES.md`. Ese documento corrige y amplía cualquier descripción histórica de este README.
 
 ## Resumen del problema
 
