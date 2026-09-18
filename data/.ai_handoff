@@ -117,7 +117,7 @@ Canonical filenames:
 - `puebla_municipios.geojson`
 - `tlaxcala_municipios.geojson`
 
-Use largest parcel/municipality overlap for assignment, not centroid-only joins. Keep overlap diagnostics.
+Administrative joins preserve the official parcel Estado/Municipio attributes. INEGI largest-overlap is QA/fallback. Audit boundary diagnostics: AGC_020 is 98.65% Emiliano Zapata / 1.35% Calpulalpan; AGC_129 is 85.43% Singuilucan / 14.57% Cuautepec de Hinojosa. AGC_048 has a documented discrepancy: official `Nanacamilpa de Mariano Arista` vs spatial `Calpulalpan`; keep official for SIAP/admin joins and spatial assignment as QA metadata.
 
 ### CHIRPS daily
 
@@ -164,9 +164,9 @@ Municipal key:
 
 Never join on `Idmunicipio` alone.
 
-Historical inventory previously had duplicate copies for 2004, 2005 and 2025; 2023 was missing and has now been downloaded. Audit must compare duplicate checksums/content and choose one deterministic copy per year.
+The v2 audit confirms duplicate copies for 2004, 2005 and 2025 are byte-identical by SHA256; use the canonical unsuffixed file. The local SIAP directory still lacks 2023 entirely (no unmatched 2023-like CSV was found), so 2023 remains the only SIAP year-coverage blocker.
 
-Discover exact barley `Nomcultivo`, cycle and modality strings from data; never guess them.
+The audit discovers `Cebada grano` and `Cebada forrajera en verde`; observed cycles include `Otoño-Invierno` and `Primavera-Verano`, modalities `Riego` and `Temporal`, unit `Tonelada`. SIAP 2015–2020 use `Nomcultivo Sin Um`, normalized source-aware to canonical `Nomcultivo`. Do not mix grain and forage barley.
 
 SIAP 2025 municipal yield is a competition-mode/public-information proxy and potential temporal leakage. Keep it separate from clean features and disclose its use.
 
