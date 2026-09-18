@@ -149,3 +149,25 @@ Once the generated fixture is versioned and its tests pass, the next implementat
 is the deterministic **197-row parcel master feature table**. Production extraction logic
 should first be exercised against this integration fixture before running against the full
 raw data tree.
+
+
+## Generated fixture snapshot
+
+The first complete workstation generation passed validation on 2026-09-18.
+
+Selected parcel IDs:
+
+`AGC_020`, `AGC_048`, `AGC_050`, `AGC_054`, `AGC_065`, `AGC_076`, `AGC_090`, `AGC_108`, `AGC_119`, `AGC_129`, `AGC_183`, `AGC_186`
+
+Observed fixture size/counts:
+
+- 12 parcels;
+- 192 BASIC rows;
+- 96 PRO rows;
+- 201 SIAP rows;
+- 63 generated files;
+- 3.77 MiB total;
+- builder validation: **PASS**.
+
+These values are now the expected reference snapshot unless the fixture-selection contract
+is intentionally changed.
