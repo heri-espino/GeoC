@@ -305,7 +305,7 @@ def run_expression_discovery(
         lines.extend([f"## {protocol}", ""])
         subset = stability.loc[stability["protocol"].eq(protocol)].head(15)
         lines.append(
-            "| Selected folds | Mean rank | Mean |rho| train | "
+            "| Selected folds | Mean rank | Mean abs(rho) train | "
             "Direction consistency | Formula |"
         )
         lines.append("|---:|---:|---:|---:|---|")
