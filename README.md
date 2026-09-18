@@ -279,7 +279,7 @@ final frozen pipeline
 2. mantener versionada la **Feature Table v1** canónica bajo `data/processed/features_v1/`;
 3. reutilizar siempre `reports/checkpoint_02/cv_folds.csv` para comparaciones de modelos;
 4. mantener cerrado **Checkpoint 03A** y no seleccionar sus 350 variables usando el target fuera de CV;
-5. cerrar **Checkpoint 03B** construyendo la capa empírica X-only y manteniendo cualquier búsqueda target-aware dentro de folds;
+5. mantener cerrado **Checkpoint 03B**; cualquier búsqueda target-aware de fórmulas debe permanecer dentro de folds;
 6. ejecutar **Checkpoint 03C** comparando `base`, `agronomic`, `empirical` y sus combinaciones bajo los mismos folds;
 7. comparar CatBoost, modelos lineales regularizados, ExtraTrees/boosting y kernels de forma controlada;
 8. tratar la gran brecha entre CV state-stratified y municipality-grouped como riesgo espacial explícito;
