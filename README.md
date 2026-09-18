@@ -4,7 +4,7 @@
 
 GeoCebada desarrolla un pipeline reproducible para estimar el rendimiento agrícola de parcelas de cebada a partir de percepción remota, clima, topografía y geometría espacial. El proyecto incluye una librería Python compartida (`geocebada`) y un laboratorio interactivo en Streamlit para exploración, inferencia estadística, feature engineering y comparación de modelos.
 
-> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
+> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `checkpoints/01_data/README.md`, `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
 
 ## Problema
 
@@ -67,7 +67,7 @@ El diccionario completo y source-backed está en **`docs/VARIABLES.md`**. El inv
 | CHIRTS-ERA5 | Tmin/Tmax mensuales | 2022–2025 | EPSG:4326 | 0.05° (~5 km) |
 | INEGI CEM | elevación y pendiente | estática | EPSG:6372 | producto entregado a 120 m |
 
-El CRS de las geometrías de parcela sigue pendiente de verificación directa.
+El CRS de las geometrías de parcela fue verificado directamente como `EPSG:4326`.
 
 ## Preguntas todavía abiertas
 
@@ -90,6 +90,8 @@ notebooks / app / experimentos
 
 ```text
 GeoCebada/
+├── checkpoints/                  # hitos reproducibles del proyecto
+│   └── 01_data/                  # adquisición, audit y fixtures de datos
 ├── app/                         # interfaces Streamlit
 ├── configs/
 ├── data/
@@ -113,6 +115,10 @@ GeoCebada/
 ├── src/geocebada/               # lógica reusable / fuente de verdad
 └── tests/
 ```
+
+## Checkpoints
+
+El estado reproducible al cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. Ese checkpoint explica qué fuentes se adquirieron, por qué, qué normalizaciones se fijaron, qué quedó dentro/fuera de Git, qué validó Data Contract v2 y cuáles son las 12 integration fixtures versionadas. El siguiente checkpoint será `02_features` cuando exista la tabla maestra determinista de 197 parcelas.
 
 ## GeoCebada Lab
 
