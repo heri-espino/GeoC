@@ -4,7 +4,7 @@ Updated: 2026-09-16
 Project: GeoCebada / Reto AgroCebada FIRA 2026
 Scope: project-wide operational context for AI agents/Codex.
 
-Read this before project-wide changes. For data work also read `docs/DATA_SOURCES.md`, `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers. For any Streamlit/app/deployment work, read **`app/AGENTS.md`** first.
+Read this before project-wide changes. For data work also read `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `configs/data_contract_v2.yaml`, `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers. For any Streamlit/app/deployment work, read **`app/AGENTS.md`** first.
 
 This file is not the FIRA AI disclosure log. Material AI-assisted work must also be recorded in `docs/AI_USAGE.md`.
 
@@ -33,7 +33,7 @@ Canonical parcel identifier: `ID_POLIGONO`.
 - CHIRTS-ERA5 Tmin/Tmax: monthly Jan 2022–Dec 2025, EPSG:4326, ~5 km.
 - INEGI CEM delivered elevation/slope products: EPSG:6372, 120 m product resolution.
 
-The complete source-backed variable dictionary is `docs/VARIABLES.md`. The comprehensive current inventory of official/external data, join rules, caveats and the Data Contract v2 plan is `docs/DATA_SOURCES.md`.
+The complete source-backed variable dictionary is `docs/VARIABLES.md`. The comprehensive current inventory is `docs/DATA_SOURCES.md`. The machine-readable audit gate is `configs/data_contract_v2.yaml`, documented in `docs/DATA_CONTRACT_V2.md` and executed by `tools/audit_data_contract_v2.py`.
 
 ### Current external-data status
 
@@ -48,7 +48,6 @@ The prioritized external set is now locally acquired: INEGI municipal boundaries
 3. Whether/how BASIC and PRO should be harmonized across sensors.
 4. Whether FIRA's 70/30 split was stratified by geography, area or another factor.
 5. Final validation strategy that best approximates FIRA's hidden evaluation.
-6. Delivered parcel CRS until directly inspected.
 
 ---
 
@@ -102,7 +101,7 @@ GeoCebada/
 
 1. Official/reference source files under `docs/official/`, `docs/reference/`, `data/source/`.
 2. Directly observed file schemas/metadata.
-3. `docs/DATA_SOURCES.md`, `docs/VARIABLES.md`, `data/README.md`, `data/.ai_handoff`.
+3. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `configs/data_contract_v2.yaml`, `docs/VARIABLES.md`, `data/README.md`, `data/.ai_handoff`.
 4. Root `README.md`, `.ai_handoff`, `AGENTS.md`.
 5. Notebook comments/conversation assumptions.
 
@@ -316,8 +315,8 @@ Current dashboard models are exploratory baselines only. Final selection still r
 
 ## Immediate next steps
 
-1. Run **Audit + Data Contract v2** before building final features.
-2. Upgrade the catalog to distinguish `available` from `complete`, verify full ID/date coverage and explicitly mark ERA5 partial/unused.
+1. Run `python tools/audit_data_contract_v2.py` on the complete workstation data before building final features.
+2. Resolve every FAIL and explicitly document every WARN; completeness is owned by the v2 audit, not by catalog `available` flags.
 3. Create joinable integration fixtures using the same ~12 parcels across split/geometry/BASIC/PRO/SIAP/raster/NetCDF samples.
 4. Audit parcel CRS/field normalization and map every parcel to municipality by largest polygon overlap.
 5. Audit SIAP duplicate years, confirm 2023, discover exact barley labels/cycles/modalities and build stable CVEGEO keys.
