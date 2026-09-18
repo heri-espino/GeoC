@@ -10,7 +10,7 @@
     "cross_domain": 19,
     "nonlinear_basis": 7,
     "phenology": 162,
-    "phenology_anomaly": 42,
+    "phenology_anomaly": 41,
     "sensor_agreement": 9,
     "soil_interaction": 8,
     "soil_profile": 18,
@@ -18,14 +18,14 @@
     "water_productivity": 40,
     "water_timing": 10
   },
-  "features": 351,
-  "generated_at": "2026-09-18T18:09:54.312600+00:00",
-  "git_commit": "988fe8d7f1db5e7cccf26d83e44cec56f3547a94",
+  "features": 350,
+  "generated_at": "2026-09-18T18:15:47.490994+00:00",
+  "git_commit": "fbd6967110db005d6beefb8ffa300e47d411bae2",
   "missing_fraction_max": 0.0,
   "missing_fraction_mean": 0.0,
   "mode_counts": {
     "clean": 123,
-    "competition": 228
+    "competition": 227
   },
   "rows": 197,
   "schema_version": 1,

@@ -1,5 +1,5 @@
 {
-  "feature_count": 351,
+  "feature_count": 350,
   "features": [
     {
       "caveats": [
@@ -1387,40 +1387,6 @@
         "sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m10"
       ],
       "meaning": "Average 2025 departure from the historical monthly seasonal profile.",
-      "mode": "competition",
-      "rationale": "Within-parcel departure from a historical remote-sensing baseline can separate persistent site productivity from conditions specific to the 2025 crop cycle.",
-      "references": [
-        "Chanev2025",
-        "Sharifi2020",
-        "Mirosavljevic2018"
-      ]
-    },
-    {
-      "caveats": [
-        "Historical monthly values are climatological summaries, not a crop-growth model.",
-        "Ratio features are undefined when the historical denominator is near zero."
-      ],
-      "column": "agro_anomaly__s2_ndwi__season_mean_ratio",
-      "evidence": "mechanistic_proxy",
-      "family": "phenology_anomaly",
-      "formula": "mean_2025 / mean_historical",
-      "inputs": [
-        "sat_basic_hist_monthly__sentinel_2__ndwi_promedio__m04",
-        "sat_basic_hist_monthly__sentinel_2__ndwi_promedio__m05",
-        "sat_basic_hist_monthly__sentinel_2__ndwi_promedio__m06",
-        "sat_basic_hist_monthly__sentinel_2__ndwi_promedio__m07",
-        "sat_basic_hist_monthly__sentinel_2__ndwi_promedio__m08",
-        "sat_basic_hist_monthly__sentinel_2__ndwi_promedio__m09",
-        "sat_basic_hist_monthly__sentinel_2__ndwi_promedio__m10",
-        "sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m04",
-        "sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m05",
-        "sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m06",
-        "sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m07",
-        "sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m08",
-        "sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m09",
-        "sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m10"
-      ],
-      "meaning": "Relative 2025 seasonal vegetation condition versus historical baseline.",
       "mode": "competition",
       "rationale": "Within-parcel departure from a historical remote-sensing baseline can separate persistent site productivity from conditions specific to the 2025 crop cycle.",
       "references": [
@@ -9326,7 +9292,7 @@
       ]
     }
   ],
-  "generated_at": "2026-09-18T18:09:54.306581+00:00",
+  "generated_at": "2026-09-18T18:15:47.487076+00:00",
   "id_column": "ID_POLIGONO",
   "schema_version": 1,
   "source_feature_manifest": "data/processed/features_v1/feature_manifest.json",
