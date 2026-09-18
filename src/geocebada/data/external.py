@@ -14,7 +14,7 @@ from geocebada.features.parcel import ID_COLUMN, canonicalize_parcels
 from geocebada.paths import find_project_root
 
 
-def normalize_label(value: object) -> str:
+def _normalize_label(value: object) -> str:
     """Normalize text for accent/case-insensitive administrative matching."""
 
     text = unicodedata.normalize("NFKD", str(value))
@@ -22,7 +22,7 @@ def normalize_label(value: object) -> str:
     return " ".join(text.casefold().split())
 
 
-def read_csv_flexible(
+def _read_csv_flexible(
     path: str | Path,
     *,
     usecols: list[str] | None = None,
@@ -64,7 +64,7 @@ def load_inegi_municipalities(
 
     for state_code, state_spec in spec["files"].items():
         frame = gpd.read_file(directory / state_spec["path"])
-        lookup = {normalize_label(column): str(column) for column in frame.columns}
+        lookup = {_normalize_label(column): str(column) for column in frame.columns}
         required = ["cvegeo", "cve_ent", "cve_mun", "nomgeo"]
         missing = [field for field in required if field not in lookup]
         if missing:
@@ -148,9 +148,9 @@ def build_admin_mapping(
     for _, parcel in parcels.sort_values(ID_COLUMN).iterrows():
         parcel_id = str(parcel[ID_COLUMN])
         official = municipalities.loc[
-            municipalities["state_name"].map(normalize_label).eq(normalize_label(parcel["Estado"]))
+            municipalities["state_name"].map(normalize_label).eq(_normalize_label(parcel["Estado"]))
             & municipalities["nomgeo"].map(normalize_label).eq(
-                normalize_label(parcel["Municipio"])
+                _normalize_label(parcel["Municipio"])
             )
         ]
         spatial_row = spatial.loc[parcel_id]
@@ -220,7 +220,7 @@ def load_siap_barley_history(
     pieces = []
 
     for path in _canonical_siap_files(directory, spec):
-        header = read_csv_flexible(path, nrows=0)
+        header = _read_csv_flexible(path, nrows=0)
         crop_column = next((alias for alias in aliases if alias in header.columns), None)
         if crop_column is None:
             raise ValueError(f"No declared SIAP crop-name alias in {path.name}.")
@@ -235,7 +235,7 @@ def load_siap_barley_history(
             "Siniestrada",
             "Volumenproduccion",
         ]
-        frame = read_csv_flexible(path, usecols=columns)
+        frame = _read_csv_flexible(path, usecols=columns)
         if crop_column != "Nomcultivo":
             frame = frame.rename(columns={crop_column: "Nomcultivo"})
 
