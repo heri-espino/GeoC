@@ -403,9 +403,9 @@ The canonical build passed with:
 
 ```text
 197 parcels
-351 derived features
+350 derived features
 123 clean
-228 competition
+227 competition
 0.0 mean/max missing fraction
 0 infinite values
 target used for construction: false
@@ -416,7 +416,7 @@ Family inventory:
 
 ```text
 phenology              162
-phenology_anomaly       42
+phenology_anomaly       41
 water_productivity      40
 thermal                 36
 cross_domain            19
@@ -435,7 +435,7 @@ heat stress is irrelevant.
 CHIRPS was intentionally excluded because Checkpoint 02 retained only one CHIRPS feature and
 that source still needs QC.
 
-No yield value was used to create or select these 351 features. Any future target-guided
+No yield value was used to create or select these 350 features. Any future target-guided
 interaction search or feature selection must occur inside training folds.
 
 Phase 03A is therefore closed. Checkpoint 03B will compare base-only, agronomic-only,
@@ -461,7 +461,7 @@ Completed:
 - feature-family ablations;
 - initial untuned baseline models;
 - versioned Feature Table v1;
-- versioned Agronomic Features v1 with 351 target-free derived variables and scientific provenance.
+- versioned Agronomic Features v1 with 350 target-free derived variables and scientific provenance.
 
 Not completed:
 
