@@ -2,6 +2,8 @@
 
 Esta carpeta contiene las fuentes oficiales del reto y los artefactos derivados del pipeline de datos. El objetivo predictivo es estimar el rendimiento agrícola de parcelas de cebada en Hidalgo, Puebla y Tlaxcala.
 
+> **Estado actual:** para el inventario completo y actualizado de fuentes oficiales/externas, joins, caveats, adquisición local y plan Data Contract v2, leer primero `docs/DATA_SOURCES.md`. Ese documento corrige y amplía cualquier descripción histórica de este README.
+
 ## Resumen del problema
 
 La unidad de observación final es una **parcela georreferenciada**. El archivo oficial de partición contiene 197 parcelas:
@@ -85,6 +87,8 @@ Para reintentar exclusivamente SoilGrids después de una interrupción o error:
 ```powershell
 python tools\download_external_data.py --sources soilgrids --workers 4
 ```
+
+El conjunto externo prioritario se considera adquirido localmente a 2026-09-17: municipios INEGI de Hidalgo/Puebla/Tlaxcala, CHIRPS diario, WaPOR, SoilGrids, CEM de alta resolución y SIAP incluyendo 2023. ERA5-Land es opcional y puede contener descargas parciales; no debe asumirse completo.
 
 El estado versionable de los archivos locales se reconstruye sin versionar los
 binarios con:
@@ -341,43 +345,39 @@ Conjunto_datos_BASICO_AgroCebada2026.csv
 Conjunto_datos_PRO_AgroCebada.csv
 ```
 
-Estos archivos forman parte del conjunto oficial de variables derivadas de sensores remotos. **Su esquema exacto, fechas, frecuencia temporal y diferencia BÁSICO vs PRO deben auditarse directamente antes de fijar el pipeline de features.** No asumir nombres de índices ni granularidad que todavía no hayan sido verificados.
+Estos archivos ya fueron auditados a nivel de esquema:
 
-El reto indica que el dataset incluye índices de vegetación, precipitación, temperatura y rendimiento, y permite además incorporar información pública externa pertinente.
+- **BASIC:** 107,666 × 96, 197 parcelas, Sentinel-2 + Landsat, 2022–2025, filas longitudinales parcela/fecha/sensor, 23 familias de índices × cuatro estadísticas, más ID/fecha/sensor/nubosidad.
+- **PRO:** 47,804 × 20, 197 parcelas, Planet, 2025, NDVI/EVI/LAI/MSAVI × cuatro estadísticas, más ID/fecha/sensor/nubosidad.
+- Las fechas son day-first.
+- El missingness es fuertemente específico por sensor.
+- Las filas satelitales no son muestras supervisadas independientes.
+- Índices con el mismo nombre entre sensores no deben fusionarse como si fueran mediciones homogéneas sin una estrategia explícita.
+
+Ver `docs/VARIABLES.md` y `docs/DATA_SOURCES.md` para el detalle actualizado.
 
 ---
 
 ## 7. Estructura temporal: punto crítico
 
-Las covariables climáticas entregadas abarcan explícitamente:
+El objetivo oficial corresponde al **ciclo abril–octubre 2025**. BASIC cubre 2022–2025, PRO cubre 2025 y el clima oficial cubre 2022–2025.
 
-\[
-2022, 2023, 2024, 2025.
-\]
+La unidad objetivo sigue siendo:
 
-Sin embargo, la tabla oficial del objetivo contiene **un solo rendimiento por parcela** y no incluye una columna de año/ciclo.
+[
+\text{1 parcela} \rightarrow \text{1 rendimiento observado u oculto}.
+]
 
-Por tanto, actualmente sabemos que:
+Las covariables satelitales y climáticas son longitudinales:
 
-\[
-\text{1 parcela} \rightarrow \text{1 rendimiento observado u oculto},
-\]
+[
+\text{1 parcela} \rightarrow \{X_{i,t}\}.
+]
 
-mientras que para varias covariables tenemos:
+Para evaluación científicamente prospectiva todavía debe declararse un **cutoff operativo de predicción** y excluir información posterior a ese cutoff. Para el reto también se mantendrá un modo de features **competition** separado, donde puede evaluarse información pública de temporada completa si las reglas lo permiten y se documenta explícitamente.
 
-\[
-\text{1 parcela} \rightarrow \{X_{i,t}\}_{t=2022}^{2025}.
-\]
+Nunca utilizar los targets ocultos de las 59 parcelas.
 
-### No asumir la alineación temporal
-
-Antes de entrenar modelos con todas las capas 2022–2025 debe aclararse a qué ciclo o año agrícola corresponde `RENDIMIENTO_T_HA`.
-
-Si el rendimiento correspondiera, por ejemplo, a una cosecha anterior a algunas covariables utilizadas, introducir información posterior causaría **data leakage temporal**.
-
-Pregunta pendiente prioritaria para FIRA:
-
-> ¿A qué ciclo/año agrícola corresponde el rendimiento `RENDIMIENTO_T_HA` de cada parcela y qué intervalo temporal de las variables satelitales/climáticas debe considerarse disponible al momento de la predicción?
 
 ---
 
@@ -478,20 +478,12 @@ Nunca usar las 59 parcelas de predicción para selección supervisada de hiperpa
 
 ---
 
-## 12. Auditorías pendientes
+## 12. Siguiente fase: Audit + Data Contract v2
 
-Antes de fijar el primer modelo serio deben resolverse estas tareas:
+Antes de construir la tabla maestra, ejecutar el audit descrito en `docs/DATA_SOURCES.md`. Debe incluir IDs/CRS/geometrías, cobertura temporal BASIC/PRO, municipios, duplicados SIAP, etiquetas reales de cebada, unidades/escalas SoilGrids, continuidad CHIRPS, semántica temporal WaPOR y cobertura espacial de todos los rásteres.
 
-- [ ] Auditar columnas, tipos, fechas y granularidad de `Conjunto_datos_BASICO_AgroCebada2026.csv`.
-- [ ] Auditar columnas, tipos, fechas y granularidad de `Conjunto_datos_PRO_AgroCebada.csv`.
-- [ ] Determinar la relación y diferencias entre BÁSICO y PRO.
-- [ ] Confirmar el identificador común exacto entre tablas y geometrías.
-- [ ] Confirmar el año/ciclo agrícola asociado a `RENDIMIENTO_T_HA`.
-- [ ] Verificar si el split 70/30 está estratificado espacialmente.
-- [ ] Comparar distribución de área y covariables entre train/test.
-- [ ] Construir estadísticas zonales reproducibles para clima y topografía.
-- [ ] Definir el horizonte temporal permitido y prevenir leakage.
-- [ ] Construir un baseline tabular reproducible antes de probar modelos complejos.
+Después crear fixtures de integración con las mismas ~12 parcelas en todas las fuentes y construir la tabla maestra de **197 filas, una por `ID_POLIGONO`**, con namespaces por fuente, trazabilidad y separación explícita entre features `clean` y `competition`.
+
 
 ---
 
