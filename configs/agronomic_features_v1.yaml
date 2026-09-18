@@ -150,6 +150,9 @@ phenology:
       sensor: planet
       period: "2025"
 
+  ratio_disabled_for:
+    - hist_s2_ndwi
+
   anomaly_pairs:
     - [hist_s2_ndvi, y2025_s2_ndvi]
     - [hist_s2_evi, y2025_s2_evi]
