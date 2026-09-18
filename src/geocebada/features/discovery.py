@@ -157,7 +157,7 @@ class FoldLocalExpressionMiner(BaseEstimator, TransformerMixin):
         self,
         X: pd.DataFrame,
         y: pd.Series | np.ndarray,
-    ) -> "FoldLocalExpressionMiner":
+    ) -> FoldLocalExpressionMiner:
         """Learn primitive ranking and expression selection from one training fold."""
 
         if not isinstance(X, pd.DataFrame):
