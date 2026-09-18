@@ -1,306 +1,265 @@
-# AI Handoff — `data/`
+# AI Handoff — data/
 
-Updated: 2026-09-18  
-Project: GeoCebada / Reto AgroCebada FIRA 2026  
-Scope: dataset understanding, ingestion, geospatial joins, feature engineering, audit and leakage controls.
+**Updated:** 2026-09-18  
+**Scope:** source data, external covariates, geospatial joins, feature construction and data QA.
 
-## Read first
+For full project context read `docs/AGENT_GUIDE.md` and `docs/PROJECT_HISTORY.md` first.
 
-For any data work, read in this order:
-
-1. `docs/DATA_SOURCES.md` — comprehensive current inventory.
-2. `docs/DATA_CONTRACT_V2.md` + `configs/data_contract_v2.yaml` — executable audit contract.
-3. `docs/VARIABLES.md` — source-backed variable/index dictionary.
-4. `data/README.md` — directory contract.
-5. `data/data_catalog.json` and `docs/DATA_CATALOG.md`.
-6. official/reference evidence under `docs/official/`, `docs/reference/`, `data/source/`.
-7. relevant code under `src/geocebada/`.
-
-If this handoff conflicts with official files or directly inspected metadata, preserve the source evidence and update the handoff.
-
-## Core task
-
-Predict `RENDIMIENTO_T_HA` for 59 hidden-target parcels.
-
-Confirmed official split:
-
-- 197 parcels total.
-- 138 `ENTRENAMIENTO`.
-- 59 `PREDICCION`.
-- key `ID_POLIGONO`.
-- target `RENDIMIENTO_T_HA`.
-- split `CONJUNTO`.
-- target cycle April–October 2025.
-- states Hidalgo, Puebla, Tlaxcala.
-- split is by whole parcel, not by satellite row.
-
-Independent supervised sample size is therefore 138.
-
-## Current official data
-
-### Split
-`data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv`
-
-Observed columns include `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`, plus empty `Unnamed: 4`.
-
-### Parcels
-`data/source/geospatial/Parcelas_Reto_AGC_CONJUNTO_70_30.zip`
-
-Observed fields include `Cultivo`, `ID_POLIGON`, `área_ha`, `Municipio`, `Estado`, `CONJUNTO`, geometry.
-
-Normalize in loaders:
-
-- `ID_POLIGON` -> `ID_POLIGONO`
-- `área_ha` -> `area_ha`
-
-Direct inspection records the parcel CRS as `EPSG:4326`; loaders must still read and validate it rather than assigning it blindly.
-
-### BASIC
-`data/source/tabular/Conjunto_datos_BASICO_AgroCebada2026.csv`
-
-- 107,666 × 96.
-- 197 parcels.
-- Sentinel-2 + Landsat.
-- 2022–2025.
-- row ≈ parcel/date/sensor.
-- date is day-first.
-- metadata: ID/date/sensor/cloud.
-- 23 index families × four stats.
-- missingness is sensor-specific.
-- do not globally fill missing values.
-- do not invent MRA/VI6T formulas.
-
-### PRO
-`data/source/tabular/Conjunto_datos_PRO_AgroCebada.csv`
-
-- 47,804 × 20.
-- 197 parcels.
-- Planet.
-- 2025.
-- NDVI/EVI/LAI/MSAVI × four stats + metadata.
-
-BASIC/PRO rows are longitudinal observations, not independent yield samples. Same-named indices across sensors are not automatically equivalent.
-
-### Official climate
-
-- CHIRPS monthly precipitation 2022–2025: 48 rasters, EPSG:4326, ~0.05°, mm/month.
-- Tmin/Tmax monthly 2022–2025: 96 rasters, EPSG:4326, ~0.05°, °C.
-- total official climate inventory observed: 146 files including two inventory CSVs.
-
-### Official topography
-
-- INEGI CEM4 elevation 120 m.
-- slope in degrees 120 m.
-- EPSG:6372.
-- NoData -9999.
-
-## Current external data status
-
-External files live under `data/raw/external/` and are gitignored. Do not commit them.
-
-The prioritized external set is considered locally acquired as of 2026-09-17:
-
-- INEGI municipal boundaries: Hidalgo, Puebla, Tlaxcala.
-- CHIRPS v3 daily: 214 days, 2025-04-01 through 2025-10-31.
-- WaPOR v3: AETI + NPP, 21 dekads each.
-- SoilGrids 250 m: 9 properties × 4 depths = 36 TIFFs.
-- INEGI CEM high-resolution state products for Hidalgo/Puebla/Tlaxcala.
-- SIAP municipal agricultural closure history including newly downloaded 2023.
-
-ERA5-Land is optional and currently not part of the completeness requirement. The local `era5_land/` directory may contain partial files from failed CDS attempts; do not consume it unless a later audit explicitly certifies completeness.
-
-### Municipal boundaries
-
-Canonical filenames:
-
-- `hidalgo_municipios.geojson`
-- `puebla_municipios.geojson`
-- `tlaxcala_municipios.geojson`
-
-Administrative joins preserve the official parcel Estado/Municipio attributes. INEGI largest-overlap is QA/fallback. Audit boundary diagnostics: AGC_020 is 98.65% Emiliano Zapata / 1.35% Calpulalpan; AGC_129 is 85.43% Singuilucan / 14.57% Cuautepec de Hinojosa. AGC_048 has a documented discrepancy: official `Nanacamilpa de Mariano Arista` vs spatial `Calpulalpan`; keep official for SIAP/admin joins and spatial assignment as QA metadata.
-
-### CHIRPS daily
-
-Candidate features:
-
-- seasonal/monthly totals.
-- rain days.
-- dry days.
-- maximum consecutive dry spell.
-- maximum daily rainfall.
-- maximum rolling 5-day rainfall.
-
-Official monthly CHIRPS already exists, so source-prefix features and test marginal value.
-
-### WaPOR
-
-AETI units: `mm/day`.  
-NPP units: `gC/m²/day`.  
-Each band has 10/11-day duration metadata.
-
-For seasonal totals, weight rate bands by `number_of_days`; do not simply sum rates.
-
-### SoilGrids
-
-Properties:
-
-`phh2o, clay, sand, silt, soc, nitrogen, cec, bdod, cfvo`
-
-Depths:
-
-`0-5cm, 5-15cm, 15-30cm, 30-60cm`
-
-Downloaded TIFF CRS metadata may be null. For files positively identified as these SoilGrids WCS downloads, use local `ESRI:54052`; WCS requests use pseudo identifier 152160.
-
-SoilGrids scale factors/units are now frozen in `configs/data_contract_v2.yaml` from the official ISRIC documentation. Apply the declared divisors explicitly; do not treat raw INT16 values as final physical values.
-
-### SIAP
-
-Observed 24-column schema includes year/state/municipality/cycle/modality/crop, planted/harvested/damaged area, production, yield and economic fields.
-
-Municipal key:
-
-`CVEGEO = zfill(Idestado,2) + zfill(Idmunicipio,3)`
-
-Never join on `Idmunicipio` alone.
-
-The v2 audit confirms duplicate copies for 2004, 2005 and 2025 are byte-identical by SHA256; use the canonical unsuffixed file. The local SIAP directory still lacks 2023 entirely (no unmatched 2023-like CSV was found), so 2023 remains the only SIAP year-coverage blocker.
-
-The audit discovers `Cebada grano` and `Cebada forrajera en verde`; observed cycles include `Otoño-Invierno` and `Primavera-Verano`, modalities `Riego` and `Temporal`, unit `Tonelada`. SIAP 2015–2020 use `Nomcultivo Sin Um`, normalized source-aware to canonical `Nomcultivo`. Do not mix grain and forage barley.
-
-SIAP 2025 municipal yield is a competition-mode/public-information proxy and potential temporal leakage. Keep it separate from clean features and disclose its use.
-
-## Temporal utilities
-
-`src/geocebada/features/temporal.py` implements:
-
-- `make_temporal_grid`
-- `temporal_coverage_summary`
-- `temporal_backend_available`
-- `align_temporal_knn`
-- `aligned_to_wide`
-
-Current exploratory defaults in notebook 02:
-
-- 2025-04-01 to 2025-10-31.
-- 14-day grid.
-- k=3 nearest dates.
-- 14-day bandwidth.
-- 30-day max distance.
-- cloud-quality weighting.
-
-These are not frozen final modeling choices.
-
-## Clean vs competition modes
-
-Maintain explicit feature groups.
-
-### Clean
-Scientifically prospective features available by a declared prediction cutoff, with preprocessing fitted inside folds.
-
-### Competition
-Rule-permitted public/transductive information that may lower hidden-test error but would not belong in a strict prospective forecast. Examples include full-season 2025 features, SIAP 2025 municipal yield and transforms learned from all 197 unlabeled X rows.
-
-Never use hidden parcel targets in either mode.
-
-## Data Contract v2 — closed locally
-
-Implementation exists in `tools/audit_data_contract_v2.py`. The complete local workstation audit was rerun after resolving SIAP and municipality policies and the user confirmed **no FAIL findings remain**. Re-run the audit after any raw/source change, but feature-engineering work may now proceed.
-
-
-Audit must verify:
-
-- exactly 197 official IDs.
-- 138 train + 59 prediction.
-- ID coverage in split/parcels/BASIC/PRO.
-- parcel field normalization, CRS and validity.
-- BASIC/PRO full date and sensor coverage.
-- cloud/missingness patterns.
-- train-vs-prediction temporal coverage.
-- complete municipal boundaries for state codes 13/21/29.
-- parcel-to-municipality largest-overlap assignment.
-- SIAP year inventory, duplicate hashes and 2023.
-- actual barley labels/cycles/modalities.
-- SoilGrids inventory, CRS fallback behavior and declared conversion semantics.
-- raster intersection coverage.
-- CHIRPS daily continuity/count = 214.
-- WaPOR band/date/day-count semantics.
-- CEM state coverage.
-- ERA5 explicitly partial/unused unless later completed.
-
-### Integration fixtures
-
-First complete generation passed locally on 2026-09-18: 12 parcels (`AGC_020`, `AGC_048`, `AGC_050`, `AGC_054`, `AGC_065`, `AGC_076`, `AGC_090`, `AGC_108`, `AGC_119`, `AGC_129`, `AGC_183`, `AGC_186`), 192 BASIC rows, 96 PRO rows, 201 SIAP rows, 63 files, 3.77 MiB, validation PASS.
-
-The integration-fixture builder now exists at `tools/build_integration_fixtures.py`; its contract lives under `integration_fixtures` in `configs/data_contract_v2.yaml`. It deterministically selects 12 shared parcels (two per Estado × CONJUNTO stratum), uses only target-free area/cloud/missingness/coverage metadata, and forces AGC_020, AGC_048 and AGC_129 so known spatial edge cases are exercised. Generate locally with `python tools\build_integration_fixtures.py`.
-
-Generated structure:
+## Core supervised contract
 
 ```text
-data/samples/
-  schema/
-    tabular/
-    raster/
-    vector/
-    netcdf/
-  integration/
-    parcels.geojson
-    split.csv
-    basic.csv
-    pro.csv
-    siap.csv
-    climate/
-    chirps_daily/
-    soilgrids/
-    wapor/
-    cem/
+ID_POLIGONO
+RENDIMIENTO_T_HA
+CONJUNTO
+197 parcels
+138 ENTRENAMIENTO
+59 PREDICCION
+target cycle: April–October 2025
+states: Hidalgo, Puebla, Tlaxcala
 ```
 
-## Feature Table v1 — completed and versioned
+The supervised unit is the parcel. BASIC/PRO rows are repeated parcel/date/sensor observations,
+not independent target samples.
 
-The deterministic parcel master table has been built and independently validated: 197 rows, 138 training + 59 prediction, 694 clean features, 709 competition-only features, 1,403 total manifest features. Canonical model-ready artifacts belong in `data/processed/features_v1/` and are intentionally versioned so later modeling can run without the large local external raw downloads.
+Never use hidden prediction targets.
 
-The table contract remains one deterministic row per parcel, exactly 197 rows and unique `ID_POLIGONO`.
+## Official sources
 
-Recommended namespaces:
+### Split
 
-- `base_*`
-- `admin_*`
-- `sat_basic_*`
-- `sat_pro_*`
-- `clim_official_*`
-- `chirps_daily_*`
-- `wapor_*`
-- `soilgrids_*`
-- `topo_official_*`
-- `cem15_*`
-- `siap_hist_*`
-- `siap_2025_*` competition-only.
+`data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv`
 
-Record feature provenance and clean/competition membership.
+Defines the 197 parcel IDs, official split, area and target availability.
 
-## Catalog vs contract
+### Parcels
 
-`data/data_catalog.json` remains a structural catalog. Completeness is now owned by the Data Contract v2 audit. Remaining catalog/fixture improvements:
+`data/source/geospatial/Parcelas_Reto_AGC_CONJUNTO_70_30.zip`
 
-- distinguish `available` from `complete`.
-- record expected/observed counts and missing files.
-- inspect full critical ID/date coverage.
-- parse BASIC/PRO dates explicitly as `%d/%m/%Y`; do not string-sort dates.
-- create joinable integration fixtures.
-- keep SoilGrids semantics synchronized with the machine-readable contract.
-- prevent partial ERA5 from appearing complete.
+Observed CRS: EPSG:4326.
+
+Canonical loader normalization:
+
+```text
+ID_POLIGON -> ID_POLIGONO
+área_ha    -> area_ha
+```
+
+### BASIC
+
+```text
+107,666 rows × 96 columns
+197 parcels
+2022–2025
+Sentinel-2 + Landsat
+23 index families × promedio/std/max/min
+```
+
+Dates are day-first. Preserve sensor provenance. Missingness is sensor-specific.
+
+### PRO
+
+```text
+47,804 rows × 20 columns
+197 parcels
+2025
+Planet
+NDVI/EVI/LAI/MSAVI × promedio/std/max/min
+```
+
+Do not silently merge same-named indices across Sentinel/Landsat/Planet.
+
+### Official climate/topography
+
+Official monthly precipitation and Tmin/Tmax cover 2022–2025.
+
+Official topography contains elevation/slope products. See `docs/DATA_SOURCES.md` for current
+CRS/resolution details.
+
+## External local data
+
+Large external downloads remain local under `data/raw/external/` and are not committed.
+
+Data Contract v2 certified the prioritized external set:
+
+- INEGI municipal boundaries for Hidalgo/Puebla/Tlaxcala;
+- CHIRPS daily 2025-04-01 through 2025-10-31, 214 files;
+- WaPOR AETI and NPP, 21 dekads each;
+- SoilGrids: 9 properties × 4 depths = 36 rasters;
+- SIAP: every year 2003–2025;
+- high-resolution INEGI CEM for the three target states.
+
+ERA5-Land is intentionally optional and is not a completeness requirement.
+
+## Join/data policies
+
+Administrative/SIAP joins use official parcel Estado/Municipio as primary.
+
+INEGI municipality overlap is QA/fallback, not silent replacement.
+
+Use full SIAP CVEGEO:
+
+```text
+zfill(Idestado, 2) + zfill(Idmunicipio, 3)
+```
+
+Never join on municipality ID alone.
+
+Keep `Cebada grano` separate from forage barley.
+
+SIAP 2025 is competition-only because it is contemporaneous municipal outcome information.
+
+SoilGrids unit/scale conversion and source-specific CRS handling are frozen in
+`configs/data_contract_v2.yaml`.
+
+WaPOR seasonal totals use band duration metadata; do not simply sum rate values.
+
+## Data Contract v2
+
+Run:
+
+```powershell
+python tools\audit_data_contract_v2.py
+```
+
+Latest full-workstation result:
+
+```text
+PASS 46
+WARN 0
+FAIL 0
+SKIP 1
+```
+
+The SKIP is intentional ERA5-Land policy.
+
+If source/raw data change, rerun the contract before regenerating model-ready artifacts.
+
+## Integration fixtures
+
+The shared 12-parcel integration fixtures are complete and validated.
+
+They exercise official/external joins and raster/NetCDF extraction on a small real subset.
+
+Builder:
+
+```powershell
+python tools\build_integration_fixtures.py
+```
+
+Do not redesign fixture selection unless the contract changes.
+
+## Feature Table v1
+
+Feature Table v1 is complete, validated and committed.
+
+Canonical directory:
+
+```text
+data/processed/features_v1/
+```
+
+Artifacts:
+
+```text
+parcel_features_clean.csv
+parcel_features_competition.csv
+parcel_features_all.csv
+feature_manifest.json
+build_report.json
+README.md
+```
+
+Validated shapes:
+
+```text
+clean        197 × 699
+competition  197 × 1408
+all          197 × 1408
+```
+
+Manifest:
+
+```text
+694 clean features
+709 competition-only features
+1403 total features
+1401 numeric
+```
+
+All 138 training targets are present. All 59 prediction targets are missing.
+
+Use `feature_manifest.json` for feature provenance/mode instead of guessing from names.
+
+## Feature namespaces
+
+Expected namespaces include:
+
+```text
+base_*
+admin_*
+sat_basic_*
+sat_pro_*
+clim_official_*
+chirps_daily_*
+wapor_*
+soilgrids_*
+topo_official_*
+cem15_*
+siap_hist_*
+siap_2025_*
+```
+
+## Clean vs competition
+
+`clean`
+: historical/static representation.
+
+`competition`
+: clean plus rule-permitted 2025/full-season/contemporaneous public information.
+
+Do not collapse this distinction.
+
+The exact operational forecast cutoff is still unresolved.
+
+## Current QC caveats
+
+Only one CHIRPS daily competition feature survives Feature Table v1. Most candidate CHIRPS
+daily aggregate features were dropped as all-null. Investigate before relying on CHIRPS.
+
+The feature builder emitted pandas fragmentation warnings during daily CHIRPS construction;
+this is a performance issue, not a failed build.
+
+The workstation also reported an h5py/HDF5 build/runtime mismatch warning during WaPOR work;
+WaPOR extraction nevertheless completed.
+
+## Git policy
+
+Versioned:
+
+- official source evidence;
+- integration fixtures;
+- canonical `data/processed/features_v1/`;
+- manifests/contracts/reports.
+
+Not versioned:
+
+- large raw external downloads;
+- transient interim outputs;
+- arbitrary processed experiments.
+
+Do not remove local raw data merely to make Git clean.
 
 ## Non-negotiable guards
 
-- preserve `ID_POLIGONO`.
-- no accidental many-to-many joins.
-- no row-random supervised split of BASIC/PRO.
-- no hidden target use.
-- preserve sensor/source provenance.
-- explicit CRS handling.
-- no guessed units/formulas/labels.
-- fit learned preprocessing inside validation folds for clean evaluation.
-- `raw/` and `interim/` stay out of Git; the canonical `data/processed/features_v1/` artifacts are the deliberate exception and should be versioned after validation.
+- preserve `ID_POLIGONO`;
+- no many-to-many accidental joins;
+- no row-random supervised split of BASIC/PRO;
+- no hidden-target use;
+- preserve sensor provenance;
+- explicit CRS handling;
+- no guessed units/formulas;
+- learned preprocessing fitted inside CV folds;
+- source files remain immutable.
 
-Full rationale and source-by-source detail: `docs/DATA_SOURCES.md`.
+For the full rationale, read `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`,
+`docs/FEATURE_TABLE_V1.md` and `checkpoints/01_data/README.md`.
