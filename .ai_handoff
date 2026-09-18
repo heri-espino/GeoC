@@ -315,16 +315,12 @@ Current dashboard models are exploratory baselines only. Final selection still r
 
 ## Immediate next steps
 
-1. Run `python tools/audit_data_contract_v2.py` on the complete workstation data before building final features.
-2. Resolve every FAIL and explicitly document every WARN; completeness is owned by the v2 audit, not by catalog `available` flags.
-3. Create joinable integration fixtures using the same ~12 parcels across split/geometry/BASIC/PRO/SIAP/raster/NetCDF samples.
-4. Audit parcel CRS/field normalization and map every parcel to municipality by largest polygon overlap.
-5. Audit SIAP duplicate years, confirm 2023, discover exact barley labels/cycles/modalities and build stable CVEGEO keys.
-6. Verify SoilGrids units/scale factors before using its INT16 values.
-7. Audit CHIRPS daily continuity (214 days), WaPOR band/day semantics and external raster coverage.
-8. Build the deterministic **197-row parcel master feature table** with source-prefixed columns, provenance and explicit clean-vs-competition feature groups.
-9. Only after that, compare feature/model families using consistent parcel folds and spatial diagnostics.
-10. Keep Streamlit synchronized with frozen reusable pipeline artifacts rather than duplicating logic in the app.
+1. Data Contract v2 is closed locally with no FAIL findings after resolving SIAP and municipality policies; re-run it after any raw/source change.
+2. Generate the shared 12-parcel integration fixtures with `python tools/build_integration_fixtures.py` and version the resulting `data/samples/integration/` artifacts.
+3. Use those fixtures to test joins/extraction end-to-end before running full-data feature engineering.
+4. Build the deterministic **197-row parcel master feature table** with source-prefixed columns, provenance and explicit clean-vs-competition feature groups.
+5. Only after that, compare feature/model families using consistent parcel folds and spatial diagnostics.
+6. Keep Streamlit synchronized with frozen reusable pipeline artifacts rather than duplicating logic in the app.
 
 
 ---
