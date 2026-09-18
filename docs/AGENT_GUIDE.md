@@ -277,15 +277,15 @@ Checkpoint 03A is complete. The additive table is:
 
 ```text
 data/processed/agronomic_features_v1/parcel_agronomic_features.csv
-197 rows × 352 columns
-= ID_POLIGONO + 351 derived features
+197 rows × 351 columns
+= ID_POLIGONO + 350 derived features
 ```
 
 Manifest counts:
 
 ```text
 clean          123
-competition    228
+competition    227
 total          351
 missingness    0.0
 ```
@@ -294,7 +294,7 @@ Families:
 
 ```text
 phenology              162
-phenology_anomaly       42
+phenology_anomaly       41
 water_productivity      40
 thermal                 36
 cross_domain            19
@@ -467,7 +467,7 @@ final predictions look plausible.
 
 ## 15. What Checkpoint 03B should do
 
-Checkpoint 03A is already closed. Do not recreate or target-select the 351 agronomic features outside CV. Checkpoint 03B should first compare feature representations (base only, agronomic only, base + agronomic, and controlled reduced/selected variants), then compare controlled model families on the already frozen data/folds.
+Checkpoint 03A is already closed. Do not recreate or target-select the 350 agronomic features outside CV. Checkpoint 03B should first compare feature representations (base only, agronomic only, base + agronomic, and controlled reduced/selected variants), then compare controlled model families on the already frozen data/folds.
 
 Good candidates:
 
