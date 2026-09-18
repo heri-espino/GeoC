@@ -29,6 +29,8 @@ Registrar cada uso relevante en la tabla siguiente.
 
 | 2026-09-17 | ChatGPT | Audit + Data Contract v2 | Solicitud de ejecutar el paso inmediato de auditoría antes de construir la tabla maestra | `configs/data_contract_v2.yaml`, `tools/audit_data_contract_v2.py`, `docs/DATA_CONTRACT_V2.md`, tests y sincronización de handoffs/documentación; el audit valida IDs, fechas, sensores, CRS, municipios, CHIRPS, WaPOR, SoilGrids, SIAP, CEM y política ERA5 | Contrato oficial contrastado con archivos/catálogo existentes; factores/unidades SoilGrids contrastados con documentación oficial ISRIC; la auditoría externa completa debe ejecutarse en la workstation que contiene `data/raw/external/` |
 
+| 2026-09-17 | ChatGPT | Resolución de hallazgos del Data Contract v2 | Interpretar el segundo pase del audit y congelar decisiones reproducibles | Se documentaron el alias SIAP `Nomcultivo Sin Um` (2015–2020), duplicados SIAP byte-idénticos, categorías reales de cebada, política de municipio oficial vs overlay INEGI y discrepancia AGC_048; 2023 quedó como único bloqueo real de cobertura SIAP | Hallazgos derivados del reporte JSON generado localmente; cambios protegidos por audit/tests/CI |
+
 ## Criterio de registro
 
 Registrar prompts que hayan contribuido materialmente a:
