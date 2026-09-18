@@ -273,3 +273,28 @@ master_table:
     - cem15_
     - siap_hist_
     - siap_2025_
+
+integration_fixtures:
+  output: data/samples/integration
+  expected_parcels: 12
+  parcels_per_state_split: 2
+  forced_ids:
+    - AGC_020
+    - AGC_048
+    - AGC_129
+  satellite_rows_per_sensor: 8
+  climate_representatives:
+    - PREC_2025_04.tif
+    - PREC_2025_07.tif
+    - PREC_2025_10.tif
+    - Tmin_2025_04.tif
+    - Tmin_2025_07.tif
+    - Tmin_2025_10.tif
+    - Tmax_2025_04.tif
+    - Tmax_2025_07.tif
+    - Tmax_2025_10.tif
+  chirps_representatives:
+    - chirps_v3_2025-04-01.tif
+    - chirps_v3_2025-07-16.tif
+    - chirps_v3_2025-10-31.tif
+  raster_pad_pixels: 2
