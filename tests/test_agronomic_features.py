@@ -108,6 +108,23 @@ def test_join_agronomic_features_is_one_to_one() -> None:
     assert len(joined.columns) == len(base.columns) + len(agronomic.columns) - 1
 
 
+def test_join_agronomic_features_rejects_incomplete_parcel_coverage() -> None:
+    base = _base()[["ID_POLIGONO", "CONJUNTO"]]
+    agronomic, _, _ = build_agronomic_feature_layer(_base(), _config())
+
+    with np.testing.assert_raises_regex(ValueError, "coverage mismatch"):
+        join_agronomic_features(base, agronomic.iloc[:-1].copy())
+
+
+def test_join_agronomic_features_rejects_overlapping_columns() -> None:
+    base = _base()[["ID_POLIGONO", "CONJUNTO"]]
+    agronomic, _, _ = build_agronomic_feature_layer(_base(), _config())
+    agronomic["CONJUNTO"] = "unexpected"
+
+    with np.testing.assert_raises_regex(ValueError, "overlap"):
+        join_agronomic_features(base, agronomic)
+
+
 def test_builder_writes_manifest_and_report(tmp_path: Path) -> None:
     report = BUILDER["build_agronomic_tables"](
         root=ROOT,
