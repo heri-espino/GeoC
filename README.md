@@ -129,7 +129,7 @@ Checkpoint 03A creó una capa aditiva separada de Feature Table v1:
 ```text
 data/processed/agronomic_features_v1/
   parcel_agronomic_features.csv   197 × 351
-  feature_manifest.json           351 variables derivadas
+  feature_manifest.json           350 variables derivadas
   build_report.json
 ```
 
