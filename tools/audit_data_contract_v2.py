@@ -939,26 +939,42 @@ def audit_siap(
 
     duplicate_hashes: dict[str, Any] = {}
     conflicts = []
+    canonical_files: dict[str, str] = {}
     for year, paths in files_by_year.items():
+        canonical = next(
+            (path for path in paths if re.fullmatch(rf"Cierre_agricola_mun_{year}\\.csv", path.name)),
+            paths[0],
+        )
+        canonical_files[str(year)] = canonical.name
         if len(paths) <= 1:
             continue
         hashes = {path.name: sha256_file(path) for path in paths}
         duplicate_hashes[str(year)] = hashes
         if len(set(hashes.values())) > 1:
             conflicts.append(year)
+
+    duplicate_status = "warn" if conflicts else "pass"
+    if conflicts:
+        duplicate_summary = (
+            "Some duplicate SIAP yearly copies differ by SHA256 and require manual resolution."
+        )
+    elif duplicate_years:
+        duplicate_summary = (
+            "Duplicate SIAP yearly copies are byte-identical; canonical unsuffixed files are safe to use."
+        )
+    else:
+        duplicate_summary = "No duplicate SIAP yearly copies detected."
+
     checks.append(
         check(
             "external_siap.duplicates",
-            "pass" if not duplicate_years else "warn",
-            (
-                "No duplicate SIAP yearly copies detected."
-                if not duplicate_years
-                else "Duplicate SIAP years require deterministic deduplication."
-            ),
+            duplicate_status,
+            duplicate_summary,
             details={
                 "duplicate_years": duplicate_years,
                 "sha256": duplicate_hashes,
                 "conflicting_duplicate_years": conflicts,
+                "canonical_files": canonical_files,
             },
         )
     )
