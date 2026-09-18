@@ -4,7 +4,7 @@
 
 GeoCebada desarrolla un pipeline reproducible para estimar el rendimiento agrícola de parcelas de cebada a partir de percepción remota, clima, topografía y geometría espacial. El proyecto incluye una librería Python compartida (`geocebada`) y un laboratorio interactivo en Streamlit para exploración, inferencia estadística, feature engineering y comparación de modelos.
 
-> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
+> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `docs/DATA_SOURCES.md`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
 
 ## Problema
 
@@ -57,7 +57,7 @@ Columnas: `ID_POLIGONO`, `AREA_HA`, `RENDIMIENTO_T_HA`, `CONJUNTO`.
 
 BASIC y PRO son longitudinales: las filas son observaciones repetidas de parcela/fecha/sensor, no muestras independientes de rendimiento. Variables con el mismo nombre provenientes de sensores diferentes no deben fusionarse automáticamente como si fueran equivalentes.
 
-El diccionario completo y source-backed está en **`docs/VARIABLES.md`**.
+El diccionario completo y source-backed está en **`docs/VARIABLES.md`**. El inventario actualizado de fuentes oficiales/externas, reglas de integración, caveats y plan Data Contract v2 está en **`docs/DATA_SOURCES.md`**.
 
 ### Clima y topografía
 
@@ -99,6 +99,7 @@ GeoCebada/
 │   ├── interim/                 # transformaciones intermedias
 │   └── processed/               # datos model-ready
 ├── docs/
+│   ├── DATA_SOURCES.md          # inventario e integración de datos
 │   ├── VARIABLES.md             # diccionario de variables
 │   ├── FUNCTION_INDEX.md        # índice autogenerado de funciones
 │   ├── VISUAL_EXPLORER.md
@@ -225,15 +226,15 @@ final frozen pipeline
 
 ## Próximos pasos
 
-1. auditar las fechas/sensores y missingness de BASIC/PRO con foco en el ciclo 2025;
-2. inspeccionar geometrías, CRS, validez y cobertura de las 197 parcelas;
-3. fijar un cutoff/horizonte de predicción pre-cosecha y ventanas temporales legales;
-4. construir el explorador temporal BASIC/PRO;
-5. extraer clima/topografía por parcela y crear features reproducibles;
-6. añadir Moran's I y diagnósticos espaciales cuando la geometría esté validada;
-7. añadir grouped/spatial CV al Model Lab;
-8. construir la tabla model-ready y realizar ablations por dominio;
-9. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
+1. ejecutar **Audit + Data Contract v2** sobre las fuentes oficiales y externas;
+2. distinguir en el catálogo entre fuente disponible y fuente completa, y certificar 197 IDs / 138+59;
+3. crear fixtures de integración con las mismas ~12 parcelas a través de todas las fuentes;
+4. resolver CRS/geometrías, joins de municipio, duplicados SIAP, etiquetas reales de cebada y escalas/unidades SoilGrids;
+5. verificar continuidad CHIRPS diario, semántica temporal WaPOR y cobertura espacial de todos los rásteres;
+6. construir una tabla maestra determinista de **197 filas**, una por `ID_POLIGONO`, con namespaces, procedencia y grupos `clean` vs `competition`;
+7. después comparar representaciones temporales y modelos con folds de parcela consistentes y diagnósticos espaciales;
+8. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
+
 
 ## Calidad y trazabilidad
 
