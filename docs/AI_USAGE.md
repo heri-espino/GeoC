@@ -33,6 +33,8 @@ Registrar cada uso relevante en la tabla siguiente.
 
 | 2026-09-18 | ChatGPT | Fixtures de integración compartidas | Implementar la etapa posterior al cierre del Data Contract v2 | `tools/build_integration_fixtures.py`, contrato `integration_fixtures` en YAML, tests, documentación y handoffs; selección target-free de 12 parcelas compartidas, joins administrativos/SIAP y recortes reales de ráster/NetCDF | Diseño validado por tests/CI; la generación completa debe ejecutarse en la workstation con las fuentes externas gitignored |
 
+| 2026-09-18 | ChatGPT | Checkpoint 01 — Data foundation | Solicitud de crear un checkpoint narrativo de todo lo realizado en datos | `checkpoints/README.md` y `checkpoints/01_data/README.md`; se documentaron fuentes, razones de adquisición, normalizaciones, audit, fixtures, qué está/no está en Git y próximos pasos | Basado en Data Contract v2, archivos versionados, manifests y resultados del audit/fixture validados localmente |
+
 ## Criterio de registro
 
 Registrar prompts que hayan contribuido materialmente a:
