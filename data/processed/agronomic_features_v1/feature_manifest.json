@@ -9292,7 +9292,7 @@
       ]
     }
   ],
-  "generated_at": "2026-09-18T18:15:47.487076+00:00",
+  "generated_at": "2026-09-18T18:17:34.228291+00:00",
   "id_column": "ID_POLIGONO",
   "schema_version": 1,
   "source_feature_manifest": "data/processed/features_v1/feature_manifest.json",
