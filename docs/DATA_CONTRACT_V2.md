@@ -108,7 +108,7 @@ Expected:
 - 47,804 rows × 20 columns;
 - 197 parcel IDs;
 - exact date format `%d/%m/%Y`;
-- date span 2025-01-01 through 2025-12-31;
+- date span 2025-01-01 through 2025-12-30;
 - sensor `Planet`.
 
 The audit records duplicate parcel/date/sensor keys, sensor-specific missingness and
