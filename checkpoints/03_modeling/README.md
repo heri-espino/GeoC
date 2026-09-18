@@ -1,7 +1,7 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A closed; 03B local validation pending; 03C next  
-**Current phase:** 03B — Empirical Feature Discovery (run/review locally)  
+**Status:** In progress — 03A/03B closed; 03C current  
+**Current phase:** 03C — Model comparison  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -72,7 +72,7 @@ See `docs/AGRONOMIC_FEATURES_V1.md` and
 
 ---
 
-## 03B — Empirical Feature Discovery — LOCAL VALIDATION PENDING
+## 03B — Empirical Feature Discovery — CLOSED
 
 03B asks a different question:
 
@@ -174,11 +174,11 @@ sensor_shape_similarity      18
 ```
 
 One `emp_histpos__landsat_vi6t__above_history_fraction` candidate was constant and dropped.
-The deterministic generated artifacts are committed. The fold-local expression audit must still be executed and reviewed on the workstation before 03B is closed.
+The workstation run passed. The deterministic artifacts and fold-local expression audit are committed. See `reports/checkpoint_03b/README.md` for the four conceptual recurrent motifs and their caveats.
 
 ---
 
-## 03C — Model comparison — NEXT
+## 03C — Model comparison — CURRENT
 
 03C compares representations such as:
 
