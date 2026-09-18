@@ -4,7 +4,7 @@
 
 GeoCebada desarrolla un pipeline reproducible para estimar el rendimiento agrícola de parcelas de cebada a partir de percepción remota, clima, topografía y geometría espacial. El proyecto incluye una librería Python compartida (`geocebada`) y un laboratorio interactivo en Streamlit para exploración, inferencia estadística, feature engineering y comparación de modelos.
 
-> Para trabajo asistido por agentes/Codex, leer primero `AGENTS.md`, `.ai_handoff`, `checkpoints/01_data/README.md`, `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `data/.ai_handoff`, `docs/VARIABLES.md` y `src/geocebada/README.md`.
+> Para trabajo asistido por agentes/Codex, empezar por **`docs/AGENT_GUIDE.md`**, luego `.ai_handoff` y **`docs/PROJECT_HISTORY.md`**. Ahí está el estado actual, qué ya se cerró, qué artifacts son canónicos y qué no debe repetirse.
 
 ## Problema
 
@@ -100,6 +100,8 @@ GeoCebada/
 │   ├── interim/                 # transformaciones intermedias
 │   └── processed/               # derivados; features_v1 canónico sí se versiona
 ├── docs/
+│   ├── AGENT_GUIDE.md           # entrada operativa para agentes
+│   ├── PROJECT_HISTORY.md       # historia cronológica del proyecto
 │   ├── DATA_SOURCES.md          # inventario e integración de datos
 │   ├── DATA_CONTRACT_V2.md      # audit gate antes de features
 │   ├── VARIABLES.md             # diccionario de variables
