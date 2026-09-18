@@ -1,6 +1,6 @@
 # AI Handoff — `data/`
 
-Updated: 2026-09-17  
+Updated: 2026-09-18  
 Project: GeoCebada / Reto AgroCebada FIRA 2026  
 Scope: dataset understanding, ingestion, geospatial joins, feature engineering, audit and leakage controls.
 
@@ -256,9 +256,11 @@ data/samples/
     cem/
 ```
 
-## Master table — task after integration fixtures
+## Feature Table v1 — completed and versioned
 
-Build one deterministic row per parcel, exactly 197 rows and unique `ID_POLIGONO`.
+The deterministic parcel master table has been built and independently validated: 197 rows, 138 training + 59 prediction, 694 clean features, 709 competition-only features, 1,403 total manifest features. Canonical model-ready artifacts belong in `data/processed/features_v1/` and are intentionally versioned so later modeling can run without the large local external raw downloads.
+
+The table contract remains one deterministic row per parcel, exactly 197 rows and unique `ID_POLIGONO`.
 
 Recommended namespaces:
 
@@ -299,6 +301,6 @@ Record feature provenance and clean/competition membership.
 - explicit CRS handling.
 - no guessed units/formulas/labels.
 - fit learned preprocessing inside validation folds for clean evaluation.
-- generated/raw/interim/processed data stay out of Git.
+- `raw/` and `interim/` stay out of Git; the canonical `data/processed/features_v1/` artifacts are the deliberate exception and should be versioned after validation.
 
 Full rationale and source-by-source detail: `docs/DATA_SOURCES.md`.
