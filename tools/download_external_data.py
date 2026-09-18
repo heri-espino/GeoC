@@ -415,24 +415,34 @@ def iter_months(start: date, end: date) -> Iterable[tuple[int, int]]:
             month += 1
 
 
-def era5_month(
+def era5_variable_month(
     output: Path,
     year: int,
     month: int,
+    variable: str,
     bbox: tuple[float, float, float, float],
     start: date,
     end: date,
 ) -> Path:
-    """Submit and download one monthly ERA5-Land request."""
+    """Download one ERA5-Land variable for one month.
+
+    ERA5-Land NetCDF requests are deliberately kept small because CDS applies
+    strict request-cost limits to NetCDF retrievals. Splitting by variable and
+    month avoids oversized requests while preserving an easy-to-merge layout.
+    """
     try:
         import cdsapi
     except ImportError as exc:
         raise RuntimeError(
-            "cdsapi is required for ERA5-Land. Install `pip install cdsapi` and configure "
+            "cdsapi is required for ERA5-Land. Install cdsapi and configure "
             "your Copernicus CDS credentials first."
         ) from exc
 
-    destination = output / "era5_land" / f"era5_land_{year}_{month:02d}.nc"
+    destination = (
+        output
+        / "era5_land"
+        / f"era5_land_{year}_{month:02d}__{variable}.nc"
+    )
     if destination.exists() and destination.stat().st_size > 1000:
         return destination
 
@@ -443,7 +453,7 @@ def era5_month(
     west, south, east, north = bbox
 
     request = {
-        "variable": ERA5_VARIABLES,
+        "variable": [variable],
         "year": str(year),
         "month": f"{month:02d}",
         "day": days,
@@ -467,17 +477,39 @@ def download_era5(
     end: date,
     workers: int,
 ) -> list[Path]:
-    """Download ERA5-Land monthly chunks with conservative CDS parallelism."""
-    months = list(iter_months(start, end))
+    """Download ERA5-Land as variable-by-month NetCDF chunks.
+
+    One variable per month keeps each CDS request far below the request that
+    previously triggered cost limits exceeded for all 13 variables at once.
+    Existing chunks are skipped, so interrupted downloads can be resumed.
+    """
+    tasks = [
+        (year, month, variable)
+        for year, month in iter_months(start, end)
+        for variable in ERA5_VARIABLES
+    ]
     outputs: list[Path] = []
     with futures.ThreadPoolExecutor(max_workers=min(workers, 2)) as executor:
         jobs = {
-            executor.submit(era5_month, output, year, month, bbox, start, end): (year, month)
-            for year, month in months
+            executor.submit(
+                era5_variable_month,
+                output,
+                year,
+                month,
+                variable,
+                bbox,
+                start,
+                end,
+            ): (year, month, variable)
+            for year, month, variable in tasks
         }
         for index, job in enumerate(futures.as_completed(jobs), 1):
             outputs.append(job.result())
-            log(f"ERA5-Land: {index}/{len(jobs)}")
+            year, month, variable = jobs[job]
+            log(
+                f"ERA5-Land: {index}/{len(jobs)} "
+                f"({year}-{month:02d} {variable})"
+            )
     return outputs
 
 
