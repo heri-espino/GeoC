@@ -227,6 +227,46 @@ evidence against barley heat sensitivity.
 Read `docs/AGRONOMIC_FEATURES_V1.md` and
 `checkpoints/03_modeling/README.md` before changing this layer.
 
+
+## Empirical Features v1 — completed and versioned
+
+Checkpoint 03B adds a separate deterministic X-only data-driven layer:
+
+```text
+data/processed/empirical_features_v1/
+  parcel_empirical_features.csv  197 × 336
+  feature_manifest.json          335 derived features
+  build_report.json
+  README.md
+```
+
+Validated canonical build:
+
+```text
+197 unique ID_POLIGONO
+335 derived numeric features
+91 clean
+244 competition
+mean/max missing fraction = 0.0
+no infinite values
+no target or split column
+target used for construction = false
+supervised formulas materialized globally = false
+short VCI-like is standard VCI = false
+CHIRPS used = false
+```
+
+Families are temporal shape (162), aggregate geometry (72), symmetric change (42),
+short-baseline condition (41) and sensor-shape similarity (18). One
+`emp_histpos__landsat_vi6t__above_history_fraction` candidate was constant and dropped.
+
+Target-aware expression discovery is separate: `FoldLocalExpressionMiner` has 24 configured
+primitive variables and may use `RENDIMIENTO_T_HA` only inside a training fold. Learned
+cross-row representations such as PCA/clustering likewise belong inside CV.
+
+Read `docs/EMPIRICAL_FEATURES_V1.md` and
+`checkpoints/03b_empirical_feature_discovery/README.md`.
+
 ## Feature namespaces
 
 Expected namespaces include:
@@ -277,6 +317,7 @@ Versioned:
 - integration fixtures;
 - canonical `data/processed/features_v1/`;
 - canonical `data/processed/agronomic_features_v1/`;
+- canonical `data/processed/empirical_features_v1/`;
 - manifests/contracts/reports.
 
 Not versioned:
