@@ -120,7 +120,7 @@ GeoCebada/
 
 ## Checkpoints
 
-El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 350 variables agronómicas/no lineales target-free (123 clean, 227 competition) para las 197 parcelas. La fase actual es **Checkpoint 03B — descubrimiento empírico de variables**; la comparación de modelos pasa a **03C**.
+El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 350 variables agronómicas/no lineales target-free (123 clean, 227 competition) para las 197 parcelas. **Checkpoint 03B** también está cerrado: `data/processed/empirical_features_v1/` contiene 335 variables empíricas X-only (91 clean, 244 competition). La fase actual es **Checkpoint 03C — comparación de representaciones y modelos**.
 
 ## Agronomic Features v1
 
@@ -140,7 +140,7 @@ CHIRPS está excluido hasta resolver su QC. Ver `docs/AGRONOMIC_FEATURES_V1.md`.
 
 ## Empirical Features v1
 
-Checkpoint 03B añade una tercera representación separada:
+Checkpoint 03B cerró una tercera representación separada:
 
 ```text
 data/processed/empirical_features_v1/
