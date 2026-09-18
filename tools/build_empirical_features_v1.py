@@ -208,6 +208,13 @@ def main() -> int:
     print(f"Features: {report['features']}")
     print(f"Modes: {report['mode_counts']}")
     print(f"Families: {report['family_counts']}")
+    print(
+        "Missing fraction mean/max: "
+        f"{report['missing_fraction_mean']:.6f}/"
+        f"{report['missing_fraction_max']:.6f}"
+    )
+    print(f"Dropped all-null: {report['dropped_all_null']}")
+    print(f"Dropped constant: {report['dropped_constant']}")
     return 0
 
 
