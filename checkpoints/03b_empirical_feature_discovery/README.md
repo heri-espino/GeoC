@@ -1,6 +1,6 @@
 # Checkpoint 03B — Empirical Feature Discovery
 
-**Status:** **Implementation ready; local validation pending**  
+**Status:** **Closed**  
 **Opened:** 2026-09-18
 
 Checkpoint 03B follows the closed Agronomic Features v1 layer.
@@ -126,7 +126,7 @@ agronomic and empirical variables.
 
 ## Acceptance criteria
 
-03B will close after the local run confirms that:
+03B closed after the workstation run confirmed that:
 
 1. deterministic empirical builder runs from a clean clone;
 2. output covers exactly the same 197 parcel IDs;
@@ -141,4 +141,4 @@ agronomic and empirical variables.
 11. Ruff, tests, function-index consistency and Sphinx pass;
 12. agent handoffs/history/AI-use docs are synchronized.
 
-The code and canonical deterministic empirical artifact are in the repository. The remaining step is to run the complete 03B pipeline on the workstation and review the fold-local expression-stability outputs. Only after that validation should 03B be marked closed and 03C begin.
+The workstation run passed. The deterministic empirical layer contains 335 features and the fold-local audit selected 88 unique expressions, with 7 raw expression strings recurring in at least 3/5 folds under both protocols. Those seven collapse to four conceptual primitive-pair motifs because several are monotone ratio reparameterizations. See `reports/checkpoint_03b/README.md` for interpretation. Checkpoint 03C is next.
