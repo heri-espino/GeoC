@@ -1,0 +1,777 @@
+{
+  "checks": [
+    {
+      "details": {
+        "missing_columns": []
+      },
+      "name": "official_split.columns",
+      "status": "pass",
+      "summary": "Required target/split columns are present."
+    },
+    {
+      "details": {
+        "rows": 197
+      },
+      "name": "official_split.rows",
+      "status": "pass",
+      "summary": "Split contains 197 parcel rows."
+    },
+    {
+      "details": {
+        "duplicate_rows": 0,
+        "missing_ids": 0,
+        "unique_ids": 197
+      },
+      "name": "official_split.ids",
+      "status": "pass",
+      "summary": "ID_POLIGONO is non-null and unique."
+    },
+    {
+      "details": {
+        "prediction": 59,
+        "train": 138
+      },
+      "name": "official_split.counts",
+      "status": "pass",
+      "summary": "Official split is 138 training + 59 prediction parcels."
+    },
+    {
+      "details": {
+        "prediction_exposed_targets": 0,
+        "train_missing_targets": 0
+      },
+      "name": "official_split.target_visibility",
+      "status": "pass",
+      "summary": "Targets are observed only for training parcels."
+    },
+    {
+      "details": {
+        "columns": 96,
+        "rows": 107666
+      },
+      "name": "official_basic.shape",
+      "status": "pass",
+      "summary": "BASIC shape matches 107,666 × 96."
+    },
+    {
+      "details": {
+        "missing_columns": []
+      },
+      "name": "official_basic.columns",
+      "status": "pass",
+      "summary": "Required longitudinal metadata columns are present."
+    },
+    {
+      "details": {
+        "extra_ids": [],
+        "missing_from_table": [],
+        "unique_ids": 197
+      },
+      "name": "official_basic.parcel_coverage",
+      "status": "pass",
+      "summary": "BASIC covers all 197 official parcels."
+    },
+    {
+      "details": {
+        "invalid_dates": 0,
+        "max": "2025-12-31",
+        "min": "2022-01-01"
+      },
+      "name": "official_basic.dates",
+      "status": "pass",
+      "summary": "Dates parse strictly as %d/%m/%Y and span 2022-01-01 to 2025-12-31."
+    },
+    {
+      "details": {
+        "expected": [
+          "Landsat",
+          "Sentinel-2"
+        ],
+        "observed": [
+          "Landsat",
+          "Sentinel-2"
+        ],
+        "row_counts": {
+          "Landsat": 48626,
+          "Sentinel-2": 59040
+        }
+      },
+      "name": "official_basic.sensors",
+      "status": "pass",
+      "summary": "Observed sensors match contract: ['Landsat', 'Sentinel-2']."
+    },
+    {
+      "details": {
+        "rows_in_duplicate_keys": 0
+      },
+      "name": "official_basic.observation_keys",
+      "status": "pass",
+      "summary": "Parcel/date/sensor keys are unique."
+    },
+    {
+      "details": {
+        "coverage_by_split": {
+          "ENTRENAMIENTO": {
+            "max_rows_per_parcel": 692,
+            "median_rows_per_parcel": 509.0,
+            "median_unique_dates_per_parcel": 461.5,
+            "min_rows_per_parcel": 494,
+            "parcels": 138,
+            "rows": 75724
+          },
+          "PREDICCION": {
+            "max_rows_per_parcel": 692,
+            "median_rows_per_parcel": 513.0,
+            "median_unique_dates_per_parcel": 463.0,
+            "min_rows_per_parcel": 501,
+            "parcels": 59,
+            "rows": 31942
+          }
+        },
+        "missing_by_sensor": {
+          "Landsat": {
+            "rows": 48626,
+            "top_missing_rates": {
+              "crc_max": 1.0,
+              "crc_min": 1.0,
+              "crc_promedio": 1.0,
+              "crc_std": 1.0,
+              "evi_max": 1.0,
+              "evi_min": 1.0,
+              "evi_promedio": 1.0,
+              "evi_std": 1.0,
+              "ndvi_max": 1.0,
+              "ndvi_min": 1.0,
+              "ndvi_promedio": 1.0,
+              "ndvi_std": 1.0
+            }
+          },
+          "Sentinel-2": {
+            "rows": 59040,
+            "top_missing_rates": {
+              "fapar_max": 0.239956,
+              "fapar_min": 0.239956,
+              "fapar_promedio": 0.239956,
+              "fapar_std": 0.239956,
+              "ndvi_max": 0.239888,
+              "ndvi_min": 0.239888,
+              "ndvi_promedio": 0.239888,
+              "ndvi_std": 0.239888,
+              "vi6t_max": 1.0,
+              "vi6t_min": 1.0,
+              "vi6t_promedio": 1.0,
+              "vi6t_std": 1.0
+            }
+          }
+        }
+      },
+      "name": "official_basic.coverage_profile",
+      "status": "pass",
+      "summary": "Recorded sensor-specific missingness and train/prediction coverage diagnostics."
+    },
+    {
+      "details": {
+        "columns": 20,
+        "rows": 47804
+      },
+      "name": "official_pro.shape",
+      "status": "pass",
+      "summary": "PRO shape matches 47,804 × 20."
+    },
+    {
+      "details": {
+        "missing_columns": []
+      },
+      "name": "official_pro.columns",
+      "status": "pass",
+      "summary": "Required longitudinal metadata columns are present."
+    },
+    {
+      "details": {
+        "extra_ids": [],
+        "missing_from_table": [],
+        "unique_ids": 197
+      },
+      "name": "official_pro.parcel_coverage",
+      "status": "pass",
+      "summary": "PRO covers all 197 official parcels."
+    },
+    {
+      "details": {
+        "invalid_dates": 0,
+        "max": "2025-12-30",
+        "min": "2025-01-01"
+      },
+      "name": "official_pro.dates",
+      "status": "pass",
+      "summary": "Dates parse strictly as %d/%m/%Y and span 2025-01-01 to 2025-12-30."
+    },
+    {
+      "details": {
+        "expected": [
+          "Planet"
+        ],
+        "observed": [
+          "Planet"
+        ],
+        "row_counts": {
+          "Planet": 47804
+        }
+      },
+      "name": "official_pro.sensors",
+      "status": "pass",
+      "summary": "Observed sensors match contract: ['Planet']."
+    },
+    {
+      "details": {
+        "rows_in_duplicate_keys": 0
+      },
+      "name": "official_pro.observation_keys",
+      "status": "pass",
+      "summary": "Parcel/date/sensor keys are unique."
+    },
+    {
+      "details": {
+        "coverage_by_split": {
+          "ENTRENAMIENTO": {
+            "max_rows_per_parcel": 251,
+            "median_rows_per_parcel": 243.0,
+            "median_unique_dates_per_parcel": 243.0,
+            "min_rows_per_parcel": 233,
+            "parcels": 138,
+            "rows": 33485
+          },
+          "PREDICCION": {
+            "max_rows_per_parcel": 251,
+            "median_rows_per_parcel": 244.0,
+            "median_unique_dates_per_parcel": 244.0,
+            "min_rows_per_parcel": 234,
+            "parcels": 59,
+            "rows": 14319
+          }
+        },
+        "missing_by_sensor": {
+          "Planet": {
+            "rows": 47804,
+            "top_missing_rates": {
+              "evi_max": 0.252217,
+              "evi_min": 0.252217,
+              "evi_promedio": 0.252217,
+              "evi_std": 0.252217,
+              "lai_max": 0.252217,
+              "lai_min": 0.252217,
+              "lai_promedio": 0.252217,
+              "lai_std": 0.252217,
+              "ndvi_max": 0.252217,
+              "ndvi_min": 0.252217,
+              "ndvi_promedio": 0.252217,
+              "ndvi_std": 0.252217
+            }
+          }
+        }
+      },
+      "name": "official_pro.coverage_profile",
+      "status": "pass",
+      "summary": "Recorded sensor-specific missingness and train/prediction coverage diagnostics."
+    },
+    {
+      "details": {
+        "features": 197
+      },
+      "name": "official_parcels.rows",
+      "status": "pass",
+      "summary": "Parcel archive contains 197 features."
+    },
+    {
+      "details": {
+        "crs": "EPSG:4326"
+      },
+      "name": "official_parcels.crs",
+      "status": "pass",
+      "summary": "Parcel CRS is EPSG:4326."
+    },
+    {
+      "details": {
+        "geometry_types": [
+          "Polygon"
+        ],
+        "invalid_or_empty": 0,
+        "valid": 197
+      },
+      "name": "official_parcels.geometry",
+      "status": "pass",
+      "summary": "All parcel geometries are present, non-empty and valid."
+    },
+    {
+      "details": {
+        "extra_geometry_ids": [],
+        "missing_from_geometry": [],
+        "unique_ids": 197
+      },
+      "name": "official_parcels.ids",
+      "status": "pass",
+      "summary": "Parcel IDs are unique and match the official split."
+    },
+    {
+      "details": {},
+      "name": "official_parcels.area_alias",
+      "status": "pass",
+      "summary": "Parcel area field normalizes to area_ha."
+    },
+    {
+      "details": {
+        "PREC": 48,
+        "Tmax": 48,
+        "Tmin": 48,
+        "missing_PREC": [],
+        "missing_Tmax": [],
+        "missing_Tmin": [],
+        "unparsed_tifs": []
+      },
+      "name": "official_climate.months",
+      "status": "pass",
+      "summary": "Official climate has complete monthly PREC/Tmin/Tmax coverage for 2022–2025."
+    },
+    {
+      "details": {
+        "observed_crs": [
+          "EPSG:4326"
+        ]
+      },
+      "name": "official_climate.crs",
+      "status": "pass",
+      "summary": "Representative climate rasters use EPSG:4326."
+    },
+    {
+      "details": {
+        "files": [
+          "data/source/topography/Reto_AgroCebada_Topografia_INEGI_CEM4/Reto_AgroCebada_Topografia_INEGI_CEM4/Elevacion_INEGI_CEM4_120m.tif",
+          "data/source/topography/Reto_AgroCebada_Topografia_INEGI_CEM4/Reto_AgroCebada_Topografia_INEGI_CEM4/Pendiente_INEGI_CEM4_120m_grados.tif"
+        ]
+      },
+      "name": "official_topography.count",
+      "status": "pass",
+      "summary": "Official topography contains 2 GeoTIFFs."
+    },
+    {
+      "details": {
+        "files": {
+          "Elevacion_INEGI_CEM4_120m.tif": "EPSG:6372",
+          "Pendiente_INEGI_CEM4_120m_grados.tif": "EPSG:6372"
+        }
+      },
+      "name": "official_topography.crs",
+      "status": "pass",
+      "summary": "Official topography CRS is EPSG:6372."
+    },
+    {
+      "details": {
+        "crs": "EPSG:4326",
+        "expected": 84,
+        "features": 84,
+        "missing_fields": []
+      },
+      "name": "external_municipios.13",
+      "status": "pass",
+      "summary": "Hidalgo: 84 municipalities with required keys."
+    },
+    {
+      "details": {
+        "crs": "EPSG:4326",
+        "expected": 217,
+        "features": 217,
+        "missing_fields": []
+      },
+      "name": "external_municipios.21",
+      "status": "pass",
+      "summary": "Puebla: 217 municipalities with required keys."
+    },
+    {
+      "details": {
+        "crs": "EPSG:4326",
+        "expected": 60,
+        "features": 60,
+        "missing_fields": []
+      },
+      "name": "external_municipios.29",
+      "status": "pass",
+      "summary": "Tlaxcala: 60 municipalities with required keys."
+    },
+    {
+      "details": {
+        "administrative_join_policy": "official_parcel_estado_municipio",
+        "assigned_parcels": 197,
+        "low_overlap_parcels": [],
+        "min_overlap_fraction": 0.854257,
+        "missing_ids": [],
+        "qa_threshold": 0.8,
+        "spatial_qc_policy": "largest_polygon_overlap"
+      },
+      "name": "external_municipios.parcel_join",
+      "status": "pass",
+      "summary": "Every parcel has a dominant spatial municipality above the 80% QA threshold."
+    },
+    {
+      "details": {
+        "administrative_join_policy": "official_parcel_estado_municipio",
+        "examples": [
+          {
+            "ID_POLIGONO": "AGC_048",
+            "inegi_nomgeo": "Calpulalpan",
+            "parcel_Municipio": "Nanacamilpa de Mariano Arista"
+          }
+        ],
+        "known_discrepancies": {
+          "AGC_048": {
+            "official_municipio": "Nanacamilpa de Mariano Arista",
+            "policy": "preserve_official_for_admin_join_keep_spatial_as_qc",
+            "spatial_municipio": "Calpulalpan"
+          }
+        },
+        "unresolved": []
+      },
+      "name": "external_municipios.name_crosscheck",
+      "status": "pass",
+      "summary": "Known parcel/INEGI municipality name discrepancies are documented; official parcel labels remain primary for administrative joins."
+    },
+    {
+      "details": {
+        "count": 214,
+        "extra_dates": [],
+        "missing_dates": [],
+        "unparsed_files": []
+      },
+      "name": "external_chirps.continuity",
+      "status": "pass",
+      "summary": "CHIRPS has all 214 daily files from 2025-04-01 through 2025-10-31."
+    },
+    {
+      "details": {
+        "observed_crs": [
+          "EPSG:4326"
+        ]
+      },
+      "name": "external_chirps.crs",
+      "status": "pass",
+      "summary": "Representative CHIRPS rasters use EPSG:4326."
+    },
+    {
+      "details": {
+        "missing": []
+      },
+      "name": "external_wapor.files",
+      "status": "pass",
+      "summary": "Both expected WaPOR NetCDF products are present."
+    },
+    {
+      "details": {
+        "issues": [],
+        "products": {
+          "AETI": {
+            "band_count": 21,
+            "end": "2025-10-31",
+            "file": "bb_L1-AETI-D_NONE_none.nc",
+            "long_names": [
+              "Actual EvapoTranspiration and Interception"
+            ],
+            "number_of_days_values": [
+              10,
+              11
+            ],
+            "start": "2025-04-01",
+            "total_days": 214,
+            "units": [
+              "mm/day"
+            ]
+          },
+          "NPP": {
+            "band_count": 21,
+            "end": "2025-10-31",
+            "file": "bb_L1-NPP-D_NONE_none.nc",
+            "long_names": [
+              "Net Primary Production"
+            ],
+            "number_of_days_values": [
+              10,
+              11
+            ],
+            "start": "2025-04-01",
+            "total_days": 214,
+            "units": [
+              "gC/m²/day"
+            ]
+          }
+        }
+      },
+      "name": "external_wapor.metadata",
+      "status": "pass",
+      "summary": "WaPOR AETI/NPP have 21 dekads with expected units and metadata."
+    },
+    {
+      "details": {
+        "count": 36,
+        "extra": [],
+        "missing": []
+      },
+      "name": "external_soilgrids.inventory",
+      "status": "pass",
+      "summary": "SoilGrids contains 9 properties × 4 depths = 36 rasters."
+    },
+    {
+      "details": {
+        "properties": {
+          "bdod": {
+            "conventional_unit": "kg/dm3",
+            "divisor": 100,
+            "mapped_unit": "cg/cm3"
+          },
+          "cec": {
+            "conventional_unit": "cmol(c)/kg",
+            "divisor": 10,
+            "mapped_unit": "mmol(c)/kg"
+          },
+          "cfvo": {
+            "conventional_unit": "vol%",
+            "divisor": 10,
+            "mapped_unit": "cm3/dm3"
+          },
+          "clay": {
+            "conventional_unit": "%",
+            "divisor": 10,
+            "mapped_unit": "g/kg"
+          },
+          "nitrogen": {
+            "conventional_unit": "g/kg",
+            "divisor": 100,
+            "mapped_unit": "cg/kg"
+          },
+          "phh2o": {
+            "conventional_unit": "pH",
+            "divisor": 10,
+            "mapped_unit": "pH_x_10"
+          },
+          "sand": {
+            "conventional_unit": "%",
+            "divisor": 10,
+            "mapped_unit": "g/kg"
+          },
+          "silt": {
+            "conventional_unit": "%",
+            "divisor": 10,
+            "mapped_unit": "g/kg"
+          },
+          "soc": {
+            "conventional_unit": "g/kg",
+            "divisor": 10,
+            "mapped_unit": "dg/kg"
+          }
+        },
+        "source": "https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs_01.html"
+      },
+      "name": "external_soilgrids.semantics",
+      "status": "pass",
+      "summary": "ISRIC conversion divisors/units are frozen in Data Contract v2."
+    },
+    {
+      "details": {
+        "distinct_header_crs": [
+          "None"
+        ]
+      },
+      "name": "external_soilgrids.crs_headers",
+      "status": "pass",
+      "summary": "SoilGrids headers are compatible with the source-specific CRS fallback."
+    },
+    {
+      "details": {
+        "duplicate_years": {
+          "2004": [
+            "Cierre_agricola_mun_2004 (1).csv",
+            "Cierre_agricola_mun_2004.csv"
+          ],
+          "2005": [
+            "Cierre_agricola_mun_2005 (1).csv",
+            "Cierre_agricola_mun_2005.csv"
+          ],
+          "2025": [
+            "Cierre_agricola_mun_2025 (1).csv",
+            "Cierre_agricola_mun_2025.csv"
+          ]
+        },
+        "missing_years": [],
+        "observed_years": [
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "unmatched_csvs": [],
+        "yearlike_unmatched_csvs": []
+      },
+      "name": "external_siap.years",
+      "status": "pass",
+      "summary": "SIAP contains every year 2003–2025."
+    },
+    {
+      "details": {
+        "canonical_files": {
+          "2003": "Cierre_agricola_mun_2003.csv",
+          "2004": "Cierre_agricola_mun_2004.csv",
+          "2005": "Cierre_agricola_mun_2005.csv",
+          "2006": "Cierre_agricola_mun_2006.csv",
+          "2007": "Cierre_agricola_mun_2007.csv",
+          "2008": "Cierre_agricola_mun_2008.csv",
+          "2009": "Cierre_agricola_mun_2009.csv",
+          "2010": "Cierre_agricola_mun_2010.csv",
+          "2011": "Cierre_agricola_mun_2011.csv",
+          "2012": "Cierre_agricola_mun_2012.csv",
+          "2013": "Cierre_agricola_mun_2013.csv",
+          "2014": "Cierre_agricola_mun_2014.csv",
+          "2015": "Cierre_agricola_mun_2015.csv",
+          "2016": "Cierre_agricola_mun_2016.csv",
+          "2017": "Cierre_agricola_mun_2017.csv",
+          "2018": "Cierre_agricola_mun_2018.csv",
+          "2019": "Cierre_agricola_mun_2019.csv",
+          "2020": "Cierre_agricola_mun_2020.csv",
+          "2021": "Cierre_agricola_mun_2021.csv",
+          "2022": "Cierre_agricola_mun_2022.csv",
+          "2023": "Cierre_agricola_mun_2023.csv",
+          "2024": "Cierre_agricola_mun_2024.csv",
+          "2025": "Cierre_agricola_mun_2025.csv"
+        },
+        "conflicting_duplicate_years": [],
+        "duplicate_years": {
+          "2004": [
+            "Cierre_agricola_mun_2004 (1).csv",
+            "Cierre_agricola_mun_2004.csv"
+          ],
+          "2005": [
+            "Cierre_agricola_mun_2005 (1).csv",
+            "Cierre_agricola_mun_2005.csv"
+          ],
+          "2025": [
+            "Cierre_agricola_mun_2025 (1).csv",
+            "Cierre_agricola_mun_2025.csv"
+          ]
+        },
+        "sha256": {
+          "2004": {
+            "Cierre_agricola_mun_2004 (1).csv": "2c6c69dfa0b0cdc28db67a20a5043e9d95e9080cf7aba7ab44e2a5af6950617d",
+            "Cierre_agricola_mun_2004.csv": "2c6c69dfa0b0cdc28db67a20a5043e9d95e9080cf7aba7ab44e2a5af6950617d"
+          },
+          "2005": {
+            "Cierre_agricola_mun_2005 (1).csv": "7342bbaae1e94460d835faf885800802baf3016db8e367ac494a8ad699318d78",
+            "Cierre_agricola_mun_2005.csv": "7342bbaae1e94460d835faf885800802baf3016db8e367ac494a8ad699318d78"
+          },
+          "2025": {
+            "Cierre_agricola_mun_2025 (1).csv": "1f72e2b0cde3aeb1cac40c205054ce662d65c5f4655831b997bf66c626650243",
+            "Cierre_agricola_mun_2025.csv": "1f72e2b0cde3aeb1cac40c205054ce662d65c5f4655831b997bf66c626650243"
+          }
+        }
+      },
+      "name": "external_siap.duplicates",
+      "status": "pass",
+      "summary": "Duplicate SIAP yearly copies are byte-identical; canonical unsuffixed files are safe to use."
+    },
+    {
+      "details": {
+        "schema_issues": {}
+      },
+      "name": "external_siap.schema",
+      "status": "pass",
+      "summary": "All SIAP yearly files expose the required columns."
+    },
+    {
+      "details": {
+        "cycles": [
+          "Otoño-Invierno",
+          "Primavera-Verano"
+        ],
+        "labels": [
+          "Cebada forrajera en verde",
+          "Cebada grano"
+        ],
+        "modalities": [
+          "Riego",
+          "Temporal"
+        ],
+        "production_units": [
+          "Tonelada"
+        ]
+      },
+      "name": "external_siap.barley_discovery",
+      "status": "pass",
+      "summary": "Discovered SIAP barley labels: ['Cebada forrajera en verde', 'Cebada grano']."
+    },
+    {
+      "details": {
+        "count": 3,
+        "files": [
+          "data/raw/external/Inegi/e13_cem_r15_v4_tif/conjunto_de_datos/13_Hidalgo_r15m_v4.tif",
+          "data/raw/external/Inegi/e21_cem_r15_v4_tif/conjunto_de_datos/21_Puebla_r15m_v4.tif",
+          "data/raw/external/Inegi/e29_cem_r15_v4_tif/conjunto_de_datos/29_Tlaxcala_r15m_v4.tif"
+        ],
+        "state_codes": [
+          "13",
+          "21",
+          "29"
+        ]
+      },
+      "name": "external_cem15.inventory",
+      "status": "pass",
+      "summary": "CEM 15 m inventory contains one raster for each target state."
+    },
+    {
+      "details": {
+        "files": {
+          "13_Hidalgo_r15m_v4.tif": "EPSG:6365",
+          "21_Puebla_r15m_v4.tif": "EPSG:6365",
+          "29_Tlaxcala_r15m_v4.tif": "EPSG:6365"
+        }
+      },
+      "name": "external_cem15.crs",
+      "status": "pass",
+      "summary": "CEM 15 m rasters use EPSG:6365."
+    },
+    {
+      "details": {
+        "file_count": 0,
+        "files": [],
+        "policy": "optional_partial_do_not_consume_without_complete_audit"
+      },
+      "name": "external_era5.policy",
+      "status": "skip",
+      "summary": "ERA5-Land is absent and intentionally not required."
+    }
+  ],
+  "contract": "configs/data_contract_v2.yaml",
+  "generated_at": "2026-09-18T15:38:40.048763+00:00",
+  "official_only": false,
+  "overall_status": "pass",
+  "schema_version": 2,
+  "summary": {
+    "fail": 0,
+    "pass": 46,
+    "skip": 1,
+    "warn": 0
+  }
+}

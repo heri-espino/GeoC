@@ -1,0 +1,15 @@
+family,mode,source,feature_count,numeric_features,non_numeric_features
+admin,clean,official_split+official_parcels+admin,8,6,2
+basic,clean,sat_basic,539,539,0
+cem,clean,external_inegi_cem,5,5,0
+climate_official,clean,official_climate,24,24,0
+geometry,clean,official_split+official_parcels+admin,6,6,0
+siap,clean,external_siap,14,14,0
+soilgrids,clean,external_soilgrids,90,90,0
+topography,clean,official_topography,8,8,0
+basic,competition,sat_basic,539,539,0
+chirps,competition,external_chirps_daily,1,1,0
+climate_official,competition,official_climate,45,45,0
+pro,competition,sat_pro,97,97,0
+siap,competition,external_siap,5,5,0
+wapor,competition,external_wapor,22,22,0

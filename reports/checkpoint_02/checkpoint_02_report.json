@@ -1,0 +1,30 @@
+{
+  "ablations": {
+    "A0_geometry_admin": 12,
+    "A1_static_environment": 115,
+    "A2_static_plus_siap_history": 129,
+    "A3_clean_plus_climate": 153,
+    "A4_clean_plus_basic_history": 692,
+    "A5_clean_full": 692,
+    "A6_competition_remote_weather": 1396,
+    "A7_competition_full": 1401
+  },
+  "clean_features": 694,
+  "competition_only_features": 709,
+  "feature_build_generated_at": "2026-09-18T15:39:18.268362+00:00",
+  "feature_table_sha256": "bf27e28f01f1765319f5c9d60af3786039ebf0c93ba550d31f7e5ad917b03984",
+  "folds_reused": false,
+  "generated_at": "2026-09-18T16:47:00.335593+00:00",
+  "git_commit": "601d725e57c6b3d256d7b7e646a7bebe2f9ebc1c",
+  "models_skipped": false,
+  "n_splits": 5,
+  "numeric_features_screened": 1401,
+  "prediction_rows": 59,
+  "primary_protocol": "fold_state_stratified",
+  "robustness_protocol": "fold_municipality_grouped",
+  "rows": 197,
+  "schema_version": 1,
+  "shift_flagged_features": 6,
+  "total_features": 1403,
+  "train_rows": 138
+}
