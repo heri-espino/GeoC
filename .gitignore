@@ -29,6 +29,17 @@ venv/
 /data/processed/*
 !/data/processed/.gitkeep
 
+# Canonical model-ready Feature Table v1 is intentionally versioned so any
+# collaborator/agent can reproduce Checkpoint 02+ modeling without the large
+# local external raw downloads.
+!/data/processed/features_v1/
+!/data/processed/features_v1/parcel_features_clean.csv
+!/data/processed/features_v1/parcel_features_competition.csv
+!/data/processed/features_v1/parcel_features_all.csv
+!/data/processed/features_v1/feature_manifest.json
+!/data/processed/features_v1/build_report.json
+!/data/processed/features_v1/README.md
+
 # Trained models / artifacts
 /models/*
 !/models/.gitkeep
