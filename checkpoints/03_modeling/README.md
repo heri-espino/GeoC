@@ -1,7 +1,7 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A closed; 03B current; 03C next  
-**Current phase:** 03B — Empirical Feature Discovery  
+**Status:** In progress — 03A/03B closed; 03C current  
+**Current phase:** 03C — Model comparison  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -72,7 +72,7 @@ See `docs/AGRONOMIC_FEATURES_V1.md` and
 
 ---
 
-## 03B — Empirical Feature Discovery — CURRENT
+## 03B — Empirical Feature Discovery — CLOSED
 
 03B asks a different question:
 
@@ -149,11 +149,38 @@ globally from all 197 rows.
 
 Kernels likewise remain model-layer representations.
 
+Canonical 03B build:
+
+```text
+rows                    197
+derived features        335
+clean                     91
+competition              244
+missing fraction          0.0
+infinite values           0
+target used             false
+global supervised expr  false
+configured primitives     24
+```
+
+Family counts:
+
+```text
+temporal_shape              162
+aggregate_geometry           72
+symmetric_change             42
+short_baseline_condition     41
+sensor_shape_similarity      18
+```
+
+One `emp_histpos__landsat_vi6t__above_history_fraction` candidate was constant and dropped.
+The canonical generated artifacts are committed. 03B completion criteria are satisfied.
+
 ---
 
-## 03C — Model comparison — NEXT
+## 03C — Model comparison — CURRENT
 
-After 03B closes, 03C should compare representations such as:
+03C compares representations such as:
 
 ```text
 B0 = Feature Table v1
