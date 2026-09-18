@@ -41,6 +41,8 @@ Registrar cada uso relevante en la tabla siguiente.
 
 | 2026-09-18 | ChatGPT | Documentación integral para agentes y continuidad histórica | Solicitud de documentar todo el repositorio para que futuras IA/agentes entiendan qué pasó y desde dónde continuar | `docs/AGENT_GUIDE.md`, `docs/PROJECT_HISTORY.md`; reescritura de `.ai_handoff` y `data/.ai_handoff`; actualización de `AGENTS.md`, README, checkpoints y navegación Sphinx con estado post-Checkpoint 02, artifacts canónicos, hallazgos de CV, caveats y siguiente fase | Hechos contrastados con `main`, Feature Table v1 versionada, reportes de Checkpoint 02 y commits existentes; CI debe validar la integración documental antes del merge |
 
+| 2026-09-18 | ChatGPT + scite | Checkpoint 03A — variables agronómicas/no lineales con trazabilidad científica | Solicitud de crear primero variables no lineales con sentido agrícola/cebada, mantener Feature Table v1 intacta, guardar una capa processed separada y documentar qué significa cada variable, por qué existe y su bibliografía | `configs/agronomic_features_v1.yaml`, `src/geocebada/features/agronomic.py`, `tools/build_agronomic_features_v1.py`, `data/processed/agronomic_features_v1/`, `docs/AGRONOMIC_FEATURES_V1.md`, `docs/references/agronomic_features_v1.bib`, tests y Checkpoint 03A; se construyeron 350 variables X-only en 10 familias | Fórmulas definidas sin usar `RENDIMIENTO_T_HA`; bibliografía recuperada/verificada con scite; build canónico 197×351, sin infinitos ni missingness retenida, 123 clean/227 competition; validación final automatizada por CI |
+
 ## Criterio de registro
 
 Registrar prompts que hayan contribuido materialmente a:

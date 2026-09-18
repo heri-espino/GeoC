@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-18  
-**Current phase:** Checkpoint 02 is closed. Checkpoint 03 — Modeling is next.
+**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 is closed and 03B model comparison is next.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -35,6 +35,7 @@ Completed milestones:
 - Checkpoint 02 — feature inventory, train/prediction diagnostics, frozen CV, ablations,
   untuned baselines: closed.
 - Canonical Feature Table v1 artifacts are committed to Git.
+- Checkpoint 03A — Agronomic Features v1: built, validated and committed as a separate target-free nonlinear layer.
 
 Canonical model-ready inputs:
 
@@ -55,6 +56,26 @@ competition-only features  709
 total features            1403
 numeric features          1401
 ```
+
+Canonical agronomic/nonlinear extension:
+
+```text
+data/processed/agronomic_features_v1/
+  parcel_agronomic_features.csv  197 × 351 = ID + 350 derived features
+  feature_manifest.json
+  build_report.json
+
+clean agronomic features        123
+competition agronomic features  227
+missing fraction                0.0
+target used to construct        false
+CHIRPS used                     false
+```
+
+03A feature families include phenology/curve shape, 2025-vs-history anomalies,
+cross-sensor agreement, thermal-time proxies, rainfall timing, WaPOR water-productivity
+proxies, soil-profile/nonlinear terms, cross-domain interactions and a small set of log basis
+transforms. Read `docs/AGRONOMIC_FEATURES_V1.md` before changing them.
 
 Frozen validation artifacts:
 
@@ -151,8 +172,7 @@ Before adding a public helper, inspect `docs/FUNCTION_INDEX.md`.
 
 For Streamlit/deployment work, read `app/AGENTS.md` first.
 
-Large external raw/interim data remain gitignored. The deliberate exception is canonical
-`data/processed/features_v1/`, which is versioned.
+Large external raw/interim data remain gitignored. The deliberate processed-data exceptions are canonical `data/processed/features_v1/` and `data/processed/agronomic_features_v1/`, both versioned.
 
 Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
@@ -163,10 +183,9 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 - h5py/HDF5 build/runtime mismatch warning on workstation: environment issue, WaPOR build still
   completed;
 - operational prediction cutoff remains unresolved;
-- CHIRPS daily feature survival needs QC.
+- CHIRPS daily feature survival needs QC and is intentionally excluded from Agronomic Features v1;
+- the 25 C monthly-mean heat hinge was constant across the 197 rows and was dropped automatically; this does not imply heat stress is agronomically irrelevant.
 
 ## Immediate next action
 
-Open Checkpoint 03 — Modeling. Compare controlled model families on the frozen Feature Table v1
-and both frozen validation protocols, document every experiment, and only then freeze the final
-pipeline for the 59 predictions.
+Start Checkpoint 03B. Compare base-only, agronomic-only, base+agronomic and reduced/selected representations under both frozen validation protocols, then compare controlled model families. Do not rebuild 03A unless its inputs or formulas change.

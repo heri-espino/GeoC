@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 02 is closed. Start from Checkpoint 03 — Modeling.
+**Current phase:** Checkpoint 03 is open. Phase 03A (Agronomic Features v1) is closed; start from 03B — model comparison.
 
 ---
 
@@ -20,11 +20,13 @@ Read in this order before substantial work:
 3. `docs/PROJECT_HISTORY.md` — what happened and why.
 4. `checkpoints/01_data/README.md` — closed data-foundation milestone.
 5. `checkpoints/02_features/README.md` — closed feature/validation milestone.
-6. `data/processed/features_v1/README.md` — canonical model-ready table contract.
-7. `reports/checkpoint_02/checkpoint_02_report.md` — actual diagnostic/baseline results.
-8. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `docs/FEATURE_TABLE_V1.md`.
-9. `docs/FUNCTION_INDEX.md` before adding reusable code.
-10. `app/AGENTS.md` before touching Streamlit/deployment.
+6. `checkpoints/03_modeling/README.md` — 03A closed; 03B current modeling milestone.
+7. `data/processed/features_v1/README.md` and `data/processed/agronomic_features_v1/README.md` — canonical model-ready representations.
+8. `reports/checkpoint_02/checkpoint_02_report.md` — frozen diagnostics/baselines/folds.
+9. `docs/AGRONOMIC_FEATURES_V1.md` before changing derived agronomic variables.
+10. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `docs/FEATURE_TABLE_V1.md`.
+11. `docs/FUNCTION_INDEX.md` before adding reusable code.
+12. `app/AGENTS.md` before touching Streamlit/deployment.
 
 Do not start by re-deriving facts from scratch unless a source changed or a validation check
 fails.
@@ -63,18 +65,21 @@ GeoCebada/
 ├── .ai_handoff
 ├── checkpoints/
 │   ├── 01_data/
-│   └── 02_features/
+│   ├── 02_features/
+│   └── 03_modeling/
 ├── configs/
 │   ├── base.yaml
 │   ├── data_contract_v2.yaml
 │   ├── features_v1.yaml
-│   └── checkpoint02.yaml
+│   ├── checkpoint02.yaml
+│   └── agronomic_features_v1.yaml
 ├── data/
 │   ├── source/                       # immutable official challenge sources
 │   ├── raw/                          # local/generated, mostly gitignored
 │   ├── interim/                      # local/generated, gitignored
 │   ├── samples/integration/          # committed integration fixtures
-│   └── processed/features_v1/        # committed canonical model-ready tables
+│   ├── processed/features_v1/        # committed canonical source-derived tables
+│   └── processed/agronomic_features_v1/ # committed target-free nonlinear layer
 ├── docs/
 │   ├── AGENT_GUIDE.md
 │   ├── PROJECT_HISTORY.md
@@ -146,6 +151,9 @@ tools/build_parcel_feature_table.py
 tools/build_checkpoint_02.py
     feature inventory, shift diagnostics, frozen folds, ablations and baselines
 
+tools/build_agronomic_features_v1.py
+    197-row target-free phenology/thermal/water/soil/nonlinear layer for Checkpoint 03A
+
 tools/generate_function_index.py
     regenerate docs/FUNCTION_INDEX.md from public package symbols
 
@@ -209,6 +217,7 @@ The following are intentionally in Git:
 - documentation/contracts;
 - integration fixtures;
 - `data/processed/features_v1/`;
+- `data/processed/agronomic_features_v1/`;
 - Checkpoint 02 reports/folds.
 
 ### Local or ignored
@@ -262,7 +271,57 @@ Use the manifest instead of guessing from prefixes whenever possible.
 
 ---
 
-## 8. Feature families
+## 8. Agronomic Features v1
+
+Checkpoint 03A is complete. The additive table is:
+
+```text
+data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+197 rows × 351 columns
+= ID_POLIGONO + 350 derived features
+```
+
+Manifest counts:
+
+```text
+clean          123
+competition    227
+total          350
+missingness    0.0
+```
+
+Families:
+
+```text
+phenology              162
+phenology_anomaly       41
+water_productivity      40
+thermal                 36
+cross_domain            19
+soil_profile            18
+water_timing            10
+sensor_agreement         9
+soil_interaction         8
+nonlinear_basis          7
+```
+
+This table is **target-free**: it contains neither `RENDIMIENTO_T_HA` nor `CONJUNTO`, and
+no interaction was chosen by examining yield. It is joined to Feature Table v1 one-to-one by
+`ID_POLIGONO`.
+
+CHIRPS is intentionally absent from Agronomic Features v1 pending QC. Three 25 C monthly-mean
+heat-derived candidates were constant across the current 197 parcels and were dropped; do not
+interpret that as evidence that heat stress is biologically irrelevant.
+
+Each manifest record contains source inputs, formula, meaning, rationale, evidence class,
+bibliography keys and caveats. Treat `literature_backed`, `mechanistic_proxy` and
+`experimental` as different evidence levels.
+
+Read `docs/AGRONOMIC_FEATURES_V1.md` for the formulas and references.
+
+---
+
+## 9. Feature families
 
 Observed Feature Table v1 inventory:
 
@@ -296,7 +355,7 @@ on CHIRPS as a modeled family.
 
 ---
 
-## 9. Clean vs competition semantics
+## 10. Clean vs competition semantics
 
 `clean` is the defensible historical/static track. It avoids full-season target-year
 information and contemporaneous outcome proxies.
@@ -311,7 +370,7 @@ must not be described as a strict prospective forecast.
 
 ---
 
-## 10. Frozen Checkpoint 02 validation
+## 11. Frozen Checkpoint 02 validation
 
 Always reuse:
 
@@ -336,7 +395,7 @@ generalization is a major project risk.
 
 ---
 
-## 11. Frozen ablations
+## 12. Frozen ablations
 
 Use the same names in future reports:
 
@@ -358,7 +417,7 @@ Do not redefine these labels halfway through a modeling study.
 
 ---
 
-## 12. Checkpoint 02 baseline evidence
+## 13. Checkpoint 02 baseline evidence
 
 These are historical baseline results, not a final-model declaration.
 
@@ -389,7 +448,7 @@ validated protocol is being added.
 
 ---
 
-## 13. Train-versus-prediction diagnostics
+## 14. Train-versus-prediction diagnostics
 
 Checkpoint 02 screened 1,401 numeric features.
 
@@ -406,9 +465,9 @@ final predictions look plausible.
 
 ---
 
-## 14. What Checkpoint 03 should do
+## 15. What Checkpoint 03B should do
 
-Checkpoint 03 should compare controlled model families on the already frozen data/folds.
+Checkpoint 03A is already closed. Do not recreate or target-select the 350 agronomic features outside CV. Checkpoint 03B should first compare feature representations (base only, agronomic only, base + agronomic, and controlled reduced/selected variants), then compare controlled model families on the already frozen data/folds.
 
 Good candidates:
 
@@ -434,7 +493,7 @@ Any learned operation must be inside the CV pipeline:
 
 ---
 
-## 15. Modeling implementation rules
+## 16. Modeling implementation rules
 
 Stable shared logic belongs under `src/geocebada/`, not inside a notebook.
 
@@ -464,7 +523,7 @@ Do not overwrite historical Checkpoint 02 outputs with Checkpoint 03 experiments
 
 ---
 
-## 16. Spatial caution
+## 17. Spatial caution
 
 The municipality-grouped degradation is a first-class project finding.
 
@@ -480,7 +539,7 @@ CV look easier than geographic generalization really is.
 
 ---
 
-## 17. Temporal caution
+## 18. Temporal caution
 
 The target corresponds to April–October 2025, but the exact operational forecasting time is not
 frozen.
@@ -495,7 +554,7 @@ Do not retroactively label competition-mode features as leakage-free prospective
 
 ---
 
-## 18. Known technical maintenance items
+## 19. Known technical maintenance items
 
 The feature-table build passed, but two non-fatal warnings were observed:
 
@@ -513,7 +572,7 @@ Do not confuse either warning with failed validation.
 
 ---
 
-## 19. Commands that define the current pipeline
+## 20. Commands that define the current pipeline
 
 From the repository root:
 
@@ -524,6 +583,7 @@ python tools\audit_data_contract_v2.py
 python tools\build_integration_fixtures.py
 python tools\build_parcel_feature_table.py
 python tools\build_checkpoint_02.py
+python tools\build_agronomic_features_v1.py
 
 python -m pytest -q -p no:cacheprovider
 python tools\generate_function_index.py
@@ -535,7 +595,7 @@ artifacts are already versioned.
 
 ---
 
-## 20. CI and code quality
+## 21. CI and code quality
 
 CI checks:
 
@@ -551,7 +611,7 @@ If CI fails, inspect the failing step rather than bypassing it.
 
 ---
 
-## 21. Streamlit rules
+## 22. Streamlit rules
 
 Before any app change, read `app/AGENTS.md`.
 
@@ -565,7 +625,7 @@ The app is an interface over `geocebada`, not a second implementation.
 
 ---
 
-## 22. AI-use documentation
+## 23. AI-use documentation
 
 Material AI contributions are logged in `docs/AI_USAGE.md`.
 
@@ -576,7 +636,7 @@ Do not put secrets or personal credentials in the AI log.
 
 ---
 
-## 23. Things an agent should not redo
+## 24. Things an agent should not redo
 
 Do not redo the following unless source data/code changed or a validation fails:
 
@@ -597,7 +657,7 @@ Build on these artifacts instead.
 
 ---
 
-## 24. Things still open
+## 25. Things still open
 
 These are legitimate next questions:
 
@@ -614,7 +674,7 @@ These are legitimate next questions:
 
 ---
 
-## 25. Definition of a good agent handoff
+## 26. Definition of a good agent handoff
 
 Before ending a substantial agent session:
 

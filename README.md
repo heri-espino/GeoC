@@ -98,7 +98,7 @@ GeoCebada/
 │   ├── source/                  # fuentes oficiales, inmutables
 │   ├── raw/                     # ingestión derivada
 │   ├── interim/                 # transformaciones intermedias
-│   └── processed/               # derivados; features_v1 canónico sí se versiona
+│   └── processed/               # features_v1 + agronomic_features_v1 canónicos se versionan
 ├── docs/
 │   ├── AGENT_GUIDE.md           # entrada operativa para agentes
 │   ├── PROJECT_HISTORY.md       # historia cronológica del proyecto
@@ -120,7 +120,23 @@ GeoCebada/
 
 ## Checkpoints
 
-El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. La siguiente fase es **Checkpoint 03 — Modeling**.
+El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 350 variables agronómicas/no lineales target-free (123 clean, 227 competition) para las 197 parcelas. La fase actual es **Checkpoint 03B — comparación de representaciones y modelos**.
+
+## Agronomic Features v1
+
+Checkpoint 03A creó una capa aditiva separada de Feature Table v1:
+
+```text
+data/processed/agronomic_features_v1/
+  parcel_agronomic_features.csv   197 × 351
+  feature_manifest.json           350 variables derivadas
+  build_report.json
+```
+
+La capa no contiene target ni split y no fue seleccionada mirando rendimiento. Incluye forma
+fenológica, anomalías 2025 vs histórico, acuerdo entre sensores, tiempo térmico, timing de
+lluvia, productividad hídrica WaPOR, perfiles/interacciones de suelo y cruces agronómicos.
+CHIRPS está excluido hasta resolver su QC. Ver `docs/AGRONOMIC_FEATURES_V1.md`.
 
 ## GeoCebada Lab
 
@@ -156,6 +172,12 @@ slope_mean
 ```
 
 Son features derivados de GeoCebada, no columnas originales. Las recetas exploratorias que se vuelvan estables deben promoverse a `src/geocebada/features/` y cubrirse con tests.
+
+La primera capa formal de hipótesis agronómicas está documentada en
+**`docs/AGRONOMIC_FEATURES_V1.md`** y versionada separadamente en
+**`data/processed/agronomic_features_v1/`**. Incluye fenología, anomalías 2025 vs histórico,
+tiempo térmico, agua/productividad, perfiles de suelo e interacciones cross-domain. Feature
+Table v1 no se modificó; ambas capas se unen uno-a-uno por `ID_POLIGONO`.
 
 ## Protección contra leakage
 
@@ -237,10 +259,12 @@ final frozen pipeline
 1. mantener cerrado el **Data Contract v2** reejecutando el audit cuando cambien fuentes/raw;
 2. mantener versionada la **Feature Table v1** canónica bajo `data/processed/features_v1/`;
 3. reutilizar siempre `reports/checkpoint_02/cv_folds.csv` para comparaciones de modelos;
-4. abrir **Checkpoint 03 — Modeling** con CatBoost, modelos lineales regularizados y boosting bajo los mismos folds;
-5. tratar la gran brecha entre CV state-stratified y municipality-grouped como riesgo espacial explícito;
-6. probar reducción/selección de dimensionalidad sólo dentro de folds y sólo si mejora evidencia fuera de muestra;
-7. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
+4. mantener cerrado **Checkpoint 03A** y no seleccionar sus 351 variables usando el target fuera de CV;
+5. ejecutar **Checkpoint 03B** comparando `base`, `agronomic`, `base+agronomic` y variantes reducidas bajo los mismos folds;
+6. comparar CatBoost, modelos lineales regularizados, ExtraTrees/boosting y kernels de forma controlada;
+7. tratar la gran brecha entre CV state-stratified y municipality-grouped como riesgo espacial explícito;
+8. probar reducción/selección de dimensionalidad sólo dentro de folds y sólo si mejora evidencia fuera de muestra;
+9. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
 
 
 ## Calidad y trazabilidad

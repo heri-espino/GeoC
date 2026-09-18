@@ -20,7 +20,8 @@ src/geocebada/
 ├── features/
 │   ├── interactive.py    # reproducible feature recipes and joins
 │   ├── temporal.py       # temporal coverage/alignment utilities
-│   └── parcel.py         # canonical parcel-level Feature Table v1 extraction
+│   ├── parcel.py         # canonical parcel-level Feature Table v1 extraction
+│   └── agronomic.py      # additive target-free agronomic/nonlinear feature layer
 ├── statistics/
 │   └── inference.py      # association tests, multiplicity and assumptions
 ├── visualization/
@@ -151,3 +152,9 @@ Do not create a new helper merely to save one or two lines in one notebook. The 
 - spatial independence cannot be assumed for georeferenced parcels.
 
 See `docs/AGENT_GUIDE.md`, `docs/PROJECT_HISTORY.md`, root `AGENTS.md`, `.ai_handoff`, and `data/.ai_handoff` for project-wide constraints. Checkpoint 03 modeling should extend this package rather than create a parallel implementation.
+
+
+## Agronomic Features v1
+
+Checkpoint 03A derives an additive target-free layer in `features/agronomic.py`.
+Use `build_agronomic_feature_layer` to construct it, `validate_agronomic_feature_layer` to enforce the 197-ID/numeric contract, and `join_agronomic_features` for a validated one-to-one merge with Feature Table v1. The formulas and evidence policy are documented in `docs/AGRONOMIC_FEATURES_V1.md`.

@@ -40,6 +40,14 @@ venv/
 !/data/processed/features_v1/build_report.json
 !/data/processed/features_v1/README.md
 
+# Agronomic Features v1 is a compact, target-free derivative layer over the
+# canonical Feature Table v1 and is intentionally versioned for Checkpoint 03+.
+!/data/processed/agronomic_features_v1/
+!/data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+!/data/processed/agronomic_features_v1/feature_manifest.json
+!/data/processed/agronomic_features_v1/build_report.json
+!/data/processed/agronomic_features_v1/README.md
+
 # Trained models / artifacts
 /models/*
 !/models/.gitkeep

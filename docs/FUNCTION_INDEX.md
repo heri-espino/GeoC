@@ -38,6 +38,10 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `benchmark_regressors` | function | `geocebada.evaluation.regression` | Compare regression baselines using identical shuffled K-fold splits. | `src/geocebada/evaluation/regression.py` |
 | `default_regressors` | function | `geocebada.evaluation.regression` | Return lightweight baseline regressors suitable for early comparison. | `src/geocebada/evaluation/regression.py` |
 | `summarize_benchmark` | function | `geocebada.evaluation.regression` | Summarize fold-level benchmark metrics as mean and standard deviation. | `src/geocebada/evaluation/regression.py` |
+| `AgronomicFeatureRecord` | class | `geocebada.features.agronomic` | Machine-readable provenance for one derived agronomic feature. | `src/geocebada/features/agronomic.py` |
+| `build_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Build the additive agronomic nonlinear feature layer. | `src/geocebada/features/agronomic.py` |
+| `join_agronomic_features` | function | `geocebada.features.agronomic` | Join the additive agronomic layer after exact parcel-coverage validation. | `src/geocebada/features/agronomic.py` |
+| `validate_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Validate one-to-one parcel coverage and numeric derived features. | `src/geocebada/features/agronomic.py` |
 | `FeatureRecipe` | class | `geocebada.features.interactive` | Declarative recipe for one grouped feature derived from a source column. | `src/geocebada/features/interactive.py` |
 | `apply_feature_recipe` | function | `geocebada.features.interactive` | Apply a feature recipe and return one row per group with the new feature. | `src/geocebada/features/interactive.py` |
 | `feature_recipe_to_dict` | function | `geocebada.features.interactive` | Serialize a feature recipe into a plain dictionary for YAML/JSON storage. | `src/geocebada/features/interactive.py` |
