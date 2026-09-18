@@ -196,8 +196,8 @@ Checkpoint 03A adds a separate target-free nonlinear layer:
 
 ```text
 data/processed/agronomic_features_v1/
-  parcel_agronomic_features.csv  197 × 352
-  feature_manifest.json          351 derived features
+  parcel_agronomic_features.csv  197 × 351
+  feature_manifest.json          350 derived features
   build_report.json
   README.md
 ```
@@ -206,9 +206,9 @@ Validated canonical build:
 
 ```text
 197 unique ID_POLIGONO
-351 derived numeric features
+350 derived numeric features
 123 clean
-228 competition
+227 competition
 mean/max missing fraction = 0.0
 no infinite values
 no target or split column
