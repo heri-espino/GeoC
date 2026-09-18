@@ -1503,17 +1503,18 @@ def join_agronomic_features(
     if base[id_column].duplicated().any() or agronomic[id_column].duplicated().any():
         raise ValueError("Both inputs must be one row per parcel before joining.")
 
-    validate_agronomic_feature_layer(
-        agronomic,
-        expected_ids=base[id_column],
-        id_column=id_column,
-    )
     overlapping = sorted((set(base.columns) & set(agronomic.columns)) - {id_column})
     if overlapping:
         raise ValueError(
             "Agronomic columns overlap existing base columns: "
             f"{overlapping[:10]}"
         )
+
+    validate_agronomic_feature_layer(
+        agronomic,
+        expected_ids=base[id_column],
+        id_column=id_column,
+    )
 
     joined = base.merge(agronomic, on=id_column, how="left", validate="one_to_one")
     if len(joined) != len(base):
