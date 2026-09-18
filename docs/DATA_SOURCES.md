@@ -123,19 +123,19 @@ Current functions:
 
 Current alignment concept for a variable at target time `tau_m`:
 
-[
-\tilde x_{ij}(\tau_m)=
-\frac{\sum_{r\in N_{k,j}(\tau_m)} w_r x_{ijr}}
-{\sum_r w_r},
-\qquad
-w_r=e^{-|t_r-\tau_m|/h}q_r,
-]
+$
+\\tilde x_{ij}(\\tau_m)=
+\\frac{\\sum_{r\\in N_{k,j}(\\tau_m)} w_r x_{ijr}}
+{\\sum_r w_r},
+\\qquad
+w_r=e^{-|t_r-\\tau_m|/h}q_r.
+$
 
 with cloud quality weight
 
-[
-q_r=1-\frac{\mathrm{cloud}_r}{100}.
-]
+$
+q_r=1-\\frac{\\mathrm{cloud}_r}{100}.
+$
 
 Notebook `notebooks/02_cobertura_alineacion_temporal.ipynb` currently uses April 1–October 31 2025, a 14-day grid, `k=3`, bandwidth 14 days, maximum distance 30 days and cloud weighting. These are exploratory defaults, not frozen final hyperparameters.
 
@@ -261,9 +261,9 @@ Metadata recovered from files:
 
 Rates must be aggregated with band duration. For example:
 
-[
-AETI_{total}=\sum_k AETI_k d_k.
-]
+$
+AETI_{total}=\\sum_k AETI_k d_k.
+$
 
 Do not treat a simple unweighted sum of daily rates as a seasonal total.
 
@@ -325,9 +325,9 @@ Dictionary semantics confirmed for area variables:
 
 Municipal key must be constructed as:
 
-[
-CVEGEO = zfill(Idestado,2) + zfill(Idmunicipio,3).
-]
+```text
+CVEGEO = zfill(Idestado, 2) + zfill(Idmunicipio, 3)
+```
 
 Never join on `Idmunicipio` alone.
 
@@ -341,11 +341,11 @@ Municipal 2025 yield can be a very strong proxy for parcel 2025 yield. Treat con
 
 A useful competition residual formulation to test later is:
 
-[
-\hat y_i^{(0)}=Y_{SIAP,muni(i),2025},
-qquad
-r_i=y_i-\hat y_i^{(0)}.
-]
+$
+\\hat y_i^{(0)}=Y_{SIAP,muni(i),2025},
+\\qquad
+r_i=y_i-\\hat y_i^{(0)}.
+$
 
 Then learn parcel-level residuals `r_i` from remote-sensing/soil/topography features.
 
