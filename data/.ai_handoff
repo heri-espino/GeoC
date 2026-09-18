@@ -230,6 +230,8 @@ Audit must verify:
 
 ### Integration fixtures
 
+First complete generation passed locally on 2026-09-18: 12 parcels (`AGC_020`, `AGC_048`, `AGC_050`, `AGC_054`, `AGC_065`, `AGC_076`, `AGC_090`, `AGC_108`, `AGC_119`, `AGC_129`, `AGC_183`, `AGC_186`), 192 BASIC rows, 96 PRO rows, 201 SIAP rows, 63 files, 3.77 MiB, validation PASS.
+
 The integration-fixture builder now exists at `tools/build_integration_fixtures.py`; its contract lives under `integration_fixtures` in `configs/data_contract_v2.yaml`. It deterministically selects 12 shared parcels (two per Estado × CONJUNTO stratum), uses only target-free area/cloud/missingness/coverage metadata, and forces AGC_020, AGC_048 and AGC_129 so known spatial edge cases are exercised. Generate locally with `python tools\build_integration_fixtures.py`.
 
 Generated structure:
