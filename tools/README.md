@@ -17,6 +17,7 @@ notebook cells.
 | `build_checkpoint_02.py` | Feature inventory, shift diagnostics, frozen folds, ablations, baselines | Checkpoint 02 closed |
 | `build_agronomic_features_v1.py` | Target-free phenology/thermal/water/soil/nonlinear layer derived from Feature Table v1 | Checkpoint 03A closed |
 | `build_empirical_features_v1.py` | Target-free temporal-geometry / relative-condition / sensor-similarity layer | Checkpoint 03B closed |
+| `run_expression_discovery_03b.py` | Training-fold-only expression recurrence audit over frozen Checkpoint 02 folds | Checkpoint 03B closed |
 | `generate_function_index.py` | Regenerate `docs/FUNCTION_INDEX.md` from public package API | run after public API changes |
 | `inspect_reference_docx.py` | Inspect reference DOCX content | utility |
 | `_netcdf_catalog_worker.py` | Internal NetCDF catalog worker | internal; not a direct user workflow |
