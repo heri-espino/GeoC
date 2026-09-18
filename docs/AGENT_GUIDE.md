@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phases 03A (Agronomic Features v1) and 03B (Empirical Features v1) are closed; start from 03C — model/representation comparison.
+**Current phase:** Checkpoint 03 is open. Phase 03A is closed. Phase 03B implementation is ready and awaits local execution/review; 03C starts after that.
 
 ---
 
@@ -20,7 +20,7 @@ Read in this order before substantial work:
 3. `docs/PROJECT_HISTORY.md` — what happened and why.
 4. `checkpoints/01_data/README.md` — closed data-foundation milestone.
 5. `checkpoints/02_features/README.md` — closed feature/validation milestone.
-6. `checkpoints/03_modeling/README.md` — 03A/03B closed; 03C current modeling milestone.
+6. `checkpoints/03_modeling/README.md` — 03A closed; 03B local validation pending.
 7. `checkpoints/03b_empirical_feature_discovery/README.md` — closed empirical-discovery contract.
 8. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md` and `data/processed/empirical_features_v1/README.md` — canonical representations.
 9. `reports/checkpoint_02/checkpoint_02_report.md` — frozen diagnostics/baselines/folds.
@@ -331,7 +331,7 @@ Read `docs/AGRONOMIC_FEATURES_V1.md` for the formulas and references.
 
 ## 9. Empirical Features v1
 
-Checkpoint 03B is complete. The additive X-only table is:
+Checkpoint 03B has a committed deterministic X-only table:
 
 ```text
 data/processed/empirical_features_v1/parcel_empirical_features.csv
@@ -521,8 +521,7 @@ final predictions look plausible.
 
 ## 16. What Checkpoint 03C should do
 
-Checkpoints 03A and 03B are closed. Do not recreate or target-select their canonical materialized
-features outside CV.
+Checkpoint 03A is closed. Checkpoint 03B must be executed/reviewed locally before 03C. Do not recreate or target-select canonical materialized features outside CV.
 
 03C should compare the following representations under both frozen validation protocols before
 heavy tuning:
