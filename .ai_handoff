@@ -4,7 +4,7 @@ Updated: 2026-09-16
 Project: GeoCebada / Reto AgroCebada FIRA 2026
 Scope: project-wide operational context for AI agents/Codex.
 
-Read this before project-wide changes. For data work also read `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `configs/data_contract_v2.yaml`, `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers. For any Streamlit/app/deployment work, read **`app/AGENTS.md`** first.
+Read this before project-wide changes. For data work also read `checkpoints/01_data/README.md`, `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `configs/data_contract_v2.yaml`, `data/.ai_handoff`, `data/README.md` and `docs/VARIABLES.md`. For reusable code read `src/geocebada/README.md` and search `docs/FUNCTION_INDEX.md` before creating helpers. For any Streamlit/app/deployment work, read **`app/AGENTS.md`** first.
 
 This file is not the FIRA AI disclosure log. Material AI-assisted work must also be recorded in `docs/AI_USAGE.md`.
 
@@ -34,6 +34,10 @@ Canonical parcel identifier: `ID_POLIGONO`.
 - INEGI CEM delivered elevation/slope products: EPSG:6372, 120 m product resolution.
 
 The complete source-backed variable dictionary is `docs/VARIABLES.md`. The comprehensive current inventory is `docs/DATA_SOURCES.md`. The machine-readable audit gate is `configs/data_contract_v2.yaml`, documented in `docs/DATA_CONTRACT_V2.md` and executed by `tools/audit_data_contract_v2.py`.
+
+### Checkpoint status
+
+The data-foundation milestone is frozen in `checkpoints/01_data/README.md`. It records the official/external sources, acquisition rationale, audit/normalization decisions, validated 12-parcel integration fixtures and what is intentionally not yet built. The next planned checkpoint is `02_features`, after the deterministic 197-row master feature table exists.
 
 ### Current external-data status
 
