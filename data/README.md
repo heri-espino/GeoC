@@ -75,7 +75,7 @@ Toda transformación reproducible debe vivir en `src/geocebada/` o scripts contr
 
 ```text
 parcel_agronomic_features.csv  197 × 351
-351 variables derivadas
+350 variables derivadas
 123 clean
 227 competition
 missingness retenida = 0.0
@@ -89,7 +89,7 @@ los 138 targets completos; cualquier selección supervisada debe ocurrir dentro 
 
 `data/raw/` y `data/interim/` permanecen fuera de Git. Las excepciones deliberadas son
 `data/processed/features_v1/` y `data/processed/agronomic_features_v1/`. La primera conserva
-las covariables canónicas source-derived; la segunda contiene 351 variables agronómicas/no
+las covariables canónicas source-derived; la segunda contiene 350 variables agronómicas/no
 lineales construidas sin target. Ambas tienen 197 IDs y se pueden unir uno-a-uno por
 `ID_POLIGONO`, permitiendo modelar desde un clon limpio sin descargar todos los rásteres/NetCDF/CSV externos. El resto de `data/processed/` sigue ignorado.
 
