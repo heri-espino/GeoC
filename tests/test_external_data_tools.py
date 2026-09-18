@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import runpy
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -102,3 +103,44 @@ def test_soilgrids_wcs_request_keeps_the_service_pseudo_epsg(
     assert output.exists()
     assert params["SUBSETTINGCRS"] == expected_crs
     assert params["OUTPUTCRS"] == expected_crs
+
+def test_era5_download_splits_by_variable_and_month(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """ERA5-Land requests must be chunked to avoid CDS request-cost limits."""
+    globals_dict = DOWNLOADER["download_era5"].__globals__
+    captured: list[tuple[int, int, str]] = []
+
+    def fake_chunk(
+        output: Path,
+        year: int,
+        month: int,
+        variable: str,
+        bbox: tuple[float, float, float, float],
+        start: date,
+        end: date,
+    ) -> Path:
+        captured.append((year, month, variable))
+        path = output / f"{year}_{month:02d}_{variable}.nc"
+        path.write_bytes(b"fixture")
+        return path
+
+    monkeypatch.setitem(globals_dict, "ERA5_VARIABLES", ["temperature", "precipitation"])
+    monkeypatch.setitem(globals_dict, "era5_variable_month", fake_chunk)
+
+    outputs = DOWNLOADER["download_era5"](
+        tmp_path,
+        (-98.7, 19.4, -98.1, 20.1),
+        date(2025, 4, 1),
+        date(2025, 5, 31),
+        workers=1,
+    )
+
+    assert len(outputs) == 4
+    assert set(captured) == {
+        (2025, 4, "temperature"),
+        (2025, 4, "precipitation"),
+        (2025, 5, "temperature"),
+        (2025, 5, "precipitation"),
+    }
+
