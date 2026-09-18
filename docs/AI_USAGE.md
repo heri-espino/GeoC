@@ -37,6 +37,8 @@ Registrar cada uso relevante en la tabla siguiente.
 
 | 2026-09-18 | ChatGPT | Checkpoint 02 — diagnóstico y modelado inicial | Solicitud de crear el checkpoint histórico posterior a Feature Table v1, inventariar features por familia, comparar train vs prediction, congelar folds, definir ablations y documentar las razones | `configs/checkpoint02.yaml`, `src/geocebada/evaluation/parcel_modeling.py`, `tools/build_checkpoint_02.py`, tests y `checkpoints/02_features/README.md`; el diseño separa clean/competition, congela CV state-stratified + municipality-grouped y difiere PCA/tuning serio | Basado en el build local validado por el usuario: 197 filas, 138/59, 694 clean, 709 competition-only, 1,403 features totales; los resultados diagnósticos/modelos deben ejecutarse y revisarse en la workstation antes de cerrar el checkpoint |
 
+| 2026-09-18 | ChatGPT | Versionado de Feature Table v1 y cierre de Checkpoint 02 | Decisión de subir los artefactos model-ready canónicos para que colaboradores y agentes puedan modelar desde un clon limpio sin los raw externos | Excepción explícita en `.gitignore` para `data/processed/features_v1/`; README del artefacto; sincronización de README/handoffs/AGENTS; Checkpoint 02 marcado como cerrado con resultados históricos | Basado en el run local validado y ya comprometido en `reports/checkpoint_02/`; los cinco archivos reales de Feature Table v1 deben añadirse desde la workstation y conservar sus validaciones 197/138/59 antes de modelar |
+
 ## Criterio de registro
 
 Registrar prompts que hayan contribuido materialmente a:
