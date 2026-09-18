@@ -309,22 +309,40 @@ Never compute metric area/distance or raster overlays without explicit CRS check
 
 ## Modeling status
 
-Small-n target problem: `n_train=138`. No final model exists.
+Small-n/high-p target problem: `n_train=138`. No final model exists.
 
-Temporal alignment now provides a reproducible route from irregular satellite captures to a parcel-level table, but no grid/neighbor parameters are frozen for final modeling yet.
+Feature Table v1 has been built and independently validated on the full workstation:
 
-Current dashboard models are exploratory baselines only. Final selection still requires legal temporal windows, grouped/spatial validation, domain ablations and frozen preprocessing.
+- 197 rows = 138 `ENTRENAMIENTO` + 59 `PREDICCION`;
+- 694 `clean` features;
+- 709 competition-only features;
+- 1,403 manifest features total;
+- 1,408 columns including metadata/target;
+- WaPOR included;
+- hidden prediction targets remain absent.
+
+Checkpoint 02 now defines the pre-modeling contract in `configs/checkpoint02.yaml`,
+`src/geocebada/evaluation/parcel_modeling.py` and
+`tools/build_checkpoint_02.py`. It freezes feature-family inventory, train-vs-prediction
+support diagnostics, five state-stratified folds, municipality-grouped robustness folds,
+interpretable ablations and deliberately untuned Dummy/Ridge/ExtraTrees baselines.
+
+The full Checkpoint 02 run still must be executed on the workstation and its generated
+`reports/checkpoint_02/` artifacts reviewed/committed before serious CatBoost/boosting/PCA
+model selection begins.
 
 ---
 
 ## Immediate next steps
 
-1. Data Contract v2 is closed locally with no FAIL findings after resolving SIAP and municipality policies; re-run it after any raw/source change.
-2. Generate the shared 12-parcel integration fixtures with `python tools/build_integration_fixtures.py` and version the resulting `data/samples/integration/` artifacts.
-3. Use those fixtures to test joins/extraction end-to-end before running full-data feature engineering.
-4. Build the deterministic **197-row parcel master feature table** with source-prefixed columns, provenance and explicit clean-vs-competition feature groups.
-5. Only after that, compare feature/model families using consistent parcel folds and spatial diagnostics.
-6. Keep Streamlit synchronized with frozen reusable pipeline artifacts rather than duplicating logic in the app.
+1. Re-run Data Contract v2 after any raw/source change; the latest full audit passed with no FAIL/WARN findings.
+2. Preserve Feature Table v1 and its manifest as the frozen input to Checkpoint 02.
+3. Run `python tools/build_checkpoint_02.py` on the full workstation.
+4. Review feature-family counts, train-vs-prediction shift/support diagnostics and the generated `cv_folds.csv`.
+5. Commit the reviewed `reports/checkpoint_02/` artifacts so every later model reuses the same folds.
+6. Compare ablation deltas under both state-stratified and municipality-grouped protocols before adding tuning capacity.
+7. Open Checkpoint 03 only after the baseline evidence justifies which feature/model families deserve CatBoost/boosting/PCA experiments.
+8. Keep Streamlit synchronized with frozen reusable pipeline artifacts rather than duplicating logic in the app.
 
 
 ---

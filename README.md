@@ -118,7 +118,7 @@ GeoCebada/
 
 ## Checkpoints
 
-El estado reproducible al cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. Ese checkpoint explica qué fuentes se adquirieron, por qué, qué normalizaciones se fijaron, qué quedó dentro/fuera de Git, qué validó Data Contract v2 y cuáles son las 12 integration fixtures versionadas. El siguiente checkpoint será `02_features` cuando exista la tabla maestra determinista de 197 parcelas.
+El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** registra históricamente este estado y congela el pipeline de inventario, covariate shift, folds fijos, ablations y baselines iniciales.
 
 ## GeoCebada Lab
 
@@ -233,11 +233,12 @@ final frozen pipeline
 ## Próximos pasos
 
 1. mantener cerrado el **Data Contract v2** reejecutando el audit cuando cambien fuentes/raw;
-2. generar y versionar las **12 integration fixtures compartidas** con `python tools/build_integration_fixtures.py`;
-3. usar esas fixtures para probar joins y extractores end-to-end;
-4. construir una tabla maestra determinista de **197 filas**, una por `ID_POLIGONO`, con namespaces, procedencia y grupos `clean` vs `competition`;
-5. después comparar representaciones temporales y modelos con folds de parcela consistentes y diagnósticos espaciales;
-6. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
+2. conservar reproducible **Feature Table v1** y su `feature_manifest.json`;
+3. ejecutar `python tools/build_checkpoint_02.py` sobre la workstation completa;
+4. revisar y congelar `reports/checkpoint_02/cv_folds.csv` y los diagnósticos train-vs-prediction;
+5. comparar los ablations bajo los dos protocolos fijos antes de abrir tuning serio;
+6. abrir Checkpoint 03 sólo después de revisar los resultados de Ridge/ExtraTrees/Dummy y decidir qué familias justifican CatBoost/boosting/PCA u otros modelos;
+7. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
 
 
 ## Calidad y trazabilidad
