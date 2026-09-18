@@ -1,6 +1,6 @@
 {
-  "agronomic_feature_manifest": "data/processed/agronomic_features_v1/feature_manifest.json",
-  "agronomic_feature_table": "data/processed/agronomic_features_v1/parcel_agronomic_features.csv",
+  "agronomic_feature_manifest": "data\\processed\\agronomic_features_v1\\feature_manifest.json",
+  "agronomic_feature_table": "data\\processed\\agronomic_features_v1\\parcel_agronomic_features.csv",
   "agronomic_manifest_schema_version": 1,
   "feature_count": 335,
   "features": [
@@ -8055,10 +8055,10 @@
       ]
     }
   ],
-  "generated_at": "2026-09-18T19:11:14.134604+00:00",
+  "generated_at": "2026-09-18T19:25:28.293943+00:00",
   "id_column": "ID_POLIGONO",
   "schema_version": 1,
-  "source_feature_manifest": "data/processed/features_v1/feature_manifest.json",
-  "source_feature_table": "data/processed/features_v1/parcel_features_all.csv",
+  "source_feature_manifest": "data\\processed\\features_v1\\feature_manifest.json",
+  "source_feature_table": "data\\processed\\features_v1\\parcel_features_all.csv",
   "source_manifest_schema_version": 1
 }

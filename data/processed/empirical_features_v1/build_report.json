@@ -13,8 +13,8 @@
     "temporal_shape": 162
   },
   "features": 335,
-  "generated_at": "2026-09-18T19:11:14.138647+00:00",
-  "git_commit": "3e3ae67f18ae1cf6450dcf6372fd8edef0dcbc6c",
+  "generated_at": "2026-09-18T19:25:28.297950+00:00",
+  "git_commit": "e872e45678d97b38305e4b99570de7fe1a220bea",
   "infinite_values": 0,
   "missing_fraction_max": 0.0,
   "missing_fraction_mean": 0.0,
@@ -25,10 +25,10 @@
   "rows": 197,
   "schema_version": 1,
   "short_vci_like_is_standard_vci": false,
-  "source_agronomic_manifest_sha256": "8f1dbb8d20c4f56813c375dc2c8e1153d4433387868068788273a813a1d89f60",
-  "source_agronomic_table_sha256": "58434250cde5729be20d558a10044799eb69d2b31b36f07ba693eb0598215f91",
-  "source_feature_manifest_sha256": "4bce7954fdc1093f567b15f811cfe335e957e764fef273da0ff108d0b66c6901",
-  "source_feature_table_sha256": "0814ed035dd2a19fe77ca1306e9dd3b858cdc90dd25abd3d2baa59940caf4d0d",
+  "source_agronomic_manifest_sha256": "29f4e5cb6e661a0f1078da1dec03ece20336a96eea154e40929aed8db21dcaed",
+  "source_agronomic_table_sha256": "5a8fbf3daea5dd628ee12d68c35374e0595030dab14426e826a27fd0b2f6b1f6",
+  "source_feature_manifest_sha256": "1eede316381c86d72a033cff2fa5e9772bac3d0c7dc11c830054610cdb5043f8",
+  "source_feature_table_sha256": "bf27e28f01f1765319f5c9d60af3786039ebf0c93ba550d31f7e5ad917b03984",
   "supervised_discovery_materialized_globally": false,
   "target_used_for_materialized_features": false
 }
