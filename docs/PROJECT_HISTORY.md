@@ -5,7 +5,7 @@ validated, and what remains open so future collaborators and AI agents do not re
 silently overwrite earlier decisions.
 
 **Last updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A is closed and 03B implementation is ready for workstation validation. 03C follows after review.
+**Current phase:** Checkpoint 03 is open; 03A and 03B are closed. 03C model comparison is next.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
@@ -514,7 +514,7 @@ materialized globally.
 Scientific/methodological context is documented in `docs/EMPIRICAL_FEATURES_V1.md`, with
 references versioned in `docs/references/empirical_features_v1.bib`.
 
-Checkpoint 03B code and deterministic empirical artifacts are in the repository. The fold-local discovery audit still needs workstation execution/review before 03B is closed and 03C begins.
+Checkpoint 03B closed after the workstation run passed. The fold-local audit selected 88 unique expressions; seven raw expressions recurred in at least 3/5 folds under both protocols, but they collapse to four conceptual motifs because several are monotone ratio reparameterizations. Interpretation is recorded in `reports/checkpoint_03b/README.md`.
 
 ---
 
@@ -549,4 +549,4 @@ Not completed:
 - CHIRPS daily extraction contribution needs QC because only one feature survives;
 - the spatial validation gap needs to drive Checkpoint 03 decisions.
 
-The immediate milestone is to run/review **Checkpoint 03B** locally; after that, **Checkpoint 03C — model/representation comparison** uses the frozen Checkpoint 02 folds.
+The next milestone is **Checkpoint 03C — model/representation comparison** using the frozen Checkpoint 02 folds.
