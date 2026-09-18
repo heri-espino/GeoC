@@ -321,7 +321,7 @@ Read `docs/AGRONOMIC_FEATURES_V1.md` for the formulas and references.
 
 ---
 
-## 10. Feature families
+## 9. Feature families
 
 Observed Feature Table v1 inventory:
 
@@ -465,9 +465,9 @@ final predictions look plausible.
 
 ---
 
-## 15. What Checkpoint 03 should do
+## 15. What Checkpoint 03B should do
 
-Checkpoint 03 should compare controlled model families on the already frozen data/folds.
+Checkpoint 03A is already closed. Do not recreate or target-select the 351 agronomic features outside CV. Checkpoint 03B should first compare feature representations (base only, agronomic only, base + agronomic, and controlled reduced/selected variants), then compare controlled model families on the already frozen data/folds.
 
 Good candidates:
 
@@ -583,6 +583,7 @@ python tools\audit_data_contract_v2.py
 python tools\build_integration_fixtures.py
 python tools\build_parcel_feature_table.py
 python tools\build_checkpoint_02.py
+python tools\build_agronomic_features_v1.py
 
 python -m pytest -q -p no:cacheprovider
 python tools\generate_function_index.py
