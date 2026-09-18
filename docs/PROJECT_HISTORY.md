@@ -5,7 +5,7 @@ validated, and what remains open so future collaborators and AI agents do not re
 silently overwrite earlier decisions.
 
 **Last updated:** 2026-09-18  
-**Current phase:** Checkpoint 02 closed; Checkpoint 03 — Modeling is the next phase.
+**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 is closed and 03B model comparison is next.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
