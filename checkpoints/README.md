@@ -9,12 +9,12 @@ metadata, the source evidence wins and the checkpoint must be corrected.
 
 ## Checkpoints
 
-| Checkpoint | State captured |
-|---|---|
-| [01_data](01_data/README.md) | Official/external data acquisition, Data Contract v2 audit, normalization decisions and validated shared integration fixtures. |
-| [02_features](02_features/README.md) | Validated 197-row feature table, feature-family inventory, train-vs-prediction diagnostics, frozen CV folds, ablations and lightweight baseline contract. |
+| Checkpoint | Status | State captured |
+|---|---|---|
+| [01_data](01_data/README.md) | Closed | Official/external data acquisition, Data Contract v2 audit, normalization decisions and validated shared integration fixtures. |
+| [02_features](02_features/README.md) | Closed | Validated/versioned 197-row feature table, feature-family inventory, train-vs-prediction diagnostics, frozen CV folds, ablations and baseline results. |
 
-Future checkpoints should continue the numeric sequence, for example:
+The next milestone is **03_modeling**. Future checkpoints should continue the numeric sequence, for example:
 
 ```text
 checkpoints/
