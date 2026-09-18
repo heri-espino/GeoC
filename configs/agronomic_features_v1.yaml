@@ -1,0 +1,190 @@
+schema_version: 1
+updated: 2026-09-18
+
+inputs:
+  feature_directory: data/processed/features_v1
+  feature_table: parcel_features_all.csv
+  feature_manifest: feature_manifest.json
+
+outputs:
+  directory: data/processed/agronomic_features_v1
+  feature_csv: parcel_agronomic_features.csv
+  manifest_json: feature_manifest.json
+  build_report_json: build_report.json
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+
+months:
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+
+phenology:
+  metrics:
+    - auc
+    - amplitude
+    - peak_month
+    - early_mean
+    - late_mean
+    - jun_to_aug_delta
+    - greenup_slope
+    - senescence_slope
+
+  series:
+    - name: hist_s2_ndvi
+      prefix: sat_basic_hist_monthly__sentinel_2__ndvi_promedio__m
+      mode: clean
+      index: ndvi
+      sensor: sentinel_2
+      period: historical
+    - name: hist_s2_evi
+      prefix: sat_basic_hist_monthly__sentinel_2__evi_promedio__m
+      mode: clean
+      index: evi
+      sensor: sentinel_2
+      period: historical
+    - name: hist_s2_lai
+      prefix: sat_basic_hist_monthly__sentinel_2__lai_promedio__m
+      mode: clean
+      index: lai
+      sensor: sentinel_2
+      period: historical
+    - name: hist_s2_fapar
+      prefix: sat_basic_hist_monthly__sentinel_2__fapar_promedio__m
+      mode: clean
+      index: fapar
+      sensor: sentinel_2
+      period: historical
+    - name: hist_s2_ndwi
+      prefix: sat_basic_hist_monthly__sentinel_2__ndwi_promedio__m
+      mode: clean
+      index: ndwi
+      sensor: sentinel_2
+      period: historical
+    - name: hist_s2_msi
+      prefix: sat_basic_hist_monthly__sentinel_2__msi_promedio__m
+      mode: clean
+      index: msi
+      sensor: sentinel_2
+      period: historical
+    - name: hist_landsat_vi6t
+      prefix: sat_basic_hist_monthly__landsat__vi6t_promedio__m
+      mode: clean
+      index: vi6t
+      sensor: landsat
+      period: historical
+
+    - name: y2025_s2_ndvi
+      prefix: sat_basic_2025_monthly__sentinel_2__ndvi_promedio__m
+      mode: competition
+      index: ndvi
+      sensor: sentinel_2
+      period: "2025"
+    - name: y2025_s2_evi
+      prefix: sat_basic_2025_monthly__sentinel_2__evi_promedio__m
+      mode: competition
+      index: evi
+      sensor: sentinel_2
+      period: "2025"
+    - name: y2025_s2_lai
+      prefix: sat_basic_2025_monthly__sentinel_2__lai_promedio__m
+      mode: competition
+      index: lai
+      sensor: sentinel_2
+      period: "2025"
+    - name: y2025_s2_fapar
+      prefix: sat_basic_2025_monthly__sentinel_2__fapar_promedio__m
+      mode: competition
+      index: fapar
+      sensor: sentinel_2
+      period: "2025"
+    - name: y2025_s2_ndwi
+      prefix: sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m
+      mode: competition
+      index: ndwi
+      sensor: sentinel_2
+      period: "2025"
+    - name: y2025_s2_msi
+      prefix: sat_basic_2025_monthly__sentinel_2__msi_promedio__m
+      mode: competition
+      index: msi
+      sensor: sentinel_2
+      period: "2025"
+    - name: y2025_landsat_vi6t
+      prefix: sat_basic_2025_monthly__landsat__vi6t_promedio__m
+      mode: competition
+      index: vi6t
+      sensor: landsat
+      period: "2025"
+
+    - name: y2025_planet_ndvi
+      prefix: sat_pro_2025_monthly__planet__ndvi_promedio__m
+      mode: competition
+      index: ndvi
+      sensor: planet
+      period: "2025"
+    - name: y2025_planet_evi
+      prefix: sat_pro_2025_monthly__planet__evi_promedio__m
+      mode: competition
+      index: evi
+      sensor: planet
+      period: "2025"
+    - name: y2025_planet_lai
+      prefix: sat_pro_2025_monthly__planet__lai_promedio__m
+      mode: competition
+      index: lai
+      sensor: planet
+      period: "2025"
+    - name: y2025_planet_msavi
+      prefix: sat_pro_2025_monthly__planet__msavi_promedio__m
+      mode: competition
+      index: msavi
+      sensor: planet
+      period: "2025"
+
+  anomaly_pairs:
+    - [hist_s2_ndvi, y2025_s2_ndvi]
+    - [hist_s2_evi, y2025_s2_evi]
+    - [hist_s2_lai, y2025_s2_lai]
+    - [hist_s2_fapar, y2025_s2_fapar]
+    - [hist_s2_ndwi, y2025_s2_ndwi]
+    - [hist_s2_msi, y2025_s2_msi]
+    - [hist_landsat_vi6t, y2025_landsat_vi6t]
+
+  sensor_agreement:
+    - [y2025_s2_ndvi, y2025_planet_ndvi]
+    - [y2025_s2_evi, y2025_planet_evi]
+    - [y2025_s2_lai, y2025_planet_lai]
+
+thermal:
+  base_temperatures_c: [0.0, 5.0]
+  heat_threshold_c: 25.0
+
+water:
+  epsilon: 1.0e-6
+
+soil:
+  depth_properties:
+    - bdod
+    - cec
+    - cfvo
+    - clay
+    - nitrogen
+    - phh2o
+    - sand
+    - silt
+    - soc
+  epsilon: 1.0e-6
+
+validation:
+  expected_rows: 197
+  require_unique_id: true
+  drop_all_null: true
+  drop_constant: true
