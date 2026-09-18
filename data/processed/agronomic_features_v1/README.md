@@ -10,7 +10,7 @@ It contains only:
 - `ID_POLIGONO`;
 - deterministic X-only agronomic/nonlinear predictors.
 
-Canonical validated build (2026-09-18): **197 parcels × 352 columns** = `ID_POLIGONO`
+Canonical validated build (2026-09-18): **197 parcels × 351 columns** = `ID_POLIGONO`
 plus **350 derived features**. The manifest contains **123 clean** and **227 competition**
 features. No retained derived feature is missing on the canonical 197 rows.
 
@@ -77,7 +77,7 @@ No large raw/external data downloads are required.
 
 Do not automatically assume that every agronomic feature improves prediction.
 
-Checkpoint 03B should compare at least:
+Checkpoint 03C should compare at least:
 
 ```text
 base only
