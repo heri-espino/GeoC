@@ -156,9 +156,9 @@ The canonical build completed successfully from the versioned Feature Table v1.
 
 ```text
 rows:                  197
-derived features:      351
+derived features:      350
 clean:                 123
-competition:           228
+competition:           227
 missing fraction mean: 0.0
 missing fraction max:  0.0
 infinite values:       0
@@ -170,7 +170,7 @@ Retained family counts:
 
 ```text
 phenology              162
-phenology_anomaly       42
+phenology_anomaly       41
 water_productivity      40
 thermal                 36
 cross_domain            19
