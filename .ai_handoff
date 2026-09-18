@@ -61,12 +61,12 @@ Canonical agronomic/nonlinear extension:
 
 ```text
 data/processed/agronomic_features_v1/
-  parcel_agronomic_features.csv  197 × 352 = ID + 351 derived features
+  parcel_agronomic_features.csv  197 × 351 = ID + 350 derived features
   feature_manifest.json
   build_report.json
 
 clean agronomic features        123
-competition agronomic features  228
+competition agronomic features  227
 missing fraction                0.0
 target used to construct        false
 CHIRPS used                     false
