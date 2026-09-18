@@ -370,7 +370,81 @@ Commit `30136fc` added the five canonical generated artifacts to `main`.
 
 ---
 
-## Current state after Checkpoint 02
+## 2026-09-18 — Checkpoint 03A: Agronomic Features v1
+
+Checkpoint 03 opened with a deliberate feature-engineering phase before serious model tuning.
+
+The design decision was to leave Feature Table v1 frozen and create a separate additive layer:
+
+```text
+data/processed/agronomic_features_v1/
+├── parcel_agronomic_features.csv
+├── feature_manifest.json
+├── build_report.json
+└── README.md
+```
+
+The layer was designed before looking at target performance. It encodes compact nonlinear
+agronomic hypotheses instead of generating all pairwise products of the ~1,400 base numeric
+features.
+
+Implemented families include phenology/seasonal curve shape, 2025-versus-history satellite
+anomalies, Sentinel-2/Planet agreement, thermal-time proxies, rainfall timing, WaPOR
+water-productivity proxies, soil vertical contrasts, soil interactions, cross-domain
+environment/crop interactions and a small set of log basis functions.
+
+Scientific rationale and formulas are documented in `docs/AGRONOMIC_FEATURES_V1.md`; the
+retrieved literature is versioned in `docs/references/agronomic_features_v1.bib`.
+
+Evidence is explicitly classified as `literature_backed`, `mechanistic_proxy` or
+`experimental`. Experimental formulas are predictive hypotheses, not causal/agronomic laws.
+
+The canonical build passed with:
+
+```text
+197 parcels
+351 derived features
+123 clean
+228 competition
+0.0 mean/max missing fraction
+0 infinite values
+target used for construction: false
+CHIRPS used: false
+```
+
+Family inventory:
+
+```text
+phenology              162
+phenology_anomaly       42
+water_productivity      40
+thermal                 36
+cross_domain            19
+soil_profile            18
+water_timing            10
+sensor_agreement         9
+soil_interaction         8
+nonlinear_basis          7
+```
+
+Three candidate features based on a 25 C monthly-mean heat hinge were constant across all 197
+parcels and were dropped automatically. This means only that the current coarse monthly climate
+representation has no cross-parcel variation for that basis; it is not evidence that barley
+heat stress is irrelevant.
+
+CHIRPS was intentionally excluded because Checkpoint 02 retained only one CHIRPS feature and
+that source still needs QC.
+
+No yield value was used to create or select these 351 features. Any future target-guided
+interaction search or feature selection must occur inside training folds.
+
+Phase 03A is therefore closed. Checkpoint 03B will compare base-only, agronomic-only,
+base+agronomic and controlled reduced/selected representations under the frozen
+state-stratified and municipality-grouped folds.
+
+---
+
+## Current state after Checkpoint 03A
 
 Completed:
 
@@ -386,7 +460,8 @@ Completed:
 - train/prediction shift diagnostics;
 - feature-family ablations;
 - initial untuned baseline models;
-- versioned model-ready tables.
+- versioned Feature Table v1;
+- versioned Agronomic Features v1 with 351 target-free derived variables and scientific provenance.
 
 Not completed:
 
@@ -398,4 +473,4 @@ Not completed:
 - CHIRPS daily extraction contribution needs QC because only one feature survives;
 - the spatial validation gap needs to drive Checkpoint 03 decisions.
 
-The next milestone is **Checkpoint 03 — Modeling**.
+The next milestone is **Checkpoint 03B — model/representation comparison** using the frozen Checkpoint 02 folds.
