@@ -1,0 +1,13 @@
+ID_POLIGONO,Estado,Municipio,cve_ent,cve_mun,cvegeo,admin_join_source,spatial_cvegeo,spatial_municipio,spatial_overlap_fraction,official_spatial_match
+AGC_020,Hidalgo,Emiliano Zapata,13,021,13021,official_name,13021,Emiliano Zapata,0.986455766012402,True
+AGC_048,Tlaxcala,Nanacamilpa de Mariano Arista,29,021,29021,official_name,29006,Calpulalpan,1.0000000000000002,False
+AGC_050,Tlaxcala,Calpulalpan,29,006,29006,official_name,29006,Calpulalpan,1.0,True
+AGC_054,Tlaxcala,Calpulalpan,29,006,29006,official_name,29006,Calpulalpan,1.0,True
+AGC_065,Hidalgo,Almoloya,13,007,13007,official_name,13007,Almoloya,0.9999999999999998,True
+AGC_076,Puebla,Chignahuapan,21,053,21053,official_name,21053,Chignahuapan,0.9999999999999992,True
+AGC_090,Puebla,Chignahuapan,21,053,21053,official_name,21053,Chignahuapan,0.9999999999999999,True
+AGC_108,Puebla,Chignahuapan,21,053,21053,official_name,21053,Chignahuapan,1.0000000000000002,True
+AGC_119,Hidalgo,Cuautepec de Hinojosa,13,016,13016,official_name,13016,Cuautepec de Hinojosa,1.0000000000000002,True
+AGC_129,Hidalgo,Singuilucan,13,057,13057,official_name,13057,Singuilucan,0.8542567825934142,True
+AGC_183,Tlaxcala,Calpulalpan,29,006,29006,official_name,29006,Calpulalpan,1.0,True
+AGC_186,Puebla,Chignahuapan,21,053,21053,official_name,21053,Chignahuapan,1.0000000000000004,True
