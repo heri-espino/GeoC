@@ -4,7 +4,8 @@ Esta carpeta concentra la documentación del proyecto, la referencia de la libre
 
 - `official/`: bases, lineamientos y documentos oficiales de la convocatoria. Inmutables.
 - `reference/`: diccionarios y documentación técnica del dataset proporcionado por FIRA. Conservar como evidencia fuente.
-- `DATA_SOURCES.md`: inventario operativo de fuentes oficiales/externas, reglas de joins, caveats, estado de adquisición y plan Data Contract v2.
+- `DATA_SOURCES.md`: inventario operativo de fuentes oficiales/externas, reglas de joins, caveats y estado de adquisición.
+- `DATA_CONTRACT_V2.md`: contrato machine-readable/auditable que debe pasar antes de construir features.
 - `VARIABLES.md`: diccionario source-backed de variables e índices.
 - `AI_USAGE.md`: registro del uso de herramientas de IA generativa y prompts relevantes.
 - `FUNCTION_INDEX.md`: índice rápido y buscable de funciones/clases públicas en `src/geocebada/`.
