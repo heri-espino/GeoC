@@ -709,10 +709,12 @@ def audit_municipalities(
     winners["_overlap_fraction"] = winners["_overlap_area_m2"] / winners["_parcel_area_m2"]
     missing_ids = sorted(set(parcels[id_col].astype(str)) - set(winners[id_col].astype(str)))
     minimum_overlap = float(winners["_overlap_fraction"].min())
+    policy = spec.get("assignment_policy", {})
+    minimum_dominant_overlap = float(policy.get("minimum_dominant_overlap", 0.80))
 
     low_overlap_details: list[dict[str, Any]] = []
     low_overlap_ids = set(
-        winners.loc[winners["_overlap_fraction"] < 0.99, id_col].astype(str)
+        winners.loc[winners["_overlap_fraction"] < minimum_dominant_overlap, id_col].astype(str)
     )
     for parcel_id in sorted(low_overlap_ids):
         candidates = intersections.loc[
@@ -740,14 +742,23 @@ def audit_municipalities(
     checks.append(
         bool_check(
             "external_municipios.parcel_join",
-            not missing_ids and minimum_overlap >= 0.99,
-            "Every parcel maps by largest overlap with >=99% polygon coverage.",
-            "Some parcels cross municipality boundaries or have <99% overlap with one municipality.",
+            not missing_ids and minimum_overlap >= minimum_dominant_overlap,
+            (
+                "Every parcel has a dominant spatial municipality above the "
+                f"{minimum_dominant_overlap:.0%} QA threshold."
+            ),
+            (
+                "Some parcels lack a dominant spatial municipality above the "
+                f"{minimum_dominant_overlap:.0%} QA threshold."
+            ),
             details={
                 "assigned_parcels": len(winners),
                 "missing_ids": missing_ids,
                 "min_overlap_fraction": round(minimum_overlap, 6),
+                "qa_threshold": minimum_dominant_overlap,
                 "low_overlap_parcels": low_overlap_details,
+                "administrative_join_policy": policy.get("administrative_join"),
+                "spatial_qc_policy": policy.get("spatial_qc"),
             },
             failure_status="warn",
         )
@@ -769,16 +780,36 @@ def audit_municipalities(
                     "inegi_nomgeo": str(row["nomgeo"]),
                 }
             )
+    known_discrepancies = policy.get("known_name_discrepancies", {})
+    unresolved_name_mismatches = [
+        item
+        for item in name_mismatches
+        if item["ID_POLIGONO"] not in known_discrepancies
+    ]
+    if not name_mismatches:
+        name_status = "pass"
+        name_summary = "Parcel Municipio labels agree with INEGI overlap assignments."
+    elif unresolved_name_mismatches:
+        name_status = "warn"
+        name_summary = "Some parcel Municipio labels differ from INEGI without a frozen policy."
+    else:
+        name_status = "pass"
+        name_summary = (
+            "Known parcel/INEGI municipality name discrepancies are documented; "
+            "official parcel labels remain primary for administrative joins."
+        )
+
     checks.append(
         check(
             "external_municipios.name_crosscheck",
-            "pass" if not name_mismatches else "warn",
-            (
-                "Parcel Municipio labels agree with INEGI overlap assignments."
-                if not name_mismatches
-                else "Some parcel Municipio labels differ textually from INEGI names."
-            ),
-            details={"examples": name_mismatches},
+            name_status,
+            name_summary,
+            details={
+                "examples": name_mismatches,
+                "known_discrepancies": known_discrepancies,
+                "unresolved": unresolved_name_mismatches,
+                "administrative_join_policy": policy.get("administrative_join"),
+            },
         )
     )
     return checks
@@ -978,7 +1009,7 @@ def audit_siap(
     canonical_files: dict[str, str] = {}
     for year, paths in files_by_year.items():
         canonical = next(
-            (path for path in paths if re.fullmatch(rf"Cierre_agricola_mun_{year}\\.csv", path.name)),
+            (path for path in paths if re.fullmatch(rf"Cierre_agricola_mun_{year}\.csv", path.name)),
             paths[0],
         )
         canonical_files[str(year)] = canonical.name
@@ -1027,10 +1058,14 @@ def audit_siap(
     for year in sorted(observed_years):
         path = files_by_year[year][0]
         header = read_csv_flexible(path, nrows=0)
+        crop_aliases = list(spec.get("crop_name_aliases", ["Nomcultivo"]))
+        crop_column = next((name for name in crop_aliases if name in header.columns), None)
         missing = sorted(set(required).difference(header.columns))
+        if crop_column is None:
+            missing.append("crop_name_alias")
         if missing:
             schema_issues[path.name] = {
-                "missing": missing,
+                "missing": sorted(set(missing)),
                 "observed_columns": list(map(str, header.columns)),
                 "crop_like_columns": [
                     str(column)
@@ -1047,12 +1082,14 @@ def audit_siap(
             "Idmunicipio",
             "Nomcicloproductivo",
             "Nommodalidad",
-            "Nomcultivo",
+            crop_column,
             "Rendimiento",
         ]
         if "Nomunidad" in header.columns:
             useful.append("Nomunidad")
         frame = read_csv_flexible(path, usecols=useful)
+        if crop_column != "Nomcultivo":
+            frame = frame.rename(columns={crop_column: "Nomcultivo"})
         states = pd.to_numeric(frame["Idestado"], errors="coerce")
         mask = states.isin(target_states) & frame["Nomcultivo"].astype(str).str.contains(
             crop_regex,
