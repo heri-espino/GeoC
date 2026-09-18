@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 is closed and 03B model comparison is next.
+**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 and 03B Empirical Features v1 are closed. Checkpoint 03C model comparison is next.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -36,6 +36,7 @@ Completed milestones:
   untuned baselines: closed.
 - Canonical Feature Table v1 artifacts are committed to Git.
 - Checkpoint 03A — Agronomic Features v1: built, validated and committed as a separate target-free nonlinear layer.
+- Checkpoint 03B — Empirical Features v1: built, validated and committed as a separate target-free data-driven layer; fold-local target-aware expression discovery is implemented but never materialized globally.
 
 Canonical model-ready inputs:
 
@@ -76,6 +77,38 @@ CHIRPS used                     false
 cross-sensor agreement, thermal-time proxies, rainfall timing, WaPOR water-productivity
 proxies, soil-profile/nonlinear terms, cross-domain interactions and a small set of log basis
 transforms. Read `docs/AGRONOMIC_FEATURES_V1.md` before changing them.
+
+Canonical empirical extension:
+
+```text
+data/processed/empirical_features_v1/
+  parcel_empirical_features.csv  197 × 336 = ID + 335 derived features
+  feature_manifest.json
+  build_report.json
+
+clean empirical features        91
+competition empirical features 244
+missing fraction                0.0
+infinite values                 0
+target used to construct        false
+supervised formulas global      false
+short VCI-like standard VCI     false
+```
+
+03B family counts:
+
+```text
+temporal_shape              162
+aggregate_geometry           72
+symmetric_change             42
+short_baseline_condition     41
+sensor_shape_similarity      18
+```
+
+The short-baseline NDVI condition features are explicitly VCI-like rather than standard VCI.
+The historical reference is only 2022–2024. One Landsat VI6T historical-range exceedance
+candidate was constant and dropped. The fold-local expression miner has 24 configured primitive
+variables and may use yield only inside each training fold. Read `docs/EMPIRICAL_FEATURES_V1.md`.
 
 Frozen validation artifacts:
 
@@ -172,7 +205,7 @@ Before adding a public helper, inspect `docs/FUNCTION_INDEX.md`.
 
 For Streamlit/deployment work, read `app/AGENTS.md` first.
 
-Large external raw/interim data remain gitignored. The deliberate processed-data exceptions are canonical `data/processed/features_v1/` and `data/processed/agronomic_features_v1/`, both versioned.
+Large external raw/interim data remain gitignored. The deliberate processed-data exceptions are canonical `data/processed/features_v1/`, `data/processed/agronomic_features_v1/` and `data/processed/empirical_features_v1/`, all versioned.
 
 Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
@@ -183,9 +216,9 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 - h5py/HDF5 build/runtime mismatch warning on workstation: environment issue, WaPOR build still
   completed;
 - operational prediction cutoff remains unresolved;
-- CHIRPS daily feature survival needs QC and is intentionally excluded from Agronomic Features v1;
+- CHIRPS daily feature survival needs QC and is intentionally excluded from Agronomic/Empirical Features v1;
 - the 25 C monthly-mean heat hinge was constant across the 197 rows and was dropped automatically; this does not imply heat stress is agronomically irrelevant.
 
 ## Immediate next action
 
-Start Checkpoint 03B. Compare base-only, agronomic-only, base+agronomic and reduced/selected representations under both frozen validation protocols, then compare controlled model families. Do not rebuild 03A unless its inputs or formulas change.
+Start Checkpoint 03C. Compare base-only, agronomic-only, empirical-only and joined representations under both frozen validation protocols. Include fold-local discovered-expression augmentation as a separate leakage-safe representation. Then compare controlled model families and fold-fitted PCA/PLS/kernels. Do not rebuild 03A or 03B unless their inputs or formulas change.
