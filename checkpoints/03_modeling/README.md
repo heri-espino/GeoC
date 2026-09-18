@@ -1,7 +1,7 @@
 # Checkpoint 03 — Modeling
 
-**Status:** In progress  
-**Current phase:** 03A — Agronomic nonlinear feature layer  
+**Status:** In progress — 03A closed; 03B next  
+**Current phase:** 03B — Model comparison  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -150,5 +150,48 @@ representations whose scaling/hyperparameters belong inside CV.
 - project/data/agent handoffs are synchronized;
 - AI use and bibliography are recorded.
 
-The generated feature count and family inventory should be recorded here after the canonical
-build is committed.
+### Canonical 03A build
+
+The canonical build completed successfully from the versioned Feature Table v1.
+
+```text
+rows:                  197
+derived features:      351
+clean:                 123
+competition:           228
+missing fraction mean: 0.0
+missing fraction max:  0.0
+infinite values:       0
+target used:           false
+CHIRPS used:           false
+```
+
+Retained family counts:
+
+```text
+phenology              162
+phenology_anomaly       42
+water_productivity      40
+thermal                 36
+cross_domain            19
+soil_profile            18
+water_timing            10
+sensor_agreement         9
+soil_interaction         8
+nonlinear_basis          7
+```
+
+Three candidate features were dropped because they were constant on all 197 parcels:
+
+```text
+agro_thermal__historical__heat_excess_25c_proxy
+agro_thermal__2025__heat_excess_25c_proxy
+agro_interaction__heat_x_positive_water_gap_2025
+```
+
+This is an empirical property of the current monthly climate representation, not evidence that
+heat stress is agronomically irrelevant. The 25 C monthly-mean hinge simply carries no
+cross-parcel variation here.
+
+03A completion criteria are satisfied. The next task is 03B: compare base-only, agronomic-only,
+base+agronomic and selected/reduced representations under both frozen CV protocols.
