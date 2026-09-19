@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-import json
 from time import perf_counter
 from typing import Any
 
@@ -516,11 +516,19 @@ def evaluate_nested_model_families(
                     model_config = config["models"][model_name]
                     actual_task_type = catboost_task_type
 
-                    def build_search(task_type: str) -> GridSearchCV:
+                    def build_search(
+                        task_type: str,
+                        current_model_name: str,
+                        current_model_config: Mapping[str, Any],
+                        current_representation: RepresentationSpec,
+                        current_inner_splits: list[
+                            tuple[np.ndarray, np.ndarray]
+                        ],
+                    ) -> GridSearchCV:
                         spec = make_model_search_spec(
-                            model_name=model_name,
-                            model_config=model_config,
-                            representation=representation,
+                            model_name=current_model_name,
+                            model_config=current_model_config,
+                            representation=current_representation,
                             discovery_config=discovery_config,
                             random_state=random_state,
                             catboost_task_type=task_type,
@@ -535,7 +543,7 @@ def evaluate_nested_model_families(
                             estimator=spec.estimator,
                             param_grid=spec.param_grid,
                             scoring="neg_root_mean_squared_error",
-                            cv=inner_splits,
+                            cv=current_inner_splits,
                             refit=True,
                             n_jobs=jobs,
                             return_train_score=False,
@@ -549,7 +557,13 @@ def evaluate_nested_model_families(
                         )
 
                     started = perf_counter()
-                    search = build_search(actual_task_type)
+                    search = build_search(
+                        actual_task_type,
+                        model_name,
+                        model_config,
+                        representation,
+                        inner_splits,
+                    )
                     try:
                         search.fit(x_train, y_train)
                     except Exception as exc:
@@ -565,7 +579,13 @@ def evaluate_nested_model_families(
                                 print(
                                     "  CatBoost GPU unavailable; retrying on CPU."
                                 )
-                            search = build_search(actual_task_type)
+                            search = build_search(
+                                actual_task_type,
+                                model_name,
+                                model_config,
+                                representation,
+                                inner_splits,
+                            )
                             search.fit(x_train, y_train)
                             catboost_task_type = "CPU"
                         else:
