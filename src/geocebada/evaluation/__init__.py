@@ -22,6 +22,13 @@ from geocebada.evaluation.checkpoint03c3 import (
     summarize_finalist_ensemble_results,
     validate_finalist_oof_coverage,
 )
+from geocebada.evaluation.checkpoint03c4 import (
+    ConvexStackingRegressor,
+    MetaSearchSpec,
+    build_stacking_meta_features,
+    evaluate_nested_stacking,
+    summarize_stacking_results,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -51,6 +58,11 @@ __all__ = [
     "build_finalist_ensemble_predictions",
     "summarize_finalist_ensemble_results",
     "validate_finalist_oof_coverage",
+    "ConvexStackingRegressor",
+    "MetaSearchSpec",
+    "build_stacking_meta_features",
+    "evaluate_nested_stacking",
+    "summarize_stacking_results",
     "RepresentationSpec",
     "build_layer_feature_catalog",
     "build_representation_specs",
