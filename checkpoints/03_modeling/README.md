@@ -1,7 +1,7 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A/03B closed; 03C current  
-**Current phase:** 03C — Model comparison  
+**Status:** In progress — 03A/03B closed; 03C.1 implementation ready  
+**Current phase:** 03C.1 — Representation benchmark  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -180,7 +180,9 @@ The workstation run passed. The deterministic artifacts and fold-local expressio
 
 ## 03C — Model comparison — CURRENT
 
-03C compares representations such as:
+### 03C.1 — Representation benchmark — IMPLEMENTATION READY
+
+03C.1 first compares representations with fixed Ridge10 and ExtraTrees baselines:
 
 ```text
 B0 = Feature Table v1
@@ -189,11 +191,10 @@ B2 = Empirical Features v1 only
 B3 = base + agronomic
 B4 = base + empirical
 B5 = base + agronomic + empirical
-B6 = reduced/selected representation
 B7 = fold-local discovered-expression augmentation
 ```
 
-Candidate model families include:
+03C.1 deliberately does not tune broad model families. After its workstation results are reviewed, 03C.2 may compare:
 
 - Ridge / ElasticNet;
 - ExtraTrees;
@@ -204,7 +205,9 @@ Candidate model families include:
 - RBF kernel;
 - PCA/PLS variants fitted inside folds.
 
-Because only 138 targets are observed, searches should remain disciplined.
+Run 03C.1 with `python tools/run_checkpoint_03c.py`. It reports both mean-fold metrics and pooled OOF metrics because municipality-grouped folds are unequal. CHIRPS is excluded pending QC.
+
+Because only 138 targets are observed, later searches should remain disciplined.
 
 All preprocessing learned from data must remain inside the training fold:
 
