@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
-**Updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A, 03B and 03C.1 are closed. Checkpoint 03C.2 implementation is complete; the competition-only nested benchmark must now be run on the workstation.
+**Updated:** 2026-09-19  
+**Current phase:** Checkpoint 03 is open; 03A, 03B, 03C.1 and 03C.2 are closed. Checkpoint 03C.3 reviews only fixed equal-weight combinations of the three 03C.2 finalists.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -209,7 +209,7 @@ does not score the 59 hidden-target parcels. Broad tuning/CatBoost/kernels/PCA/P
 
 ## 03C.2 checkpoint snapshot
 
-The implementation is ready and CI has passed.
+The workstation benchmark is complete and committed.
 
 ```text
 active track: competition only
@@ -217,19 +217,12 @@ representations: C0, C1, C2, C3
 outer CV: frozen state-stratified + municipality-grouped
 inner CV: 3-fold, aligned to outer protocol
 models: Ridge, ElasticNet, ExtraTrees, CatBoost, PLS, PCA+RBF KRR, PCA+Poly2 KRR
-final model selected: no
+individual finalists frozen: C0+PLS, C3+Ridge, C1+CatBoost
+CatBoost execution: GPU
 59 predictions generated: no
 ```
 
-Run:
-
-```text
-python -m pip install -e ".[models]"
-python tools/run_checkpoint_03c2.py
-```
-
-Then commit `reports/checkpoint_03c2/` and review `robustness_summary.csv`,
-`protocol_summary.csv`, fold metrics, selected hyperparameters and CatBoost execution mode.
+Key 03C.2 municipality-grouped OOF RMSE: C0+PLS 0.7621, C3+Ridge 0.7650, C1+CatBoost 0.7709. ExtraTrees remains stronger under state-stratified CV but is less robust under municipality-grouped CV.
 
 ## Modeling rules for Checkpoint 03
 
@@ -289,4 +282,35 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
 ## Immediate next action
 
-On the university workstation run `python tools/run_checkpoint_03c2.py` after installing `.[models]`. Push the generated `reports/checkpoint_03c2/` artifacts. Then interpret cross-protocol robustness and freeze only a small finalist set. Do not generate the 59 final predictions yet.
+Run the lightweight deterministic `python tools/run_checkpoint_03c3.py`, commit its generated `reports/checkpoint_03c3/` artifacts, and verify CI. Then define the final full-data fitting rule for E13 and E123 before generating the 59 hidden-target predictions once.
+
+
+## Checkpoint 03C.3 finalist ensembles
+
+03C.3 uses only committed 03C.2 OOF predictions and does not refit models or inspect hidden targets.
+
+Frozen individual finalists:
+
+```text
+F1 = C0_base + PLS
+F2 = C3_base_agro_plus_discovery + Ridge
+F3 = C1_agronomic + CatBoost
+```
+
+Fixed equal-weight ensembles:
+
+```text
+E12  = 0.5 F1 + 0.5 F2
+E13  = 0.5 F1 + 0.5 F3
+E23  = 0.5 F2 + 0.5 F3
+E123 = (F1 + F2 + F3) / 3
+```
+
+Reviewed OOF evidence:
+
+```text
+E123: state 0.5121, municipality 0.7481
+E13:  state 0.5082, municipality 0.7488
+```
+
+Retain both E13 and E123. Their municipality RMSE difference is below 0.001, so do not claim a meaningful winner and do not tune continuous ensemble weights.
