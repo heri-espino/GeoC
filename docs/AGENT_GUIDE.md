@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1/03C.2 are closed. Checkpoint 03C.3 reviews fixed equal-weight ensembles of the three robust 03C.2 finalists.
+**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1/03C.2/03C.3 are closed. Checkpoint 03C.4 evaluates leakage-safe nested stacking.
 
 ---
 
@@ -21,7 +21,7 @@ Read in this order before substantial work:
 4. `checkpoints/01_data/README.md` — closed data-foundation milestone.
 5. `checkpoints/02_features/README.md` — closed feature/validation milestone.
 6. `checkpoints/03_modeling/README.md` — Checkpoint 03 phase map.
-7. `checkpoints/03c2_competition_modeling/README.md` — closed 03C.2 benchmark evidence.\n8. `checkpoints/03c3_finalist_ensembles/README.md` — **current finalist-ensemble checkpoint**.
+7. `checkpoints/03c2_competition_modeling/README.md` — closed 03C.2 benchmark evidence.\n8. `checkpoints/03c3_finalist_ensembles/README.md` — closed fixed-ensemble checkpoint.\n9. `checkpoints/03c4_nested_stacking/README.md` — **current nested-stacking checkpoint**.
 8. `checkpoints/03b_empirical_feature_discovery/README.md` — closed empirical-discovery contract.
 9. `checkpoints/03c_representation_benchmark/README.md` and `reports/checkpoint_03c/README.md` — closed representation benchmark and interpretation.
 10. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md` and `data/processed/empirical_features_v1/README.md` — canonical representations.
@@ -777,3 +777,4 @@ Before ending a substantial agent session:
 
 The project should always remain understandable from a fresh clone without relying on chat
 history.
+\n03C.4 uses honest level-1 cross-fitting inside each frozen outer fold. Base tuning for each level-1 prediction must use only that level-1 training subset. PCA, discovery, imputation and scaling remain fold-local. Treat the frozen outer CV as development validation, not as a pristine final test after repeated iteration.\n
