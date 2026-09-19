@@ -108,10 +108,17 @@ class ConvexStackingRegressor(BaseEstimator, RegressorMixin):
 def build_stacking_meta_features(
     base_predictions: pd.DataFrame,
     config: Mapping[str, Any],
+    *,
+    base_names: Sequence[str] | None = None,
 ) -> pd.DataFrame:
     """Build target-free meta features from cross-fitted base predictions."""
 
-    base_names = list(map(str, config["base_candidates"].keys()))
+    resolved_base_names = (
+        list(map(str, base_names))
+        if base_names is not None
+        else list(map(str, config["base_candidates"].keys()))
+    )
+    base_names = resolved_base_names
     missing = [name for name in base_names if name not in base_predictions.columns]
     if missing:
         raise KeyError(f"Missing base prediction columns: {missing}")
@@ -820,12 +827,9 @@ def evaluate_nested_stacking(
                     )
                 )
 
-                for row_position, prediction in zip(
-                    cross_range := range(len(outer_train)),
-                    level1_matrix[base_name].to_numpy(dtype=float),
-                    strict=True,
+                for row_position, prediction in enumerate(
+                    level1_matrix[base_name].to_numpy(dtype=float)
                 ):
-                    del cross_range
                     meta_training_rows.append(
                         {
                             "protocol": protocol,
@@ -852,8 +856,16 @@ def evaluate_nested_stacking(
                         }
                     )
 
-            z_train = build_stacking_meta_features(level1_matrix, config)
-            z_valid = build_stacking_meta_features(outer_base_matrix, config)
+            z_train = build_stacking_meta_features(
+                level1_matrix,
+                config,
+                base_names=base_names,
+            )
+            z_valid = build_stacking_meta_features(
+                outer_base_matrix,
+                config,
+                base_names=base_names,
+            )
             raw_top3 = list(map(str, config["meta_features"]["top3"]))
 
             for meta_index, meta_name in enumerate(meta_names, start=1):
