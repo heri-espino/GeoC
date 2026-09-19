@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A, 03B and 03C.1 are closed. Checkpoint 03C.2 controlled model-family comparison is current.
+**Current phase:** Checkpoint 03 is open; 03A, 03B and 03C.1 are closed. Checkpoint 03C.2 implementation is complete; the competition-only nested benchmark must now be run on the workstation.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -207,6 +207,30 @@ excluded pending QC. The run reports pooled OOF metrics as well as mean-fold met
 does not score the 59 hidden-target parcels. Broad tuning/CatBoost/kernels/PCA/PLS belong to
 03C.2 after these representation results are reviewed.
 
+## 03C.2 checkpoint snapshot
+
+The implementation is ready and CI has passed.
+
+```text
+active track: competition only
+representations: C0, C1, C2, C3
+outer CV: frozen state-stratified + municipality-grouped
+inner CV: 3-fold, aligned to outer protocol
+models: Ridge, ElasticNet, ExtraTrees, CatBoost, PLS, PCA+RBF KRR, PCA+Poly2 KRR
+final model selected: no
+59 predictions generated: no
+```
+
+Run:
+
+```text
+python -m pip install -e ".[models]"
+python tools/run_checkpoint_03c2.py
+```
+
+Then commit `reports/checkpoint_03c2/` and review `robustness_summary.csv`,
+`protocol_summary.csv`, fold metrics, selected hyperparameters and CatBoost execution mode.
+
 ## Modeling rules for Checkpoint 03
 
 Reuse `reports/checkpoint_02/cv_folds.csv`.
@@ -265,4 +289,4 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
 ## Immediate next action
 
-Run Checkpoint 03C.2 on the **competition track only** using the compact candidate set documented in `reports/checkpoint_03c/README.md`: B0 base control, B1 agronomic-only, B7 all + fold-local discovery, plus a new base + agronomic + fold-local-discovery ablation that omits the bulk deterministic empirical block. Tune only inside each outer training fold. Do not generate the 59 final predictions yet.
+On the university workstation run `python tools/run_checkpoint_03c2.py` after installing `.[models]`. Push the generated `reports/checkpoint_03c2/` artifacts. Then interpret cross-protocol robustness and freeze only a small finalist set. Do not generate the 59 final predictions yet.
