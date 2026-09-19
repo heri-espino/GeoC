@@ -1,6 +1,6 @@
 # Checkpoint 03C.2 — Competition-only model-family benchmark
 
-**Status:** implementation ready; workstation run pending  
+**Status:** closed; workstation benchmark completed  
 **Opened:** 2026-09-18
 
 03C.2 follows the closed 03C.1 representation benchmark.
@@ -200,3 +200,4 @@ No prediction for the 59 challenge parcels is generated in 03C.2.
 - a small finalist set is documented without using hidden prediction targets;
 - CI remains green and handoffs/history are synchronized.
 
+\n## Closure result\n\nThe three individual finalists carried to 03C.3 are `C0_base + PLS`, `C3_base_agro_plus_discovery + Ridge`, and `C1_agronomic + CatBoost`. Their municipality-grouped OOF RMSE values are 0.7621, 0.7650 and 0.7709 respectively. Checkpoint 03C.3 evaluates only fixed equal-weight combinations of these finalists.\n
