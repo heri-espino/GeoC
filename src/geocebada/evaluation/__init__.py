@@ -8,6 +8,15 @@ from geocebada.evaluation.checkpoint03c import (
     make_representation_estimator,
     summarize_representation_benchmark,
 )
+from geocebada.evaluation.checkpoint03c2 import (
+    ModelSearchSpec,
+    build_competition_representation_specs,
+    evaluate_nested_model_families,
+    make_inner_cv_splits,
+    make_model_search_spec,
+    summarize_nested_results,
+    validate_nested_oof_coverage,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -27,6 +36,13 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "ModelSearchSpec",
+    "build_competition_representation_specs",
+    "evaluate_nested_model_families",
+    "make_inner_cv_splits",
+    "make_model_search_spec",
+    "summarize_nested_results",
+    "validate_nested_oof_coverage",
     "RepresentationSpec",
     "build_layer_feature_catalog",
     "build_representation_specs",

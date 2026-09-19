@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A, 03B and 03C.1 are closed. Checkpoint 03C.2 controlled model-family comparison is next.
+**Current phase:** Checkpoint 03 is open; 03A, 03B and 03C.1 are closed. Checkpoint 03C.2 controlled model-family comparison is current.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -138,15 +138,16 @@ municipality-grouped ExtraTrees A6 0.8835
 Do not optimize only the easier state-stratified metric. Spatial/municipal generalization is a
 first-class risk.
 
-## Clean vs competition
+## Historical clean/competition distinction
 
-Keep the two tracks explicit.
+The repository still preserves both feature labels for provenance, but **active modeling from
+03C.2 onward uses only `competition`**.
 
 `clean`
-: historical/static, intended for defensible prospective-style modeling.
+: historical/static provenance label only; do not benchmark or select models on this track unless explicitly reopened.
 
 `competition`
-: clean plus rule-permitted 2025/full-season/contemporaneous public covariates.
+: active modeling track = clean plus rule-permitted 2025/full-season/contemporaneous public covariates.
 
 The exact operational forecast cutoff is still unresolved. Do not describe competition-mode
 features as a strict prospective forecast.
@@ -162,6 +163,24 @@ CHIRPS contribution.
 Train-versus-prediction screening flagged only 6/1401 numeric features under the configured
 descriptive shift/support thresholds. These X-only diagnostics are not labels and must not be
 used as a hidden-test tuning target.
+
+## Modeling-track directive — competition only
+
+From Checkpoint 03C.2 onward, **use only the `competition` feature track** for model
+development, tuning, comparison and final prediction.
+
+Operational meaning:
+
+```text
+competition = clean + competition-mode features
+clean       = historical/diagnostic only; do not run unless explicitly reopened
+```
+
+Do not spend compute comparing clean versus competition and do not use clean results to select
+the 03C.2 model. The project objective is the FIRA competition estimate after observing the
+2025 cycle, so current modeling prioritizes the competition representation.
+
+CHIRPS remains excluded pending QC even though the active track is competition.
 
 ## Checkpoint 03C.1 representation benchmark
 
@@ -246,4 +265,4 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
 ## Immediate next action
 
-Start Checkpoint 03C.2 using the compact candidate set documented in `reports/checkpoint_03c/README.md`: B0 base control, B1 agronomic-only, B7 all + fold-local discovery, plus a new base + agronomic + fold-local-discovery ablation that omits the deterministic empirical-only block. Tune only inside each outer training fold. Do not generate the 59 final predictions yet.
+Run Checkpoint 03C.2 on the **competition track only** using the compact candidate set documented in `reports/checkpoint_03c/README.md`: B0 base control, B1 agronomic-only, B7 all + fold-local discovery, plus a new base + agronomic + fold-local-discovery ablation that omits the bulk deterministic empirical block. Tune only inside each outer training fold. Do not generate the 59 final predictions yet.

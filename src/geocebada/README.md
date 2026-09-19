@@ -31,7 +31,8 @@ src/geocebada/
 ├── evaluation/
 │   ├── regression.py      # early exploratory regression utilities
 │   ├── parcel_modeling.py # frozen-fold diagnostics/ablations for Checkpoint 02
-│   └── checkpoint03c.py   # clean/competition representation benchmark for 03C.1
+│   ├── checkpoint03c.py   # clean/competition representation benchmark for 03C.1
+│   └── checkpoint03c2.py  # competition-only nested model-family benchmark
 └── models/               # final training/inference interfaces
 ```
 

@@ -31,6 +31,13 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `evaluate_representation_benchmark` | function | `geocebada.evaluation.checkpoint03c` | Evaluate representations on frozen folds and return scores, OOF rows and discovery logs. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `make_representation_estimator` | function | `geocebada.evaluation.checkpoint03c` | Create one fixed baseline pipeline for representation comparison. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `summarize_representation_benchmark` | function | `geocebada.evaluation.checkpoint03c` | Summarize mean-fold and parcel-weighted OOF metrics for each experiment. | `src/geocebada/evaluation/checkpoint03c.py` |
+| `ModelSearchSpec` | class | `geocebada.evaluation.checkpoint03c2` | Pipeline plus a small deterministic candidate grid. | `src/geocebada/evaluation/checkpoint03c2.py` |
+| `build_competition_representation_specs` | function | `geocebada.evaluation.checkpoint03c2` | Resolve competition-only 03C.2 representations. | `src/geocebada/evaluation/checkpoint03c2.py` |
+| `evaluate_nested_model_families` | function | `geocebada.evaluation.checkpoint03c2` | Run nested tuning under both frozen outer validation protocols. | `src/geocebada/evaluation/checkpoint03c2.py` |
+| `make_inner_cv_splits` | function | `geocebada.evaluation.checkpoint03c2` | Create leakage-safe inner splits aligned with the outer protocol. | `src/geocebada/evaluation/checkpoint03c2.py` |
+| `make_model_search_spec` | function | `geocebada.evaluation.checkpoint03c2` | Construct one 03C.2 estimator and its disciplined candidate grid. | `src/geocebada/evaluation/checkpoint03c2.py` |
+| `summarize_nested_results` | function | `geocebada.evaluation.checkpoint03c2` | Build protocol-specific and cross-protocol robustness summaries. | `src/geocebada/evaluation/checkpoint03c2.py` |
+| `validate_nested_oof_coverage` | function | `geocebada.evaluation.checkpoint03c2` | Require one OOF prediction per parcel for every protocol/representation/model. | `src/geocebada/evaluation/checkpoint03c2.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
