@@ -1,7 +1,7 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A/03B/03C.1/03C.2 closed; 03C.3 finalist review current  
-**Current phase:** 03C.3 — Fixed equal-weight finalist ensembles  
+**Status:** In progress — 03A/03B/03C.1/03C.2/03C.3 closed; 03C.4 stacking current  
+**Current phase:** 03C.4 — Leakage-safe nested stacking  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -324,3 +324,18 @@ python tools\run_checkpoint_03c3.py
 
 The next stage is to freeze the full-data fitting rule for the retained finalist(s), then
 generate the 59 competition predictions exactly once.
+
+
+---
+
+### 03C.4 — Leakage-safe nested stacking — CURRENT
+
+03C.4 evaluates whether learned stacking improves on E13/E123 without contaminating frozen outer folds. Each outer-training subset produces 3-fold level-1 OOF predictions; each level-1 base learner tunes in a separate 2-fold CV using only that cross-fit training subset. PCA+Ridge bases test dimensionality reduction inside folds. Stacker candidates include convex simplex, Ridge, ElasticNet, Huber, ExtraTrees and HistGradientBoosting plus equal-weight controls.
+
+Run on the workstation with:
+
+```powershell
+python tools\run_checkpoint_03c4.py --catboost-task-type GPU
+```
+
+Do not generate the 59 final predictions until 03C.4 is reviewed and a final full-data fitting rule is frozen.
