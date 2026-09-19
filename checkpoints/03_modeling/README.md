@@ -1,7 +1,7 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A/03B closed; 03C.1 implementation ready  
-**Current phase:** 03C.1 — Representation benchmark  
+**Status:** In progress — 03A/03B/03C.1 closed; 03C.2 next  
+**Current phase:** 03C.2 — Controlled model-family comparison  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -180,7 +180,7 @@ The workstation run passed. The deterministic artifacts and fold-local expressio
 
 ## 03C — Model comparison — CURRENT
 
-### 03C.1 — Representation benchmark — IMPLEMENTATION READY
+### 03C.1 — Representation benchmark — CLOSED
 
 03C.1 first compares representations with fixed Ridge10 and ExtraTrees baselines:
 
@@ -205,7 +205,7 @@ B7 = fold-local discovered-expression augmentation
 - RBF kernel;
 - PCA/PLS variants fitted inside folds.
 
-Run 03C.1 with `python tools/run_checkpoint_03c.py`. It reports both mean-fold metrics and pooled OOF metrics because municipality-grouped folds are unequal. CHIRPS is excluded pending QC.
+The workstation 03C.1 run passed. Read `reports/checkpoint_03c/README.md` and `representation_summary.csv`. Clean B7 is strongest for ExtraTrees across both protocols; competition B1/B7 are the strongest ExtraTrees robustness candidates; empirical-only B2 is consistently weak. CHIRPS remains excluded pending QC.
 
 Because only 138 targets are observed, later searches should remain disciplined.
 
