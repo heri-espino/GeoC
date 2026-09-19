@@ -1,8 +1,16 @@
 Model evaluation
 ================
 
-Checkpoint 03C representation benchmark
+Checkpoint 03C.2 nested model benchmark
 ---------------------------------------
+
+.. automodule:: geocebada.evaluation.checkpoint03c2
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Checkpoint 03C.1 representation benchmark
+------------------------------------------
 
 .. automodule:: geocebada.evaluation.checkpoint03c
    :members:
