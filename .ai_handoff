@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-19  
-**Current phase:** Checkpoint 03 is open; 03A, 03B, 03C.1 and 03C.2 are closed. Checkpoint 03C.3 reviews only fixed equal-weight combinations of the three 03C.2 finalists.
+**Current phase:** Checkpoint 03 is open; 03A, 03B, 03C.1, 03C.2 and 03C.3 are closed. Checkpoint 03C.4 is the leakage-safe nested stacking benchmark.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -282,7 +282,7 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
 ## Immediate next action
 
-Run the lightweight deterministic `python tools/run_checkpoint_03c3.py`, commit its generated `reports/checkpoint_03c3/` artifacts, and verify CI. Then define the final full-data fitting rule for E13 and E123 before generating the 59 hidden-target predictions once.
+Run `python tools/run_checkpoint_03c4.py --catboost-task-type GPU` on the workstation, commit `reports/checkpoint_03c4/`, inspect municipality-grouped/worst-protocol RMSE and stack stability, then freeze only the strongest reproducible stack/fallback ensemble before the final 138-row fit and 59 hidden predictions.
 
 
 ## Checkpoint 03C.3 finalist ensembles
@@ -314,3 +314,12 @@ E13:  state 0.5082, municipality 0.7488
 ```
 
 Retain both E13 and E123. Their municipality RMSE difference is below 0.001, so do not claim a meaningful winner and do not tune continuous ensemble weights.
+
+
+## Checkpoint 03C.4 nested stacking
+
+03C.4 treats the frozen outer CV as development validation and keeps the 59 hidden challenge parcels untouched. Within each outer fold it builds 3-fold level-1 OOF predictions; every base learner tunes only inside the corresponding level-1 training split with 2-fold CV. Final base predictions for the outer validation fold tune on the whole outer-training subset with 3-fold CV.
+
+Base library: C0+PLS, C3+Ridge, C1+CatBoost, C0+Ridge, C3+PLS, C2+PLS, C1+ExtraTrees, C1+PLS, C0+PCA+Ridge and C1+PCA+Ridge. Meta learners: equal top-3, mean-all, convex simplex, Ridge, ElasticNet, Huber, ExtraTrees and HistGradientBoosting. Meta features are prediction-only plus disagreement geometry; no parcel IDs, state labels or raw covariates.
+
+Canonical run: `python tools/run_checkpoint_03c4.py --catboost-task-type GPU`. CPU fallback is disabled. No final 59 predictions are generated in this checkpoint.
