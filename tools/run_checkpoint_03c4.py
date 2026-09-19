@@ -85,7 +85,10 @@ def _render_report(
         "- active feature track: **competition only**",
         "- outer evaluation: frozen Checkpoint 02 folds",
         f"- level-1 cross-fitting: **{report['level1_folds']} folds**",
-        f"- base tuning inside each level-1 training split: **{report['base_tuning_folds']} folds**",
+        (
+            "- base tuning inside each level-1 training split: "
+            f"**{report['base_tuning_folds']} folds**"
+        ),
         f"- outer-refit base tuning: **{report['outer_refit_tuning_folds']} folds**",
         f"- meta tuning: **{report['meta_tuning_folds']} folds**",
         f"- CatBoost execution: **{report['catboost_task_type_final']}**",
