@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 and 03B Empirical Feature Discovery are closed. Checkpoint 03C model comparison is next.
+**Current phase:** Checkpoint 03 is open; 03A and 03B are closed. Checkpoint 03C.1 representation benchmarking is implemented and awaiting workstation execution/review.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -221,4 +221,4 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
 ## Immediate next action
 
-Start Checkpoint 03C. Compare source, agronomic and empirical representations under both frozen validation protocols; include fold-local discovered-expression augmentation as a separate leakage-safe representation. Read `reports/checkpoint_03b/README.md` before interpreting the discovered motifs.
+Run `python tools/run_checkpoint_03c.py` on the workstation. Review `reports/checkpoint_03c/checkpoint_03c_report.md` and `representation_summary.csv`, then use only a small set of representations for 03C.2 model-family tuning. Do not generate the 59 final predictions yet.
