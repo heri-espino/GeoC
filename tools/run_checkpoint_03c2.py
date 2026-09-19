@@ -167,7 +167,7 @@ def _render_report(
     )
 
     for protocol in report["protocols"]:
-        lines.extend([f"", f"## {protocol}", ""])
+        lines.extend(["", f"## {protocol}", ""])
         subset = protocol_summary.loc[
             protocol_summary["protocol"].eq(protocol)
         ].sort_values(["oof_rmse", "representation", "model"])
