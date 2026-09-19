@@ -1,6 +1,6 @@
 # Checkpoint 03C.1 — Representation Benchmark
 
-**Status:** implementation ready; workstation run pending  
+**Status:** **Closed**  
 **Opened:** 2026-09-18
 
 Checkpoint 03C starts model evaluation after the closed 03A/03B feature-discovery phases.
@@ -147,7 +147,7 @@ feature stack.
 
 ## Next stage
 
-After the workstation run is reviewed, 03C.2 should retain only a small number of
+The workstation run passed and is summarized in `reports/checkpoint_03c/README.md`. 03C.2 should retain only a small number of
 representations and compare/tune model families such as:
 
 - ElasticNet;
