@@ -10,12 +10,13 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint02.yaml` | Frozen Checkpoint 02 diagnostics, folds, ablations and baseline settings | closed/frozen |
 | `agronomic_features_v1.yaml` | Explicit target-free nonlinear/agronomic transformations over Feature Table v1 | Checkpoint 03A closed |
 | `empirical_features_v1.yaml` | Deterministic empirical X-only transforms plus fold-local expression-discovery contract | Checkpoint 03B closed |
-| `checkpoint03c.yaml` | Frozen-fold representation benchmark over base/agronomic/empirical layers | Checkpoint 03C.1 current |
+| `checkpoint03c.yaml` | Frozen-fold representation benchmark over base/agronomic/empirical layers | Checkpoint 03C.1 closed |
+| `checkpoint03c2.yaml` | Competition-only nested model-family benchmark | Checkpoint 03C.2 current |
 
 Do not silently edit a frozen config to improve historical results. If a later phase changes a
 contract, create/update the appropriate new-phase config and document the rationale in the
 relevant checkpoint/history.
 
-Checkpoint 03A has its own `agronomic_features_v1.yaml`; do not mutate the frozen Checkpoint 02 config. Checkpoint 03B is closed with `empirical_features_v1.yaml`. Checkpoint 03C.1 uses `checkpoint03c.yaml` for the fixed representation benchmark; do not mutate the frozen 03A/03B configs to tune 03C results.
+Checkpoint 03A has its own `agronomic_features_v1.yaml`; do not mutate the frozen Checkpoint 02 config. Checkpoint 03B is closed with `empirical_features_v1.yaml`. Checkpoint 03C.1 is frozen in `checkpoint03c.yaml`. Checkpoint 03C.2 uses `checkpoint03c2.yaml` and is competition-only; do not mutate earlier configs to improve later results.
 
 See `docs/AGENT_GUIDE.md` and `docs/PROJECT_HISTORY.md`.
