@@ -18,7 +18,7 @@ These instructions apply repository-wide unless a more specific handoff adds con
 12. relevant official/reference material under `docs/`.
 13. **`app/AGENTS.md` before any Streamlit/app/deployment change**.
 
-Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoints 01, 02, 03A and 03B are closed. The current phase is Checkpoint 03C.1 — fixed representation comparison. Do not begin broad tuning before the 03C.1 workstation results are reviewed.
+Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoints 01, 02, 03A and 03B are closed. The current phase is Checkpoint 03C.2 — controlled model-family comparison. 03C.1 is closed; read `reports/checkpoint_03c/README.md` before choosing representations or tuning.
 
 ## Core invariants
 
