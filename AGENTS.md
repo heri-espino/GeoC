@@ -18,7 +18,7 @@ These instructions apply repository-wide unless a more specific handoff adds con
 12. relevant official/reference material under `docs/`.
 13. **`app/AGENTS.md` before any Streamlit/app/deployment change**.
 
-Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoints 01, 02, 03A and 03B are closed. The current phase is Checkpoint 03C.2 — controlled model-family comparison. 03C.1 is closed; read `reports/checkpoint_03c/README.md` before choosing representations or tuning.
+Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoints 01, 02, 03A and 03B are closed. The current phase is Checkpoint 03C.2 — competition-only controlled model-family comparison. From 03C.2 onward do not run the clean track unless the user explicitly reopens it; read `.ai_handoff`, `reports/checkpoint_03c/README.md` and `checkpoints/03c2_competition_modeling/README.md` before tuning.
 
 ## Core invariants
 
