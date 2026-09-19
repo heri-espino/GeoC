@@ -16,7 +16,7 @@ metadata, the source evidence wins and the checkpoint must be corrected.
 | [03_modeling](03_modeling/README.md) | In progress | 03A/03B/03C.1 closed; 03C.2 competition-only implementation is ready and the workstation benchmark is next. |
 | [03b_empirical_feature_discovery](03b_empirical_feature_discovery/README.md) | Closed | 335-feature X-only empirical layer plus leakage-safe fold-local expression recurrence audit. |
 | [03c_representation_benchmark](03c_representation_benchmark/README.md) | Closed | Clean/competition B0/B1/B2/B3/B4/B5/B7 representation benchmark using frozen folds and fixed Ridge10/ExtraTrees. |
-| [03c2_competition_modeling](03c2_competition_modeling/README.md) | Run pending | Competition-only nested model-family tuning over C0/C1/C2/C3; implementation/CI complete, workstation benchmark pending. |
+| [03c2_competition_modeling](03c2_competition_modeling/README.md) | Closed | Competition-only nested model-family tuning over C0/C1/C2/C3; workstation run completed with CatBoost on GPU. |\n| [03c3_finalist_ensembles](03c3_finalist_ensembles/README.md) | Current | Fixed equal-weight OOF ensemble review for the three 03C.2 finalists; no hidden-target predictions. |
 
 Checkpoint **03_modeling** is now open. Future checkpoints should continue the numeric sequence, for example:
 
