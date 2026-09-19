@@ -20,15 +20,16 @@ Read in this order before substantial work:
 3. `docs/PROJECT_HISTORY.md` — what happened and why.
 4. `checkpoints/01_data/README.md` — closed data-foundation milestone.
 5. `checkpoints/02_features/README.md` — closed feature/validation milestone.
-6. `checkpoints/03_modeling/README.md` — 03A/03B/03C.1 closed; 03C.2 current modeling milestone.
-7. `checkpoints/03b_empirical_feature_discovery/README.md` — closed empirical-discovery contract.
-8. `checkpoints/03c_representation_benchmark/README.md` and `reports/checkpoint_03c/README.md` — closed representation benchmark and interpretation.
-9. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md` and `data/processed/empirical_features_v1/README.md` — canonical representations.
-10. `reports/checkpoint_02/checkpoint_02_report.md` — frozen diagnostics/baselines/folds.
-11. `docs/AGRONOMIC_FEATURES_V1.md` and `docs/EMPIRICAL_FEATURES_V1.md` before changing derived variables.
-12. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `docs/FEATURE_TABLE_V1.md`.
-13. `docs/FUNCTION_INDEX.md` before adding reusable code.
-14. `app/AGENTS.md` before touching Streamlit/deployment.
+6. `checkpoints/03_modeling/README.md` — Checkpoint 03 phase map.
+7. `checkpoints/03c2_competition_modeling/README.md` — **current 03C.2 checkpoint; read before running/tuning**.
+8. `checkpoints/03b_empirical_feature_discovery/README.md` — closed empirical-discovery contract.
+9. `checkpoints/03c_representation_benchmark/README.md` and `reports/checkpoint_03c/README.md` — closed representation benchmark and interpretation.
+10. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md` and `data/processed/empirical_features_v1/README.md` — canonical representations.
+11. `reports/checkpoint_02/checkpoint_02_report.md` — frozen diagnostics/baselines/folds.
+12. `docs/AGRONOMIC_FEATURES_V1.md` and `docs/EMPIRICAL_FEATURES_V1.md` before changing derived variables.
+13. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `docs/FEATURE_TABLE_V1.md`.
+14. `docs/FUNCTION_INDEX.md` before adding reusable code.
+15. `app/AGENTS.md` before touching Streamlit/deployment.
 
 Do not start by re-deriving facts from scratch unless a source changed or a validation check
 fails.
@@ -553,7 +554,7 @@ Blind B5 concatenation is not consistently beneficial.
 
 Read `reports/checkpoint_03c/README.md` before designing 03C.2.
 
-03C.2 is competition-only. It carries C0 base control, C1 agronomic-only, C2 all + fold-local discovery, and C3 base + agronomic + the four empirical discovery-support primitives + fold-local discovery. Do not spend compute on clean-track comparisons unless explicitly reopened.
+03C.2 is competition-only. Its implementation is complete and CI is green; the workstation benchmark is still pending. It carries C0 base control, C1 agronomic-only, C2 all + fold-local discovery, and C3 base + agronomic + the four empirical discovery-support primitives + fold-local discovery. Do not spend compute on clean-track comparisons unless explicitly reopened.
 
 03C.2 candidate model families include:
 
