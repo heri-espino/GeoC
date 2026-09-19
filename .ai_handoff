@@ -138,15 +138,16 @@ municipality-grouped ExtraTrees A6 0.8835
 Do not optimize only the easier state-stratified metric. Spatial/municipal generalization is a
 first-class risk.
 
-## Clean vs competition
+## Historical clean/competition distinction
 
-Keep the two tracks explicit.
+The repository still preserves both feature labels for provenance, but **active modeling from
+03C.2 onward uses only `competition`**.
 
 `clean`
-: historical/static, intended for defensible prospective-style modeling.
+: historical/static provenance label only; do not benchmark or select models on this track unless explicitly reopened.
 
 `competition`
-: clean plus rule-permitted 2025/full-season/contemporaneous public covariates.
+: active modeling track = clean plus rule-permitted 2025/full-season/contemporaneous public covariates.
 
 The exact operational forecast cutoff is still unresolved. Do not describe competition-mode
 features as a strict prospective forecast.
