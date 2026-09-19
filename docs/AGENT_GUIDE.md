@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phases 03A and 03B are closed; start from 03C — model/representation comparison.
+**Current phase:** Checkpoint 03 is open. Phases 03A/03B are closed. Checkpoint 03C.1 representation benchmarking is implemented and awaits workstation results.
 
 ---
 
@@ -523,8 +523,7 @@ final predictions look plausible.
 
 Checkpoints 03A and 03B are closed. Do not recreate or target-select canonical materialized features outside CV.
 
-03C should compare the following representations under both frozen validation protocols before
-heavy tuning:
+03C.1 should compare the following representations under both frozen validation protocols before heavy tuning, using fixed Ridge10 and ExtraTrees:
 
 ```text
 B0 = Feature Table v1
@@ -533,11 +532,10 @@ B2 = Empirical Features v1 only
 B3 = base + agronomic
 B4 = base + empirical
 B5 = base + agronomic + empirical
-B6 = reduced/selected representation
 B7 = fold-local discovered-expression augmentation
 ```
 
-Good candidate model families:
+After 03C.1 results are reviewed, 03C.2 candidate model families include:
 
 - CatBoost;
 - Ridge/ElasticNet with tuned regularization;
