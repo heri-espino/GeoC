@@ -17,6 +17,11 @@ from geocebada.evaluation.checkpoint03c2 import (
     summarize_nested_results,
     validate_nested_oof_coverage,
 )
+from geocebada.evaluation.checkpoint03c3 import (
+    build_finalist_ensemble_predictions,
+    summarize_finalist_ensemble_results,
+    validate_finalist_oof_coverage,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -43,6 +48,9 @@ __all__ = [
     "make_model_search_spec",
     "summarize_nested_results",
     "validate_nested_oof_coverage",
+    "build_finalist_ensemble_predictions",
+    "summarize_finalist_ensemble_results",
+    "validate_finalist_oof_coverage",
     "RepresentationSpec",
     "build_layer_feature_catalog",
     "build_representation_specs",
