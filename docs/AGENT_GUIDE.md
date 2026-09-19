@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1 are closed. Checkpoint 03C.2 implementation is ready; run the competition-only workstation benchmark next.
+**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1/03C.2 are closed. Checkpoint 03C.3 reviews fixed equal-weight ensembles of the three robust 03C.2 finalists.
 
 ---
 
@@ -21,7 +21,7 @@ Read in this order before substantial work:
 4. `checkpoints/01_data/README.md` — closed data-foundation milestone.
 5. `checkpoints/02_features/README.md` — closed feature/validation milestone.
 6. `checkpoints/03_modeling/README.md` — Checkpoint 03 phase map.
-7. `checkpoints/03c2_competition_modeling/README.md` — **current 03C.2 checkpoint; read before running/tuning**.
+7. `checkpoints/03c2_competition_modeling/README.md` — closed 03C.2 benchmark evidence.\n8. `checkpoints/03c3_finalist_ensembles/README.md` — **current finalist-ensemble checkpoint**.
 8. `checkpoints/03b_empirical_feature_discovery/README.md` — closed empirical-discovery contract.
 9. `checkpoints/03c_representation_benchmark/README.md` and `reports/checkpoint_03c/README.md` — closed representation benchmark and interpretation.
 10. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md` and `data/processed/empirical_features_v1/README.md` — canonical representations.
@@ -552,9 +552,9 @@ Empirical-only B2 is consistently weak.
 Blind B5 concatenation is not consistently beneficial.
 ```
 
-Read `reports/checkpoint_03c/README.md` before designing 03C.2.
+Read `reports/checkpoint_03c2/checkpoint_03c2_report.md` and `checkpoints/03c3_finalist_ensembles/README.md` before changing the finalist set.
 
-03C.2 is competition-only. Its implementation is complete and CI is green; the workstation benchmark is still pending. It carries C0 base control, C1 agronomic-only, C2 all + fold-local discovery, and C3 base + agronomic + the four empirical discovery-support primitives + fold-local discovery. Do not spend compute on clean-track comparisons unless explicitly reopened.
+03C.2 is competition-only and closed after the workstation benchmark. CatBoost executed on GPU. The robust individual finalists are C0+PLS, C3+Ridge and C1+CatBoost. 03C.3 evaluates only their fixed equal-weight combinations; do not tune continuous ensemble weights or revive clean-track comparisons unless explicitly reopened.
 
 03C.2 candidate model families include:
 

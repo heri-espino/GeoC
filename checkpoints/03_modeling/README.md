@@ -1,7 +1,7 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A/03B/03C.1 closed; 03C.2 implementation ready  
-**Current phase:** 03C.2 — Competition-only nested model benchmark; workstation run pending  
+**Status:** In progress — 03A/03B/03C.1/03C.2 closed; 03C.3 finalist review current  
+**Current phase:** 03C.3 — Fixed equal-weight finalist ensembles  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -224,7 +224,7 @@ Do not regenerate the frozen folds because a result is inconvenient.
 
 ---
 
-### 03C.2 — Competition-only nested model-family benchmark — IMPLEMENTATION READY
+### 03C.2 — Competition-only nested model-family benchmark — CLOSED
 
 The project no longer compares clean versus competition. From 03C.2 onward the active modeling
 track is **competition only**.
@@ -293,3 +293,34 @@ No final model or 59-parcel predictions exist yet.
 - agent/data/history/AI-use handoffs are synchronized.
 
 Once these criteria are met, 03B is frozen and the project moves to 03C.
+
+
+---
+
+### 03C.3 — Finalist equal-weight ensemble review — CURRENT
+
+03C.3 does not run another model search. It consumes the committed 03C.2 OOF predictions and
+compares only:
+
+```text
+F1 = C0_base + PLS
+F2 = C3_base_agro_plus_discovery + Ridge
+F3 = C1_agronomic + CatBoost
+E12 = 0.5 F1 + 0.5 F2
+E13 = 0.5 F1 + 0.5 F3
+E23 = 0.5 F2 + 0.5 F3
+E123 = (F1 + F2 + F3) / 3
+```
+
+No continuous ensemble weights are tuned.
+
+The reviewed OOF evidence retains E13 and E123. Their municipality-grouped RMSE values are
+0.7488 and 0.7481 respectively; this difference is too small to interpret as a meaningful
+winner. Reproduce with:
+
+```powershell
+python tools\run_checkpoint_03c3.py
+```
+
+The next stage is to freeze the full-data fitting rule for the retained finalist(s), then
+generate the 59 competition predictions exactly once.

@@ -20,3 +20,4 @@ relevant checkpoint/history.
 Checkpoint 03A has its own `agronomic_features_v1.yaml`; do not mutate the frozen Checkpoint 02 config. Checkpoint 03B is closed with `empirical_features_v1.yaml`. Checkpoint 03C.1 is frozen in `checkpoint03c.yaml`. Checkpoint 03C.2 uses `checkpoint03c2.yaml` and is competition-only; do not mutate earlier configs to improve later results.
 
 See `docs/AGENT_GUIDE.md` and `docs/PROJECT_HISTORY.md`.
+\n- `checkpoint03c3.yaml`: fixed finalist/equal-weight ensemble review using committed 03C.2 OOF predictions; no hidden-target scoring.\n
