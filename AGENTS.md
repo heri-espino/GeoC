@@ -9,7 +9,7 @@ These instructions apply repository-wide unless a more specific handoff adds con
 3. `docs/PROJECT_HISTORY.md` — chronological record of what happened and why.
 4. `README.md`.
 5. `checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` — completed milestones.
-6. `checkpoints/03_modeling/README.md` and `checkpoints/03b_empirical_feature_discovery/README.md` — 03A/03B closed; 03C current phase.
+6. `checkpoints/03_modeling/README.md`, `checkpoints/03b_empirical_feature_discovery/README.md` and `checkpoints/03c_representation_benchmark/README.md` — 03A/03B closed; 03C.1 current phase.
 7. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md`, `data/processed/empirical_features_v1/README.md`, `docs/AGRONOMIC_FEATURES_V1.md`, `docs/EMPIRICAL_FEATURES_V1.md` and `reports/checkpoint_02/checkpoint_02_report.md` before modeling.
 8. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before data/feature changes.
 9. `data/.ai_handoff` and `data/README.md` for data/geospatial work.
@@ -18,7 +18,7 @@ These instructions apply repository-wide unless a more specific handoff adds con
 12. relevant official/reference material under `docs/`.
 13. **`app/AGENTS.md` before any Streamlit/app/deployment change**.
 
-Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoints 01, 02, 03A and 03B are closed. The current phase is Checkpoint 03C — model/representation comparison.
+Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoints 01, 02, 03A and 03B are closed. The current phase is Checkpoint 03C.1 — fixed representation comparison. Do not begin broad tuning before the 03C.1 workstation results are reviewed.
 
 ## Core invariants
 
