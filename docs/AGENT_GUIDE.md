@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1 are closed. Checkpoint 03C.2 controlled model-family comparison is next.
+**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1 are closed. Checkpoint 03C.2 is current and uses only the competition track.
 
 ---
 
@@ -553,9 +553,7 @@ Blind B5 concatenation is not consistently beneficial.
 
 Read `reports/checkpoint_03c/README.md` before designing 03C.2.
 
-03C.2 should carry a small representation set: B0 control, B1 agronomic-only, B7 all +
-fold-local discovery, and a new base + agronomic + fold-local-discovery ablation that omits the
-deterministic empirical-only block.
+03C.2 is competition-only. It carries C0 base control, C1 agronomic-only, C2 all + fold-local discovery, and C3 base + agronomic + the four empirical discovery-support primitives + fold-local discovery. Do not spend compute on clean-track comparisons unless explicitly reopened.
 
 03C.2 candidate model families include:
 
