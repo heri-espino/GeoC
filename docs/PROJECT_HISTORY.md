@@ -657,3 +657,57 @@ Not completed:
 - the spatial validation gap needs to drive Checkpoint 03 decisions.
 
 The next milestone is the **Checkpoint 03C.2 workstation run** using `python tools/run_checkpoint_03c2.py`, followed by interpretation of `reports/checkpoint_03c2/` and selection of a small finalist set. Final 59-parcel prediction comes later.
+
+
+---
+
+## 2026-09-19 — Checkpoint 03C.2 workstation benchmark completed
+
+The full competition-only nested benchmark completed and the generated artifacts were committed
+under `reports/checkpoint_03c2/`.
+
+Run facts:
+
+```text
+training rows          138
+outer fits             280
+OOF prediction rows    7,728
+inner candidate rows   1,640
+discovery rows         2,800
+CatBoost task type     GPU
+hidden targets used    false
+```
+
+The strongest individual candidates by worst-protocol OOF RMSE were:
+
+```text
+C0_base + PLS                         state 0.5339   grouped 0.7621
+C3_base_agro_plus_discovery + Ridge  state 0.5331   grouped 0.7650
+C1_agronomic + CatBoost              state 0.5235   grouped 0.7709
+```
+
+ExtraTrees remained strongest on the easier state-stratified protocol but was materially weaker
+under municipality-grouped validation, so it was not selected for the robust finalist set.
+
+## 2026-09-19 — Checkpoint 03C.3 finalist equal-weight ensembles
+
+To avoid another high-variance tuning layer with only 138 labels, 03C.3 uses only the three
+reviewed individual finalists and fixed equal-weight combinations of their committed OOF
+predictions. No continuous ensemble-weight optimization is allowed.
+
+The four pre-specified ensembles are E12 = PLS+Ridge, E13 = PLS+CatBoost,
+E23 = Ridge+CatBoost and E123 = PLS+Ridge+CatBoost.
+
+Reviewed OOF results:
+
+```text
+E123_equal_top3      state 0.5121   grouped 0.7481
+E13_PLS_CatBoost     state 0.5082   grouped 0.7488
+E23_Ridge_CatBoost   state 0.5146   grouped 0.7544
+E12_PLS_Ridge        state 0.5270   grouped 0.7546
+```
+
+E13 and E123 are both retained. Their municipality-grouped RMSE differs by less than 0.001, so
+the project does not interpret that development-score difference as evidence for a unique
+winner. The next step is to freeze a full-data fitting rule for the retained finalist(s) before
+producing the 59 challenge predictions.
