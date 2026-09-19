@@ -120,7 +120,7 @@ GeoCebada/
 
 ## Checkpoints
 
-El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 350 variables agronómicas/no lineales target-free (123 clean, 227 competition) para las 197 parcelas. **Checkpoint 03B** está cerrado: `data/processed/empirical_features_v1/` contiene 335 variables empíricas X-only (91 clean, 244 competition), y el audit fold-local encontró 88 expresiones únicas, con 7 expresiones recurrentes que se reducen a cuatro motivos conceptuales. La fase actual es **Checkpoint 03C.1 — benchmark de representaciones**: comparar B0/B1/B2/B3/B4/B5/B7 en tracks clean/competition con Ridge10 y ExtraTrees fijos antes de tuning.
+El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 350 variables agronómicas/no lineales target-free (123 clean, 227 competition) para las 197 parcelas. **Checkpoint 03B** está cerrado: `data/processed/empirical_features_v1/` contiene 335 variables empíricas X-only (91 clean, 244 competition), y el audit fold-local encontró 88 expresiones únicas, con 7 expresiones recurrentes que se reducen a cuatro motivos conceptuales. **Checkpoint 03C.1** está cerrado. El benchmark mostró que las variables agronómicas conservan señal con mucha menor dimensionalidad, `empirical-only` es débil como representación aislada y el discovery fold-local puede mejorar ExtraTrees, especialmente en el track clean. La fase actual es **Checkpoint 03C.2 — comparación/tuning controlado de familias de modelos**.
 
 ## Agronomic Features v1
 
@@ -280,8 +280,8 @@ final frozen pipeline
 3. reutilizar siempre `reports/checkpoint_02/cv_folds.csv` para comparaciones de modelos;
 4. mantener cerrado **Checkpoint 03A** y no seleccionar sus 350 variables usando el target fuera de CV;
 5. mantener cerrado **Checkpoint 03B**; cualquier búsqueda target-aware de fórmulas debe permanecer dentro de folds;
-6. ejecutar **Checkpoint 03C.1** con `python tools/run_checkpoint_03c.py` y revisar las representaciones bajo ambos folds;
-7. usar 03C.2 para comparar CatBoost, modelos lineales regularizados, ExtraTrees/boosting, kernels y PCA/PLS sólo en representaciones finalistas;
+6. mantener cerrado **Checkpoint 03C.1** y usar `reports/checkpoint_03c/README.md` como interpretación canónica;
+7. ejecutar **03C.2** sobre un conjunto reducido de representaciones: base, agronomic-only, all+discovery y base+agronomic+discovery; comparar CatBoost, regularización lineal, ExtraTrees/boosting, kernels y PCA/PLS con tuning dentro de folds;
 8. tratar la gran brecha entre CV state-stratified y municipality-grouped como riesgo espacial explícito;
 9. probar reducción/selección de dimensionalidad sólo dentro de folds y sólo si mejora evidencia fuera de muestra;
 10. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
