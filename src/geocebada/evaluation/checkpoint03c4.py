@@ -531,6 +531,7 @@ def evaluate_nested_stacking(
     pd.DataFrame,
     pd.DataFrame,
     pd.DataFrame,
+    pd.DataFrame,
     str,
 ]:
     """Run honest level-1 cross-fitting and untouched outer-fold stack evaluation."""
