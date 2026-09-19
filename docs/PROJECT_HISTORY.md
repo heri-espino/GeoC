@@ -619,7 +619,7 @@ The workstation benchmark and interpretation of its generated reports are the ne
 
 ---
 
-## Current state after Checkpoint 03C.1
+## Current state at Checkpoint 03C.2
 
 Completed:
 
@@ -638,11 +638,17 @@ Completed:
 - versioned Feature Table v1;
 - versioned Agronomic Features v1 with 350 target-free derived variables and scientific provenance;
 - versioned Empirical Features v1 with 335 target-free derived variables;
-- fold-local target-aware expression-discovery infrastructure with 24 configured primitives.
+- fold-local target-aware expression-discovery infrastructure with 24 configured primitives;
+- closed Checkpoint 03C.1 representation benchmark with 280 outer fits and 7,728 OOF predictions;
+- competition-only modeling directive from 03C.2 onward;
+- implemented 03C.2 nested-CV model benchmark over C0/C1/C2/C3;
+- implemented Ridge, ElasticNet, ExtraTrees, CatBoost, PLS, PCA+RBF KRR and PCA+Poly2 KRR candidate families;
+- repository CI green for the current 03C.2 implementation.
 
 Not completed:
 
 - no final model is selected;
+- the 03C.2 workstation benchmark has not yet been executed;
 - no final hyperparameters are frozen;
 - no final preprocessing/feature-selection pipeline is frozen;
 - no final 59 predictions have been produced;
