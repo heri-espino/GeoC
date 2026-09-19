@@ -711,3 +711,14 @@ E13 and E123 are both retained. Their municipality-grouped RMSE differs by less 
 the project does not interpret that development-score difference as evidence for a unique
 winner. The next step is to freeze a full-data fitting rule for the retained finalist(s) before
 producing the 59 challenge predictions.
+
+
+---
+
+## 2026-09-19 — Checkpoint 03C.4 nested stacking designed
+
+After 03C.3 showed that equal-weight ensembles improve cross-protocol robustness, the project opened a stricter stacked-generalization experiment. The frozen outer CV remains untouched for each fit, while 3-fold level-1 predictions are generated inside the outer training set. Each level-1 base model performs its own 2-fold hyperparameter search using only the corresponding cross-fit training subset. Final outer-fold base predictions use a separate 3-fold search on the whole outer training subset.
+
+The base library includes the strongest 03C.2 candidates, a deliberately diverse weaker PLS/ExtraTrees subset, and two new PCA+Ridge bases to test dimensionality reduction without reviving the failed PCA-kernel models. The stackers include equal averages, a convex simplex learner, regularized/robust linear learners and strongly regularized tree/boosting meta models. Reports add kg/ha and nRMSE alongside ton/ha RMSE.
+
+The current frozen CV is explicitly treated as development validation because its results have already informed multiple iterations. The 59 hidden parcels remain the unseen competition set.
