@@ -557,7 +557,69 @@ removes the deterministic empirical-only block.
 Full interpretation is in `reports/checkpoint_03c/README.md`.
 
 ---
-## Current state after Checkpoint 03B
+## 2026-09-18 — Checkpoint 03C.2 implementation: competition-only nested modeling
+
+After 03C.1, the modeling contract was simplified: **only the competition track matters for
+current development and final challenge prediction**. The clean label remains in the repository
+for provenance/history but is no longer an active model-selection track unless explicitly
+reopened.
+
+03C.2 was implemented as a nested model-family benchmark over four competition-only
+representations:
+
+```text
+C0 = base
+C1 = agronomic-only
+C2 = base + agronomic + empirical + fold-local discovery
+C3 = base + agronomic + four empirical discovery-support primitives
+     + fold-local discovery
+```
+
+C3 was added specifically to test whether the large deterministic empirical block is unnecessary
+once the fold-local discovery miner can still access the four empirical support primitives.
+
+The frozen Checkpoint 02 folds remain the outer evaluation:
+
+```text
+fold_state_stratified
+fold_municipality_grouped
+```
+
+Within each outer training fold, 3-fold inner CV selects hyperparameters. Inner splitting mirrors
+the outer protocol: state-stratified inner CV for the state protocol and municipality-grouped
+inner CV for the municipality protocol. Imputation, scaling, PCA, PLS, expression discovery and
+hyperparameter selection all remain inside the training folds.
+
+Implemented model families:
+
+```text
+Ridge
+ElasticNet
+ExtraTrees
+CatBoost
+PLS
+PCA + RBF Kernel Ridge
+PCA + degree-2 Polynomial Kernel Ridge
+```
+
+CatBoost defaults to GPU on the university workstation and has a guarded CPU fallback for
+GPU/CUDA availability failures.
+
+The implementation is versioned in:
+
+```text
+configs/checkpoint03c2.yaml
+src/geocebada/evaluation/checkpoint03c2.py
+tools/run_checkpoint_03c2.py
+checkpoints/03c2_competition_modeling/README.md
+```
+
+No final model has been selected. No final 59-parcel predictions have been generated.
+The workstation benchmark and interpretation of its generated reports are the next milestone.
+
+---
+
+## Current state at Checkpoint 03C.2
 
 Completed:
 
@@ -576,11 +638,17 @@ Completed:
 - versioned Feature Table v1;
 - versioned Agronomic Features v1 with 350 target-free derived variables and scientific provenance;
 - versioned Empirical Features v1 with 335 target-free derived variables;
-- fold-local target-aware expression-discovery infrastructure with 24 configured primitives.
+- fold-local target-aware expression-discovery infrastructure with 24 configured primitives;
+- closed Checkpoint 03C.1 representation benchmark with 280 outer fits and 7,728 OOF predictions;
+- competition-only modeling directive from 03C.2 onward;
+- implemented 03C.2 nested-CV model benchmark over C0/C1/C2/C3;
+- implemented Ridge, ElasticNet, ExtraTrees, CatBoost, PLS, PCA+RBF KRR and PCA+Poly2 KRR candidate families;
+- repository CI green for the current 03C.2 implementation.
 
 Not completed:
 
 - no final model is selected;
+- the 03C.2 workstation benchmark has not yet been executed;
 - no final hyperparameters are frozen;
 - no final preprocessing/feature-selection pipeline is frozen;
 - no final 59 predictions have been produced;
@@ -588,4 +656,4 @@ Not completed:
 - CHIRPS daily extraction contribution needs QC because only one feature survives;
 - the spatial validation gap needs to drive Checkpoint 03 decisions.
 
-The next milestone is **Checkpoint 03C — model/representation comparison** using the frozen Checkpoint 02 folds.
+The next milestone is the **Checkpoint 03C.2 workstation run** using `python tools/run_checkpoint_03c2.py`, followed by interpretation of `reports/checkpoint_03c2/` and selection of a small finalist set. Final 59-parcel prediction comes later.
