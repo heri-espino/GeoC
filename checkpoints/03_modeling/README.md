@@ -224,6 +224,57 @@ Do not regenerate the frozen folds because a result is inconvenient.
 
 ---
 
+### 03C.2 — Competition-only nested model-family benchmark — IMPLEMENTATION READY
+
+The project no longer compares clean versus competition. From 03C.2 onward the active modeling
+track is **competition only**.
+
+Current candidate representations:
+
+```text
+C0 = base
+C1 = agronomic-only
+C2 = base + agronomic + empirical + fold-local discovery
+C3 = base + agronomic + four empirical discovery-support primitives
+     + fold-local discovery
+```
+
+Implemented model families:
+
+```text
+Ridge
+ElasticNet
+ExtraTrees
+CatBoost
+PLS
+PCA + RBF Kernel Ridge
+PCA + degree-2 Polynomial Kernel Ridge
+```
+
+The exact frozen Checkpoint 02 folds remain the outer evaluation. Each outer training split
+contains a 3-fold inner search aligned to the outer protocol. Discovery, imputation, scaling,
+PCA/PLS and hyperparameter selection remain inside the nested training pipeline.
+
+Implementation:
+
+```text
+configs/checkpoint03c2.yaml
+src/geocebada/evaluation/checkpoint03c2.py
+tools/run_checkpoint_03c2.py
+checkpoints/03c2_competition_modeling/README.md
+```
+
+Repository CI is green. The next action is the workstation run:
+
+```powershell
+python -m pip install -e ".[models]"
+python tools\run_checkpoint_03c2.py
+```
+
+No final model or 59-parcel predictions exist yet.
+
+---
+
 ## Completion criteria for 03B
 
 03B closes when:
