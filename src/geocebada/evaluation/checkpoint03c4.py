@@ -302,6 +302,28 @@ def _fit_base_search(
         catboost_task_type=catboost_task_type,
         catboost_devices=catboost_devices,
     )
+    if spec.kind == "pls":
+        max_components = min(
+            int(X.shape[1]),
+            min(len(train_idx) for train_idx, _ in cv_splits),
+        )
+        safe_grid = [
+            candidate
+            for candidate in spec.param_grid
+            if int(candidate["model__n_components"][0]) <= max_components
+        ]
+        if not safe_grid:
+            raise ValueError(
+                f"No valid PLS n_components candidates for {base_name!r}; "
+                f"fold-local upper bound is {max_components}."
+            )
+        spec = ModelSearchSpec(
+            name=spec.name,
+            kind=spec.kind,
+            estimator=spec.estimator,
+            param_grid=safe_grid,
+        )
+
     task_type = catboost_task_type
     jobs = (
         1
