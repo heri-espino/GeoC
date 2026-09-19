@@ -1,0 +1,79 @@
+schema_version: 1
+updated: 2026-09-19
+
+scope:
+  active_track: competition
+  source_checkpoint: 03C.2
+  policy: >
+    Compare only the three reviewed 03C.2 finalists and fixed equal-weight
+    ensembles built from their out-of-fold predictions. Do not optimize
+    continuous ensemble weights and do not score the 59 hidden-target parcels.
+
+inputs:
+  oof_predictions: reports/checkpoint_03c2/oof_predictions.csv
+
+outputs:
+  directory: reports/checkpoint_03c3
+  candidate_oof_predictions: finalist_oof_predictions.csv
+  fold_metrics: finalist_fold_metrics.csv
+  protocol_summary: finalist_protocol_summary.csv
+  robustness_summary: finalist_robustness_summary.csv
+  residual_correlation: finalist_residual_correlation.csv
+  run_report_json: checkpoint_03c3_report.json
+  run_report_markdown: checkpoint_03c3_report.md
+
+identity:
+  id_column: ID_POLIGONO
+  observed_column: observed
+  predicted_column: predicted
+  protocol_column: protocol
+  fold_column: fold
+  representation_column: representation
+  model_column: model
+
+validation:
+  state_protocol: fold_state_stratified
+  grouped_protocol: fold_municipality_grouped
+  expected_training_rows: 138
+
+base_candidates:
+  F1_PLS_C0:
+    representation: C0_base
+    model: PLS
+  F2_Ridge_C3:
+    representation: C3_base_agro_plus_discovery
+    model: Ridge
+  F3_CatBoost_C1:
+    representation: C1_agronomic
+    model: CatBoost
+
+ensembles:
+  E12_PLS_Ridge:
+    members: [F1_PLS_C0, F2_Ridge_C3]
+    weights: [0.5, 0.5]
+  E13_PLS_CatBoost:
+    members: [F1_PLS_C0, F3_CatBoost_C1]
+    weights: [0.5, 0.5]
+  E23_Ridge_CatBoost:
+    members: [F2_Ridge_C3, F3_CatBoost_C1]
+    weights: [0.5, 0.5]
+  E123_equal_top3:
+    members: [F1_PLS_C0, F2_Ridge_C3, F3_CatBoost_C1]
+    weights: [0.3333333333333333, 0.3333333333333333, 0.3333333333333333]
+
+decision:
+  finalists:
+    - E13_PLS_CatBoost
+    - E123_equal_top3
+  rationale: >
+    Both equal-weight ensembles improve the municipality-grouped RMSE relative
+    to every individual finalist while remaining strong under state-stratified
+    validation. Their grouped RMSE difference is less than 0.001, so 03C.3
+    preserves both rather than over-interpreting a negligible development-score
+    difference.
+  no_continuous_weight_tuning: true
+  no_hidden_target_inspection: true
+
+stage:
+  name: finalist_equal_weight_ensemble_review
+  no_final_prediction: true
