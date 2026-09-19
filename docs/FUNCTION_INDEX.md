@@ -41,6 +41,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `build_finalist_ensemble_predictions` | function | `geocebada.evaluation.checkpoint03c3` | Build fixed finalist and equal-weight ensemble predictions from 03C.2 OOF rows. | `src/geocebada/evaluation/checkpoint03c3.py` |
 | `summarize_finalist_ensemble_results` | function | `geocebada.evaluation.checkpoint03c3` | Summarize fold, protocol, robustness and residual-correlation evidence. | `src/geocebada/evaluation/checkpoint03c3.py` |
 | `validate_finalist_oof_coverage` | function | `geocebada.evaluation.checkpoint03c3` | Require complete one-row-per-parcel OOF coverage for every 03C.3 candidate. | `src/geocebada/evaluation/checkpoint03c3.py` |
+| `ConvexStackingRegressor` | class | `geocebada.evaluation.checkpoint03c4` | Fit nonnegative stacking weights constrained to sum to one. | `src/geocebada/evaluation/checkpoint03c4.py` |
+| `MetaSearchSpec` | class | `geocebada.evaluation.checkpoint03c4` | One stacker estimator and its small tuning grid. | `src/geocebada/evaluation/checkpoint03c4.py` |
+| `build_stacking_meta_features` | function | `geocebada.evaluation.checkpoint03c4` | Build target-free meta features from cross-fitted base predictions. | `src/geocebada/evaluation/checkpoint03c4.py` |
+| `evaluate_nested_stacking` | function | `geocebada.evaluation.checkpoint03c4` | Run honest level-1 cross-fitting and untouched outer-fold stack evaluation. | `src/geocebada/evaluation/checkpoint03c4.py` |
+| `summarize_stacking_results` | function | `geocebada.evaluation.checkpoint03c4` | Build pooled protocol metrics and cross-protocol robustness for stackers. | `src/geocebada/evaluation/checkpoint03c4.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
