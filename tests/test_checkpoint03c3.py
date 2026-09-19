@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 
 from geocebada.evaluation.checkpoint03c3 import (
     build_finalist_ensemble_predictions,
@@ -108,3 +111,27 @@ def test_missing_finalist_oof_rows_fail() -> None:
     ]
     with pytest.raises(ValueError, match="lacks OOF coverage"):
         build_finalist_ensemble_predictions(broken, _config())
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_canonical_oof_reproduces_reviewed_finalist_ranking() -> None:
+    config = yaml.safe_load(
+        (ROOT / "configs" / "checkpoint03c3.yaml").read_text(encoding="utf-8")
+    )
+    oof = pd.read_csv(ROOT / "reports" / "checkpoint_03c2" / "oof_predictions.csv")
+    predictions = build_finalist_ensemble_predictions(oof, config)
+    _, _, robustness, _ = summarize_finalist_ensemble_results(predictions, config)
+
+    assert robustness.iloc[0]["candidate"] == "E123_equal_top3"
+    assert robustness.iloc[1]["candidate"] == "E13_PLS_CatBoost"
+    top = robustness.set_index("candidate")
+    assert np.isclose(
+        top.loc["E123_equal_top3", "grouped_oof_rmse"],
+        0.7480856805730625,
+    )
+    assert np.isclose(
+        top.loc["E13_PLS_CatBoost", "state_oof_rmse"],
+        0.5082146167422403,
+    )
