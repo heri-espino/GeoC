@@ -1,7 +1,7 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A/03B/03C.1 closed; 03C.2 next  
-**Current phase:** 03C.2 — Controlled model-family comparison  
+**Status:** In progress — 03A/03B/03C.1 closed; 03C.2 implementation ready  
+**Current phase:** 03C.2 — Competition-only nested model benchmark; workstation run pending  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -205,7 +205,7 @@ B7 = fold-local discovered-expression augmentation
 - RBF kernel;
 - PCA/PLS variants fitted inside folds.
 
-The workstation 03C.1 run passed. Read `reports/checkpoint_03c/README.md` and `representation_summary.csv`. Clean B7 is strongest for ExtraTrees across both protocols; competition B1/B7 are the strongest ExtraTrees robustness candidates; empirical-only B2 is consistently weak. CHIRPS remains excluded pending QC.
+The workstation 03C.1 run passed. Historical clean results remain documented, but **03C.2 and all subsequent active modeling use competition only**. Read `reports/checkpoint_03c/README.md` for the evidence that motivated C0/C1/C2/C3. CHIRPS remains excluded pending QC.
 
 Because only 138 targets are observed, later searches should remain disciplined.
 
