@@ -1034,12 +1034,16 @@ def summarize_stacking_results(
             outer_metrics["protocol"].eq(protocol)
             & outer_metrics["meta_model"].eq(meta_model)
         ]
+        yield_mean = float(pd.to_numeric(subset["observed"], errors="raise").mean())
         protocol_rows.append(
             {
                 "protocol": str(protocol),
                 "meta_model": str(meta_model),
                 "oof_rmse": metrics["rmse"],
+                "oof_rmse_kg_ha": 1_000.0 * metrics["rmse"],
+                "oof_nrmse_pct": 100.0 * metrics["rmse"] / yield_mean,
                 "oof_mae": metrics["mae"],
+                "oof_mae_kg_ha": 1_000.0 * metrics["mae"],
                 "oof_r2": metrics["r2"],
                 "fold_rmse_mean": float(fold_subset["rmse"].mean()),
                 "fold_rmse_std": float(fold_subset["rmse"].std(ddof=1)),
@@ -1081,6 +1085,9 @@ def summarize_stacking_results(
     robustness["protocol_gap"] = (
         robustness["state_oof_rmse"] - robustness["grouped_oof_rmse"]
     ).abs()
+    robustness["worst_protocol_rmse_kg_ha"] = (
+        1_000.0 * robustness["worst_protocol_rmse"]
+    )
     robustness = robustness.sort_values(
         ["worst_protocol_rmse", "mean_oof_rmse", "meta_model"],
         kind="stable",
