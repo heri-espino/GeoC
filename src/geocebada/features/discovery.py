@@ -322,3 +322,90 @@ class FoldLocalExpressionMiner(BaseEstimator, TransformerMixin):
                 }
             )
         return pd.DataFrame(rows)
+
+
+class FoldLocalExpressionAugmenter(BaseEstimator, TransformerMixin):
+    """Append fold-local discovered expressions to a numeric feature DataFrame.
+
+    The wrapped FoldLocalExpressionMiner is fitted only when this transformer is fitted.
+    When placed as the first step of a scikit-learn pipeline, every outer-fold clone learns
+    expressions from that fold's training rows only.
+    """
+
+    def __init__(
+        self,
+        primitive_columns: tuple[str, ...],
+        *,
+        top_primitives: int = 12,
+        top_expressions: int = 20,
+        operations: tuple[str, ...] = (
+            "product",
+            "difference",
+            "sum",
+            "safe_ratio",
+            "symmetric_change",
+        ),
+        epsilon: float = 1.0e-6,
+    ) -> None:
+        self.primitive_columns = primitive_columns
+        self.top_primitives = top_primitives
+        self.top_expressions = top_expressions
+        self.operations = operations
+        self.epsilon = epsilon
+
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: pd.Series | np.ndarray,
+    ) -> FoldLocalExpressionAugmenter:
+        """Fit the wrapped expression miner on the current training rows."""
+
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError("FoldLocalExpressionAugmenter requires a pandas DataFrame.")
+        miner = FoldLocalExpressionMiner(
+            tuple(self.primitive_columns),
+            top_primitives=int(self.top_primitives),
+            top_expressions=int(self.top_expressions),
+            operations=tuple(self.operations),
+            epsilon=float(self.epsilon),
+        )
+        miner.fit(X, y)
+        self.miner_ = miner
+        self.input_columns_ = tuple(map(str, X.columns))
+        self.feature_names_out_ = tuple(
+            [*self.input_columns_, *miner.get_feature_names_out().tolist()]
+        )
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Append expressions learned by the corresponding fitted miner."""
+
+        check_is_fitted(self, attributes=["miner_", "input_columns_"])
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError("FoldLocalExpressionAugmenter requires a pandas DataFrame.")
+        missing = sorted(set(self.input_columns_).difference(X.columns))
+        if missing:
+            raise KeyError(f"Augmenter input column(s) missing: {missing[:10]}")
+
+        base = X.loc[:, list(self.input_columns_)].copy()
+        discovered = self.miner_.transform(base)
+        overlap = sorted(set(base.columns) & set(discovered.columns))
+        if overlap:
+            raise ValueError(f"Discovered feature name collision: {overlap[:10]}")
+        return pd.concat([base, discovered], axis=1)
+
+    def get_feature_names_out(
+        self,
+        input_features: Any | None = None,
+    ) -> np.ndarray:
+        """Return original plus discovered feature names after fitting."""
+
+        del input_features
+        check_is_fitted(self, attributes=["feature_names_out_"])
+        return np.asarray(self.feature_names_out_, dtype=object)
+
+    def discovery_report(self) -> pd.DataFrame:
+        """Return the wrapped miner selected formulas after fitting."""
+
+        check_is_fitted(self, attributes=["miner_"])
+        return self.miner_.discovery_report()

@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 and 03B Empirical Feature Discovery are closed. Checkpoint 03C model comparison is next.
+**Current phase:** Checkpoint 03 is open; 03A, 03B and 03C.1 are closed. Checkpoint 03C.2 controlled model-family comparison is next.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -163,6 +163,31 @@ Train-versus-prediction screening flagged only 6/1401 numeric features under the
 descriptive shift/support thresholds. These X-only diagnostics are not labels and must not be
 used as a hidden-test tuning target.
 
+## Checkpoint 03C.1 representation benchmark
+
+Implementation is on the current 03C branch and should be run with:
+
+```text
+python tools/run_checkpoint_03c.py
+```
+
+It evaluates both `clean` and `competition` tracks with:
+
+```text
+B0 base
+B1 agronomic only
+B2 empirical only
+B3 base + agronomic
+B4 base + empirical
+B5 base + agronomic + empirical
+B7 B5 + fold-local discovered expressions
+```
+
+using fixed Ridge10 and ExtraTrees under both frozen Checkpoint 02 protocols. CHIRPS is
+excluded pending QC. The run reports pooled OOF metrics as well as mean-fold metrics and
+does not score the 59 hidden-target parcels. Broad tuning/CatBoost/kernels/PCA/PLS belong to
+03C.2 after these representation results are reviewed.
+
 ## Modeling rules for Checkpoint 03
 
 Reuse `reports/checkpoint_02/cv_folds.csv`.
@@ -221,4 +246,4 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
 ## Immediate next action
 
-Start Checkpoint 03C. Compare source, agronomic and empirical representations under both frozen validation protocols; include fold-local discovered-expression augmentation as a separate leakage-safe representation. Read `reports/checkpoint_03b/README.md` before interpreting the discovered motifs.
+Start Checkpoint 03C.2 using the compact candidate set documented in `reports/checkpoint_03c/README.md`: B0 base control, B1 agronomic-only, B7 all + fold-local discovery, plus a new base + agronomic + fold-local-discovery ablation that omits the deterministic empirical-only block. Tune only inside each outer training fold. Do not generate the 59 final predictions yet.

@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phases 03A and 03B are closed; start from 03C — model/representation comparison.
+**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1 are closed. Checkpoint 03C.2 controlled model-family comparison is next.
 
 ---
 
@@ -20,14 +20,15 @@ Read in this order before substantial work:
 3. `docs/PROJECT_HISTORY.md` — what happened and why.
 4. `checkpoints/01_data/README.md` — closed data-foundation milestone.
 5. `checkpoints/02_features/README.md` — closed feature/validation milestone.
-6. `checkpoints/03_modeling/README.md` — 03A/03B closed; 03C current modeling milestone.
+6. `checkpoints/03_modeling/README.md` — 03A/03B/03C.1 closed; 03C.2 current modeling milestone.
 7. `checkpoints/03b_empirical_feature_discovery/README.md` — closed empirical-discovery contract.
-8. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md` and `data/processed/empirical_features_v1/README.md` — canonical representations.
-9. `reports/checkpoint_02/checkpoint_02_report.md` — frozen diagnostics/baselines/folds.
-10. `docs/AGRONOMIC_FEATURES_V1.md` and `docs/EMPIRICAL_FEATURES_V1.md` before changing derived variables.
-11. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `docs/FEATURE_TABLE_V1.md`.
-12. `docs/FUNCTION_INDEX.md` before adding reusable code.
-13. `app/AGENTS.md` before touching Streamlit/deployment.
+8. `checkpoints/03c_representation_benchmark/README.md` and `reports/checkpoint_03c/README.md` — closed representation benchmark and interpretation.
+9. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md` and `data/processed/empirical_features_v1/README.md` — canonical representations.
+10. `reports/checkpoint_02/checkpoint_02_report.md` — frozen diagnostics/baselines/folds.
+11. `docs/AGRONOMIC_FEATURES_V1.md` and `docs/EMPIRICAL_FEATURES_V1.md` before changing derived variables.
+12. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md`, `docs/FEATURE_TABLE_V1.md`.
+13. `docs/FUNCTION_INDEX.md` before adding reusable code.
+14. `app/AGENTS.md` before touching Streamlit/deployment.
 
 Do not start by re-deriving facts from scratch unless a source changed or a validation check
 fails.
@@ -523,8 +524,7 @@ final predictions look plausible.
 
 Checkpoints 03A and 03B are closed. Do not recreate or target-select canonical materialized features outside CV.
 
-03C should compare the following representations under both frozen validation protocols before
-heavy tuning:
+03C.1 is closed. It compared:
 
 ```text
 B0 = Feature Table v1
@@ -533,11 +533,31 @@ B2 = Empirical Features v1 only
 B3 = base + agronomic
 B4 = base + empirical
 B5 = base + agronomic + empirical
-B6 = reduced/selected representation
 B7 = fold-local discovered-expression augmentation
 ```
 
-Good candidate model families:
+Key evidence from the workstation run:
+
+```text
+ExtraTrees clean:
+  state OOF RMSE   B7 0.4948 vs B0 0.5119
+  grouped OOF RMSE B7 0.8488 vs B0 0.9431
+
+ExtraTrees competition:
+  state OOF RMSE   B7 0.4992 vs B0 0.5003
+  grouped OOF RMSE B1 0.8590 vs B0 0.8974
+
+Empirical-only B2 is consistently weak.
+Blind B5 concatenation is not consistently beneficial.
+```
+
+Read `reports/checkpoint_03c/README.md` before designing 03C.2.
+
+03C.2 should carry a small representation set: B0 control, B1 agronomic-only, B7 all +
+fold-local discovery, and a new base + agronomic + fold-local-discovery ablation that omits the
+deterministic empirical-only block.
+
+03C.2 candidate model families include:
 
 - CatBoost;
 - Ridge/ElasticNet with tuned regularization;

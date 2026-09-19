@@ -5,7 +5,7 @@ validated, and what remains open so future collaborators and AI agents do not re
 silently overwrite earlier decisions.
 
 **Last updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A and 03B are closed. 03C model comparison is next.
+**Current phase:** Checkpoint 03 is open; 03A/03B/03C.1 are closed. 03C.2 controlled model-family comparison is next.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
@@ -518,6 +518,45 @@ Checkpoint 03B closed after the workstation run passed. The fold-local audit sel
 
 ---
 
+## 2026-09-18 — Checkpoint 03C.1: Representation benchmark
+
+03C.1 compared seven feature representations in both clean and competition tracks under the
+exact frozen Checkpoint 02 state-stratified and municipality-grouped folds. To isolate
+representation effects, only fixed Ridge10 and ExtraTrees baselines were used.
+
+The workstation run completed 280 outer fits and produced 7,728 out-of-fold predictions.
+CHIRPS remained excluded pending QC; no hidden prediction target was used.
+
+Key OOF RMSE findings:
+
+```text
+ExtraTrees clean:
+  state:   B7 discovery 0.4948 vs B0 base 0.5119
+  grouped: B7 discovery 0.8488 vs B0 base 0.9431
+
+ExtraTrees competition:
+  state:   B7 discovery 0.4992 vs B0 base 0.5003
+  grouped: B1 agronomic 0.8590 vs B0 base 0.8974
+
+Ridge10 competition grouped:
+  B0 base 0.8059
+```
+
+Interpretation:
+
+- agronomic-only features preserve substantial signal with much lower dimensionality;
+- empirical-only features are consistently weak as a standalone representation;
+- concatenating every deterministic feature is not reliably beneficial;
+- fold-local expression discovery can improve tree models, especially in the clean track;
+- fixed Ridge is highly representation-sensitive, motivating nested regularization tuning.
+
+03C.2 should therefore use a compact candidate set rather than carry all seven representations:
+B0 base, B1 agronomic-only, B7 all+discovery, and a new base+agronomic+discovery ablation that
+removes the deterministic empirical-only block.
+
+Full interpretation is in `reports/checkpoint_03c/README.md`.
+
+---
 ## Current state after Checkpoint 03B
 
 Completed:

@@ -5,7 +5,10 @@ from geocebada.features.agronomic import (
     join_agronomic_features,
     validate_agronomic_feature_layer,
 )
-from geocebada.features.discovery import FoldLocalExpressionMiner
+from geocebada.features.discovery import (
+    FoldLocalExpressionAugmenter,
+    FoldLocalExpressionMiner,
+)
 from geocebada.features.empirical import (
     build_empirical_feature_layer,
     join_empirical_features,
@@ -40,6 +43,7 @@ from geocebada.features.temporal import (
 )
 
 __all__ = [
+    "FoldLocalExpressionAugmenter",
     "FoldLocalExpressionMiner",
     "build_empirical_feature_layer",
     "join_empirical_features",

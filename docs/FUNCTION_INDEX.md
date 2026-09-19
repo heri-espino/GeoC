@@ -25,6 +25,12 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `load_yield_split` | function | `geocebada.data.targets` | Load the official parcel target/split table. | `src/geocebada/data/targets.py` |
 | `partition_yield_split` | function | `geocebada.data.targets` | Return independent training and prediction DataFrames. | `src/geocebada/data/targets.py` |
 | `validate_yield_split` | function | `geocebada.data.targets` | Validate the known invariants of the official 70/30 split. | `src/geocebada/data/targets.py` |
+| `RepresentationSpec` | class | `geocebada.evaluation.checkpoint03c` | One track-specific feature representation used in Checkpoint 03C. | `src/geocebada/evaluation/checkpoint03c.py` |
+| `build_layer_feature_catalog` | function | `geocebada.evaluation.checkpoint03c` | Build one cross-layer feature catalog with mode and numeric availability. | `src/geocebada/evaluation/checkpoint03c.py` |
+| `build_representation_specs` | function | `geocebada.evaluation.checkpoint03c` | Resolve configured 03C representations into exact numeric feature lists. | `src/geocebada/evaluation/checkpoint03c.py` |
+| `evaluate_representation_benchmark` | function | `geocebada.evaluation.checkpoint03c` | Evaluate representations on frozen folds and return scores, OOF rows and discovery logs. | `src/geocebada/evaluation/checkpoint03c.py` |
+| `make_representation_estimator` | function | `geocebada.evaluation.checkpoint03c` | Create one fixed baseline pipeline for representation comparison. | `src/geocebada/evaluation/checkpoint03c.py` |
+| `summarize_representation_benchmark` | function | `geocebada.evaluation.checkpoint03c` | Summarize mean-fold and parcel-weighted OOF metrics for each experiment. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
@@ -43,6 +49,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `join_agronomic_features` | function | `geocebada.features.agronomic` | Join the additive agronomic layer after exact parcel-coverage validation. | `src/geocebada/features/agronomic.py` |
 | `validate_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Validate one-to-one parcel coverage and numeric derived features. | `src/geocebada/features/agronomic.py` |
 | `ExpressionSpec` | class | `geocebada.features.discovery` | One selected two-variable expression. | `src/geocebada/features/discovery.py` |
+| `FoldLocalExpressionAugmenter` | class | `geocebada.features.discovery` | Append fold-local discovered expressions to a numeric feature DataFrame. | `src/geocebada/features/discovery.py` |
 | `FoldLocalExpressionMiner` | class | `geocebada.features.discovery` | Select simple target-associated expressions using training data only. | `src/geocebada/features/discovery.py` |
 | `EmpiricalFeatureRecord` | class | `geocebada.features.empirical` | Machine-readable provenance for one deterministic empirical feature. | `src/geocebada/features/empirical.py` |
 | `build_empirical_feature_layer` | function | `geocebada.features.empirical` | Build deterministic target-free empirical features for all parcels. | `src/geocebada/features/empirical.py` |
