@@ -1,0 +1,49 @@
+{
+  "active_track": "competition",
+  "catboost_task_type_final": "GPU",
+  "chirps_excluded": true,
+  "clean_track_evaluated": false,
+  "discovery_rows": 2800,
+  "final_model_selected": false,
+  "final_predictions_generated": false,
+  "generated_at": "2026-09-19T07:39:04.238077+00:00",
+  "git_commit": "e441e882683d6f376dbe95283ee09e8e02839012",
+  "hidden_prediction_targets_used": false,
+  "inner_candidate_rows": 1640,
+  "inner_folds": 3,
+  "models": [
+    "Ridge",
+    "ElasticNet",
+    "ExtraTrees",
+    "CatBoost",
+    "PLS",
+    "PCA_RBF",
+    "PCA_Poly2"
+  ],
+  "oof_prediction_rows": 7728,
+  "outer_fits": 280,
+  "prediction_rows_scored": 0,
+  "protocols": [
+    "fold_state_stratified",
+    "fold_municipality_grouped"
+  ],
+  "representations": [
+    "C0_base",
+    "C1_agronomic",
+    "C2_all_plus_discovery",
+    "C3_base_agro_plus_discovery"
+  ],
+  "schema_version": 1,
+  "source_sha256": {
+    "agronomic_manifest": "29f4e5cb6e661a0f1078da1dec03ece20336a96eea154e40929aed8db21dcaed",
+    "agronomic_table": "5a8fbf3daea5dd628ee12d68c35374e0595030dab14426e826a27fd0b2f6b1f6",
+    "base_manifest": "1eede316381c86d72a033cff2fa5e9772bac3d0c7dc11c830054610cdb5043f8",
+    "base_table": "bf27e28f01f1765319f5c9d60af3786039ebf0c93ba550d31f7e5ad917b03984",
+    "empirical_manifest": "f3bea38f80ddc47167d3e36ea6d7ac31d0df93e62d78ecd90a653e4a81d5a943",
+    "empirical_table": "f2c3ebd33bb42e19d58b5966936231141e1239cf347927bf74f4c3057d47fc03",
+    "frozen_folds": "0b332c65b036dbe09c9d67695d4b627e09043df6a939311161b4db40ac86cf1c"
+  },
+  "stage": "competition_model_family_benchmark",
+  "total_rows": 197,
+  "training_rows": 138
+}

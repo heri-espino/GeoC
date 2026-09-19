@@ -1,0 +1,182 @@
+schema_version: 1
+updated: 2026-09-18
+
+scope:
+  active_track: competition
+  clean_track_enabled: false
+  policy: >
+    From Checkpoint 03C.2 onward, model development uses only the competition
+    feature track. Clean remains historical/diagnostic and is not evaluated.
+
+inputs:
+  base_directory: data/processed/features_v1
+  base_table: parcel_features_all.csv
+  base_manifest: feature_manifest.json
+  agronomic_directory: data/processed/agronomic_features_v1
+  agronomic_table: parcel_agronomic_features.csv
+  agronomic_manifest: feature_manifest.json
+  empirical_directory: data/processed/empirical_features_v1
+  empirical_table: parcel_empirical_features.csv
+  empirical_manifest: feature_manifest.json
+  empirical_config: configs/empirical_features_v1.yaml
+  frozen_folds: reports/checkpoint_02/cv_folds.csv
+
+outputs:
+  directory: reports/checkpoint_03c2
+  representation_manifest: representation_manifest.json
+  outer_fold_metrics: outer_fold_metrics.csv
+  oof_predictions: oof_predictions.csv
+  inner_search_results: inner_search_results.csv
+  discovery_by_outer_fold: discovery_by_outer_fold.csv
+  protocol_summary: protocol_summary.csv
+  robustness_summary: robustness_summary.csv
+  run_report_json: checkpoint_03c2_report.json
+  run_report_markdown: checkpoint_03c2_report.md
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  state_column: meta_estado
+  municipality_column: meta_municipio
+
+validation:
+  outer_protocols:
+    - fold_state_stratified
+    - fold_municipality_grouped
+  outer_folds: 5
+  inner_folds: 3
+  random_state: 42
+  inner_policy:
+    fold_state_stratified: stratified_by_state
+    fold_municipality_grouped: group_by_municipality
+  note: >
+    Outer folds are the frozen Checkpoint 02 assignments. Hyperparameters,
+    PCA/PLS and target-aware discovery are fitted only inside each outer
+    training fold through inner CV.
+
+feature_policy:
+  numeric_only: true
+  competition_includes_clean: true
+  exclude_sources:
+    - external_chirps_daily
+  exclude_columns: []
+  note: >
+    Competition means clean + competition-mode predictors. CHIRPS remains
+    excluded pending QC.
+
+representations:
+  C0_base:
+    layers: [base]
+    discovery: false
+    description: Competition Feature Table v1 control.
+  C1_agronomic:
+    layers: [agronomic]
+    discovery: false
+    description: Compact agronomic nonlinear representation.
+  C2_all_plus_discovery:
+    layers: [base, agronomic, empirical]
+    discovery: true
+    description: >
+      Full deterministic stack plus fold-local discovered expressions.
+  C3_base_agro_plus_discovery:
+    layers: [base, agronomic]
+    discovery: true
+    discovery_support_layers: [empirical]
+    description: >
+      Base + agronomic features plus the small configured empirical primitive
+      support set required by fold-local discovery; omits the rest of the
+      deterministic empirical block.
+
+models:
+  Ridge:
+    kind: ridge
+    candidates:
+      - {alpha: 0.1}
+      - {alpha: 1.0}
+      - {alpha: 10.0}
+      - {alpha: 100.0}
+      - {alpha: 1000.0}
+      - {alpha: 10000.0}
+
+  ElasticNet:
+    kind: elastic_net
+    candidates:
+      - {alpha: 0.001, l1_ratio: 0.10}
+      - {alpha: 0.01, l1_ratio: 0.10}
+      - {alpha: 0.01, l1_ratio: 0.50}
+      - {alpha: 0.10, l1_ratio: 0.50}
+      - {alpha: 0.10, l1_ratio: 0.90}
+      - {alpha: 1.00, l1_ratio: 0.90}
+
+  ExtraTrees:
+    kind: extra_trees
+    fixed:
+      n_estimators: 400
+      max_depth: null
+    candidates:
+      - {min_samples_leaf: 2, max_features: sqrt}
+      - {min_samples_leaf: 3, max_features: sqrt}
+      - {min_samples_leaf: 5, max_features: sqrt}
+      - {min_samples_leaf: 2, max_features: 0.30}
+      - {min_samples_leaf: 3, max_features: 0.30}
+      - {min_samples_leaf: 5, max_features: 0.30}
+
+  CatBoost:
+    kind: catboost
+    fixed:
+      iterations: 400
+      loss_function: RMSE
+      verbose: false
+      allow_writing_files: false
+    candidates:
+      - {depth: 4, learning_rate: 0.03, l2_leaf_reg: 3.0}
+      - {depth: 4, learning_rate: 0.06, l2_leaf_reg: 6.0}
+      - {depth: 5, learning_rate: 0.03, l2_leaf_reg: 10.0}
+      - {depth: 5, learning_rate: 0.06, l2_leaf_reg: 3.0}
+      - {depth: 6, learning_rate: 0.03, l2_leaf_reg: 6.0}
+      - {depth: 6, learning_rate: 0.06, l2_leaf_reg: 10.0}
+
+  PLS:
+    kind: pls
+    candidates:
+      - {n_components: 2}
+      - {n_components: 4}
+      - {n_components: 8}
+      - {n_components: 12}
+      - {n_components: 20}
+
+  PCA_RBF:
+    kind: pca_kernel_rbf
+    candidates:
+      - {n_components: 8, alpha: 1.0, gamma: 0.10}
+      - {n_components: 16, alpha: 1.0, gamma: 0.05}
+      - {n_components: 24, alpha: 1.0, gamma: 0.02}
+      - {n_components: 16, alpha: 0.1, gamma: 0.05}
+      - {n_components: 16, alpha: 10.0, gamma: 0.05}
+      - {n_components: 24, alpha: 1.0, gamma: 0.10}
+
+  PCA_Poly2:
+    kind: pca_kernel_poly2
+    candidates:
+      - {n_components: 8, alpha: 1.0, gamma: 0.10}
+      - {n_components: 16, alpha: 1.0, gamma: 0.05}
+      - {n_components: 24, alpha: 1.0, gamma: 0.02}
+      - {n_components: 16, alpha: 0.1, gamma: 0.05}
+      - {n_components: 16, alpha: 10.0, gamma: 0.05}
+      - {n_components: 24, alpha: 1.0, gamma: 0.10}
+
+runtime:
+  search_n_jobs: 1
+  catboost_task_type: GPU
+  catboost_devices: "0"
+  catboost_allow_cpu_fallback: false
+  progress: true
+
+stage:
+  name: competition_model_family_benchmark
+  no_final_prediction: true
+  purpose: >
+    Compare controlled model families with nested tuning on competition-only
+    representations after 03C.1 narrowed the feature spaces.
