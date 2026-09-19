@@ -42,6 +42,12 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `build_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Build the additive agronomic nonlinear feature layer. | `src/geocebada/features/agronomic.py` |
 | `join_agronomic_features` | function | `geocebada.features.agronomic` | Join the additive agronomic layer after exact parcel-coverage validation. | `src/geocebada/features/agronomic.py` |
 | `validate_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Validate one-to-one parcel coverage and numeric derived features. | `src/geocebada/features/agronomic.py` |
+| `ExpressionSpec` | class | `geocebada.features.discovery` | One selected two-variable expression. | `src/geocebada/features/discovery.py` |
+| `FoldLocalExpressionMiner` | class | `geocebada.features.discovery` | Select simple target-associated expressions using training data only. | `src/geocebada/features/discovery.py` |
+| `EmpiricalFeatureRecord` | class | `geocebada.features.empirical` | Machine-readable provenance for one deterministic empirical feature. | `src/geocebada/features/empirical.py` |
+| `build_empirical_feature_layer` | function | `geocebada.features.empirical` | Build deterministic target-free empirical features for all parcels. | `src/geocebada/features/empirical.py` |
+| `join_empirical_features` | function | `geocebada.features.empirical` | Join the empirical layer after exact parcel-coverage validation. | `src/geocebada/features/empirical.py` |
+| `validate_empirical_feature_layer` | function | `geocebada.features.empirical` | Validate one-to-one coverage and numeric empirical predictors. | `src/geocebada/features/empirical.py` |
 | `FeatureRecipe` | class | `geocebada.features.interactive` | Declarative recipe for one grouped feature derived from a source column. | `src/geocebada/features/interactive.py` |
 | `apply_feature_recipe` | function | `geocebada.features.interactive` | Apply a feature recipe and return one row per group with the new feature. | `src/geocebada/features/interactive.py` |
 | `feature_recipe_to_dict` | function | `geocebada.features.interactive` | Serialize a feature recipe into a plain dictionary for YAML/JSON storage. | `src/geocebada/features/interactive.py` |

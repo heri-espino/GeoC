@@ -9,8 +9,8 @@ These instructions apply repository-wide unless a more specific handoff adds con
 3. `docs/PROJECT_HISTORY.md` — chronological record of what happened and why.
 4. `README.md`.
 5. `checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` — completed milestones.
-6. `checkpoints/03_modeling/README.md` — 03A closed; 03B current phase.
-7. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md`, `docs/AGRONOMIC_FEATURES_V1.md` and `reports/checkpoint_02/checkpoint_02_report.md` before modeling.
+6. `checkpoints/03_modeling/README.md` and `checkpoints/03b_empirical_feature_discovery/README.md` — 03A/03B closed; 03C current phase.
+7. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md`, `data/processed/empirical_features_v1/README.md`, `docs/AGRONOMIC_FEATURES_V1.md`, `docs/EMPIRICAL_FEATURES_V1.md` and `reports/checkpoint_02/checkpoint_02_report.md` before modeling.
 8. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before data/feature changes.
 9. `data/.ai_handoff` and `data/README.md` for data/geospatial work.
 10. `docs/VARIABLES.md` for the source-backed variable dictionary.
@@ -18,7 +18,7 @@ These instructions apply repository-wide unless a more specific handoff adds con
 12. relevant official/reference material under `docs/`.
 13. **`app/AGENTS.md` before any Streamlit/app/deployment change**.
 
-Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoint 01, Checkpoint 02 and Checkpoint 03A are closed; do not redo them unless source/code changes invalidate a check. The current phase is Checkpoint 03B — model/representation comparison.
+Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoints 01, 02, 03A and 03B are closed. The current phase is Checkpoint 03C — model/representation comparison.
 
 ## Core invariants
 
@@ -28,7 +28,7 @@ Do not replace confirmed project facts with guesses or generic ML assumptions. C
 - The target corresponds to the **April–October 2025 production cycle**.
 - Hidden prediction targets are never pseudo-ground-truth.
 - `data/source/` and `docs/official/` are immutable source evidence.
-- Generated data belongs in `data/raw/`, `data/interim/` or `data/processed/`; the canonical `data/processed/features_v1/` and `data/processed/agronomic_features_v1/` artifacts are intentionally versioned, while other raw/interim/processed outputs remain ignored unless explicitly promoted.
+- Generated data belongs in `data/raw/`, `data/interim/` or `data/processed/`; the canonical `data/processed/features_v1/`, `data/processed/agronomic_features_v1/` and `data/processed/empirical_features_v1/` artifacts are intentionally versioned, while other raw/interim/processed outputs remain ignored unless explicitly promoted.
 - Models belong in `models/`; metrics/figures/predictions in `reports/`.
 - Stable production/reusable logic belongs in `src/geocebada/`; notebooks are exploratory.
 
@@ -58,6 +58,18 @@ python tools/generate_function_index.py
 ```
 
 Public reusable functions should have docstrings, type hints and tests when stable. Export commonly used symbols through the relevant `__init__.py`.
+
+## Checkpoint 03B discovery rule
+
+The materialized Empirical Features v1 layer must remain target-free. Deterministic row-wise
+X transforms may be built once for all 197 parcels.
+
+Any target-aware formula search must be fitted inside training folds. Use
+`FoldLocalExpressionMiner` or an equivalently leakage-safe pipeline; never discover formulas
+from all 138 labels and then report the frozen CV as if those formulas had been pre-specified.
+
+PCA, clustering, kernels and other learned representations are not global processed features;
+fit them inside folds during Checkpoint 03C.
 
 ## Streamlit maintenance rule
 

@@ -48,6 +48,15 @@ venv/
 !/data/processed/agronomic_features_v1/build_report.json
 !/data/processed/agronomic_features_v1/README.md
 
+# Empirical Features v1 is the deterministic X-only portion of Checkpoint 03B.
+# Target-aware expression discovery is fold-local and is never committed as a
+# global processed table.
+!/data/processed/empirical_features_v1/
+!/data/processed/empirical_features_v1/parcel_empirical_features.csv
+!/data/processed/empirical_features_v1/feature_manifest.json
+!/data/processed/empirical_features_v1/build_report.json
+!/data/processed/empirical_features_v1/README.md
+
 # Trained models / artifacts
 /models/*
 !/models/.gitkeep

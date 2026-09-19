@@ -5,7 +5,7 @@ validated, and what remains open so future collaborators and AI agents do not re
 silently overwrite earlier decisions.
 
 **Last updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A Agronomic Features v1 is closed and 03B model comparison is next.
+**Current phase:** Checkpoint 03 is open; 03A and 03B are closed. 03C model comparison is next.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
@@ -438,13 +438,87 @@ that source still needs QC.
 No yield value was used to create or select these 350 features. Any future target-guided
 interaction search or feature selection must occur inside training folds.
 
-Phase 03A is therefore closed. Checkpoint 03B will compare base-only, agronomic-only,
-base+agronomic and controlled reduced/selected representations under the frozen
-state-stratified and municipality-grouped folds.
+Phase 03A is therefore closed. Its output feeds the separate 03B empirical-discovery phase before model comparison.
 
 ---
 
-## Current state after Checkpoint 03A
+## 2026-09-18 — Checkpoint 03B: Empirical Feature Discovery
+
+Before model comparison, the project inserted a second feature-discovery phase to distinguish
+agronomic hypotheses from mathematical structure learned from the observed covariates.
+
+A third canonical processed layer was added:
+
+```text
+data/processed/empirical_features_v1/
+├── parcel_empirical_features.csv
+├── feature_manifest.json
+├── build_report.json
+└── README.md
+```
+
+The materialized layer is entirely X-only and contains temporal-shape geometry,
+short-baseline historical condition, symmetric 2025-versus-history change,
+Sentinel-2/Planet shape similarity and scale-normalized distribution geometry.
+
+Canonical build:
+
+```text
+197 parcels
+335 derived features
+91 clean
+244 competition
+0.0 mean/max missing fraction
+0 infinite values
+target used for materialized features: false
+supervised formulas materialized globally: false
+short VCI-like is standard VCI: false
+CHIRPS used: false
+```
+
+Family inventory:
+
+```text
+temporal_shape              162
+aggregate_geometry           72
+symmetric_change             42
+short_baseline_condition     41
+sensor_shape_similarity      18
+```
+
+One `emp_histpos__landsat_vi6t__above_history_fraction` candidate was constant across all
+197 parcels and was dropped. This is a property of that representation, not a biological
+conclusion.
+
+The NDVI historical-range normalization is deliberately named
+`emp_vci_like_short__*`. Literature on VCI/TCI/VHI motivated the historical-range idea,
+but the project has only a 2022–2024 parcel-level remote-sensing baseline, so it is not
+reported as standard climatological VCI. Likewise, CWSI was not reconstructed because the
+available temperature fields are air-temperature products rather than the canopy-temperature
+wet/dry reference system required by CWSI.
+
+The target-aware part of 03B is implemented as `FoldLocalExpressionMiner`. It starts from 24
+configured source/agronomic/empirical primitives, ranks primitives and simple pairwise formulas
+using only training-fold yield, then applies the selected formulas to validation rows without
+reading validation targets. Candidate operations are products, sums, oriented differences,
+safe oriented ratios and symmetric relative change.
+
+This controlled search is a first step toward symbolic-regression-style index discovery. A
+candidate formula is not considered a new barley-yield index merely because it correlates with
+training yield; recurrence across independent fold fits and held-out contribution, especially
+under municipality-grouped validation, are required before promoting any formula.
+
+PCA, PLS, clustering and kernels remain fold-fitted model-layer transforms and were not
+materialized globally.
+
+Scientific/methodological context is documented in `docs/EMPIRICAL_FEATURES_V1.md`, with
+references versioned in `docs/references/empirical_features_v1.bib`.
+
+Checkpoint 03B closed after the workstation run passed. The fold-local audit selected 88 unique expressions; seven raw expressions recurred in at least 3/5 folds under both protocols, but they collapse to four conceptual motifs because several are monotone ratio reparameterizations. Interpretation is recorded in `reports/checkpoint_03b/README.md`.
+
+---
+
+## Current state after Checkpoint 03B
 
 Completed:
 
@@ -461,7 +535,9 @@ Completed:
 - feature-family ablations;
 - initial untuned baseline models;
 - versioned Feature Table v1;
-- versioned Agronomic Features v1 with 350 target-free derived variables and scientific provenance.
+- versioned Agronomic Features v1 with 350 target-free derived variables and scientific provenance;
+- versioned Empirical Features v1 with 335 target-free derived variables;
+- fold-local target-aware expression-discovery infrastructure with 24 configured primitives.
 
 Not completed:
 
@@ -473,4 +549,4 @@ Not completed:
 - CHIRPS daily extraction contribution needs QC because only one feature survives;
 - the spatial validation gap needs to drive Checkpoint 03 decisions.
 
-The next milestone is **Checkpoint 03B — model/representation comparison** using the frozen Checkpoint 02 folds.
+The next milestone is **Checkpoint 03C — model/representation comparison** using the frozen Checkpoint 02 folds.

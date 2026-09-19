@@ -1,0 +1,26 @@
+{
+  "expressions_selected_in_3plus_folds_both_protocols": [
+    "reverse_safe_ratio::siap_hist__yield_trend_recent::agro_thermal__2025__gdd_proxy_base5p0c",
+    "reverse_safe_ratio::siap_hist__yield_trend_recent::clim_official_2025__prec__season_sum",
+    "reverse_safe_ratio::soilgrids__soc__depth_weighted_0_30cm::clim_official_2025__prec__season_sum",
+    "safe_ratio::soilgrids__soc__depth_weighted_0_30cm::clim_official_2025__prec__season_sum",
+    "symmetric_change::siap_hist__yield_trend_recent::clim_official_2025__prec__season_sum",
+    "symmetric_change::siap_hist__yield_trend_recent::siap_hist__yield_mean_recent",
+    "symmetric_change::soilgrids__soc__depth_weighted_0_30cm::clim_official_2025__prec__season_sum"
+  ],
+  "folds_per_protocol": 5,
+  "generated_at": "2026-09-18T19:25:30.432937+00:00",
+  "interpretation": "Training-fold recurrence audit only. Do not treat selection frequency or training association as unbiased predictive performance.",
+  "primitive_count": 24,
+  "protocols": [
+    "fold_state_stratified",
+    "fold_municipality_grouped"
+  ],
+  "schema_version": 1,
+  "selection_rows": 200,
+  "top_expressions_per_fit": 20,
+  "top_primitives_per_fit": 12,
+  "training_rows": 138,
+  "unique_expressions": 88,
+  "validation_targets_used_for_discovery_or_reporting": false
+}
