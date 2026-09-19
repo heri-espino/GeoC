@@ -5,7 +5,7 @@ validated, and what remains open so future collaborators and AI agents do not re
 silently overwrite earlier decisions.
 
 **Last updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A and 03B are closed. 03C model comparison is next.
+**Current phase:** Checkpoint 03 is open; 03A/03B are closed. 03C.1 representation benchmark code is ready for workstation execution.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
