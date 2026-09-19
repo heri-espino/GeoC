@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A and 03B are closed. Checkpoint 03C.1 representation benchmarking is implemented and awaiting workstation execution/review.
+**Current phase:** Checkpoint 03 is open; 03A, 03B and 03C.1 are closed. Checkpoint 03C.2 controlled model-family comparison is next.
 
 Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
 only a compact operational summary.
@@ -246,4 +246,4 @@ Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
 
 ## Immediate next action
 
-Run `python tools/run_checkpoint_03c.py` on the workstation. Review `reports/checkpoint_03c/checkpoint_03c_report.md` and `representation_summary.csv`, then use only a small set of representations for 03C.2 model-family tuning. Do not generate the 59 final predictions yet.
+Start Checkpoint 03C.2 using the compact candidate set documented in `reports/checkpoint_03c/README.md`: B0 base control, B1 agronomic-only, B7 all + fold-local discovery, plus a new base + agronomic + fold-local-discovery ablation that omits the deterministic empirical-only block. Tune only inside each outer training fold. Do not generate the 59 final predictions yet.
