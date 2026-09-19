@@ -1,0 +1,117 @@
+schema_version: 1
+updated: 2026-09-18
+
+inputs:
+  base_directory: data/processed/features_v1
+  base_table: parcel_features_all.csv
+  base_manifest: feature_manifest.json
+  agronomic_directory: data/processed/agronomic_features_v1
+  agronomic_table: parcel_agronomic_features.csv
+  agronomic_manifest: feature_manifest.json
+  empirical_directory: data/processed/empirical_features_v1
+  empirical_table: parcel_empirical_features.csv
+  empirical_manifest: feature_manifest.json
+  empirical_config: configs/empirical_features_v1.yaml
+  frozen_folds: reports/checkpoint_02/cv_folds.csv
+
+outputs:
+  directory: reports/checkpoint_03c
+  representation_manifest: representation_manifest.json
+  fold_metrics: representation_fold_metrics.csv
+  summary_metrics: representation_summary.csv
+  oof_predictions: representation_oof_predictions.csv
+  discovery_by_fold: discovery_by_outer_fold.csv
+  run_report_json: checkpoint_03c_report.json
+  run_report_markdown: checkpoint_03c_report.md
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+
+validation:
+  protocols:
+    - fold_state_stratified
+    - fold_municipality_grouped
+  n_splits: 5
+  random_state: 42
+  policy: >
+    Reuse the exact frozen Checkpoint 02 folds. Never regenerate folds because
+    one representation or model performs poorly. Report both mean fold metrics
+    and parcel-weighted OOF metrics because municipality-grouped folds are very
+    unequal in size.
+
+feature_policy:
+  numeric_only: true
+  competition_includes_clean: true
+  exclude_sources:
+    - external_chirps_daily
+  exclude_columns: []
+  note: >
+    CHIRPS remains excluded pending QC. Clean uses only mode=clean parents.
+    Competition uses clean plus competition-mode parents.
+
+tracks:
+  - clean
+  - competition
+
+representations:
+  B0_base:
+    layers: [base]
+    discovery: false
+    description: Source-derived Feature Table v1 only.
+  B1_agronomic:
+    layers: [agronomic]
+    discovery: false
+    description: Explicit agronomic nonlinear features only.
+  B2_empirical:
+    layers: [empirical]
+    discovery: false
+    description: Deterministic empirical X-only features only.
+  B3_base_plus_agronomic:
+    layers: [base, agronomic]
+    discovery: false
+    description: Source-derived plus agronomic features.
+  B4_base_plus_empirical:
+    layers: [base, empirical]
+    discovery: false
+    description: Source-derived plus empirical features.
+  B5_all:
+    layers: [base, agronomic, empirical]
+    discovery: false
+    description: Source-derived plus agronomic plus empirical features.
+  B7_all_plus_discovery:
+    layers: [base, agronomic, empirical]
+    discovery: true
+    description: >
+      B5 plus target-aware expressions learned only inside each outer training
+      fold through FoldLocalExpressionAugmenter.
+
+models:
+  Ridge10:
+    kind: ridge
+    alpha: 10.0
+  ExtraTrees:
+    kind: extra_trees
+    n_estimators: 300
+    min_samples_leaf: 3
+    max_features: sqrt
+
+discovery:
+  source_config: configs/empirical_features_v1.yaml
+  policy: >
+    For each track, use only configured primitives whose provenance mode is
+    available in that track. The augmenter is fitted as part of the estimator
+    pipeline on each outer training fold, then applied to the held-out fold.
+
+stage:
+  name: representation_benchmark
+  purpose: >
+    Isolate representation effects before hyperparameter tuning by reusing the
+    same two fixed baseline model families as Checkpoint 02.
+  no_final_model_selection: true
+  next_if_successful: >
+    Use the representation results to define Checkpoint 03C.2 model-family and
+    nested tuning experiments, including CatBoost, ElasticNet, kernels and
+    fold-fitted PCA/PLS.
