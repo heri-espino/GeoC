@@ -7,7 +7,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1 are closed. Checkpoint 03C.2 is current and uses only the competition track.
+**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1 are closed. Checkpoint 03C.2 implementation is ready; run the competition-only workstation benchmark next.
 
 ---
 
@@ -256,9 +256,9 @@ data/processed/features_v1/feature_manifest.json
 
 for general Checkpoint 03 experiments.
 
-Use `parcel_features_clean.csv` when running the clean/historical track.
+`parcel_features_clean.csv` is retained only for provenance/history. **Do not use it for active modeling from 03C.2 onward.**
 
-Use `parcel_features_competition.csv` when running the challenge/competition track.
+Use the competition representation (`parcel_features_competition.csv` / manifest-resolved competition features) for all current model development and final challenge prediction.
 
 Validated shapes:
 
@@ -418,7 +418,7 @@ information and contemporaneous outcome proxies.
 `competition` adds rule-permitted 2025/full-season/transductive public information, including
 PRO, target-year climate/WaPOR and SIAP 2025 proxies.
 
-Keep both tracks visible in results. Never quietly merge their interpretation.
+Keep the historical clean/competition distinction documented, but active results from 03C.2 onward are **competition-only**. Do not spend compute re-benchmarking clean unless the project explicitly reopens that question.
 
 The exact operational prediction cutoff is still unresolved. Therefore competition features
 must not be described as a strict prospective forecast.
