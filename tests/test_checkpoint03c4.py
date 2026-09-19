@@ -136,7 +136,11 @@ def _synthetic_inputs() -> tuple[
             },
             "PLS": {
                 "kind": "pls",
-                "candidates": [{"n_components": 1}, {"n_components": 2}],
+                "candidates": [
+                    {"n_components": 1},
+                    {"n_components": 2},
+                    {"n_components": 20},
+                ],
             },
         }
     }
