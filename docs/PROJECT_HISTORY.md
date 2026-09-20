@@ -815,3 +815,37 @@ extrapolation and 34 mixed-support targets.
 04A therefore closes with a target-specific doctrine: use local/spatial evidence aggressively
 where pseudo-competition RMSE validates it, but do not apply the same local trust to every
 target. 04B becomes the active phase.
+
+
+---
+
+## 2026-09-20 — Checkpoint 04B implemented: target-matched pseudo-competition validation
+
+After 04A established strong spatial yield structure, weak global train-target shift and
+heterogeneous parcel-level support, the repository added the first validation layer that
+matches the actual information structure of the fixed 59 targets.
+
+04B hides only y for pseudo-target parcels. All 197 X rows remain available to X-only PCA,
+distance, support and graph construction. Target-aware estimators receive only the pseudo-train
+labels.
+
+The primary split family contains 16 repeated 41-parcel pseudo-target masks. Forty-one is the
+59/197 competition target fraction scaled to the 138-label universe. Mask construction uses
+only state/municipality plus X-derived geographic, agronomic, temporal and adversarial profile
+descriptors and explicitly excludes neighbor-y consistency.
+
+A secondary state-random family and the frozen Checkpoint 02 state-stratified and
+municipality-grouped folds are retained as stress tests.
+
+The lightweight 04B suite compares group means, geographic/agronomic/mixed kNN, transductive
+Ridge, PLS, query-specific local Ridge, graph-Laplacian regression and fixed global/local
+blends. The run also recomputes dynamic X-only support inside every pseudo split and learns
+support-tier method routing for the actual 59 targets without producing their yields.
+
+Workstation command:
+
+```powershell
+python tools\run_checkpoint_04b.py
+```
+
+No 04B numerical conclusions are recorded until that run completes.
