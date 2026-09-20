@@ -1,5 +1,24 @@
 """Model evaluation, validation and diagnostics utilities."""
 
+from geocebada.evaluation.checkpoint04a import (
+    EmbeddingResult,
+    adversarial_train_target_validation,
+    build_checkpoint03_ensemble_residuals,
+    build_monthly_temporal_arrays,
+    build_target_support_profile,
+    build_train_pair_validation,
+    build_transductive_pca_embedding,
+    feature_neighbor_tables,
+    feature_shift_table,
+    geographic_neighbor_tables,
+    haversine_distance_matrix,
+    knn_weight_matrix,
+    morans_i,
+    resolve_numeric_representation_features,
+    summarize_similarity_yield_relationships,
+    temporal_neighbor_tables,
+    temporal_pair_metrics,
+)
 from geocebada.evaluation.checkpoint03c import (
     RepresentationSpec,
     build_layer_feature_catalog,
@@ -41,6 +60,23 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "EmbeddingResult",
+    "adversarial_train_target_validation",
+    "build_checkpoint03_ensemble_residuals",
+    "build_monthly_temporal_arrays",
+    "build_target_support_profile",
+    "build_train_pair_validation",
+    "build_transductive_pca_embedding",
+    "feature_neighbor_tables",
+    "feature_shift_table",
+    "geographic_neighbor_tables",
+    "haversine_distance_matrix",
+    "knn_weight_matrix",
+    "morans_i",
+    "resolve_numeric_representation_features",
+    "summarize_similarity_yield_relationships",
+    "temporal_neighbor_tables",
+    "temporal_pair_metrics",
     "ModelSearchSpec",
     "build_competition_representation_specs",
     "evaluate_nested_model_families",
