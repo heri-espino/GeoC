@@ -1,0 +1,8 @@
+metric,n_pairs,spearman_rho_with_abs_yield_difference,p_value,expected_direction_if_useful
+geo_distance_km,9453,0.488227634110243,0.0,positive
+C1_agronomic__distance,9453,0.21996377498575082,6.190646856784187e-104,positive
+C4_all_deterministic__distance,9453,0.18327064253140987,3.4200054836260183e-72,positive
+C0_base__distance,9453,0.16728840117854393,2.7345380139309455e-60,positive
+temporal_dtw_mean,9453,0.0762622528723343,1.1316565915601043e-13,positive
+temporal_pearson_mean,9453,-0.05029141608992332,9.976097954550941e-07,positive
+temporal_best_lag_corr_mean,9453,-0.04822116874069703,2.7255697862266953e-06,negative

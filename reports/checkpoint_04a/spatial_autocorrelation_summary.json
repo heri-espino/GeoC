@@ -1,0 +1,32 @@
+{
+  "yield": {
+    "morans_i": 0.6797266368243011,
+    "expected_i": -0.0072992700729927005,
+    "permutation_p_value_two_sided": 0.001,
+    "permutations": 999.0
+  },
+  "E13_fold_state_stratified_residual": {
+    "morans_i": -0.04700995494637302,
+    "expected_i": -0.0072992700729927005,
+    "permutation_p_value_two_sided": 0.314,
+    "permutations": 999.0
+  },
+  "E123_fold_state_stratified_residual": {
+    "morans_i": -0.037491455560214874,
+    "expected_i": -0.0072992700729927005,
+    "permutation_p_value_two_sided": 0.429,
+    "permutations": 999.0
+  },
+  "E13_fold_municipality_grouped_residual": {
+    "morans_i": 0.558919523997091,
+    "expected_i": -0.0072992700729927005,
+    "permutation_p_value_two_sided": 0.001,
+    "permutations": 999.0
+  },
+  "E123_fold_municipality_grouped_residual": {
+    "morans_i": 0.5483273334836977,
+    "expected_i": -0.0072992700729927005,
+    "permutation_p_value_two_sided": 0.001,
+    "permutations": 999.0
+  }
+}

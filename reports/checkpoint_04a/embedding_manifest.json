@@ -1,0 +1,20 @@
+[
+  {
+    "representation": "C0_base",
+    "n_features_used": 1397,
+    "n_components": 20,
+    "explained_variance_ratio_sum": 0.7885097570284322
+  },
+  {
+    "representation": "C1_agronomic",
+    "n_features_used": 350,
+    "n_components": 20,
+    "explained_variance_ratio_sum": 0.9030617935699549
+  },
+  {
+    "representation": "C4_all_deterministic",
+    "n_features_used": 2082,
+    "n_components": 20,
+    "explained_variance_ratio_sum": 0.7684479064198867
+  }
+]

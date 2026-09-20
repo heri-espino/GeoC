@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-20T17:35:47.525361+00:00",
+  "git_commit": "a21703845646689903a590651bd822285097b77b",
+  "stage": "target_topology_similarity",
+  "active_track": "competition",
+  "total_rows": 197,
+  "training_rows": 138,
+  "prediction_rows": 59,
+  "hidden_prediction_targets_used": false,
+  "target_covariates_used_transductively": true,
+  "primary_representation": "C4_all_deterministic",
+  "representations": [
+    "C0_base",
+    "C1_agronomic",
+    "C4_all_deterministic"
+  ],
+  "temporal_series_found": [
+    "sentinel2_ndvi",
+    "sentinel2_evi",
+    "sentinel2_lai",
+    "sentinel2_fapar",
+    "sentinel2_ndwi",
+    "sentinel2_msi",
+    "landsat_vi6t",
+    "planet_ndvi",
+    "planet_evi",
+    "planet_lai",
+    "planet_msavi"
+  ],
+  "train_pair_rows": 9453,
+  "target_train_temporal_pairs": 8142,
+  "adversarial_auc": 0.4891918447555883,
+  "support_tier_counts": {
+    "E_mixed_support": 34,
+    "D_extrapolation": 13,
+    "A_high_support": 5,
+    "C_geographic_supported": 5,
+    "B_feature_supported": 2
+  }
+}
