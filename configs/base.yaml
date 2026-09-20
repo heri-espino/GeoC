@@ -2,6 +2,12 @@ project:
   name: GeoCebada
   random_seed: 42
 
+objective:
+  mode: transductive_fixed_target_reconstruction
+  active_track: competition
+  allow_all_197_covariates: true
+  hidden_prediction_targets: forbidden
+
 paths:
   source: data/source
   raw: data/raw
@@ -21,11 +27,12 @@ data_contract:
   expected_prediction_parcels: 59
 
 validation:
-  # Do not choose the final strategy until parcel geography and the operational
-  # prediction horizon are audited. Random CV must be compared with a
-  # spatial/grouped diagnostic.
-  strategy: null
-  n_splits: null
+  # Active Checkpoint 04 validation hides pseudo-target y while keeping pseudo-target X visible
+  # to X-only transductive steps. Legacy state/municipality folds remain stress tests.
+  strategy: transductive_pseudo_competition
+  expose_pseudo_target_x: true
+  repeated: true
+  target_matched: true
 
 metrics:
   - rmse
@@ -39,8 +46,8 @@ temporal:
   # the April-October 2025 production cycle.
   target_cycle_start: 2025-04
   target_cycle_end: 2025-10
-  # Still unresolved: the exact date/window at which the operational forecast
-  # is meant to be made. Final predictors must not use observations after it.
+  # Active competition reconstruction may use the full observed 2025 competition track.
+  # A strict prospective cutoff is not the active Checkpoint 04 objective.
   prediction_cutoff: null
 
 geospatial:
