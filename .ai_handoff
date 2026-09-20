@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
-**Updated:** 2026-09-19  
-**Active phase:** Checkpoint 04 — Transductive Competition Modeling / fixed-target yield reconstruction.
+**Updated:** 2026-09-20  
+**Active phase:** Checkpoint 04B — Transductive pseudo-competition validation.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,7 +144,7 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run the implemented Checkpoint 04A on the workstation with `python tools/run_checkpoint_04a.py`. Review and commit `reports/checkpoint_04a/`, especially the 59-row support profile, adversarial AUC, similarity-vs-yield diagnostics, Moran statistics and generated figures. Only after interpreting 04A should Checkpoint 04B build repeated transductive pseudo-competition splits.
+Implement Checkpoint 04B using the completed 04A evidence. Build repeated pseudo-competition masks that keep pseudo-target X visible, score with hidden pseudo-target y only after prediction, match the actual 59 target support/state/municipality geometry, and test global-vs-local/spatial/graph strategies with RMSE.
 
 
 ## Checkpoint 04A implementation status
@@ -161,3 +161,33 @@ Run the implemented Checkpoint 04A on the workstation with `python tools/run_che
 - summary figures plus per-target Planet-NDVI neighbor panels.
 
 No 04A numerical result should be claimed until the workstation run completes.
+
+
+## Checkpoint 04A completed findings
+
+Canonical interpretation: `docs/CHECKPOINT_04A_FINDINGS.md`. Raw/generated evidence:
+`reports/checkpoint_04a/`.
+
+Key results:
+
+```text
+adversarial train-vs-target AUC                    0.4892
+Spearman(geo distance, |delta yield|)             0.4882
+Spearman(C1 agronomic distance, |delta yield|)    0.2200
+Spearman(C4 deterministic distance, |delta yield|)0.1833
+Moran's I observed yield                           0.6797  p=0.001
+Moran's I E123 grouped residual                    0.5483  p=0.001
+Moran's I E123 state-stratified residual          -0.0375 p=0.429
+support taxonomy                                   A=5 B=2 C=5 D=13 E=34
+```
+
+Interpretation: there is little evidence of a global train/target distribution shift, but very
+strong spatial yield structure and heterogeneous parcel-level support. Geography is the
+strongest observed similarity-transfer signal. Monthly temporal similarity alone is weak.
+04B should therefore prioritize target-matched spatial/local validation, support-tier-aware
+global/local mixtures, graph methods and explicit testing of SIAP/local external priors.
+
+A display-only bug in the original generated 04A report labeled the expected direction of
+`temporal_pearson_mean` as positive. The statistic is correct; the useful direction is
+negative because higher Pearson similarity should imply smaller absolute yield difference.
+The code has been fixed for future runs.
