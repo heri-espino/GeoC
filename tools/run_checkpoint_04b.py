@@ -309,7 +309,8 @@ def _render_report(
         "## Validation contract",
         "",
         "Each pseudo-competition hides y for selected labeled parcels but leaves their X visible.",
-        "All X-only PCA, distances, support calculations and graph topology may use the full 197-X universe.",
+        "All X-only PCA, distances, support calculations and graph topology may use the "
+        "full 197-X universe.",
         "Every y-aware estimator sees only the pseudo-training labels.",
         "",
         f"Primary split family: **{primary}**",
@@ -435,8 +436,10 @@ def _render_report(
             "## Interpretation boundary",
             "",
             "- 04B ranks methods with observed pseudo-target y only after predictions are frozen.",
-            "- Actual-target rows receive support/routing metadata only; no hidden yield is scored.",
-            "- Target-matched RMSE is the primary fixed-target simulation; legacy state/municipality folds remain stress tests.",
+            "- Actual-target rows receive support/routing metadata only; no hidden yield is "
+            "scored.",
+            "- Target-matched RMSE is the primary fixed-target simulation; legacy state/municipality "
+            "folds remain stress tests.",
             "- 04C may spend more compute only on globally competitive model families.",
             "- 04D should refine local/graph mixtures only when 04B demonstrates pseudo-test gain.",
             "",
