@@ -1,0 +1,50 @@
+{
+  "active_track": "competition",
+  "base_candidates": [
+    "B01_C0_PLS",
+    "B02_C3_Ridge",
+    "B03_C1_CatBoost",
+    "B04_C0_Ridge",
+    "B05_C3_PLS",
+    "B06_C2_PLS",
+    "B07_C1_ExtraTrees",
+    "B08_C1_PLS",
+    "B09_C0_PCA_Ridge",
+    "B10_C1_PCA_Ridge"
+  ],
+  "base_tuning_folds": 2,
+  "catboost_task_type_final": "GPU",
+  "final_predictions_generated": false,
+  "generated_at": "2026-09-20T00:49:20.419817+00:00",
+  "hidden_prediction_targets_used": false,
+  "level1_folds": 3,
+  "meta_models": [
+    "EqualTop3",
+    "MeanAll",
+    "ConvexAll",
+    "RidgeStack",
+    "ElasticNetStack",
+    "HuberStack",
+    "ExtraTreesStack",
+    "HistGBStack"
+  ],
+  "meta_tuning_folds": 3,
+  "outer_refit_tuning_folds": 3,
+  "prediction_rows_scored": 0,
+  "protocols": [
+    "fold_state_stratified",
+    "fold_municipality_grouped"
+  ],
+  "schema_version": 1,
+  "source_sha256": {
+    "agronomic_table": "5a8fbf3daea5dd628ee12d68c35374e0595030dab14426e826a27fd0b2f6b1f6",
+    "base_table": "bf27e28f01f1765319f5c9d60af3786039ebf0c93ba550d31f7e5ad917b03984",
+    "checkpoint03c2_config": "bcfdb6fd57da224004ece766426cc894ef0f228d9addae9cebf21225617c24d6",
+    "empirical_config": "a737133bec9811bbbc196d1f8e1e12fa195173286f7c11a87130248f168fc045",
+    "empirical_table": "f2c3ebd33bb42e19d58b5966936231141e1239cf347927bf74f4c3057d47fc03",
+    "frozen_folds": "0b332c65b036dbe09c9d67695d4b627e09043df6a939311161b4db40ac86cf1c"
+  },
+  "stage": "nested_stacking_oof_benchmark",
+  "total_rows": 197,
+  "training_rows": 138
+}
