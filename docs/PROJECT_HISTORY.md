@@ -786,3 +786,32 @@ python tools\run_checkpoint_04a.py
 
 No numerical 04A conclusions are recorded yet. The generated report and figures must be
 reviewed after the workstation run before 04B pseudo-competition validation is designed.
+
+
+---
+
+## 2026-09-20 — Checkpoint 04A completed: target topology and support
+
+The first transductive workstation run was committed in `77f5b90a3288dc7365902ed918baa6b132d3ec52`.
+Generated artifacts live in `reports/checkpoint_04a/`; canonical interpretation is
+`docs/CHECKPOINT_04A_FINDINGS.md`.
+
+The strongest empirical finding is spatial structure. Across all 9,453 labeled-labeled pairs,
+geographic distance has Spearman rho 0.4882 with absolute yield difference, stronger than
+agronomic PCA distance (0.2200), all-deterministic PCA distance (0.1833) or the monthly
+temporal metrics (roughly 0.05-0.08 in magnitude). Observed yield has Moran's I 0.6797 with
+permutation p=0.001.
+
+Checkpoint 03 state-stratified ensemble residuals show no significant spatial autocorrelation,
+but municipality-grouped E13/E123 residuals remain strongly spatially autocorrelated
+(Moran's I 0.5589/0.5483, both p=0.001). This means local context matters most when an
+administrative/spatial neighborhood is absent from model training.
+
+The adversarial train-vs-target classifier has AUC 0.4892, so the 59 targets do not form a
+globally distinguishable covariate population in the tested representation. Support is still
+heterogeneous: 5 high-support, 2 feature-supported, 5 geographically supported, 13
+extrapolation and 34 mixed-support targets.
+
+04A therefore closes with a target-specific doctrine: use local/spatial evidence aggressively
+where pseudo-competition RMSE validates it, but do not apply the same local trust to every
+target. 04B becomes the active phase.
