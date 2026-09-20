@@ -270,8 +270,26 @@ def _sampling_weights(
     scale = max(float(temperature), 1.0e-6)
     base = np.exp(-distances / scale)
 
-    target_municipalities = frame.iloc[list(real_target_positions)]["meta_municipio"].astype(str)
-    candidate_municipalities = frame.iloc[candidate_positions]["meta_municipio"].astype(str)
+    candidate_states = set(
+        frame.iloc[candidate_positions]["meta_estado"].astype(str)
+    )
+    target_reference_positions = list(map(int, real_target_positions))
+    if len(candidate_states) == 1:
+        state = next(iter(candidate_states))
+        same_state_targets = [
+            int(position)
+            for position in real_target_positions
+            if str(frame.iloc[int(position)]["meta_estado"]) == state
+        ]
+        if same_state_targets:
+            target_reference_positions = same_state_targets
+
+    target_municipalities = frame.iloc[target_reference_positions][
+        "meta_municipio"
+    ].astype(str)
+    candidate_municipalities = frame.iloc[candidate_positions][
+        "meta_municipio"
+    ].astype(str)
     target_freq = target_municipalities.value_counts(normalize=True)
     candidate_freq = candidate_municipalities.value_counts(normalize=True)
 
