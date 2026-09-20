@@ -573,7 +573,10 @@ def summarize_similarity_yield_relationships(pair_table: pd.DataFrame) -> pd.Dat
         if int(mask.sum()) < 10 or values.loc[mask].nunique() < 2:
             continue
         result = spearmanr(values.loc[mask], target.loc[mask])
-        higher_means_more_similar = "corr" in column and "distance" not in column
+        higher_means_more_similar = (
+            ("corr" in column or "pearson" in column or "spearman" in column)
+            and "distance" not in column
+        )
         rows.append(
             {
                 "metric": column,
