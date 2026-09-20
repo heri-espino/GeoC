@@ -61,9 +61,10 @@ E13_PLS_CatBoost
 E123_equal_top3
 ```
 
-They are retained as a two-member final decision set for the final fitting
-stage. The project should not add optimized weights or revive discarded model
-families without a new explicit methodological reason.
+Within the historical Checkpoint 03 doctrine, they were retained as a two-member final
+decision set. That restriction was superseded when Checkpoint 04 adopted transductive
+fixed-target reconstruction; E13/E123 now serve as baseline evidence rather than a limit on
+new model families or ensemble weights.
 
 ExtraTrees remains useful evidence from 03C.2, especially under the
 state-stratified protocol, but it was not carried forward because its
