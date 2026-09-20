@@ -4,8 +4,8 @@
 validated, and what remains open so future collaborators and AI agents do not repeat work or
 silently overwrite earlier decisions.
 
-**Last updated:** 2026-09-18  
-**Current phase:** Checkpoint 03 is open; 03A/03B/03C.1 are closed. 03C.2 competition-only controlled model-family comparison is current.
+**Last updated:** 2026-09-19  
+**Current phase:** Checkpoint 04 — Transductive Competition Modeling. Checkpoint 03 is closed as the First Modeling Delivery.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
@@ -711,3 +711,39 @@ E13 and E123 are both retained. Their municipality-grouped RMSE differs by less 
 the project does not interpret that development-score difference as evidence for a unique
 winner. The next step is to freeze a full-data fitting rule for the retained finalist(s) before
 producing the 59 challenge predictions.
+
+
+---
+
+## 2026-09-19 — First Modeling Delivery closed; project reframed as transductive reconstruction
+
+Checkpoint 03C.2/03C.3 were reviewed as a deliberately controlled first modeling delivery rather
+than a final solution. The conventional nested-CV evidence retained three diverse individual
+models — C0+PLS, C3+Ridge and C1+CatBoost — and two equal-weight ensembles, with E123 at
+0.5121 state-stratified / 0.7481 municipality-grouped RMSE and E13 at 0.5082 / 0.7488.
+
+The project then changed its active modeling doctrine. The actual competition exposes the
+covariates of the exact 59 parcels that must be scored. Therefore the central task is now
+treated as fixed-target transductive regression: use X for all 197 parcels and y for the
+138 labeled parcels to reconstruct the 59 hidden FIRA reference yields.
+
+The working interpretation is analogous to receiving 59 missing or potentially untrusted yield
+reports and attempting to reconstruct their latent values from independent evidence. FIRA's
+reserved yield values are the external scoring reference. They remain unavailable and are not
+to be obtained directly.
+
+Checkpoint 04 was opened with six workstreams: target-set topology/similarity; transductive
+pseudo-competition validation; higher-compute global models; local/graph/domain-adaptation
+models; external-data enrichment; and final transductive ensemble/reconstruction.
+
+Important methodological consequences:
+
+- pseudo-validation hides y but keeps pseudo-target X visible;
+- the 59 real target X vectors may inform X-only representations;
+- spatial/temporal/phenological similarity and autocorrelation become first-class modeling questions;
+- Feature Table v1 remains useful but original BASIC/PRO longitudinal trajectories are reopened as direct similarity/modeling inputs;
+- SIAP 2025 is elevated as a priority source, especially the most specific valid combination of `Cebada grano`, relevant cycle, `Temporal` modality and municipality;
+- the older state/municipality folds remain stress tests, while target-matched repeated pseudo-competition RMSE becomes the primary evidence for new methods.
+
+Canonical specification: `docs/TRANSDUCTIVE_OBJECTIVE.md`.  
+Active checkpoint: `checkpoints/04_transductive_competition/README.md`.
