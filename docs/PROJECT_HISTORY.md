@@ -747,3 +747,42 @@ Important methodological consequences:
 
 Canonical specification: `docs/TRANSDUCTIVE_OBJECTIVE.md`.  
 Active checkpoint: `checkpoints/04_transductive_competition/README.md`.
+
+
+---
+
+## 2026-09-20 — Checkpoint 04A implementation: fixed-target topology and support
+
+The first transductive diagnostic implementation was added before any higher-compute model
+search. 04A is intentionally diagnostic rather than predictive.
+
+Implemented:
+
+```text
+configs/checkpoint04a.yaml
+src/geocebada/evaluation/checkpoint04a.py
+src/geocebada/visualization/checkpoint04a.py
+tools/run_checkpoint_04a.py
+tests/test_checkpoint04a.py
+```
+
+The runner studies the 59 target parcels against the 138 labeled parcels using geographic
+nearest neighbors, three deterministic transductive PCA spaces, monthly 2025 temporal
+similarity across Sentinel-2/Landsat/Planet signals, best lag correlation, normalized DTW,
+adversarial train-vs-target classification, per-feature shift, train-pair similarity versus
+absolute yield difference, Moran's I for observed yield and frozen Checkpoint 03 ensemble
+residuals, and a composite target-support taxonomy.
+
+The temporal v1 analysis deliberately reuses the canonical April-October monthly trajectories
+already extracted into Feature Table v1. This provides reproducible sensor-aware temporal
+topology from a clean clone. Capture-level BASIC/PRO alignment can be added later if the
+monthly results justify greater temporal resolution.
+
+The workstation command is:
+
+```powershell
+python tools\run_checkpoint_04a.py
+```
+
+No numerical 04A conclusions are recorded yet. The generated report and figures must be
+reviewed after the workstation run before 04B pseudo-competition validation is designed.
