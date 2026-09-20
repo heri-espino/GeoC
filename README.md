@@ -38,6 +38,26 @@ El identificador canónico es `ID_POLIGONO`. La documentación oficial confirma 
 
 Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conocemos \(X_L\), \(X_U\) y \(y_L\), y buscamos reconstruir \(y_U\). Una única función global \(f(X)\) es sólo una de varias estrategias posibles.
 
+
+## Ejecutar Checkpoint 04A
+
+La primera etapa transductiva ya está implementada. Después de actualizar el repositorio:
+
+```powershell
+git pull
+conda activate geocebada
+python -m pip install -e ".[dev,geo]"
+python tools\run_checkpoint_04a.py
+```
+
+04A no entrena todavía el modelo final ni genera los 59 rendimientos. Estudia la topología de
+las 59 parcelas objetivo: vecinos geográficos y multivariados, similitud temporal con lag/DTW,
+covariate shift, relación similitud–diferencia de rendimiento, autocorrelación espacial y
+soporte/extrapolación por parcela.
+
+Los resultados se generan en `reports/checkpoint_04a/`, incluyendo CSV/JSON, un reporte
+Markdown, figuras resumen y paneles temporales para cada una de las 59 parcelas.
+
 ## Datos confirmados
 
 ### Target y split
