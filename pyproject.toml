@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "geocebada"
 version = "0.1.0"
-description = "GeoCebada: predicción agroclimática del rendimiento de cebada para el Reto AgroCebada FIRA 2026"
+description = "GeoCebada: reconstruccion transductiva de 59 rendimientos de cebada para AgroCebada FIRA 2026"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
