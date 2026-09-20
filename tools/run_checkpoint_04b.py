@@ -8,6 +8,7 @@ import json
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 import numpy as np
@@ -528,9 +529,13 @@ def run_checkpoint_04b(root: Path, config: dict[str, Any]) -> dict[str, Any]:
             ]
         )
 
-    print("[04B 3/9] Generating target-matched, random and frozen stress pseudo-splits...")
+    print(
+        "[04B 3/9] Generating target-matched, random and frozen stress pseudo-splits...",
+        flush=True,
+    )
     split_cfg = config["split_design"]
     target_cfg = split_cfg["target_matched"]
+    split_start = perf_counter()
     matched = generate_target_matched_splits(
         joined,
         profile_coordinates=profile_coordinates,
@@ -541,6 +546,11 @@ def run_checkpoint_04b(root: Path, config: dict[str, Any]) -> dict[str, Any]:
         municipality_smoothing=float(target_cfg["municipality_smoothing"]),
         diversity_penalty=float(target_cfg["diversity_penalty"]),
         random_state=int(split_cfg["random_state"]),
+        verbose=True,
+    )
+    print(
+        f"    target-matched generation finished in {perf_counter() - split_start:.1f}s",
+        flush=True,
     )
     random_splits = generate_state_random_splits(
         joined,
@@ -557,6 +567,10 @@ def run_checkpoint_04b(root: Path, config: dict[str, Any]) -> dict[str, Any]:
         profile_coordinates=profile_coordinates,
     )
     splits = [*matched, *random_splits, *legacy]
+    print(
+        f"    all split families ready in {perf_counter() - split_start:.1f}s",
+        flush=True,
+    )
 
     membership = _split_membership(joined, splits)
     membership.to_csv(
