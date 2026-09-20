@@ -1,5 +1,11 @@
 # Checkpoint 03C.3 — Finalist equal-weight ensembles
 
+> **First Modeling Delivery remark (2026-09-19):** E13 and E123 are frozen as baseline
+> evidence, not as mandatory final models. The project subsequently adopted fixed-target
+> transductive reconstruction in Checkpoint 04, which explicitly reopens model search,
+> target-specific models, external enrichment and ensemble design.
+
+
 **Status:** closed  
 **Opened/closed:** 2026-09-19
 
@@ -71,12 +77,8 @@ python tools\run_checkpoint_03c3.py
 
 This is a lightweight deterministic run; no GPU is required.
 
-## Next step
+## Historical handoff
 
-Define the final full-data fitting rule for the retained finalist(s), including
-how nested-CV hyperparameter evidence is converted into a single full-training
-configuration. Only after that rule is frozen should the project generate the
-59 challenge predictions.
+The next active stage is `checkpoints/04_transductive_competition/README.md`. Do not proceed directly from this checkpoint to a final E13/E123 submission without evaluating the new transductive strategies.
 
-The 03C.3 scores are development evidence from reused frozen OOF folds, not an
-independent final-test estimate.
+The 03C.3 scores are development evidence from reused frozen OOF folds, not an independent final-test estimate.
