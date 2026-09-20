@@ -24,7 +24,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import pairwise_distances, roc_auc_score, roc_curve
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
-from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 ID_COLUMN = "ID_POLIGONO"
@@ -962,8 +961,8 @@ def build_target_support_profile(
         rows.append(
             {
                 ID_COLUMN: query_id,
-                "meta_estado": getattr(row, "meta_estado"),
-                "meta_municipio": getattr(row, "meta_municipio"),
+                "meta_estado": row.meta_estado,
+                "meta_municipio": row.meta_municipio,
                 "nearest_geo_train_id": geo["neighbor_id"] if geo is not None else "",
                 "nearest_geo_km": float(geo["distance"]) if geo is not None else np.nan,
                 "nearest_feature_train_id": (
