@@ -88,6 +88,7 @@ def test_temporal_similarity_finds_identical_curve_as_best_neighbor() -> None:
             [0.3, 0.3, 0.7, 0.3],
             [0.1, 0.2, 0.8, 0.1],
         ],
+        strict=True,
     ):
         frame[f"series__m{month:02d}"] = values
 
@@ -143,6 +144,7 @@ def test_checkpoint03_ensemble_residuals_reconstruct_expected_means() -> None:
             ["P1", "P2"],
             [3.0, 5.0],
             predictions,
+            strict=True,
         ):
             rows.append(
                 {
