@@ -1,0 +1,151 @@
+schema_version: 1
+updated: 2026-09-20
+
+stage:
+  name: target_topology_similarity
+  checkpoint: 04A
+  active_track: competition
+  hidden_prediction_targets_used: false
+  purpose: >
+    Characterize the fixed 59 target parcels relative to the 138 labeled parcels
+    before high-compute model tuning. Quantify geographic, multivariate and
+    temporal support, train-vs-target shift, yield-transferability of similarity
+    metrics, and spatial autocorrelation of yield/baseline residuals.
+
+inputs:
+  base_directory: data/processed/features_v1
+  base_table: parcel_features_all.csv
+  base_manifest: feature_manifest.json
+  agronomic_directory: data/processed/agronomic_features_v1
+  agronomic_table: parcel_agronomic_features.csv
+  agronomic_manifest: feature_manifest.json
+  empirical_directory: data/processed/empirical_features_v1
+  empirical_table: parcel_empirical_features.csv
+  empirical_manifest: feature_manifest.json
+  checkpoint03_oof: reports/checkpoint_03c2/oof_predictions.csv
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  state_column: meta_estado
+  municipality_column: meta_municipio
+  latitude_column: base_centroid_lat
+  longitude_column: base_centroid_lon
+
+feature_policy:
+  allowed_modes: [clean, competition]
+  exclude_sources:
+    - external_chirps_daily
+  exclude_columns: []
+  note: >
+    CHIRPS remains excluded from multivariate distance spaces pending the known
+    Feature Table v1 QC issue. SIAP 2025 and other competition features remain
+    included.
+
+representations:
+  C0_base:
+    layers: [base]
+    description: Competition Feature Table v1 numeric features.
+  C1_agronomic:
+    layers: [agronomic]
+    description: Compact 350-feature agronomic representation.
+  C4_all_deterministic:
+    layers: [base, agronomic, empirical]
+    description: >
+      All deterministic X-only layers. Does not include target-aware 03B
+      discovered expressions.
+
+embedding:
+  pca_components: 20
+  primary_representation: C4_all_deterministic
+
+neighbors:
+  k: 5
+
+temporal:
+  months: [4, 5, 6, 7, 8, 9, 10]
+  min_points: 4
+  max_lag_months: 2
+  note: >
+    04A v1 uses the canonical monthly 2025 trajectories already extracted from
+    BASIC/PRO. These retain sensor identity and provide a reproducible first
+    temporal topology before any later capture-level 04A refinement.
+  series:
+    - name: sentinel2_ndvi
+      prefix: sat_basic_2025_monthly__sentinel_2__ndvi_promedio__m
+    - name: sentinel2_evi
+      prefix: sat_basic_2025_monthly__sentinel_2__evi_promedio__m
+    - name: sentinel2_lai
+      prefix: sat_basic_2025_monthly__sentinel_2__lai_promedio__m
+    - name: sentinel2_fapar
+      prefix: sat_basic_2025_monthly__sentinel_2__fapar_promedio__m
+    - name: sentinel2_ndwi
+      prefix: sat_basic_2025_monthly__sentinel_2__ndwi_promedio__m
+    - name: sentinel2_msi
+      prefix: sat_basic_2025_monthly__sentinel_2__msi_promedio__m
+    - name: landsat_vi6t
+      prefix: sat_basic_2025_monthly__landsat__vi6t_promedio__m
+    - name: planet_ndvi
+      prefix: sat_pro_2025_monthly__planet__ndvi_promedio__m
+    - name: planet_evi
+      prefix: sat_pro_2025_monthly__planet__evi_promedio__m
+    - name: planet_lai
+      prefix: sat_pro_2025_monthly__planet__lai_promedio__m
+    - name: planet_msavi
+      prefix: sat_pro_2025_monthly__planet__msavi_promedio__m
+  panel_series:
+    name: planet_ndvi
+    prefix: sat_pro_2025_monthly__planet__ndvi_promedio__m
+
+adversarial:
+  representation: C4_all_deterministic
+  folds: 5
+  random_state: 42
+  top_shift_features: 25
+
+spatial:
+  k_neighbors: 5
+  permutations: 999
+  random_state: 42
+  baseline_protocols:
+    - fold_state_stratified
+    - fold_municipality_grouped
+
+support:
+  weights:
+    geographic: 1.0
+    feature: 1.0
+    temporal: 1.0
+    adversarial: 1.0
+    neighbor_consistency: 1.0
+  high_threshold: 0.67
+  low_threshold: 0.33
+  note: >
+    The composite support score is a descriptive ranking, not a calibrated
+    probability or a predicted yield.
+
+figures:
+  dpi: 170
+  target_temporal_panels: true
+
+outputs:
+  directory: reports/checkpoint_04a
+  figures_directory: figures
+  geographic_neighbors: geographic_neighbors.csv
+  feature_neighbors: feature_neighbors.csv
+  temporal_neighbors: temporal_neighbors.csv
+  temporal_pairs: temporal_pairs.csv
+  train_pair_validation: train_pair_similarity_validation.csv
+  similarity_summary: similarity_yield_summary.csv
+  adversarial_scores: adversarial_scores.csv
+  adversarial_roc: adversarial_roc.csv
+  adversarial_feature_shift: adversarial_feature_shift.csv
+  embedding_manifest: embedding_manifest.json
+  embeddings: transductive_embeddings.csv
+  spatial_autocorrelation: spatial_autocorrelation_summary.json
+  target_support_profile: target_support_profile.csv
+  run_report_json: checkpoint_04a_report.json
+  run_report_markdown: checkpoint_04a_report.md
