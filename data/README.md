@@ -1,5 +1,12 @@
 # Datos — Reto AgroCebada FIRA 2026
 
+> **Objetivo activo (Checkpoint 04):** el problema actual es reconstruir transductivamente los
+> 59 rendimientos fijos. Las covariables de las 59 parcelas sí pueden participar en métodos
+> X-only junto con las 138 parcelas etiquetadas; los 59 targets ocultos siguen fuera de alcance.
+> Feature Table v1 es una representación tabular canónica, pero las series BASIC/PRO originales
+> también vuelven a ser evidencia activa para similitud temporal, lag, vecinos y grafos.
+
+
 Esta carpeta contiene las fuentes oficiales del reto y los artefactos derivados del pipeline de datos. El objetivo predictivo es estimar el rendimiento agrícola de parcelas de cebada en Hidalgo, Puebla y Tlaxcala.
 
 > **Estado actual:** el cierre reproducible de la fase de datos está documentado en `checkpoints/01_data/README.md`. Para el inventario operativo actualizado de fuentes oficiales/externas, joins y caveats, leer `docs/DATA_SOURCES.md`. Ese documento corrige y amplía cualquier descripción histórica de este README.
@@ -13,17 +20,7 @@ La unidad de observación final es una **parcela georreferenciada**. El archivo 
 
 El split es **por parcela completa**, no un 70/30 dentro de cada parcela. Es decir, FIRA entrega el rendimiento de unas parcelas y oculta por completo el de otras.
 
-Formalmente, para cada parcela \(i\):
-
-\[
-\hat y_i=f(X_i),
-\]
-
-con:
-
-- \(y_i\): rendimiento real en toneladas por hectárea (`RENDIMIENTO_T_HA`),
-- \(X_i\): variables satelitales, climáticas, topográficas, geométricas y otras covariables de la parcela,
-- \(\hat y_i\): rendimiento predicho.
+Formalmente, el problema activo conoce \(X\) para las 197 parcelas y \(y\) sólo para 138. El objeto de inferencia es el vector de 59 valores \(y_U\); un predictor global \(f(X)\) es una opción, no un requisito.
 
 El rendimiento real del conjunto de predicción permanece resguardado por FIRA y se utilizará para la evaluación final.
 
