@@ -2,7 +2,8 @@
 
 Esta carpeta concentra la documentación del proyecto, la referencia de la librería Python y los materiales oficiales del Reto AgroCebada FIRA 2026.
 
-- `AGENT_GUIDE.md`: punto de entrada operativo para agentes/colaboradores; estado actual, reglas, artifacts, CV congelada y siguiente fase.
+- `TRANSDUCTIVE_OBJECTIVE.md`: especificación canónica del objetivo activo: reconstrucción transductiva de las 59 parcelas fijas y validación pseudo-competition.
+- `AGENT_GUIDE.md`: punto de entrada operativo para agentes/colaboradores; estado actual, reglas, artifacts y siguiente fase.
 - `PROJECT_HISTORY.md`: cronología de lo que se hizo, por qué y qué quedó validado.
 - `official/`: bases, lineamientos y documentos oficiales de la convocatoria. Inmutables.
 - `reference/`: diccionarios y documentación técnica del dataset proporcionado por FIRA. Conservar como evidencia fuente.
