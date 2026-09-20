@@ -1,6 +1,6 @@
 # Checkpoint 04 — Transductive Competition Modeling
 
-**Status:** OPEN — 04A COMPLETE, 04B NEXT  
+**Status:** OPEN — 04A COMPLETE, 04B IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-09-19
 
 Checkpoint 04 begins after the closure of Checkpoint 03 as the **First Modeling Delivery**. Read `docs/TRANSDUCTIVE_OBJECTIVE.md` before implementing this checkpoint.
@@ -74,9 +74,41 @@ The workstation run is complete and committed. Canonical interpretation: `docs/C
 Key evidence: adversarial AUC 0.4892; geographic distance vs absolute yield difference Spearman rho 0.4882; observed-y Moran's I 0.6797 (p=0.001); municipality-grouped E123 residual Moran's I 0.5483 (p=0.001); 5 high-support, 13 extrapolation and 41 intermediate/mixed targets.
 
 
-## 04B — Transductive pseudo-competition validation
+## 04B — Transductive pseudo-competition validation — IMPLEMENTED, RUN PENDING
 
 Create repeated pseudo-target splits from the 138 labels. For each split, pseudo-target X is visible throughout X-only transductive learning while pseudo-target y is hidden until scoring.
+
+
+### 04B implementation
+
+The runnable validation layer is now committed:
+
+```text
+configs/checkpoint04b.yaml
+src/geocebada/evaluation/checkpoint04b.py
+src/geocebada/visualization/checkpoint04b.py
+tools/run_checkpoint_04b.py
+tests/test_checkpoint04b.py
+```
+
+Run from the repository root:
+
+```powershell
+python tools\run_checkpoint_04b.py
+```
+
+The primary protocol creates 16 repeated X-only target-matched pseudo-competitions with 41
+pseudo-targets each, approximating the real 59/197 target fraction. A secondary state-matched
+random protocol and both frozen Checkpoint 02 state/municipality folds remain as stress tests.
+
+The method suite is intentionally lightweight enough to establish the validation doctrine
+before 04C GPU tuning. It includes global/state/municipality baselines, geographic kNN,
+agronomic-space kNN, mixed geographic+agronomic(+temporal) kNN, transductive-PCA Ridge,
+C0 PLS, query-specific local Ridge, graph-Laplacian regression and fixed global/local blends.
+
+All split selection is X-only. A separate dynamic X-only support score is recomputed inside
+every pseudo split, and support-tier winners are used to propose method routing for the actual
+59 targets without inspecting hidden y.
 
 At least two split families should be retained:
 
