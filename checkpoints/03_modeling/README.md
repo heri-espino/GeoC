@@ -1,7 +1,14 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-**Status:** In progress — 03A/03B/03C.1/03C.2 closed; 03C.3 finalist review current  
-**Current phase:** 03C.3 — Fixed equal-weight finalist ensembles  
+> **Historical checkpoint notice (2026-09-19):** Checkpoint 03 is frozen as the First
+> Modeling Delivery. Its fold-local rules describe the conventional inductive baseline that
+> produced the documented scores. Active modeling has moved to Checkpoint 04 and
+> `docs/TRANSDUCTIVE_OBJECTIVE.md`, where pseudo-target X remains visible to X-only
+> transductive operations.
+
+
+**Status:** CLOSED — First Modeling Delivery  
+**Historical scope:** 03A/03B/03C.1/03C.2/03C.3  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -178,7 +185,7 @@ The workstation run passed. The deterministic artifacts and fold-local expressio
 
 ---
 
-## 03C — Model comparison — CURRENT
+## 03C — Model comparison — CLOSED
 
 ### 03C.1 — Representation benchmark — CLOSED
 
@@ -297,7 +304,7 @@ Once these criteria are met, 03B is frozen and the project moves to 03C.
 
 ---
 
-### 03C.3 — Finalist equal-weight ensemble review — CURRENT
+### 03C.3 — Finalist equal-weight ensemble review — CLOSED
 
 03C.3 does not run another model search. It consumes the committed 03C.2 OOF predictions and
 compares only:
@@ -322,5 +329,4 @@ winner. Reproduce with:
 python tools\run_checkpoint_03c3.py
 ```
 
-The next stage is to freeze the full-data fitting rule for the retained finalist(s), then
-generate the 59 competition predictions exactly once.
+This was the end of the First Modeling Delivery. E13/E123 are retained as historical baseline candidates. Active work continues in Checkpoint 04 under transductive pseudo-competition validation rather than proceeding directly to a frozen E13/E123 final fit.
