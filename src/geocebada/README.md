@@ -1,5 +1,11 @@
 # `geocebada` Python library
 
+> **Active modeling phase:** Checkpoint 04 is transductive fixed-target reconstruction. Stable
+> implementations for target topology, pseudo-competition splitting, local/graph methods,
+> covariate shift and final inference should be added under `src/geocebada/` rather than only in
+> notebooks. Historical Checkpoint 03 modules remain frozen evidence.
+
+
 This directory is the reusable codebase for GeoCebada. Team notebooks and the web app should **import functionality from this package** instead of copying data-loading, feature-engineering, statistical inference, visualization or evaluation code into notebooks.
 
 ## Design rule
@@ -116,7 +122,7 @@ Interactive feature recipes are exploratory specifications. If a feature becomes
 - exploratory random-CV regression benchmarks;
 - reusable Plotly visualizations.
 
-The app automatically excludes hidden official prediction targets from supervised statistical/model analyses. Checkpoint 02 has now established frozen state-stratified and municipality-grouped parcel folds under `reports/checkpoint_02/cv_folds.csv`; generic random CV in the laboratory remains exploratory and must not replace those project-level protocols.
+The app must exclude hidden official prediction y from supervised analyses. Target-parcel X may participate in explicitly documented transductive methods. Checkpoint 04 pseudo-competition validation is now the active selection protocol; the frozen Checkpoint 02 state/municipality folds remain stress tests.
 
 ## Public API and function index
 
