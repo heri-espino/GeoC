@@ -10,6 +10,7 @@ than duplicated across notebooks.
    :caption: Contents
 
    README
+   TRANSDUCTIVE_OBJECTIVE
    AGENT_GUIDE
    PROJECT_HISTORY
    GETTING_STARTED
