@@ -1,5 +1,11 @@
 # Data Contract v2
 
+> **Checkpoint 04 note:** this contract remains the source-integrity gate. Its historical
+> `clean`/prospective rules must not be confused with the active transductive modeling
+> objective. In Checkpoint 04, all rule-permitted `competition` covariates for the 197 parcels
+> may participate in X-only transductive inference; hidden target y remains unavailable.
+
+
 Updated: 2026-09-17
 
 Data Contract v2 is the machine-checkable boundary between raw GeoCebada inputs
