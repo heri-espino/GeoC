@@ -83,14 +83,17 @@ El diccionario completo y source-backed está en **`docs/VARIABLES.md`**. El inv
 
 El CRS de las geometrías de parcela fue verificado directamente como `EPSG:4326`.
 
-## Preguntas todavía abiertas
+## Preguntas activas de Checkpoint 04
 
 No asumir respuestas sin evidencia:
 
-1. fecha exacta de corte/horizonte en la que debe entenderse una predicción operativa dentro del ciclo abril–octubre de 2025;
-2. estrategia de armonización entre sensores cuando se combinen BASIC y PRO;
-3. mecanismo de estratificación del split 70/30, si existe;
-4. estrategia de validación que mejor aproxime la evaluación oculta de FIRA;
+1. ¿qué tan cerca está cada una de las 59 parcelas de alguna de las 138 etiquetadas, espacialmente y en espacio de features?;
+2. ¿la similitud de curvas temporales BASIC/PRO implica realmente similitud de rendimiento?;
+3. ¿existe autocorrelación espacial del rendimiento o de los residuos del baseline?;
+4. ¿qué pseudo-competition splits reproducen mejor la geometría X de las 59 parcelas objetivo?;
+5. ¿qué gana covariate shift, kNN/local regression, grafos y mixtures of experts frente al baseline de Checkpoint 03?;
+6. ¿puede SIAP 2025 alinearse específicamente a `Cebada grano` + ciclo + `Temporal` + municipio?;
+7. ¿qué fuentes externas agregan señal no redundante para estas 59 parcelas?;
 
 ## Arquitectura
 
@@ -105,7 +108,9 @@ notebooks / app / experimentos
 ```text
 GeoCebada/
 ├── checkpoints/                  # hitos reproducibles del proyecto
-│   └── 01_data/                  # adquisición, audit y fixtures de datos
+│   ├── 01_data/                  # adquisición, audit y fixtures de datos
+│   ├── 03_modeling/              # First Modeling Delivery, congelado
+│   └── 04_transductive_competition/ # fase activa
 ├── app/                         # interfaces Streamlit
 ├── configs/
 ├── data/
