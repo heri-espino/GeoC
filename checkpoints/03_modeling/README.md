@@ -201,7 +201,7 @@ B5 = base + agronomic + empirical
 B7 = fold-local discovered-expression augmentation
 ```
 
-03C.1 deliberately does not tune broad model families. After its workstation results are reviewed, 03C.2 may compare:
+03C.1 deliberately did not tune broad model families. Its workstation results motivated 03C.2 to compare:
 
 - Ridge / ElasticNet;
 - ExtraTrees;
@@ -214,7 +214,7 @@ B7 = fold-local discovered-expression augmentation
 
 The workstation 03C.1 run passed. Historical clean results remain documented, but **03C.2 and all subsequent active modeling use competition only**. Read `reports/checkpoint_03c/README.md` for the evidence that motivated C0/C1/C2/C3. CHIRPS remains excluded pending QC.
 
-Because only 138 targets are observed, later searches should remain disciplined.
+Because only 138 targets are observed, the historical 03C search was deliberately disciplined.
 
 All preprocessing learned from data must remain inside the training fold:
 
@@ -236,7 +236,7 @@ Do not regenerate the frozen folds because a result is inconvenient.
 The project no longer compares clean versus competition. From 03C.2 onward the active modeling
 track is **competition only**.
 
-Current candidate representations:
+Historical 03C.2 representations:
 
 ```text
 C0 = base
@@ -271,14 +271,8 @@ tools/run_checkpoint_03c2.py
 checkpoints/03c2_competition_modeling/README.md
 ```
 
-Repository CI is green. The next action is the workstation run:
-
-```powershell
-python -m pip install -e ".[models]"
-python tools\run_checkpoint_03c2.py
-```
-
-No final model or 59-parcel predictions exist yet.
+The workstation run completed successfully and is preserved in `reports/checkpoint_03c2/`.
+No 59-parcel prediction was generated during Checkpoint 03C.2.
 
 ---
 
