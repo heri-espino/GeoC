@@ -1,5 +1,13 @@
 # Data sources and integration contract
 
+> **Checkpoint 04 evidence policy (2026-09-19).** The current problem is fixed-target
+> transductive reconstruction. Public contemporaneous data are desirable when they reduce
+> uncertainty for the exact 59 targets. SIAP 2025 should be re-audited at the most specific
+> valid grain-barley/cycle/`Temporal`/municipality granularity. The original BASIC/PRO
+> longitudinal rows remain active evidence for direct temporal similarity; Feature Table v1
+> is not the only allowed representation.
+
+
 Updated: 2026-09-17  
 Project: GeoCebada / Reto AgroCebada FIRA 2026  
 Audience: humans, AI agents and Codex sessions working on data ingestion, feature engineering or modeling.
