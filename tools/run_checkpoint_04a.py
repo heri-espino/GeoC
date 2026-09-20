@@ -173,7 +173,8 @@ def _render_report(
             "## Covariate shift",
             "",
             f"Cross-validated adversarial AUC: **{report['adversarial_auc']:.4f}**.",
-            "AUC near 0.5 means weak separation; larger AUC means the target X distribution is more distinguishable.",
+            "AUC near 0.5 means weak separation; larger AUC means the target X distribution "
+            "is more distinguishable.",
             "",
             "Largest standardized train-target mean shifts:",
             "",
@@ -297,7 +298,8 @@ def _render_report(
             "",
             "![Support ranking](figures/target_support_ranking.png)",
             "",
-            "Individual target-versus-best-temporal-neighbor panels are in figures/target_temporal_panels.",
+            "Individual target-versus-best-temporal-neighbor panels are in "
+            "figures/target_temporal_panels.",
             "",
             "## Boundary",
             "",
