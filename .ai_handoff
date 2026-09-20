@@ -1,316 +1,150 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-19  
-**Current phase:** Checkpoint 03 is open; 03A, 03B, 03C.1 and 03C.2 are closed. Checkpoint 03C.3 reviews only fixed equal-weight combinations of the three 03C.2 finalists.
+**Active phase:** Checkpoint 04 — Transductive Competition Modeling / fixed-target yield reconstruction.
 
-Read `docs/AGENT_GUIDE.md` first, then `docs/PROJECT_HISTORY.md` for chronology. This file is
-only a compact operational summary.
+Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
+`docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
+conventional baseline; it is not the current modeling doctrine.
 
-## Mission
+## Current mission
 
-Predict barley parcel yield `RENDIMIENTO_T_HA` for the 59 hidden-target parcels using a
-reproducible combination of remote sensing, climate, soil, topography and spatial/admin
-information.
-
-Canonical contract:
+GeoCebada now treats the FIRA task as a fixed-target transductive reconstruction problem.
 
 ```text
-ID_POLIGONO
-RENDIMIENTO_T_HA
-CONJUNTO
-197 parcels = 138 ENTRENAMIENTO + 59 PREDICCION
+197 known parcels
+138 labeled parcels (ENTRENAMIENTO)
+59 fixed target parcels (PREDICCION)
+X for all 197 parcels is observable
+y = RENDIMIENTO_T_HA is observed only for the 138 labeled parcels
 target cycle = April–October 2025
 states = Hidalgo, Puebla, Tlaxcala
 ```
 
-Never reconstruct or use the 59 hidden targets.
+The objective is **not** to optimize a universally deployable future-yield model. The active
+objective is to reconstruct the 59 hidden FIRA reference yields as accurately as possible,
+using every rule-permitted observable signal associated with the 197 parcels.
 
-## Current reproducible state
+Operational interpretation: treat the 59 yields as latent/missing or potentially untrusted
+values that must be reconstructed from satellite, temporal, spatial, climatic, soil,
+topographic, administrative and public production evidence. FIRA's hidden values are the
+external evaluation reference. They are not available to the project and must never be
+obtained or treated as known labels.
 
-Completed milestones:
+## Information boundary
 
-- Checkpoint 01 — data acquisition/audit/integration fixtures: closed.
-- Data Contract v2: PASS (46 pass, 0 warn, 0 fail, 1 intentional skip).
-- Feature Table v1: built and independently validated.
-- Checkpoint 02 — feature inventory, train/prediction diagnostics, frozen CV, ablations,
-  untuned baselines: closed.
-- Canonical Feature Table v1 artifacts are committed to Git.
-- Checkpoint 03A — Agronomic Features v1: built, validated and committed as a separate target-free nonlinear layer.
-- Checkpoint 03B — deterministic Empirical Features v1 and the fold-local expression recurrence audit are complete and committed.
+Allowed and encouraged:
 
-Canonical model-ready inputs:
+- all covariates X for all 197 parcels;
+- the complete `competition` / full-season 2025 track;
+- original BASIC/PRO longitudinal trajectories, not only the 197-row aggregation;
+- joint X-only representations learned from labeled + target parcels;
+- transductive PCA/clustering/manifolds/graphs when validation reproduces the same information structure;
+- spatial, temporal and phenological similarity between target and labeled parcels;
+- local models specific to a target parcel;
+- covariate-shift/domain-adaptation weighting;
+- public external data, including SIAP 2025, CHIRPS, WaPOR, SoilGrids, CEM/topography and additional justified sources;
+- ensembles supported by transductive pseudo-test RMSE.
 
-```text
-data/processed/features_v1/
-  parcel_features_clean.csv       197 × 699
-  parcel_features_competition.csv 197 × 1408
-  parcel_features_all.csv         197 × 1408
-  feature_manifest.json
-  build_report.json
-```
+Forbidden:
 
-Manifest counts:
+- direct access to, recovery of, scraping of, or manual insertion of FIRA's 59 hidden reference yields;
+- pretending hidden targets are observed;
+- evaluating a method on hidden y;
+- row-random supervised splitting of BASIC/PRO as if repeated dates were independent yield labels.
 
-```text
-clean features             694
-competition-only features  709
-total features            1403
-numeric features          1401
-```
+## Validation doctrine from Checkpoint 04 onward
 
-Canonical agronomic/nonlinear extension:
+Validation must simulate the real information structure:
 
-```text
-data/processed/agronomic_features_v1/
-  parcel_agronomic_features.csv  197 × 351 = ID + 350 derived features
-  feature_manifest.json
-  build_report.json
+1. choose labeled parcels as pseudo-targets;
+2. hide only their y;
+3. keep their X visible during X-only transductive representation learning;
+4. train using the remaining labeled y;
+5. predict the pseudo-targets;
+6. reveal their y only to compute RMSE/MAE/R².
 
-clean agronomic features        123
-competition agronomic features  227
-missing fraction                0.0
-target used to construct        false
-CHIRPS used                     false
-```
+Pseudo-target splits should preferentially resemble the actual 59 target parcels in geography,
+state/municipality composition, feature support and target-set topology. Legacy
+`fold_state_stratified` and `fold_municipality_grouped` results remain valuable stress tests,
+but they are no longer the sole model-selection doctrine.
 
-03A feature families include phenology/curve shape, 2025-vs-history anomalies,
-cross-sensor agreement, thermal-time proxies, rainfall timing, WaPOR water-productivity
-proxies, soil-profile/nonlinear terms, cross-domain interactions and a small set of log basis
-transforms. Read `docs/AGRONOMIC_FEATURES_V1.md` before changing them.
+## First Modeling Delivery — frozen Checkpoint 03 evidence
 
-Canonical empirical extension:
+Checkpoint 03 established reproducible feature layers, leakage-safe inductive CV, model-family
+screening and a conservative ensemble baseline. Do not rewrite its outputs to fit the new
+objective.
 
 ```text
-data/processed/empirical_features_v1/
-  parcel_empirical_features.csv  197 × 336 = ID + 335 derived features
-  feature_manifest.json
-  build_report.json
-
-clean empirical features        91
-competition empirical features 244
-missing fraction                0.0
-infinite values                 0
-target used to construct        false
-supervised formulas global      false
-short VCI-like standard VCI     false
+F1 = C0_base + PLS                         state 0.5339   municipality 0.7621
+F2 = C3_base_agro_plus_discovery + Ridge  state 0.5331   municipality 0.7650
+F3 = C1_agronomic + CatBoost              state 0.5235   municipality 0.7709
+E123 equal top 3                           state 0.5121   municipality 0.7481
+E13 PLS + CatBoost                         state 0.5082   municipality 0.7488
 ```
 
-03B family counts:
+These scores are baseline evidence, not a command to stop searching. Checkpoint 04 explicitly
+reopens model development under the transductive objective, including stronger tuning, local
+models, graph methods, domain adaptation, external-data enrichment and new ensembles.
+
+## Canonical data
 
 ```text
-temporal_shape              162
-aggregate_geometry           72
-symmetric_change             42
-short_baseline_condition     41
-sensor_shape_similarity      18
+BASIC: 107,666 rows × 96 columns; 197 parcels; 2022–2025; Sentinel-2 + Landsat
+PRO:    47,804 rows × 20 columns; 197 parcels; 2025; Planet
 ```
 
-The short-baseline NDVI condition features are explicitly VCI-like rather than standard VCI.
-The historical reference is only 2022–2024. One Landsat VI6T historical-range exceedance
-candidate was constant and dropped. The fold-local expression miner has 24 configured primitive
-variables and may use yield only inside each training fold. Read `docs/EMPIRICAL_FEATURES_V1.md`.
-
-Frozen validation artifacts:
+BASIC/PRO rows are repeated `(parcel, date, sensor)` observations. The supervised unit remains
+the parcel. Feature Table v1 compressed these trajectories to one row per parcel, but that
+compression is not the only representation allowed in Checkpoint 04.
 
 ```text
-reports/checkpoint_02/cv_folds.csv
-reports/checkpoint_02/baseline_fold_scores.csv
-reports/checkpoint_02/baseline_summary.csv
-reports/checkpoint_02/train_prediction_diagnostics.csv
-reports/checkpoint_02/checkpoint_02_report.md
+data/processed/features_v1/parcel_features_competition.csv  197 × 1408
+manifest: 1403 total features, of which 709 are competition-only
+
+Agronomic Features v1: 197 × 351 = ID + 350 features
+Empirical Features v1: 197 × 336 = ID + 335 features
 ```
 
-## Validation finding that must carry forward
+Active modeling uses **competition** information. `clean` remains historical/provenance only.
 
-Two five-fold protocols are frozen:
+## External evidence priority
 
-- `fold_state_stratified` — primary.
-- `fold_municipality_grouped` — spatial/generalization robustness.
+SIAP is not merely another generic covariate. Checkpoint 04 should explicitly audit whether
+the 2025 municipal proxy can be aligned as closely as possible to `Cebada grano`, the correct
+cycle and the `Temporal` modality, because the target parcels are understood to be rainfed.
+Do not mix grain and forage barley.
 
-The municipality-grouped protocol is much harder. Representative baseline RMSE:
+Also preserve and exploit CHIRPS after its QC issue is understood, WaPOR AETI/NPP, SoilGrids,
+INEGI CEM/topography, official climate, and additional public daily weather/stress variables
+when they add a testable reconstruction hypothesis.
+
+## Checkpoint 04 phase map
 
 ```text
-state-stratified ExtraTrees A7   0.4966
-municipality-grouped Ridge A3    0.7426
-municipality-grouped ExtraTrees A6 0.8835
+04A target-set topology, similarity, autocorrelation and support
+04B transductive pseudo-competition validation
+04C stronger global models / larger compute budget
+04D local-per-parcel, graph and covariate-shift/domain-adaptation models
+04E external-data enrichment and SIAP Temporal refinement
+04F transductive ensemble and final 59-value reconstruction
 ```
 
-Do not optimize only the easier state-stratified metric. Spatial/municipal generalization is a
-first-class risk.
-
-## Historical clean/competition distinction
-
-The repository still preserves both feature labels for provenance, but **active modeling from
-03C.2 onward uses only `competition`**.
-
-`clean`
-: historical/static provenance label only; do not benchmark or select models on this track unless explicitly reopened.
-
-`competition`
-: active modeling track = clean plus rule-permitted 2025/full-season/contemporaneous public covariates.
-
-The exact operational forecast cutoff is still unresolved. Do not describe competition-mode
-features as a strict prospective forecast.
-
-SIAP 2025 is a competition-only municipal outcome proxy and must stay explicitly labeled.
-
-## Feature QC finding
-
-Only one CHIRPS daily competition feature survives in Feature Table v1. Most candidate CHIRPS
-daily aggregates were dropped as all-null by the builder. Investigate before claiming a rich
-CHIRPS contribution.
-
-Train-versus-prediction screening flagged only 6/1401 numeric features under the configured
-descriptive shift/support thresholds. These X-only diagnostics are not labels and must not be
-used as a hidden-test tuning target.
-
-## Modeling-track directive — competition only
-
-From Checkpoint 03C.2 onward, **use only the `competition` feature track** for model
-development, tuning, comparison and final prediction.
-
-Operational meaning:
-
-```text
-competition = clean + competition-mode features
-clean       = historical/diagnostic only; do not run unless explicitly reopened
-```
-
-Do not spend compute comparing clean versus competition and do not use clean results to select
-the 03C.2 model. The project objective is the FIRA competition estimate after observing the
-2025 cycle, so current modeling prioritizes the competition representation.
-
-CHIRPS remains excluded pending QC even though the active track is competition.
-
-## Checkpoint 03C.1 representation benchmark
-
-Implementation is on the current 03C branch and should be run with:
-
-```text
-python tools/run_checkpoint_03c.py
-```
-
-It evaluates both `clean` and `competition` tracks with:
-
-```text
-B0 base
-B1 agronomic only
-B2 empirical only
-B3 base + agronomic
-B4 base + empirical
-B5 base + agronomic + empirical
-B7 B5 + fold-local discovered expressions
-```
-
-using fixed Ridge10 and ExtraTrees under both frozen Checkpoint 02 protocols. CHIRPS is
-excluded pending QC. The run reports pooled OOF metrics as well as mean-fold metrics and
-does not score the 59 hidden-target parcels. Broad tuning/CatBoost/kernels/PCA/PLS belong to
-03C.2 after these representation results are reviewed.
-
-## 03C.2 checkpoint snapshot
-
-The workstation benchmark is complete and committed.
-
-```text
-active track: competition only
-representations: C0, C1, C2, C3
-outer CV: frozen state-stratified + municipality-grouped
-inner CV: 3-fold, aligned to outer protocol
-models: Ridge, ElasticNet, ExtraTrees, CatBoost, PLS, PCA+RBF KRR, PCA+Poly2 KRR
-individual finalists frozen: C0+PLS, C3+Ridge, C1+CatBoost
-CatBoost execution: GPU
-59 predictions generated: no
-```
-
-Key 03C.2 municipality-grouped OOF RMSE: C0+PLS 0.7621, C3+Ridge 0.7650, C1+CatBoost 0.7709. ExtraTrees remains stronger under state-stratified CV but is less robust under municipality-grouped CV.
-
-## Modeling rules for Checkpoint 03
-
-Reuse `reports/checkpoint_02/cv_folds.csv`.
-
-Candidate families may include CatBoost, Ridge/ElasticNet, ExtraTrees/RandomForest,
-HistGradientBoosting and LightGBM/XGBoost if justified.
-
-Because n=138 and p is large, keep searches disciplined.
-
-Any learned preprocessing must be inside folds:
-
-- imputation;
-- scaling;
-- PCA/PLS;
-- supervised feature selection;
-- encoding;
-- target-aware transforms.
-
-Keep fold-level RMSE/MAE/R² and machine-readable experiment records.
-
-Do not regenerate folds because a result is inconvenient.
+Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Repository rules
 
-Source evidence:
-
-```text
-data/source/
-docs/official/
-docs/reference/
-```
-
-must not be edited to fit code.
-
-Stable reusable logic belongs under `src/geocebada/`.
-
-Notebooks orchestrate exploration; they are not the canonical implementation.
-
-Before adding a public helper, inspect `docs/FUNCTION_INDEX.md`.
-
-For Streamlit/deployment work, read `app/AGENTS.md` first.
-
-Large external raw/interim data remain gitignored. The deliberate processed-data exceptions are canonical `data/processed/features_v1/`, `data/processed/agronomic_features_v1/` and `data/processed/empirical_features_v1/`, all versioned.
-
-Material AI-assisted work must be recorded in `docs/AI_USAGE.md`.
-
-## Known maintenance items
-
-- pandas fragmentation warning in daily CHIRPS construction: performance issue, build still
-  validated;
-- h5py/HDF5 build/runtime mismatch warning on workstation: environment issue, WaPOR build still
-  completed;
-- operational prediction cutoff remains unresolved;
-- CHIRPS daily feature survival needs QC and is intentionally excluded from Agronomic/Empirical Features v1;
-- the 25 C monthly-mean heat hinge was constant across the 197 rows and was dropped automatically; this does not imply heat stress is agronomically irrelevant.
+- preserve `ID_POLIGONO`; target is `RENDIMIENTO_T_HA`;
+- source evidence under `data/source/`, `docs/official/` and `docs/reference/` is immutable;
+- stable reusable code belongs in `src/geocebada/`; notebooks are exploratory;
+- preserve sensor provenance and explicit CRS handling;
+- use GPU where appropriate for expensive model searches;
+- record material AI-assisted work in `docs/AI_USAGE.md`;
+- update this handoff, `docs/AGENT_GUIDE.md` and the active checkpoint when project doctrine changes.
 
 ## Immediate next action
 
-Run the lightweight deterministic `python tools/run_checkpoint_03c3.py`, commit its generated `reports/checkpoint_03c3/` artifacts, and verify CI. Then define the final full-data fitting rule for E13 and E123 before generating the 59 hidden-target predictions once.
-
-
-## Checkpoint 03C.3 finalist ensembles
-
-03C.3 uses only committed 03C.2 OOF predictions and does not refit models or inspect hidden targets.
-
-Frozen individual finalists:
-
-```text
-F1 = C0_base + PLS
-F2 = C3_base_agro_plus_discovery + Ridge
-F3 = C1_agronomic + CatBoost
-```
-
-Fixed equal-weight ensembles:
-
-```text
-E12  = 0.5 F1 + 0.5 F2
-E13  = 0.5 F1 + 0.5 F3
-E23  = 0.5 F2 + 0.5 F3
-E123 = (F1 + F2 + F3) / 3
-```
-
-Reviewed OOF evidence:
-
-```text
-E123: state 0.5121, municipality 0.7481
-E13:  state 0.5082, municipality 0.7488
-```
-
-Retain both E13 and E123. Their municipality RMSE difference is below 0.001, so do not claim a meaningful winner and do not tune continuous ensemble weights.
+Implement Checkpoint 04A and 04B: characterize the 59 target parcels relative to the 138
+labeled parcels, quantify spatial/temporal/phenological similarity and covariate shift, and
+build repeated transductive pseudo-competition splits that produce honest RMSE while allowing
+pseudo-target X to participate in X-only representation learning.
