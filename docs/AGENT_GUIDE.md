@@ -1,3 +1,21 @@
+# ACTIVE DOCTRINE — read before the historical guide below
+
+**Current phase: Checkpoint 04 — Transductive Competition Modeling.**
+
+`docs/TRANSDUCTIVE_OBJECTIVE.md` is now the highest-priority modeling specification. The
+historical sections below document how Checkpoint 03 was executed, but any statement that says
+03C.3 is current, that all learned X-only transforms must ignore target-set X, or that E13/E123
+must be the final fit is superseded for active work.
+
+Checkpoint 03 is closed as the **First Modeling Delivery**. The 59 target covariate vectors are
+known and should be exploited through properly validated transductive methods. Hidden target y
+remains unavailable.
+
+Active read order: `TRANSDUCTIVE_OBJECTIVE.md` → `.ai_handoff` → this guide →
+`checkpoints/04_transductive_competition/README.md` → historical Checkpoint 03 evidence.
+
+---
+
 # GeoCebada agent guide
 
 This is the operational entry point for any AI agent, collaborator or new contributor taking
@@ -7,7 +25,7 @@ Read this file before changing modeling/data logic. It tells you what is already
 files are authoritative, what can be changed, what must not be redone, and where the project
 currently stands.
 
-**Current phase:** Checkpoint 03 is open. Phases 03A/03B/03C.1/03C.2 are closed. Checkpoint 03C.3 reviews fixed equal-weight ensembles of the three robust 03C.2 finalists.
+**Historical phase recorded below:** Checkpoint 03 is closed; active work is Checkpoint 04.
 
 ---
 
@@ -554,7 +572,7 @@ Blind B5 concatenation is not consistently beneficial.
 
 Read `reports/checkpoint_03c2/checkpoint_03c2_report.md` and `checkpoints/03c3_finalist_ensembles/README.md` before changing the finalist set.
 
-03C.2 is competition-only and closed after the workstation benchmark. CatBoost executed on GPU. The robust individual finalists are C0+PLS, C3+Ridge and C1+CatBoost. 03C.3 evaluates only their fixed equal-weight combinations; do not tune continuous ensemble weights or revive clean-track comparisons unless explicitly reopened.
+03C.2/03C.3 are frozen historical baselines. Their finalists remain reference evidence, but Checkpoint 04 explicitly reopens model development, tuning and ensemble design under transductive pseudo-competition validation.
 
 03C.2 candidate model families include:
 
