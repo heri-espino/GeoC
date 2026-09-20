@@ -1,5 +1,10 @@
 # Reportes y entregables
 
+> **Checkpoint 04:** new development reports should evaluate fixed-target transductive
+> reconstruction. The primary new evidence is repeated pseudo-competition RMSE with
+> pseudo-target X visible and pseudo-target y hidden. Historical Checkpoint 02/03 reports remain
+> frozen reference evidence.
+
 This directory stores reproducible analysis/model outputs and final-deliverable material. It is
 not a source-data directory.
 
@@ -22,11 +27,9 @@ reports/
     └── checkpoint_02_report.md
 ```
 
-`reports/checkpoint_02/cv_folds.csv` is a frozen modeling artifact. Checkpoint 03 experiments
-must reuse it unless a new validation protocol is explicitly added and documented.
+`reports/checkpoint_02/cv_folds.csv` remains a frozen historical artifact. Checkpoint 04 adds a new documented transductive pseudo-competition protocol; legacy state/municipality folds remain stress tests.
 
-Do not overwrite Checkpoint 02 artifacts with later modeling results. Create a separate
-Checkpoint 03 report namespace.
+Do not overwrite Checkpoint 02/03 artifacts. New outputs belong under a Checkpoint 04 report namespace.
 
 Suggested final-deliverable areas remain:
 
