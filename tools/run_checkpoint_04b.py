@@ -438,8 +438,8 @@ def _render_report(
             "- 04B ranks methods with observed pseudo-target y only after predictions are frozen.",
             "- Actual-target rows receive support/routing metadata only; no hidden yield is "
             "scored.",
-            "- Target-matched RMSE is the primary fixed-target simulation; legacy state/municipality "
-            "folds remain stress tests.",
+            "- Target-matched RMSE is the primary fixed-target simulation; legacy "
+            "state/municipality folds remain stress tests.",
             "- 04C may spend more compute only on globally competitive model families.",
             "- 04D should refine local/graph mixtures only when 04B demonstrates pseudo-test gain.",
             "",
