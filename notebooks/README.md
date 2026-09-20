@@ -1,6 +1,6 @@
 # Notebooks
 
-> Estado actual: Checkpoint 02 está cerrado. Para modelado nuevo, leer `docs/AGENT_GUIDE.md`, usar `data/processed/features_v1/` y reutilizar `reports/checkpoint_02/cv_folds.csv`.
+> Estado actual: Checkpoint 04 está abierto. Para modelado nuevo, leer `docs/TRANSDUCTIVE_OBJECTIVE.md` y `docs/AGENT_GUIDE.md`. Las 59 X objetivo pueden usarse en análisis X-only transductivo; los 59 y ocultos no.
 
 Los notebooks son para exploración, visualización y experimentos iniciales. La lógica estable y reutilizable debe vivir en `src/geocebada/` y consumirse como una librería normal de Python.
 
@@ -93,7 +93,7 @@ Para descubrir funciones existentes antes de crear una nueva, consulta `docs/FUN
 
 ## Convención sugerida
 
-Los notebooks 01–02 ya existen y son exploratorios. La Feature Table v1 y los baselines de Checkpoint 02 ya se construyeron por scripts reproducibles, así que no se deben recrear como única lógica en notebooks. Para Checkpoint 03 pueden añadirse notebooks de análisis/visualización que importen el pipeline estable desde `src/geocebada/`.
+Los notebooks 01–02 ya existen y son exploratorios. La Feature Table v1 y los baselines de Checkpoint 02 ya se construyeron por scripts reproducibles, así que no se deben recrear como única lógica en notebooks. Para Checkpoint 04 pueden añadirse notebooks de diagnóstico de similitud, autocorrelación, covariate shift y trayectorias temporales, pero toda lógica estable de validación/modelado debe promoverse a `src/geocebada/`.
 
 ## Regla de promoción a librería
 
