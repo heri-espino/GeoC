@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-20  
-**Active phase:** Checkpoint 04B — Transductive pseudo-competition validation.
+**Active phase:** Checkpoint 04B — implementation complete; workstation pseudo-competition run pending.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,7 +144,7 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Implement Checkpoint 04B using the completed 04A evidence. Build repeated pseudo-competition masks that keep pseudo-target X visible, score with hidden pseudo-target y only after prediction, match the actual 59 target support/state/municipality geometry, and test global-vs-local/spatial/graph strategies with RMSE.
+Run the implemented Checkpoint 04B with `python tools/run_checkpoint_04b.py`. Review `reports/checkpoint_04b/` before opening 04C/04D. The primary evidence is target-matched pseudo-competition RMSE plus support-tier performance and the frozen state/municipality stress protocols.
 
 
 ## Checkpoint 04A implementation status
@@ -191,3 +191,33 @@ A display-only bug in the original generated 04A report labeled the expected dir
 `temporal_pearson_mean` as positive. The statistic is correct; the useful direction is
 negative because higher Pearson similarity should imply smaller absolute yield difference.
 The code has been fixed for future runs.
+
+
+## Checkpoint 04B implementation status
+
+04B code/config/tests are committed. The run will compare:
+
+```text
+GlobalMean / StateMean / municipality shrinkage
+GeoKNN k=3/5/10
+Agronomic-kNN
+mixed geographic+agronomic kNN
+one mixed geographic+agronomic+temporal kNN
+Global Ridge on transductive C1 PCs
+Global PLS on transductively preprocessed C0
+query-specific Local Ridge
+graph-Laplacian regression
+fixed global/local blends
+```
+
+Primary pseudo masks contain 41 parcels, matching the 59/197 hidden fraction after scaling to
+the 138 labeled universe. Target-matched mask construction uses only state/municipality and
+X-derived geographic/agronomic/temporal/adversarial support descriptors. It never receives y.
+
+04B also creates a new dynamic X-only support score. This is the support quantity allowed for
+method routing. The 04A support score included labeled-neighbor-y consistency and therefore
+must not be used to select pseudo-target masks or route methods during pseudo-validation.
+
+Expected outputs include every pseudo prediction, per-split metrics, protocol summaries,
+support-tier RMSE, robustness tables, actual-target X-only support, and a 59-row method-routing
+proposal with no target yield prediction.
