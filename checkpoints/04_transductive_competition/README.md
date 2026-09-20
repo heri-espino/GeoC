@@ -41,6 +41,37 @@ Required outputs should include, where feasible:
 
 The 59 parcels should receive a target-specific predictability/support profile rather than be treated as exchangeable.
 
+### 04A implementation
+
+The first runnable 04A implementation is now committed:
+
+```text
+configs/checkpoint04a.yaml
+src/geocebada/evaluation/checkpoint04a.py
+src/geocebada/visualization/checkpoint04a.py
+tools/run_checkpoint_04a.py
+tests/test_checkpoint04a.py
+```
+
+Run it from the repository root:
+
+```powershell
+python tools\run_checkpoint_04a.py
+```
+
+It writes the complete result set under `reports/checkpoint_04a/`: target and leave-one-out
+neighbor tables, temporal-pair diagnostics, all 138-choose-2 labeled-pair comparisons,
+adversarial shift scores, Moran statistics, the 59-row support profile, a Markdown/JSON report,
+summary plots and one Planet-NDVI best-neighbor panel for each target.
+
+The temporal first pass uses the canonical April-October 2025 monthly trajectories already
+derived from BASIC/PRO. It preserves sensor identity and adds Pearson/Spearman similarity,
+best-lag correlation and normalized DTW. Raw capture-level alignment can be added after these
+results show whether additional temporal resolution is worth the complexity.
+
+No 04A result should be interpreted before the workstation run completes.
+
+
 ## 04B — Transductive pseudo-competition validation
 
 Create repeated pseudo-target splits from the 138 labels. For each split, pseudo-target X is visible throughout X-only transductive learning while pseudo-target y is hidden until scoring.
