@@ -1,0 +1,188 @@
+schema_version: 1
+updated: 2026-09-20
+
+stage:
+  name: transductive_pseudo_competition_validation
+  checkpoint: 04B
+  active_track: competition
+  hidden_prediction_targets_used: false
+  purpose: >
+    Simulate the real 59-target information structure by hiding y for repeated
+    pseudo-target parcels while keeping pseudo-target X visible. Compare global,
+    local, spatial, graph and blended methods with RMSE and route methods by
+    X-only support tier.
+
+inputs:
+  base_directory: data/processed/features_v1
+  base_table: parcel_features_all.csv
+  base_manifest: feature_manifest.json
+  agronomic_directory: data/processed/agronomic_features_v1
+  agronomic_table: parcel_agronomic_features.csv
+  agronomic_manifest: feature_manifest.json
+  empirical_directory: data/processed/empirical_features_v1
+  empirical_table: parcel_empirical_features.csv
+  empirical_manifest: feature_manifest.json
+  checkpoint04a_directory: reports/checkpoint_04a
+  checkpoint04a_embeddings: transductive_embeddings.csv
+  checkpoint04a_adversarial_scores: adversarial_scores.csv
+  checkpoint04a_temporal_pairs: temporal_pairs.csv
+  frozen_folds: reports/checkpoint_02/cv_folds.csv
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  state_column: meta_estado
+  municipality_column: meta_municipio
+  latitude_column: base_centroid_lat
+  longitude_column: base_centroid_lon
+
+feature_policy:
+  allowed_modes: [clean, competition]
+  exclude_sources:
+    - external_chirps_daily
+  exclude_columns: []
+
+representations:
+  c0_name: C0_base
+  c1_name: C1_agronomic
+  c4_name: C4_all_deterministic
+  c0_layers: [base]
+
+profile_matching:
+  columns:
+    - nearest_geo_km
+    - nearest_agro_distance
+    - best_temporal_similarity
+    - adversarial_target_probability
+
+split_design:
+  pseudo_target_fraction: 0.29949238578680204
+  n_pseudo_targets: 41
+  random_state: 20260920
+
+  target_matched:
+    repeats: 16
+    candidates_per_repeat: 80
+    temperature: 0.85
+    municipality_smoothing: 0.02
+    diversity_penalty: 0.08
+
+  state_random:
+    repeats: 8
+    random_state_offset: 10000
+
+  legacy_stress:
+    protocols:
+      - fold_state_stratified
+      - fold_municipality_grouped
+
+support:
+  high_threshold: 0.67
+  low_threshold: 0.33
+
+distance:
+  temporal_component: best_lag_corr_mean
+  mixes:
+    GeoAgro_75_25:
+      geographic: 0.75
+      agronomic: 0.25
+      temporal: 0.0
+    GeoAgro_50_50:
+      geographic: 0.50
+      agronomic: 0.50
+      temporal: 0.0
+    GeoAgro_25_75:
+      geographic: 0.25
+      agronomic: 0.75
+      temporal: 0.0
+    GeoAgroTemporal:
+      geographic: 0.50
+      agronomic: 0.35
+      temporal: 0.15
+
+models:
+  municipality_shrinkage:
+    prior_strengths: [3.0, 8.0]
+
+  geo_knn:
+    k_values: [3, 5, 10]
+    power: 1.0
+
+  agronomic_knn:
+    k_values: [5]
+    power: 1.0
+
+  mixed_knn:
+    k_values: [5]
+    power: 1.0
+    distance_names:
+      - GeoAgro_75_25
+      - GeoAgro_50_50
+      - GeoAgro_25_75
+      - GeoAgroTemporal
+
+  ridge_c1:
+    alphas: [10.0, 100.0, 1000.0]
+
+  pls_c0:
+    n_components: [4, 8, 12]
+
+  local_ridge:
+    distance_name: GeoAgro_50_50
+    variants:
+      - k: 20
+        alpha: 100.0
+      - k: 30
+        alpha: 100.0
+
+  graph:
+    distance_name: GeoAgro_50_50
+    variants:
+      - k: 6
+        regularization: 0.5
+      - k: 8
+        regularization: 2.0
+
+  blends:
+    - name: Blend_PLS8_Geo5
+      members:
+        - GlobalPLS_C0_8
+        - GeoKNN_5
+      weights: [0.5, 0.5]
+    - name: Blend_PLS8_Graph8
+      members:
+        - GlobalPLS_C0_8
+        - Graph_k8_lam2
+      weights: [0.5, 0.5]
+    - name: Blend_Ridge100_Geo5
+      members:
+        - GlobalRidge_C1_100
+        - GeoKNN_5
+      weights: [0.5, 0.5]
+
+routing:
+  primary_family: target_matched
+  support_tiers: [low, mid, high]
+
+figures:
+  dpi: 170
+  top_methods: 10
+
+outputs:
+  directory: reports/checkpoint_04b
+  figures_directory: figures
+  pseudo_split_membership: pseudo_competition_splits.csv
+  split_quality: split_quality.csv
+  actual_target_x_support: actual_target_x_support.csv
+  pseudo_predictions: pseudo_test_predictions.csv
+  split_metrics: split_metrics.csv
+  protocol_summary: protocol_summary.csv
+  support_tier_summary: support_tier_summary.csv
+  robustness_summary: robustness_summary.csv
+  support_tier_method_routing: support_tier_method_routing.csv
+  actual_target_method_routing: actual_target_method_routing.csv
+  run_report_json: checkpoint_04b_report.json
+  run_report_markdown: checkpoint_04b_report.md
