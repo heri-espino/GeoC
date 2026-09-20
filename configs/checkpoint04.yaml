@@ -1,0 +1,70 @@
+schema_version: 1
+updated: 2026-09-19
+
+objective:
+  mode: transductive_fixed_target_reconstruction
+  active_track: competition
+  labeled_parcels: 138
+  target_parcels: 59
+  allow_target_covariates: true
+  allow_joint_x_only_representation_learning: true
+  hidden_target_access: forbidden
+  primary_goal: minimize_error_on_fixed_59_reference_yields
+
+validation:
+  primary:
+    name: transductive_pseudo_competition
+    hide: y_only
+    expose_pseudo_target_x: true
+    repeated: true
+    target_distribution_matched: true
+  stress_tests:
+    - fold_state_stratified
+    - fold_municipality_grouped
+  metrics: [rmse, mae, r2]
+
+phases:
+  04A:
+    name: target_topology_similarity
+    tasks:
+      - spatial_neighbors
+      - feature_space_neighbors
+      - temporal_curve_similarity
+      - lagged_cross_correlation
+      - optional_dtw
+      - adversarial_train_vs_target
+      - support_extrapolation
+      - yield_spatial_autocorrelation
+      - baseline_residual_autocorrelation
+  04B:
+    name: transductive_validation
+    tasks:
+      - build_repeated_pseudo_competitions
+      - match_actual_target_covariate_geometry
+      - preserve_hidden_y_until_scoring
+  04C:
+    name: high_compute_global_models
+  04D:
+    name: local_graph_domain_adaptation
+  04E:
+    name: external_evidence_enrichment
+    priorities:
+      - siap_2025_cebadagrano_cycle_temporal
+      - chirps_qc
+      - wapor
+      - soilgrids
+      - terrain
+      - daily_weather_stress
+  04F:
+    name: final_transductive_ensemble
+
+historical_baseline:
+  checkpoint: 03
+  status: frozen_first_modeling_delivery
+  retained_reference_candidates:
+    E123:
+      state_rmse: 0.5121
+      municipality_rmse: 0.7481
+    E13:
+      state_rmse: 0.5082
+      municipality_rmse: 0.7488
