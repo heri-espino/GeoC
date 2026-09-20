@@ -39,6 +39,26 @@ El identificador canónico es `ID_POLIGONO`. La documentación oficial confirma 
 Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conocemos \(X_L\), \(X_U\) y \(y_L\), y buscamos reconstruir \(y_U\). Una única función global \(f(X)\) es sólo una de varias estrategias posibles.
 
 
+
+## Ejecutar Checkpoint 04B
+
+04B ya está implementado y es la fase activa. Después de actualizar el repositorio:
+
+```powershell
+git pull
+conda activate geocebada
+python -m pip install -e ".[dev,geo]"
+python tools\run_checkpoint_04b.py
+```
+
+El runner simula repetidamente el concurso real: oculta únicamente `y` de pseudo-targets,
+mantiene sus `X` visibles, y calcula RMSE para modelos globales, kNN geográficos/agronómicos,
+modelos locales, grafos y blends. También conserva los folds state/municipality de Checkpoint 03
+como stress tests.
+
+Los resultados se generan en `reports/checkpoint_04b/`. No produce todavía los 59 rendimientos
+finales; produce evidencia para decidir qué estrategia usar y cuándo confiar en modelos locales.
+
 ## Checkpoint 04A — completado
 
 La primera etapa transductiva ya fue ejecutada y sus resultados están versionados en `reports/checkpoint_04a/`. Para reproducirla:
