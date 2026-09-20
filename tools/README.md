@@ -22,6 +22,7 @@ notebook cells.
 | `run_checkpoint_03c.py` | Fixed-fold clean/competition representation benchmark with Ridge10 and ExtraTrees | Checkpoint 03C.1 closed |
 | `run_checkpoint_03c2.py` | Competition-only nested model-family benchmark with fold-safe tuning/discovery | Checkpoint 03C.2 closed |
 | `run_checkpoint_03c3.py` | Deterministic OOF review of three finalists and fixed equal-weight ensembles | Checkpoint 03C.3 closed/frozen |
+| `run_checkpoint_04a.py` | Build 59-target geographic/feature/temporal topology, shift, autocorrelation, support tables and figures | **Checkpoint 04A implemented; run on workstation** |
 | `generate_function_index.py` | Regenerate `docs/FUNCTION_INDEX.md` from public package API | run after public API changes |
 | `inspect_reference_docx.py` | Inspect reference DOCX content | utility |
 | `_netcdf_catalog_worker.py` | Internal NetCDF catalog worker | internal; not a direct user workflow |
