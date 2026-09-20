@@ -20,7 +20,7 @@ E13 PLS + CatBoost:    state RMSE 0.5082, municipality RMSE 0.7488
 
 These are baseline development scores. Historical 03 configs/reports must not be modified.
 
-## 04A — Target-set topology and similarity
+## 04A — Target-set topology and similarity — IMPLEMENTED, RUN PENDING
 
 Build a deterministic diagnostic layer for the relationship between the 59 targets and the 138 labeled parcels.
 
