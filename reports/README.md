@@ -46,3 +46,13 @@ Original/source data do not belong here. Tables, figures, metrics and prediction
 regenerable from code and should record the relevant commit/config/model context.
 
 See `docs/AGENT_GUIDE.md` for current project state and reporting rules.
+
+
+## Checkpoint 04B
+
+`reports/checkpoint_04b/` is the active pseudo-competition namespace. Its runner hides
+pseudo-target y while keeping pseudo-target X visible and compares global/local/spatial/graph
+methods with repeated RMSE.
+
+Until the workstation run finishes, only `reports/checkpoint_04b/README.md` should exist.
+Generated numerical artifacts must come from `python tools/run_checkpoint_04b.py`.
