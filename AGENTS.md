@@ -2,147 +2,132 @@
 
 These instructions apply repository-wide unless a more specific handoff adds constraints.
 
-## Read before changing code
+## Read before changing modeling/data logic
 
-1. `docs/AGENT_GUIDE.md` — operational project entry point.
+1. `docs/TRANSDUCTIVE_OBJECTIVE.md` — current mathematical and methodological objective.
 2. `.ai_handoff` — compact current-state handoff.
-3. `docs/PROJECT_HISTORY.md` — chronological record of what happened and why.
-4. `README.md`.
-5. `checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` — completed milestones.
-6. `checkpoints/03_modeling/README.md`, `checkpoints/03b_empirical_feature_discovery/README.md` and `checkpoints/03c_representation_benchmark/README.md` — 03A/03B closed; 03C.1 current phase.
-7. `data/processed/features_v1/README.md`, `data/processed/agronomic_features_v1/README.md`, `data/processed/empirical_features_v1/README.md`, `docs/AGRONOMIC_FEATURES_V1.md`, `docs/EMPIRICAL_FEATURES_V1.md` and `reports/checkpoint_02/checkpoint_02_report.md` before modeling.
-8. `docs/DATA_SOURCES.md`, `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` before data/feature changes.
-9. `data/.ai_handoff` and `data/README.md` for data/geospatial work.
-10. `docs/VARIABLES.md` for the source-backed variable dictionary.
-11. `src/geocebada/README.md` and `docs/FUNCTION_INDEX.md` before creating reusable helpers.
-12. relevant official/reference material under `docs/`.
-13. **`app/AGENTS.md` before any Streamlit/app/deployment change**.
+3. `docs/AGENT_GUIDE.md` — operational entry point.
+4. `docs/PROJECT_HISTORY.md` — chronology and frozen historical decisions.
+5. `checkpoints/04_transductive_competition/README.md` — active checkpoint.
+6. `checkpoints/03c3_finalist_ensembles/README.md` and `reports/checkpoint_03c2/checkpoint_03c2_report.md` — First Modeling Delivery baseline only.
+7. `data/.ai_handoff`, `docs/DATA_SOURCES.md`, `docs/FEATURE_TABLE_V1.md` — data semantics.
+8. `docs/FUNCTION_INDEX.md` before adding reusable helpers.
+9. `app/AGENTS.md` before Streamlit/deployment changes.
 
-Do not replace confirmed project facts with guesses or generic ML assumptions. Checkpoints 01, 02, 03A and 03B are closed. Checkpoint 03C.2 is closed after the competition-only workstation benchmark. The current phase is Checkpoint 03C.3 — finalist equal-weight ensemble review. From 03C.2 onward do not run the clean track unless the user explicitly reopens it; read `.ai_handoff`, `reports/checkpoint_03c2/checkpoint_03c2_report.md` and `checkpoints/03c3_finalist_ensembles/README.md` before changing model selection.
+## Active objective
+
+Checkpoint 04 is **Transductive Competition Modeling**. There are 59 fixed target parcels whose
+reference yields are hidden by FIRA. The current purpose is to reconstruct those 59 values as
+accurately as possible, not to optimize a generic model intended to generalize to arbitrary
+future parcels.
+
+Use all rule-permitted observable evidence. All X for all 197 parcels may inform X-only
+representations and the final transductive inference. The hidden y values may not.
+
+Treat FIRA's hidden values as the external scoring reference, not as available data and not
+necessarily as error-free physical truth. A useful operational analogy is missing/untrusted
+reported parcel yields that must be reconstructed from independent evidence.
 
 ## Core invariants
 
-- Canonical parcel identifier: `ID_POLIGONO`.
-- Canonical target: `RENDIMIENTO_T_HA`.
-- Official split: 197 parcels = 138 `ENTRENAMIENTO` + 59 `PREDICCION`.
-- The target corresponds to the **April–October 2025 production cycle**.
-- Hidden prediction targets are never pseudo-ground-truth.
-- `data/source/` and `docs/official/` are immutable source evidence.
-- Generated data belongs in `data/raw/`, `data/interim/` or `data/processed/`; the canonical `data/processed/features_v1/`, `data/processed/agronomic_features_v1/` and `data/processed/empirical_features_v1/` artifacts are intentionally versioned, while other raw/interim/processed outputs remain ignored unless explicitly promoted.
-- Models belong in `models/`; metrics/figures/predictions in `reports/`.
-- Stable production/reusable logic belongs in `src/geocebada/`; notebooks are exploratory.
+- canonical ID: `ID_POLIGONO`;
+- target: `RENDIMIENTO_T_HA`;
+- split: 197 = 138 `ENTRENAMIENTO` + 59 `PREDICCION`;
+- target cycle: April–October 2025;
+- states: Hidalgo, Puebla, Tlaxcala;
+- BASIC/PRO rows are repeated parcel/date/sensor observations, not independent yield samples;
+- current modeling track: `competition`; `clean` is historical/provenance only;
+- direct use or acquisition of the 59 hidden y values is forbidden.
 
-## Confirmed remote-sensing sources
+## Transductive validation rule
 
-- BASIC: 107,666 rows × 96 columns, 197 parcels, Sentinel-2 + Landsat, 2022–2025.
-- BASIC has 23 index families with parcel-level `promedio`, `std`, `max`, `min`; see `docs/VARIABLES.md`.
-- PRO: 47,804 rows × 20 columns, 197 parcels, Planet, 2025.
-- PRO contains NDVI, EVI, LAI and MSAVI with `promedio`, `std`, `max`, `min`.
-- BASIC/PRO are longitudinal: rows are repeated parcel/date/sensor observations, not independent yield samples.
-- Same-named indices from different sensors must not be silently treated as equivalent.
+From Checkpoint 04 onward, an evaluation fold should mimic the real competition:
 
-## Reusable-library rule
+- pseudo-target y is hidden;
+- pseudo-target X remains visible to X-only transductive steps;
+- any target-aware step sees only the remaining labeled y;
+- RMSE is computed only after predictions are frozen.
 
-Team notebooks and the web app must import common behavior from the `geocebada` package. Do not duplicate loaders, path helpers, feature transforms, model utilities or evaluation code across notebooks.
+This permits joint X-only PCA, clustering, graph construction, density estimation,
+target-set-aware normalization and similar operations, provided the same information structure
+is reproduced during validation.
 
-Before writing a public function:
+Target-aware feature search, supervised feature selection and any operation using y must still
+be restricted to the labeled portion of each pseudo-competition split.
 
-1. search `docs/FUNCTION_INDEX.md`;
-2. inspect the relevant package module;
-3. reuse/extend existing behavior if responsibility overlaps.
+Legacy state-stratified and municipality-grouped folds are retained as stress-test evidence;
+they are not the only selection criterion in Checkpoint 04.
 
-After changing the public API, run:
+## Similarity and dependence are first-class signals
 
-```bash
-python tools/generate_function_index.py
+Checkpoint 04 should explicitly test:
+
+- spatial autocorrelation of observed yields;
+- spatial autocorrelation of baseline residuals;
+- target-to-train geographic neighborhoods;
+- correlation/cross-correlation of longitudinal vegetation curves;
+- lagged phenological similarity;
+- dynamic-time-warping or other time-series distances when justified;
+- climate/soil/topography similarity;
+- joint graph neighborhoods over the 197 parcels;
+- whether closer/similar labeled parcels actually have smaller yield differences.
+
+Do not assume similarity transfers yield; measure it on the 138 labels.
+
+## External-data directive
+
+Public external data are desirable when they can reduce uncertainty for the fixed 59 targets.
+Priority sources already present include SIAP 2003–2025, CHIRPS, WaPOR, SoilGrids, INEGI CEM
+and official climate/topography.
+
+SIAP 2025 deserves special attention. Audit the most specific valid proxy for `Cebada grano`,
+the relevant production cycle and `Temporal` modality. Never mix grain barley with forage
+barley. Administrative joins use full CVEGEO / state+municipality semantics, not municipality
+ID alone.
+
+Additional public sources may be added when there is a concrete hypothesis and provenance is
+documented.
+
+## First Modeling Delivery is frozen history
+
+Checkpoint 03 is closed and preserved as the first conventional modeling delivery.
+
+```text
+F1 C0+PLS:      state 0.5339, municipality 0.7621
+F2 C3+Ridge:    state 0.5331, municipality 0.7650
+F3 C1+CatBoost: state 0.5235, municipality 0.7709
+E123:           state 0.5121, municipality 0.7481
+E13:            state 0.5082, municipality 0.7488
 ```
 
-Public reusable functions should have docstrings, type hints and tests when stable. Export commonly used symbols through the relevant `__init__.py`.
+Do not mutate Checkpoint 03 configs/reports to improve these historical scores. Checkpoint 04
+may reuse, retune, supersede or ensemble these models under the new validation doctrine.
 
-## Checkpoint 03B discovery rule
+## Data and implementation rules
 
-The materialized Empirical Features v1 layer must remain target-free. Deterministic row-wise
-X transforms may be built once for all 197 parcels.
+- source evidence in `data/source/`, `docs/official/`, `docs/reference/` is immutable;
+- preserve sensor provenance across Sentinel-2, Landsat and Planet;
+- no many-to-many accidental joins;
+- explicit CRS checks/reprojection before spatial distances/areas;
+- stable reusable logic belongs in `src/geocebada/`; notebooks orchestrate exploration;
+- use `geocebada.paths`; avoid machine-specific absolute paths;
+- add schema/ID/row-count assertions;
+- Python 3.11+;
+- use GPU for expensive supported searches when available;
+- add/update tests for stable behavior.
 
-Any target-aware formula search must be fitted inside training folds. Use
-`FoldLocalExpressionMiner` or an equivalently leakage-safe pipeline; never discover formulas
-from all 138 labels and then report the frozen CV as if those formulas had been pre-specified.
+## Documentation and provenance
 
-PCA, clustering, kernels and other learned representations are not global processed features;
-fit them inside folds during Checkpoint 03C.
+After substantive work:
 
-## Streamlit maintenance rule
-
-`app/AGENTS.md` is the authoritative app-specific maintenance contract. It documents:
-
-- current pages/capabilities;
-- thin-interface architecture;
-- prediction-set and leakage guardrails;
-- CRS/map safety;
-- Streamlit Community Cloud dependency precedence;
-- local and Cloud smoke tests;
-- caching/performance conventions;
-- the checklist that must be followed when dependencies, data interpretation, model artifacts or pages change.
-
-Important deployment invariant: local Conda configuration lives in `environment.dev.yml`; do **not** reintroduce a root `environment.yml` without checking Streamlit dependency-file precedence. Cloud bootstrapping uses root `requirements.txt`, which installs the package/extras defined in `pyproject.toml`.
-
-## Documentation rule
-
-Sphinx API docs live under `docs/api/` and derive from source docstrings. Build with:
-
-```bash
-pip install -e ".[docs]"
-sphinx-build -b html docs docs/_build/html
-```
-
-`checkpoints/01_data/README.md` and `checkpoints/02_features/README.md` are completed checkpoints. `docs/DATA_SOURCES.md` is the operational inventory. `docs/DATA_CONTRACT_V2.md` and `configs/data_contract_v2.yaml` define the executable feature-engineering gate. `docs/VARIABLES.md` is the human-facing variable dictionary; source/reference documents remain authoritative when they conflict with derived documentation.
-
-## Known spatial constraints
-
-- CHIRPS precipitation: EPSG:4326.
-- CHIRTS-ERA5 temperature: EPSG:4326.
-- INEGI CEM topography: EPSG:6372.
-- Official parcel CRS has been directly inspected as EPSG:4326.
-
-Never perform overlays, metric distances or area calculations without explicit CRS checks/reprojection.
-
-## Leakage constraints
-
-- Do not use hidden targets for model selection/evaluation.
-- The target cycle is April–October 2025, but the **operational prediction cutoff is not yet frozen**. Do not use satellite/climate observations after the chosen forecast horizon.
-- Fit learned preprocessing inside CV folds.
-- Never row-random split BASIC/PRO for supervised validation; group by parcel at minimum.
-- Treat spatial autocorrelation as a validation risk; random parcel CV alone may be optimistic.
-- Do not tune against the final 59 predictions by subjective inspection.
-- Preserve sensor provenance when combining satellite sources.
-
-## Current unresolved questions
-
-Do not silently assume:
-
-- exact pre-harvest prediction cutoff/window within the April–October 2025 cycle;
-- sensor-harmonization strategy between BASIC and PRO;
-- official split stratification mechanism;
-- final model-selection decision after comparing the frozen state-stratified and municipality-grouped protocols;
-
-## Implementation style
-
-- Python 3.11+.
-- Prefer small, testable functions.
-- Preserve reproducibility and `random_seed: 42` unless documented otherwise.
-- Add assertions for schema, unique parcel IDs, row counts, CRS and joins.
-- Avoid absolute local paths; use `geocebada.paths`.
-- Keep app logic thin; inference must reuse the frozen library pipeline.
-- Add/update tests for stable behavior.
-
-## Before finishing a substantive task
-
-- run relevant tests/lint/docs when available;
-- report what was actually verified;
-- regenerate `docs/FUNCTION_INDEX.md` after public API changes;
-- update `.ai_handoff` if project facts/status changed;
+- update `.ai_handoff` if current state changed;
 - update `data/.ai_handoff` for data-specific discoveries;
-- update `docs/AI_USAGE.md` when AI materially contributed;
-- for Streamlit/deployment changes, follow `app/AGENTS.md` and update `docs/DEPLOYMENT.md` when the deployment contract changes.
+- update `docs/PROJECT_HISTORY.md` for milestones;
+- update the active Checkpoint 04 README;
+- record material AI contribution in `docs/AI_USAGE.md`;
+- regenerate `docs/FUNCTION_INDEX.md` after public API changes;
+- follow `app/AGENTS.md` for app work.
 
-If source evidence contradicts repository documentation, preserve source evidence and update the derived documentation.
+Historical documentation may describe older leakage-safe inductive rules. Those remain valid
+for interpreting Checkpoint 03 but are superseded for active Checkpoint 04 by
+`docs/TRANSDUCTIVE_OBJECTIVE.md`.
