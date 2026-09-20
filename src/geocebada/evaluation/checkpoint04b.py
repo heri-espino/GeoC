@@ -358,15 +358,39 @@ def generate_target_matched_splits(
     municipality_smoothing: float,
     diversity_penalty: float,
     random_state: int,
+    verbose: bool = False,
 ) -> list[PseudoSplit]:
-    """Generate repeated X-only pseudo-target masks matched to the real 59 targets."""
+    """Generate repeated X-only pseudo-target masks matched to the real 59 targets.
+
+    Candidate pools and their X-only sampling weights are invariant across
+    repeats. Precomputing them avoids millions of repeated pandas ``iloc`` calls
+    during the Monte Carlo search.
+    """
 
     train_positions = np.flatnonzero(frame[SPLIT_COLUMN].eq(TRAIN_VALUE).to_numpy())
     real_targets = np.flatnonzero(frame[SPLIT_COLUMN].eq(PREDICTION_VALUE).to_numpy())
-    target_state_counts = (
-        frame.iloc[real_targets]["meta_estado"].astype(str).value_counts().to_dict()
-    )
+    states = frame["meta_estado"].astype(str).to_numpy()
+    target_state_counts = pd.Series(states[real_targets]).value_counts().to_dict()
     state_quotas = hamilton_apportion(target_state_counts, int(n_pseudo_targets))
+
+    state_candidates: dict[str, np.ndarray] = {}
+    state_weights: dict[str, np.ndarray] = {}
+    for state, quota in state_quotas.items():
+        candidates = train_positions[states[train_positions] == state].astype(int)
+        if int(quota) > len(candidates):
+            raise ValueError(
+                f"Requested {quota} pseudo-targets in {state}, only {len(candidates)} "
+                "labeled parcels are available."
+            )
+        state_candidates[state] = candidates
+        state_weights[state] = _sampling_weights(
+            frame,
+            profile_coordinates,
+            candidates=candidates,
+            real_target_positions=real_targets,
+            temperature=temperature,
+            municipality_smoothing=municipality_smoothing,
+        )
 
     rng = np.random.default_rng(int(random_state))
     previous: list[set[int]] = []
@@ -380,29 +404,12 @@ def generate_target_matched_splits(
         for _ in range(int(candidates_per_repeat)):
             selected: list[int] = []
             for state, quota in state_quotas.items():
-                candidates = [
-                    int(position)
-                    for position in train_positions
-                    if str(frame.iloc[int(position)]["meta_estado"]) == state
-                ]
-                if quota > len(candidates):
-                    raise ValueError(
-                        f"Requested {quota} pseudo-targets in {state}, only {len(candidates)} "
-                        "labeled parcels are available."
-                    )
-                weights = _sampling_weights(
-                    frame,
-                    profile_coordinates,
-                    candidates=candidates,
-                    real_target_positions=real_targets,
-                    temperature=temperature,
-                    municipality_smoothing=municipality_smoothing,
-                )
+                candidates = state_candidates[state]
                 chosen = rng.choice(
                     candidates,
                     size=int(quota),
                     replace=False,
-                    p=weights,
+                    p=state_weights[state],
                 )
                 selected.extend(map(int, chosen))
 
@@ -436,8 +443,16 @@ def generate_target_matched_splits(
                 profile_mean_distance=float(best_quality[2]),
             )
         )
-    return splits
+        if verbose:
+            print(
+                f"    matched split {repeat:02d}/{int(repeats):02d}: "
+                f"objective={best_quality[0]:.4f}, "
+                f"municipality_tv={best_quality[1]:.4f}, "
+                f"profile_distance={best_quality[2]:.4f}",
+                flush=True,
+            )
 
+    return splits
 
 def generate_state_random_splits(
     frame: pd.DataFrame,
