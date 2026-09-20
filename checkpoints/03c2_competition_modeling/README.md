@@ -1,5 +1,11 @@
 # Checkpoint 03C.2 — Competition-only model-family benchmark
 
+> **First Modeling Delivery remark (2026-09-19):** this checkpoint remains a frozen
+> conventional nested-CV benchmark. It is no longer the active selection doctrine. Checkpoint
+> 04 may reuse or supersede these model families using transductive pseudo-competition
+> validation in which pseudo-target X is visible but pseudo-target y is hidden.
+
+
 **Status:** closed; workstation benchmark completed  
 **Opened:** 2026-09-18
 
