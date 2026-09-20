@@ -41,6 +41,23 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `build_finalist_ensemble_predictions` | function | `geocebada.evaluation.checkpoint03c3` | Build fixed finalist and equal-weight ensemble predictions from 03C.2 OOF rows. | `src/geocebada/evaluation/checkpoint03c3.py` |
 | `summarize_finalist_ensemble_results` | function | `geocebada.evaluation.checkpoint03c3` | Summarize fold, protocol, robustness and residual-correlation evidence. | `src/geocebada/evaluation/checkpoint03c3.py` |
 | `validate_finalist_oof_coverage` | function | `geocebada.evaluation.checkpoint03c3` | Require complete one-row-per-parcel OOF coverage for every 03C.3 candidate. | `src/geocebada/evaluation/checkpoint03c3.py` |
+| `EmbeddingResult` | class | `geocebada.evaluation.checkpoint04a` | One transductive PCA representation and its metadata. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `adversarial_train_target_validation` | function | `geocebada.evaluation.checkpoint04a` | Cross-validate a train-vs-target classifier in a transductive X embedding. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `build_checkpoint03_ensemble_residuals` | function | `geocebada.evaluation.checkpoint04a` | Reconstruct E13/E123 OOF residuals from the frozen 03C.2 finalists. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `build_monthly_temporal_arrays` | function | `geocebada.evaluation.checkpoint04a` | Extract configured monthly parcel trajectories from Feature Table v1. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `build_target_support_profile` | function | `geocebada.evaluation.checkpoint04a` | Assemble one diagnostic support profile for each of the 59 targets. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `build_train_pair_validation` | function | `geocebada.evaluation.checkpoint04a` | Build one row per labeled-labeled pair with distance and \|delta y\|. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `build_transductive_pca_embedding` | function | `geocebada.evaluation.checkpoint04a` | Fit median imputation, scaling and PCA jointly on all available X rows. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `feature_neighbor_tables` | function | `geocebada.evaluation.checkpoint04a` | Compute Euclidean neighbour tables in one transductive PCA space. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `feature_shift_table` | function | `geocebada.evaluation.checkpoint04a` | Compute per-feature standardized mean and missingness shift. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `geographic_neighbor_tables` | function | `geocebada.evaluation.checkpoint04a` | Return target-to-train and train leave-one-out geographic neighbours. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `haversine_distance_matrix` | function | `geocebada.evaluation.checkpoint04a` | Return the full great-circle distance matrix in kilometres. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `knn_weight_matrix` | function | `geocebada.evaluation.checkpoint04a` | Create a symmetric row-standardized kNN spatial weight matrix. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `morans_i` | function | `geocebada.evaluation.checkpoint04a` | Compute Moran's I and a two-sided permutation p-value. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `resolve_numeric_representation_features` | function | `geocebada.evaluation.checkpoint04a` | Resolve one deterministic numeric competition representation. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `summarize_similarity_yield_relationships` | function | `geocebada.evaluation.checkpoint04a` | Summarize monotone association between pair similarity and \|delta yield\|. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `temporal_neighbor_tables` | function | `geocebada.evaluation.checkpoint04a` | Rank temporal neighbours by high lagged correlation then low DTW. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `temporal_pair_metrics` | function | `geocebada.evaluation.checkpoint04a` | Compute aggregate target-train and unique train-train temporal similarities. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
@@ -101,6 +118,16 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `covariate_shift_screen` | function | `geocebada.statistics.inference` | Compare numeric covariates between training and prediction subsets. | `src/geocebada/statistics/inference.py` |
 | `linear_regression_diagnostics` | function | `geocebada.statistics.inference` | Fit OLS-style linear regression and return core assumption diagnostics. | `src/geocebada/statistics/inference.py` |
 | `vif_table` | function | `geocebada.statistics.inference` | Compute variance inflation factors using auxiliary linear regressions. | `src/geocebada/statistics/inference.py` |
+| `plot_adversarial_roc` | function | `geocebada.visualization.checkpoint04a` | Plot the train-vs-target adversarial ROC curve. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_moran_scatter` | function | `geocebada.visualization.checkpoint04a` | Plot centered values against their spatial lag. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_nearest_distance_distribution` | function | `geocebada.visualization.checkpoint04a` | Compare target-to-train nearest distances with train leave-one-out distances. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_pca_embedding` | function | `geocebada.visualization.checkpoint04a` | Plot the first two transductive PCA coordinates. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_primary_temporal_neighbor_panels` | function | `geocebada.visualization.checkpoint04a` | Write one target-vs-best-neighbor curve figure for each target. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_similarity_vs_yield_difference` | function | `geocebada.visualization.checkpoint04a` | Plot one train-train distance/similarity metric against absolute yield difference. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_support_ranking` | function | `geocebada.visualization.checkpoint04a` | Plot all 59 targets ordered by composite support. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_temporal_similarity_distribution` | function | `geocebada.visualization.checkpoint04a` | Compare nearest temporal similarity for targets and labeled LOO parcels. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_top_feature_shift` | function | `geocebada.visualization.checkpoint04a` | Plot features with the largest absolute standardized mean shift. | `src/geocebada/visualization/checkpoint04a.py` |
+| `plot_train_target_map` | function | `geocebada.visualization.checkpoint04a` | Plot parcel centroids by official split. | `src/geocebada/visualization/checkpoint04a.py` |
 | `correlation_heatmap` | function | `geocebada.visualization.exploration` | Build an interactive correlation heatmap for selected numeric variables. | `src/geocebada/visualization/exploration.py` |
 | `correlation_scatter` | function | `geocebada.visualization.exploration` | Build an interactive scatter plot for exploring bivariate relationships. | `src/geocebada/visualization/exploration.py` |
 | `distribution_figure` | function | `geocebada.visualization.exploration` | Build an interactive histogram for one numeric variable. | `src/geocebada/visualization/exploration.py` |
