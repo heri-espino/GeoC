@@ -1,6 +1,6 @@
 # Checkpoint 04 — Transductive Competition Modeling
 
-**Status:** OPEN  
+**Status:** OPEN — 04A COMPLETE, 04B NEXT  
 **Opened:** 2026-09-19
 
 Checkpoint 04 begins after the closure of Checkpoint 03 as the **First Modeling Delivery**. Read `docs/TRANSDUCTIVE_OBJECTIVE.md` before implementing this checkpoint.
@@ -20,7 +20,7 @@ E13 PLS + CatBoost:    state RMSE 0.5082, municipality RMSE 0.7488
 
 These are baseline development scores. Historical 03 configs/reports must not be modified.
 
-## 04A — Target-set topology and similarity — IMPLEMENTED, RUN PENDING
+## 04A — Target-set topology and similarity — COMPLETE
 
 Build a deterministic diagnostic layer for the relationship between the 59 targets and the 138 labeled parcels.
 
@@ -69,7 +69,9 @@ derived from BASIC/PRO. It preserves sensor identity and adds Pearson/Spearman s
 best-lag correlation and normalized DTW. Raw capture-level alignment can be added after these
 results show whether additional temporal resolution is worth the complexity.
 
-No 04A result should be interpreted before the workstation run completes.
+The workstation run is complete and committed. Canonical interpretation: `docs/CHECKPOINT_04A_FINDINGS.md`.
+
+Key evidence: adversarial AUC 0.4892; geographic distance vs absolute yield difference Spearman rho 0.4882; observed-y Moran's I 0.6797 (p=0.001); municipality-grouped E123 residual Moran's I 0.5483 (p=0.001); 5 high-support, 13 extrapolation and 41 intermediate/mixed targets.
 
 
 ## 04B — Transductive pseudo-competition validation
