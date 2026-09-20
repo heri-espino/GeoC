@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 04 — Transductive Competition Modeling  
+**Current phase:** Checkpoint 04B — transductive pseudo-competition validation (implemented; workstation run pending)  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -136,19 +136,14 @@ This distinction is essential:
 
 ## 7. Checkpoint 04 plan
 
-### 04A — target topology and support
+### 04A — target topology and support — COMPLETE
 
-Characterize whether each target is interpolation-like or extrapolation-like.
+Canonical interpretation: `docs/CHECKPOINT_04A_FINDINGS.md`.
 
-Measure:
-
-- geographic neighbors;
-- same municipality/state coverage;
-- nearest neighbors in C0/C1/other representations;
-- train-vs-target adversarial AUC;
-- density/support metrics;
-- spatial autocorrelation of observed yield;
-- spatial autocorrelation of baseline OOF residuals.
+Key evidence: adversarial AUC 0.4892; geographic distance versus absolute yield difference
+Spearman rho 0.4882; observed-y Moran's I 0.6797 (p=0.001); municipality-grouped E123 residual
+Moran's I 0.5483 (p=0.001). Geography is the strongest 04A similarity-transfer signal and
+monthly temporal similarity alone is weak.
 
 ### 04A — temporal similarity
 
@@ -163,10 +158,21 @@ Use original BASIC/PRO trajectories to test:
 Do not assume a time-series similarity metric transfers yield until this is measured on the 138
 labeled parcels.
 
-### 04B — pseudo-competition validation
+### 04B — pseudo-competition validation — IMPLEMENTED, RUN NEXT
 
-Create repeated target-matched pseudo-test sets and machine-readable fold assignments. Every
-subsequent method must produce pseudo-target predictions and RMSE.
+Run:
+
+```powershell
+python tools\run_checkpoint_04b.py
+```
+
+04B creates repeated 41-parcel target-matched pseudo-target masks using only X-derived profile
+information, plus state-random and frozen state/municipality stress protocols. It compares
+global means, municipality shrinkage, geographic/agronomic/mixed kNN, Ridge, PLS, local Ridge,
+graph-Laplacian regression and fixed blends.
+
+The dynamic support variable used for method routing is X-only. Do not reuse the 04A composite
+support score for validation routing because 04A also included consistency of labeled-neighbor y.
 
 ### 04C — stronger global models
 
