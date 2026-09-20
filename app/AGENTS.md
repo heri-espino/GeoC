@@ -1,5 +1,11 @@
 # AGENTS.md — GeoCebada Streamlit application
 
+> **Checkpoint 04 update:** the active scientific objective is fixed-target transductive
+> reconstruction. The app may expose and use all supplied covariates of the 59 target parcels
+> for documented X-only transductive diagnostics/models. Hidden FIRA yields remain unavailable.
+> The old prospective forecast-cutoff question is not the active competition objective.
+
+
 These instructions apply to everything under `app/` and supplement the repository-wide `AGENTS.md` and `.ai_handoff`.
 
 Future AI agents/Codex working on the Streamlit application must read this file **before modifying the app**. Also read `docs/AGENT_GUIDE.md` for the current project phase and frozen modeling artifacts.
@@ -82,7 +88,7 @@ Any supervised validation shown in the UI must group by parcel at minimum. Never
 
 Keep sensor provenance visible. Same-named NDVI/EVI/LAI values from Sentinel/Landsat/Planet are not automatically interchangeable.
 
-The target corresponds to April–October 2025, but the operational forecasting cutoff is not yet frozen. Do not advertise a feature/model as operationally valid if it uses observations that would occur after the intended prediction date.
+The target corresponds to April–October 2025. For the active competition-reconstruction mode, full observed 2025 competition information may be used. If the app separately presents a prospective forecasting scenario, that scenario must declare its own cutoff and exclude later observations.
 
 ## Geospatial/CRS safety
 
