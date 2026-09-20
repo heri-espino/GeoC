@@ -20,11 +20,11 @@ notebook cells.
 | `run_expression_discovery_03b.py` | Training-fold-only expression recurrence audit over frozen Checkpoint 02 folds | Checkpoint 03B closed |
 | `run_checkpoint_03b.py` | One-command local runner: rebuild empirical layer, then run fold-local discovery audit | Checkpoint 03B closed |
 | `run_checkpoint_03c.py` | Fixed-fold clean/competition representation benchmark with Ridge10 and ExtraTrees | Checkpoint 03C.1 closed |
-| `run_checkpoint_03c2.py` | Competition-only nested model-family benchmark with fold-safe tuning/discovery | Checkpoint 03C.2 closed |\n| `run_checkpoint_03c3.py` | Deterministic OOF review of three finalists and fixed equal-weight ensembles | Checkpoint 03C.3 current |
+| `run_checkpoint_03c2.py` | Competition-only nested model-family benchmark with fold-safe tuning/discovery | Checkpoint 03C.2 closed |\n| `run_checkpoint_03c3.py` | Deterministic OOF review of three finalists and fixed equal-weight ensembles | Checkpoint 03C.3 closed/frozen |
 | `generate_function_index.py` | Regenerate `docs/FUNCTION_INDEX.md` from public package API | run after public API changes |
 | `inspect_reference_docx.py` | Inspect reference DOCX content | utility |
 | `_netcdf_catalog_worker.py` | Internal NetCDF catalog worker | internal; not a direct user workflow |
 
-Checkpoint 03 is open. 03A/03B/03C.1/03C.2 are closed. 03C.3 is the finalist equal-weight ensemble review.
+Checkpoint 03 is closed as the First Modeling Delivery. Checkpoint 04 is active. New scripts should support target topology/similarity, transductive pseudo-competition validation, local/graph/domain-adaptation models and external-evidence enrichment.
 
 See `docs/AGENT_GUIDE.md` before adding scripts.
