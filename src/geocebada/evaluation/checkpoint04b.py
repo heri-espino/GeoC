@@ -26,7 +26,6 @@ from geocebada.evaluation.checkpoint04a import (
     ID_COLUMN,
     PREDICTION_VALUE,
     SPLIT_COLUMN,
-    TARGET_COLUMN,
     TRAIN_VALUE,
 )
 
