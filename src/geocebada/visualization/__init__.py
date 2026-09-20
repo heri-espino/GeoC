@@ -1,14 +1,5 @@
 """Reusable visualizations for notebooks and the GeoCebada app."""
 
-from geocebada.visualization.checkpoint04b import (
-    plot_actual_method_routing,
-    plot_actual_vs_pseudo_support,
-    plot_primary_method_ranking,
-    plot_split_match_quality,
-    plot_support_tier_method_rmse,
-    plot_target_support_routing_scatter,
-    plot_top_method_rmse_boxplot,
-)
 from geocebada.visualization.checkpoint04a import (
     plot_adversarial_roc,
     plot_moran_scatter,
@@ -20,6 +11,15 @@ from geocebada.visualization.checkpoint04a import (
     plot_temporal_similarity_distribution,
     plot_top_feature_shift,
     plot_train_target_map,
+)
+from geocebada.visualization.checkpoint04b import (
+    plot_actual_method_routing,
+    plot_actual_vs_pseudo_support,
+    plot_primary_method_ranking,
+    plot_split_match_quality,
+    plot_support_tier_method_rmse,
+    plot_target_support_routing_scatter,
+    plot_top_method_rmse_boxplot,
 )
 from geocebada.visualization.exploration import (
     correlation_heatmap,
