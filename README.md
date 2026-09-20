@@ -1,5 +1,25 @@
 # GeoCebada
 
+## Objetivo activo — reconstrucción transductiva de 59 rendimientos
+
+Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de
+**Transductive Competition Modeling**. Conocemos las covariables de las 197 parcelas, pero sólo
+138 tienen `RENDIMIENTO_T_HA`; las otras 59 son consultas fijas cuyos valores de referencia
+permanecen ocultos por FIRA.
+
+El objetivo activo no es aprender el mejor modelo universal para parcelas futuras. Es reconstruir
+los 59 rendimientos faltantes con el menor error posible usando toda la evidencia observable y
+permitida: series temporales BASIC/PRO, `competition` full-season, geometría, similitud entre
+parcelas, clima, suelo, topografía, SIAP 2025 y demás fuentes públicas justificadas.
+
+Las X de las 59 parcelas **sí forman parte del problema** y pueden utilizarse en aprendizaje
+transductivo X-only. Los 59 y ocultos no pueden utilizarse ni obtenerse directamente.
+
+Checkpoint 03 queda congelado como **First Modeling Delivery** y baseline convencional. La fase
+activa es `checkpoints/04_transductive_competition/`. Leer primero
+`docs/TRANSDUCTIVE_OBJECTIVE.md`.
+
+
 **Predicción agroclimática y geoespacial del rendimiento de cebada** para el Reto AgroCebada FIRA 2026.
 
 GeoCebada desarrolla un pipeline reproducible para estimar el rendimiento agrícola de parcelas de cebada a partir de percepción remota, clima, topografía y geometría espacial. El proyecto incluye una librería Python compartida (`geocebada`) y un laboratorio interactivo en Streamlit para exploración, inferencia estadística, feature engineering y comparación de modelos.
@@ -16,13 +36,7 @@ La unidad final de predicción es una **parcela georreferenciada**:
 
 El identificador canónico es `ID_POLIGONO`. La documentación oficial confirma que el target corresponde al **ciclo de producción abril–octubre de 2025**.
 
-Formalmente,
-
-\[
-\hat y_i=f(X_i),
-\]
-
-donde \(X_i\) puede integrar señal satelital, clima, topografía, geometría y features espaciales/temporales derivados.
+Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conocemos \(X_L\), \(X_U\) y \(y_L\), y buscamos reconstruir \(y_U\). Una única función global \(f(X)\) es sólo una de varias estrategias posibles.
 
 ## Datos confirmados
 
