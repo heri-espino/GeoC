@@ -144,7 +144,20 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Implement Checkpoint 04A and 04B: characterize the 59 target parcels relative to the 138
-labeled parcels, quantify spatial/temporal/phenological similarity and covariate shift, and
-build repeated transductive pseudo-competition splits that produce honest RMSE while allowing
-pseudo-target X to participate in X-only representation learning.
+Run the implemented Checkpoint 04A on the workstation with `python tools/run_checkpoint_04a.py`. Review and commit `reports/checkpoint_04a/`, especially the 59-row support profile, adversarial AUC, similarity-vs-yield diagnostics, Moran statistics and generated figures. Only after interpreting 04A should Checkpoint 04B build repeated transductive pseudo-competition splits.
+
+
+## Checkpoint 04A implementation status
+
+04A code/config/tests are now committed. It is designed to produce:
+
+- geographic target-to-train and train-LOO neighbors;
+- transductive PCA neighborhoods for C0 base, C1 agronomic and all deterministic features;
+- monthly 2025 temporal similarity using 11 sensor/index trajectories, including lag and DTW;
+- all labeled-labeled pair comparisons against absolute yield difference;
+- adversarial train-vs-target AUC and per-feature shift;
+- Moran's I for observed yield and frozen Checkpoint 03 E13/E123 residuals;
+- one support/typology row for every one of the 59 targets;
+- summary figures plus per-target Planet-NDVI neighbor panels.
+
+No 04A numerical result should be claimed until the workstation run completes.
