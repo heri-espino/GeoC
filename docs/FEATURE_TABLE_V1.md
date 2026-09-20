@@ -1,5 +1,12 @@
 # Parcel Feature Table v1
 
+> **Active role in Checkpoint 04:** Feature Table v1 remains the canonical parcel-level tabular
+> representation, but it is no longer treated as the complete information universe. The
+> transductive phase may return to original BASIC/PRO trajectories for correlation, lag, DTW,
+> graph and target-neighborhood modeling. X-only transforms may use all 197 X vectors when the
+> same transductive information structure is reproduced in pseudo-competition validation.
+
+
 Updated: 2026-09-18
 
 This stage converts the audited GeoCebada source data into deterministic one-row-per-parcel
