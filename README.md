@@ -39,9 +39,9 @@ El identificador canónico es `ID_POLIGONO`. La documentación oficial confirma 
 Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conocemos \(X_L\), \(X_U\) y \(y_L\), y buscamos reconstruir \(y_U\). Una única función global \(f(X)\) es sólo una de varias estrategias posibles.
 
 
-## Ejecutar Checkpoint 04A
+## Checkpoint 04A — completado
 
-La primera etapa transductiva ya está implementada. Después de actualizar el repositorio:
+La primera etapa transductiva ya fue ejecutada y sus resultados están versionados en `reports/checkpoint_04a/`. Para reproducirla:
 
 ```powershell
 git pull
@@ -57,6 +57,8 @@ soporte/extrapolación por parcela.
 
 Los resultados se generan en `reports/checkpoint_04a/`, incluyendo CSV/JSON, un reporte
 Markdown, figuras resumen y paneles temporales para cada una de las 59 parcelas.
+
+La interpretación canónica del resultado está en `docs/CHECKPOINT_04A_FINDINGS.md`. El siguiente paso activo es Checkpoint 04B: validación pseudo-competition transductiva con RMSE.
 
 ## Datos confirmados
 
