@@ -25,3 +25,11 @@ Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`; active implement
 create Checkpoint 04-specific configuration rather than mutating historical contracts.
 
 See `docs/AGENT_GUIDE.md` and `docs/PROJECT_HISTORY.md`.
+
+
+### `checkpoint04e1.yaml`
+
+Checkpoint 04E.1 external-localization configuration. Freezes the exact SIAP
+scope (`Cebada grano + Primavera-Verano + Temporal + CVEGEO`), historical
+window, 04D.1 local/graph anchors, affine calibration strengths and fixed blend
+weights.
