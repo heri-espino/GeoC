@@ -97,3 +97,7 @@ interpretation: `docs/CHECKPOINT_04E1_FINDINGS.md`.
 rule is Local04D; the runner verifies provenance, audits a constrained
 Local/Graph blend family and writes exactly 59 `ID_POLIGONO,RENDIMIENTO_T_HA`
 rows plus separate uncertainty/disagreement diagnostics.
+
+The finalization run is complete. The canonical submission-facing file is
+`reports/checkpoint_04f/final_predictions.csv`; interpretation is frozen in
+`docs/CHECKPOINT_04F_FINDINGS.md`.
