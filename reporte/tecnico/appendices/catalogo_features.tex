@@ -1,0 +1,176 @@
+\section{Feature Table v1}
+
+La representación base contiene 1,403 predictores trazables a source/family/mode. Para lectura
+del equipo, las familias deben entenderse como bloques de evidencia, no como variables
+intercambiables.
+
+\subsection{Geometría y administración}
+
+Incluye área oficial, centroides, identificadores y contexto administrativo. Estas columnas son
+especialmente importantes para:
+\begin{itemize}
+\item joins con INEGI/SIAP;
+\item cálculo de distancias geográficas;
+\item control de folds agrupados;
+\item análisis de soporte.
+\end{itemize}
+
+Los identificadores administrativos no se interpretan numéricamente. Cuando una variable
+categórica se materializa como código, su valor entero no representa una distancia ordinal.
+
+\subsection{BASIC histórico y 2025}
+
+Los resúmenes BASIC se mantienen separados por sensor, índice, estadístico y ventana temporal.
+Una feature típica codifica:
+\[
+\text{source}\times\text{period}\times\text{sensor}
+\times\text{index}\times\text{statistic}\times\text{month}.
+\]
+Esta granularidad explica por qué la tabla base alcanza cientos de columnas aunque sólo existan
+197 parcelas.
+
+Las variables históricas 2022--2024 contribuyen al modo clean; los resúmenes 2025 completos
+son competition. La distinción permite comparar:
+\[
+\text{estado estructural/histórico}
+\quad\text{vs}\quad
+\text{condición del ciclo evaluado}.
+\]
+
+\subsection{PRO Planet}
+
+Las features Planet son competition por construcción, al corresponder a 2025. NDVI, EVI, LAI
+y MSAVI se resumen de forma consistente con la entidad parcela. No se fusionan con Sentinel-2
+para crear un único NDVI universal; las comparaciones inter-sensor aparecen como features
+derivadas en 03A/03B.
+
+\subsection{Clima oficial}
+
+Se conservan precipitación, temperatura mínima y máxima históricas y 2025. Las capas
+agronómicas derivan:
+\[
+T_{\mathrm{mean}},\quad DTR,\quad GDD_{\mathrm{proxy}},
+\quad P_{\mathrm{early}},P_{\mathrm{mid}},P_{\mathrm{late}}.
+\]
+La existencia de la fuente base y de una transformación derivada no constituye duplicación
+accidental: permite que modelos no lineales aprendan desde inputs crudos y que modelos
+lineales dispongan de una base más útil.
+
+\subsection{WaPOR}
+
+Las 22 features de competition representan resúmenes de AETI/NPP y provenance asociado. Los
+totales respetan duración de dekads. Interacciones hídricas posteriores se mantienen separadas
+de estos valores source-derived.
+
+\subsection{SoilGrids}
+
+Las 90 features SoilGrids de la tabla clean resumen nueve propiedades a distintas
+profundidades y estadísticos. Las transformaciones de 03A usan perfiles 0--30 y 30--60 para
+crear gradientes y razones, evitando un polynomial expansion indiscriminado.
+
+\subsection{SIAP}
+
+La capa base contiene historia municipal y variables contemporáneas. Deben distinguirse:
+\begin{enumerate}
+\item SIAP histórico como contexto regional;
+\item SIAP 2025 legado de Feature Table v1;
+\item SIAP 2025 exact-scope re-auditado en 04E.1.
+\end{enumerate}
+La tercera es semánticamente superior para auditar la fuente, pero su RMSE directo demuestra
+que mayor pureza semántica no implica mayor resolución predictiva.
+
+\section{Agronomic Features v1}
+
+\begin{longtable}{p{0.28\linewidth}rp{0.50\linewidth}}
+\toprule
+Familia & $p$ & Interpretación \\
+\midrule
+\endhead
+phenology & 162 & forma/timing del ciclo por sensor e índice.\\
+phenology anomaly & 41 & contraste 2025 contra baseline histórico parcelario.\\
+water productivity & 40 & relaciones entre NPP, AETI, precipitación y crop state.\\
+thermal & 36 & temperatura media, DTR y GDD proxies.\\
+cross-domain & 19 & interacciones seleccionadas entre clima, suelo, SIAP y satélite.\\
+soil profile & 18 & gradientes y razones verticales.\\
+water timing & 10 & ventanas de precipitación y distribución estacional.\\
+sensor agreement & 9 & concordancia S2--Planet en NDVI/EVI/LAI.\\
+soil interaction & 8 & SOC, CEC, textura, N, pH y bases compactas.\\
+nonlinear basis & 7 & log-transformaciones y otras bases target-free.\\
+\bottomrule
+\end{longtable}
+
+Toda feature de esta capa puede escribirse como
+\[
+z_{ij}=g_j(X_i),
+\]
+sin dependencia de $y$. Esa propiedad permite materializarla una vez para las 197 parcelas.
+
+\section{Empirical Features v1}
+
+\begin{longtable}{p{0.31\linewidth}rp{0.47\linewidth}}
+\toprule
+Familia & $p$ & Interpretación \\
+\midrule
+\endhead
+temporal shape & 162 & TV, roughness, curvature, autocorrelación, timing y entropía.\\
+aggregate geometry & 72 & resúmenes matemáticos de bloques y distribuciones.\\
+symmetric change & 42 & cambio 2025/histórico robusto a denominadores cercanos a cero.\\
+short-baseline condition & 41 & posición de 2025 en rango histórico corto.\\
+sensor shape similarity & 18 & Pearson/Spearman/cosine/RMSE normalizado inter-sensor.\\
+\bottomrule
+\end{longtable}
+
+La capa materializada es target-free. El miner supervisado es un componente separado:
+\[
+\mathcal E_f=A(X_{\mathrm{train}(f)},y_{\mathrm{train}(f)}).
+\]
+Nunca se escribe un único set $\mathcal E$ descubierto con las 138 etiquetas completas y luego
+se presenta como input independiente.
+
+\section{Representaciones modeladas}
+
+\subsection{Checkpoint 03C.1}
+
+Las B-representations sirven para medir el efecto de capas:
+\[
+B0=\text{base},\quad
+B1=\text{agro},\quad
+B2=\text{empirical},
+\]
+\[
+B3=\text{base+agro},\quad
+B4=\text{base+empirical},\quad
+B5=\text{all},\quad
+B7=\text{all+fold-local discovery}.
+\]
+
+\subsection{Checkpoint 03C.2}
+
+El benchmark anidado reduce el espacio:
+\[
+C0=\text{base},\quad
+C1=\text{agro},
+\]
+\[
+C2=\text{all deterministic + discovery},\quad
+C3=\text{base+agro+selected empirical support+discovery}.
+\]
+
+\subsection{Checkpoint 04}
+
+La topología transductiva retiene:
+\[
+C0,\qquad C1,\qquad C4=\text{base+agro+empirical deterministic}.
+\]
+C4 excluye fórmulas descubiertas con $y$ para que PCA/distancias/grafos puedan aprenderse sobre
+las 197 parcelas sin contaminar la construcción $X$-only.
+
+\section{Principio general de provenance}
+
+Una feature derivada debe declarar:
+\[
+(\text{source},\text{parents},\text{formula},\text{mode},\text{evidence}).
+\]
+Esta tupla es más importante que el nombre humano de la columna. Dos features con nombres
+parecidos pero distinto sensor, periodo o scope administrativo no deben considerarse
+equivalentes.
