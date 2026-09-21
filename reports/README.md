@@ -71,3 +71,7 @@ python tools\run_checkpoint_04d1.py
 The runner reuses frozen 04B memberships, performs exhaustive target-matched refinement,
 leave-one-split-out selection/routing validation, finalist stress testing and candidate
 prediction disagreement analysis for the actual 59 targets.
+
+
+- `checkpoint_04e1/`: exact SIAP 2025 grain-barley/Primavera-Verano/Temporal
+  audit and external-prior pseudo-competition validation.
