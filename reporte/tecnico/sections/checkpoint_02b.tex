@@ -1,0 +1,117 @@
+\subsection{Train versus prediction}
+
+Una vez congelada la tabla, el primer análisis no supervisado comparó la distribución de las
+138 filas etiquetadas con las 59 filas objetivo. Se examinaron 1,401 variables numéricas. Para
+cada feature se calcularon, entre otros, diferencia estandarizada de medias, missingness y
+fracción del conjunto objetivo fuera del rango observado de entrenamiento.
+
+Una forma genérica del standardized mean difference es
+\begin{equation}
+\mathrm{SMD}_j
+=
+\frac{\bar x_{j,\Train}-\bar x_{j,\Target}}
+{\sqrt{\frac{s^2_{j,\Train}+s^2_{j,\Target}}{2}}}.
+\label{eq:smd}
+\end{equation}
+Sólo seis variables superaron al menos un threshold descriptivo. Cuatro correspondían a
+resúmenes históricos Sentinel-2 de agosto, una a la desviación de densidad aparente
+SoilGrids 30--60 cm y una a EVI mínimo Sentinel-2 2025.
+
+\begin{table}[H]
+\centering
+\caption{Principales flags descriptivos del diagnóstico train--prediction.}
+\label{tab:cp02-shift}
+\small
+\begin{tabular}{p{0.60\linewidth}rr}
+\toprule
+Feature & $|\mathrm{SMD}|$ & fuera de rango \\
+\midrule
+Sentinel-2 ENDDI histórico, agosto & 0.5343 & 0.0000 \\
+Sentinel-2 DSWI2 histórico, agosto & 0.5303 & 0.0000 \\
+Sentinel-2 MCRC histórico, agosto & 0.5296 & 0.0169 \\
+Sentinel-2 CRC histórico, agosto & 0.5035 & 0.0339 \\
+SoilGrids bdod 30--60 cm, std & 0.3218 & 0.1017 \\
+Sentinel-2 EVI mínimo 2025, std & 0.2212 & 0.1017 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El resultado sugería ausencia de un shift univariado masivo, pero no descartaba shift
+multivariado. Esa pregunta fue retomada formalmente con clasificación adversarial en
+Checkpoint~04A.
+
+\subsection{Ablaciones estructuradas}
+
+En lugar de entrenar inmediatamente sobre las 1,401 variables numéricas, Checkpoint~02 definió
+una secuencia acumulativa de ocho representaciones:
+
+\begin{table}[H]
+\centering
+\caption{Ablaciones de Checkpoint 02.}
+\label{tab:cp02-ablations}
+\small
+\begin{tabular}{llr}
+\toprule
+ID & Contenido & $p$ \\
+\midrule
+A0 & geometría + administración & 12 \\
+A1 & A0 + ambiente estático & 115 \\
+A2 & A1 + historia SIAP & 129 \\
+A3 & A2 + clima histórico & 153 \\
+A4 & A3 + BASIC histórico & 692 \\
+A5 & clean completo & 692 \\
+A6 & clean + remote/weather 2025, sin SIAP outcome & 1,396 \\
+A7 & competition completo, incluido SIAP 2025 & 1,401 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A4 y A5 coinciden numéricamente porque, bajo el manifest de esa versión, todas las features
+clean numéricas ya estaban contenidas en A4. La duplicación se mantuvo como checkpoint
+semántico: A4 representa hasta BASIC histórico y A5 todo clean.
+
+\subsection{Por qué las ablaciones importan en high-dimensional small-\texorpdfstring{$n$}{n}}
+
+Cuando $p\gg n$, agregar una familia completa puede degradar un modelo incluso si contiene
+señal real. La varianza del ajuste, colinealidad y ruido pueden dominar. Por ello se mide
+\begin{equation}
+\Delta\RMSE_{A\rightarrow B}
+=
+\RMSE(B)-\RMSE(A)
+\label{eq:ablation-delta}
+\end{equation}
+por modelo y protocolo, en vez de suponer monotonicidad con el número de features.
+
+El ejemplo más claro aparece con Ridge: en state-stratified, A3 obtiene RMSE medio 0.5298,
+mientras A4/A5 suben a 0.6707. Agregar cientos de resúmenes satelitales a un modelo lineal de
+alpha fijo no es una mejora automática. ExtraTrees es mucho menos sensible en ese protocolo:
+A3 da 0.5035 y A7 0.4966.
+
+\subsection{Clean y competition como ejes experimentales}
+
+Checkpoint~02 mostró que la señal 2025 completa podía ayudar en algunos modelos, pero también
+que SIAP contemporáneo no tenía por qué mejorar de forma automática. ExtraTrees pasa de
+0.5001 en A6 a 0.4966 en A7 bajo state-stratified, una ganancia pequeña; en
+municipality-grouped, A6=0.8835 y A7=0.8916, es decir, el agregado completo empeora. Este
+patrón anticipa la conclusión mucho más fuerte de Checkpoint~04E.1: una fuente contemporánea
+puede ser legal y plausible sin ser un buen proxy parcelario.
+
+\subsection{Rango y extrapolación}
+
+La fracción de objetivos fuera del rango train,
+\[
+q_j=
+\frac{1}{|\Target|}
+\sum_{i\in\Target}
+\mathbf 1\{x_{ij}<\min_{\Train}x_{\cdot j}\;\vee\;
+x_{ij}>\max_{\Train}x_{\cdot j}\},
+\]
+es útil como alerta, pero no prueba que una parcela sea imposible de predecir. Un punto puede
+estar fuera del rango de una feature marginal y, simultáneamente, cerca de entrenamiento en
+una representación multivariada relevante. Por esa razón el soporte final de Checkpoint~04
+combina geografía, embeddings, temporalidad y clasificación adversarial.
+
+\begin{technicalnote}
+Los flags de covariate shift de Checkpoint~02 son descriptivos. No se usaron para inferir
+pseudo-etiquetas ni para eliminar variables usando conocimiento de las 59 respuestas.
+\end{technicalnote}
