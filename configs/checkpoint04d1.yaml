@@ -116,6 +116,7 @@ figures:
 outputs:
   directory: reports/checkpoint_04d1
   figures_directory: figures
+  method_manifest: method_manifest.csv
   primary_predictions: primary_predictions.csv
   primary_summary: primary_summary.csv
   primary_split_metrics: primary_split_metrics.csv
