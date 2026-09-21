@@ -1,0 +1,142 @@
+\subsection{Motivación y posición cronológica}
+
+Checkpoint~04C.1 se ejecutó después de haber observado la superioridad de métodos
+locales/grafo y después de cerrar la hipótesis SIAP. Se mantiene la etiqueta 04C porque
+representa la rama de modelos globales de mayor compute prevista desde el diseño de
+Checkpoint~04. La pregunta no es volver a buscar el mejor modelo global, sino medir si
+CatBoost aporta un error suficientemente diferente para mejorar un predictor local mediante
+un peso pequeño.
+
+La representación se restringe a C1 agronomic, con 350 features, porque 03C.2 ya había
+identificado C1+CatBoost como el anchor boosting global más relevante. Reabrir cientos de
+configuraciones sobre los mismos 138 labels habría aumentado el riesgo de overfitting de
+selección sin aportar información independiente.
+
+\subsection{Candidate set congelado}
+
+Se reutilizan tres configuraciones presentes en el grid histórico de 03C.2:
+\begin{table}[H]
+\centering
+\caption{Candidatos CatBoost de 04C.1.}
+\label{tab:cp04c-cat}
+\begin{tabular}{rrrr}
+\toprule
+depth & learning rate & $L_2$ leaf reg & iterations \\
+\midrule
+4 & 0.03 & 3 & 400 \\
+4 & 0.06 & 6 & 400 \\
+5 & 0.06 & 3 & 400 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cada configuración se entrena con seeds 42, 314 y 2718; la predicción usada para evaluación
+es
+\[
+\hat y_q^{CB}
+=
+\frac{1}{3}
+\sum_{s\in\{42,314,2718\}}
+\hat y_{q,s}^{CB}.
+\]
+La ejecución se hace en GPU; no existe fallback automático a CPU. Esta decisión es de
+reproducibilidad operacional, no estadística.
+
+\subsection{Blends predefinidos}
+
+Para el candidato estable depth 4, learning rate 0.03, $L_2=3$, se definen pesos pequeños
+\[
+\hat y^{(w)}
+=
+(1-w)\hat y^{Local}
++w\hat y^{CB},
+\qquad
+w\in\{0.10,0.20,0.30\}.
+\]
+También se construyen blends equivalentes con Graph04D como baseline. Los pesos son
+deliberadamente discretos: dado que CatBoost standalone ya es más débil, la hipótesis plausible
+es corrección/diversidad, no dominancia.
+
+\subsection{Resultados target-matched}
+
+\begin{table}[H]
+\centering
+\caption{Resultados principales de 04C.1.}
+\label{tab:cp04c-results}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Método & RMSE medio & pooled RMSE & pooled MAE \\
+\midrule
+Local + CatBoost 10\% & 0.487842 & 0.495915 & 0.342266 \\
+Local04D & \textbf{0.487845} & \textbf{0.495741} & 0.342501 \\
+Local + CatBoost 20\% & 0.488501 & 0.496728 & 0.342952 \\
+Local + CatBoost 30\% & 0.489822 & 0.498177 & 0.344425 \\
+Graph + CatBoost 30\% & 0.491439 & 0.500394 & 0.339809 \\
+Graph04D & 0.494881 & 0.503346 & 0.340288 \\
+CatBoost d5/lr.06/l2=3 & 0.515282 & 0.523869 & 0.370873 \\
+CatBoost d4/lr.03/l2=3 & 0.516796 & 0.525414 & 0.371216 \\
+CatBoost d4/lr.06/l2=6 & 0.520583 & 0.528819 & 0.373011 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El blend 10\% parece superar Local04D en la sexta cifra decimal:
+\[
+0.4878453167-0.4878418585
+\approx3.46\times10^{-6}.
+\]
+Pero esta diferencia carece de evidencia práctica. El pooled RMSE es peor:
+0.495915 frente a 0.495741. Seleccionar el blend sólo por el mínimo de la media de los mismos
+16 splits sería un ejemplo clásico de sobreinterpretación de ruido de validación.
+
+\subsection{Gate leave-one-split-out}
+
+Se restringe el universo de selección a:
+\[
+\{\text{Local},\ \text{CatBoost},\
+\text{Local+CB10},\text{Local+CB20},\text{Local+CB30}\}.
+\]
+Para cada holdout $h$, el método se selecciona por RMSE medio sobre los otros 15 splits y se
+evalúa en $h$. El selector escoge Local puro en 8/16 y Local+CB10 en 8/16. El resultado
+concatenado es
+\[
+\overline{\RMSE}_{LOSO}=0.488884,
+\qquad
+\RMSE_{\mathrm{pooled}}=0.496838.
+\]
+Ambos son peores que Local04D fijo. Por tanto, la minúscula diferencia de la tabla completa no
+sobrevive selección split-excluded.
+
+\subsection{Diversidad de residuos}
+
+Para pares de métodos se calcula correlación de residuos sobre las 656 pseudo-predicciones
+target-matched:
+\[
+\rho(e^{Local},e^{Graph})=0.9707,
+\]
+\[
+\rho(e^{Local},e^{CB})=0.9423,
+\qquad
+\rho(e^{Graph},e^{CB})=0.9143.
+\]
+CatBoost es algo más diverso respecto al grafo, pero sus errores siguen altamente
+correlacionados. Su pérdida de accuracy standalone es demasiado grande para que esa diversidad
+compense de forma robusta.
+
+\subsection{Stress tests}
+
+Graph+CatBoost puede mejorar algunas métricas target/state-random, pero no conserva la mejor
+robustez municipality-grouped. Por ejemplo, Graph+CB30 alcanza 0.4914 target-matched y
+0.4627 state-random, frente a 0.4949 y 0.4679 del grafo; sin embargo, grouped empeora de
+0.5279 a aproximadamente 0.5508. Un peso 10\% casi preserva grouped, pero sigue siendo peor
+que Local en el protocolo primario.
+
+\subsection{Decisión}
+
+\begin{decision}
+CatBoost no entra como componente obligatorio de 04F. Se conserva como diagnóstico de
+diversidad y sensibilidad. La razón no es que boosting sea débil en general: la evidencia
+específica del problema muestra que, después de aprovechar localidad espacial, el anchor
+CatBoost no aporta una mejora reproducible.
+\end{decision}
