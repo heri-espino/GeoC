@@ -104,3 +104,21 @@ Keep `Cebada grano` separate from forage barley. Never join on municipality ID a
 Support Checkpoint 04A/04B by exposing parcel-level geometry plus reusable longitudinal
 trajectories and by building target-vs-train similarity/support diagnostics without touching
 the hidden 59 y values.
+
+
+## 04E.1 implementation note
+
+The SIAP external-evidence runner now reads the detailed raw closure through
+`load_siap_barley_detail`, preserving `Nomcicloproductivo` and
+`Nommodalidad`. The primary competition proxy is explicitly:
+
+```text
+Cebada grano
+Primavera-Verano
+Temporal
+CVEGEO
+2025
+```
+
+Broader grain-barley 2025 scopes are retained only as named fallbacks when an
+exact municipal row is unavailable. Never merge forage barley into this prior.
