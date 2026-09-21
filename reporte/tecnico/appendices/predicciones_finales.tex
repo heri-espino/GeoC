@@ -1,0 +1,116 @@
+\section{Advertencia de uso}
+
+La tabla de este apéndice reproduce las 59 predicciones finales \emph{redondeadas a seis
+decimales únicamente para lectura humana}. El artefacto que debe utilizarse para cualquier
+entrega o procesamiento posterior es
+\[
+\artifact{reports/checkpoint_04f/final_predictions.csv},
+\]
+que conserva la precisión numérica completa. No se deben copiar manualmente los valores de
+esta tabla para construir la entrega.
+
+\section{Vector final}
+
+\begin{longtable}{lr}
+\caption{Predicciones finales congeladas del rendimiento de cebada.}
+\label{tab:final-predictions}\\
+\toprule
+\artifact{ID_POLIGONO} & \artifact{RENDIMIENTO_T_HA} \\
+\midrule
+\endfirsthead
+\toprule
+\artifact{ID_POLIGONO} & \artifact{RENDIMIENTO_T_HA} \\
+\midrule
+\endhead
+AGC\_003 & 3.619219 \\
+AGC\_011 & 4.749113 \\
+AGC\_016 & 4.495977 \\
+AGC\_025 & 2.965280 \\
+AGC\_027 & 2.919605 \\
+AGC\_028 & 4.759666 \\
+AGC\_029 & 3.117419 \\
+AGC\_030 & 3.141298 \\
+AGC\_031 & 4.152739 \\
+AGC\_036 & 4.381511 \\
+AGC\_039 & 2.878491 \\
+AGC\_042 & 3.054654 \\
+AGC\_043 & 4.385614 \\
+AGC\_050 & 2.957521 \\
+AGC\_052 & 4.513075 \\
+AGC\_061 & 2.930974 \\
+AGC\_063 & 4.277952 \\
+AGC\_065 & 4.457068 \\
+AGC\_071 & 3.088721 \\
+AGC\_075 & 3.029695 \\
+AGC\_076 & 4.442815 \\
+AGC\_082 & 4.449122 \\
+AGC\_085 & 4.028177 \\
+AGC\_086 & 2.970075 \\
+AGC\_087 & 2.798619 \\
+AGC\_088 & 4.367917 \\
+AGC\_091 & 4.523682 \\
+AGC\_093 & 3.021425 \\
+AGC\_094 & 4.772291 \\
+AGC\_095 & 4.611794 \\
+AGC\_107 & 4.496003 \\
+AGC\_113 & 2.982389 \\
+AGC\_116 & 4.390382 \\
+AGC\_118 & 3.262602 \\
+AGC\_120 & 2.965691 \\
+AGC\_126 & 4.579298 \\
+AGC\_128 & 4.481228 \\
+AGC\_129 & 3.477291 \\
+AGC\_130 & 4.559845 \\
+AGC\_136 & 4.513440 \\
+AGC\_142 & 4.556583 \\
+AGC\_143 & 4.531609 \\
+AGC\_147 & 2.962276 \\
+AGC\_149 & 4.525898 \\
+AGC\_153 & 4.144400 \\
+AGC\_154 & 4.565747 \\
+AGC\_156 & 3.296195 \\
+AGC\_158 & 4.162532 \\
+AGC\_173 & 2.994752 \\
+AGC\_174 & 4.490803 \\
+AGC\_175 & 4.511380 \\
+AGC\_177 & 4.268497 \\
+AGC\_182 & 4.460818 \\
+AGC\_183 & 2.947021 \\
+AGC\_186 & 4.244017 \\
+AGC\_188 & 4.527555 \\
+AGC\_190 & 4.525003 \\
+AGC\_191 & 4.801678 \\
+AGC\_192 & 4.628534 \\
+\bottomrule
+\end{longtable}
+
+\section{Resumen descriptivo del vector entregable}
+
+Estas estadísticas describen las predicciones; no son una evaluación porque los 59 targets
+reales permanecen ocultos:
+
+\[
+\min \hat y=2.798619,\qquad
+\max \hat y=4.801678,
+\]
+\[
+\overline{\hat y}=3.944322,\qquad
+\operatorname{median}(\hat y)=4.367917,\qquad
+s_{\hat y}=0.709443.
+\]
+
+La distribución predicha no se postprocesa para forzar momentos, cuantiles o límites
+administrativos. Cualquier clipping posterior sería una nueva regla de modelado y requeriría
+evidencia de validación propia.
+
+\section{Relación con el diagnóstico Local--Graph}
+
+El archivo separado \artifact{final_prediction_diagnostics.csv} contiene para cada ID la
+predicción final Local04D, la predicción Graph04D, el tier de soporte y su discrepancia
+absoluta. Esos campos se excluyen de la tabla submission-facing para impedir cambios manuales
+por parcela. La discrepancia media es 0.1056 t/ha, la mediana 0.0769 t/ha y el máximo 0.4980
+t/ha.
+
+El máximo se observa en AGC\_003. El hecho de que esta parcela también aparezca entre los
+objetivos de bajo soporte es coherente con mayor sensibilidad a inductive bias, pero no
+constituye una etiqueta indirecta ni una justificación para alterar su predicción congelada.
