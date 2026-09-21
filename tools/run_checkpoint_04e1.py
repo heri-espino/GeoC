@@ -289,8 +289,14 @@ def _render_report(
         [
             "",
             f"Exact parcel coverage: **{report['exact_2025_parcel_coverage']}/197**.",
-            f"Selected-prior parcel coverage before median fallback: **{report['prior_parcel_coverage']}/197**.",
-            f"Actual-target selected-prior coverage: **{report['actual_target_prior_coverage']}/59**.",
+            (
+                "Selected-prior parcel coverage before median fallback: "
+                f"**{report['prior_parcel_coverage']}/197**."
+            ),
+            (
+                "Actual-target selected-prior coverage: "
+                f"**{report['actual_target_prior_coverage']}/59**."
+            ),
             "",
             "## Primary target-matched ranking",
             "",
@@ -315,16 +321,31 @@ def _render_report(
             "",
             "## Full-label proxy diagnostics",
             "",
-            f"- SIAP selected prior direct RMSE on the 138 observed parcels: **{report['full_train_prior_rmse']:.4f}**",
+            (
+                "- SIAP selected prior direct RMSE on the 138 observed parcels: "
+                f"**{report['full_train_prior_rmse']:.4f}**"
+            ),
             f"- Spearman(prior, observed yield): **{report['full_train_prior_spearman']:.4f}**",
-            f"- legacy aggregated SIAP 2025 direct RMSE: **{report['legacy_siap_direct_rmse']:.4f}**",
+            (
+                "- legacy aggregated SIAP 2025 direct RMSE: "
+                f"**{report['legacy_siap_direct_rmse']:.4f}**"
+            ),
             "",
             "## Interpretation boundary",
             "",
             "- Exact SIAP means Cebada grano + Primavera-Verano + Temporal + CVEGEO.",
-            "- Broader SIAP scopes are explicit fallbacks, never silently mixed into the exact audit.",
-            "- Actual 59 predictions written here are candidates for 04F, not the final submission.",
-            "- 04E.1 decides whether the external municipal prior adds validated information beyond 04D.1.",
+            (
+                "- Broader SIAP scopes are explicit fallbacks, never silently mixed "
+                "into the exact audit."
+            ),
+            (
+                "- Actual 59 predictions written here are candidates for 04F, "
+                "not the final submission."
+            ),
+            (
+                "- 04E.1 decides whether the external municipal prior adds validated "
+                "information beyond 04D.1."
+            ),
             "",
             "## Figures",
             "",
@@ -349,7 +370,10 @@ def run_checkpoint_04e1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     figures_dir.mkdir(parents=True, exist_ok=True)
 
-    print("[04E.1 1/8] Loading parcels, frozen validation artifacts and detailed SIAP...", flush=True)
+    print(
+        "[04E.1 1/8] Loading parcels, frozen validation artifacts and detailed SIAP...",
+        flush=True,
+    )
     base_dir = root / str(inputs["base_directory"])
     frame = pd.read_csv(base_dir / str(inputs["base_table"]))
     _validate_contract(frame)
@@ -372,7 +396,10 @@ def run_checkpoint_04e1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
     )
     actual_support = pd.read_csv(b04_dir / str(inputs["checkpoint04b_support"]))
 
-    print("[04E.1 2/8] Auditing Cebada grano + Primavera-Verano + Temporal + municipality...", flush=True)
+    print(
+        "[04E.1 2/8] Auditing Cebada grano + Primavera-Verano + Temporal + municipality...",
+        flush=True,
+    )
     panel, scope_audit = build_siap_external_panel(
         detail,
         crop=str(siap_cfg["crop"]),
@@ -433,7 +460,10 @@ def run_checkpoint_04e1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
     prior = pd.to_numeric(parcel_siap["siap_prior_yield"], errors="coerce").to_numpy(float)
     source = parcel_siap["siap_prior_source"].astype("string").to_numpy()
 
-    print(f"[04E.1 5/8] Evaluating external-prior methods on {len(splits)} frozen splits...", flush=True)
+    print(
+        f"[04E.1 5/8] Evaluating external-prior methods on {len(splits)} frozen splits...",
+        flush=True,
+    )
     prediction_rows: list[dict[str, Any]] = []
     for split_index, split in enumerate(splits, start=1):
         predictions = _method_predictions(
@@ -498,7 +528,10 @@ def run_checkpoint_04e1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
     loso_selection.to_csv(output_dir / str(outputs["loso_selection"]), index=False)
     loso_predictions.to_csv(output_dir / str(outputs["loso_predictions"]), index=False)
 
-    print("[04E.1 7/8] Fitting candidate external-prior models for the actual 59 targets...", flush=True)
+    print(
+        "[04E.1 7/8] Fitting candidate external-prior models for the actual 59 targets...",
+        flush=True,
+    )
     actual_predictions = _method_predictions(
         config=config,
         prior=prior,
@@ -509,7 +542,10 @@ def run_checkpoint_04e1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
         observed=train_positions,
         query=target_positions,
     )
-    _, actual_filled = complete_external_prior(prior, reference_positions=train_positions)
+    actual_prior_filled, actual_filled = complete_external_prior(
+        prior,
+        reference_positions=train_positions,
+    )
     actual_support_lookup = actual_support.set_index(ID_COLUMN)
     actual_rows: list[dict[str, Any]] = []
     for method, values in actual_predictions.items():
@@ -523,9 +559,7 @@ def run_checkpoint_04e1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
                     "predicted": float(values[local_index]),
                     "x_support_score": float(support_row["x_support_score"]),
                     "x_support_tier": str(support_row["x_support_tier"]),
-                    "siap_prior_yield": float(
-                        complete_external_prior(prior, reference_positions=train_positions)[0][position]
-                    ),
+                    "siap_prior_yield": float(actual_prior_filled[position]),
                     "siap_prior_source": "visible_median_fallback"
                     if bool(actual_filled[position])
                     else str(source[position]),
