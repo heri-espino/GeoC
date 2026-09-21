@@ -204,7 +204,6 @@ def _canonical_siap_files(directory: Path, spec: Mapping[str, Any]) -> list[Path
         files.append(canonical if canonical in candidates else candidates[0])
     return files
 
-
 def load_siap_barley_detail(
     contract: Mapping[str, Any],
     *,
