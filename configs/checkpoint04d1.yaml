@@ -21,6 +21,7 @@ inputs:
   checkpoint04a_embeddings: transductive_embeddings.csv
   checkpoint04b_directory: reports/checkpoint_04b
   checkpoint04b_membership: pseudo_competition_splits.csv
+  checkpoint04b_pseudo_predictions: pseudo_test_predictions.csv
   checkpoint04b_support: actual_target_x_support.csv
 
 identity:
@@ -121,6 +122,7 @@ outputs:
   finalist_manifest: finalist_manifest.csv
   stress_predictions: stress_predictions.csv
   stress_summary: stress_summary.csv
+  finalist_robustness: finalist_robustness.csv
   loso_method_selection: loso_method_selection.csv
   loso_method_predictions: loso_method_predictions.csv
   loso_tier_selection: loso_tier_selection.csv
