@@ -1,0 +1,182 @@
+\subsection{Objetivo: estructura empírica sin target}
+
+Checkpoint~03B responde una pregunta distinta de 03A. En lugar de codificar primero una
+hipótesis agronómica, construye descriptores matemáticos de la geometría observada de $X$:
+curvatura temporal, persistencia, cambio relativo robusto, concordancia de forma entre
+sensores y posición de 2025 respecto al historial corto.
+
+El build canónico retiene 335 features en 197 parcelas, sin missing ni infinitos:
+91 clean y 244 competition. Las familias son:
+\[
+162\ \text{temporal shape}
++42\ \text{symmetric change}
++41\ \text{short-baseline condition}
++72\ \text{aggregate geometry}
++18\ \text{sensor shape similarity}.
+\]
+Sólo se elimina una columna constante. El target no participa en la construcción de esta
+tabla.
+
+\subsection{Geometría temporal}
+
+Dada una serie $x_1,\ldots,x_T$, se definen diferencias locales
+\[
+s_t=\frac{x_t-x_{t-1}}{m_t-m_{t-1}}.
+\]
+A partir de ellas se construyen:
+
+\paragraph{Variación total}
+\begin{equation}
+TV(x)=\sum_{t=2}^{T}|x_t-x_{t-1}|.
+\label{eq:tv}
+\end{equation}
+
+\paragraph{Rugosidad}
+\begin{equation}
+R(x)=\frac{1}{T-2}\sum_t|s_t-s_{t-1}|.
+\label{eq:roughness}
+\end{equation}
+
+\paragraph{Energía de curvatura}
+\begin{equation}
+C(x)=\frac{1}{T-2}\sum_t(s_t-s_{t-1})^2.
+\label{eq:curvature}
+\end{equation}
+
+La variación total mide movimiento acumulado, mientras que rugosidad y energía de curvatura
+penalizan cambios en la pendiente. Dos parcelas pueden tener la misma amplitud y AUC, pero
+trayectorias muy distintas en estas métricas.
+
+También se calculan autocorrelación lag-1, $R^2$ de tendencia lineal, fracción de cambios de
+signo en las pendientes, sharpness del máximo, centro de masa temporal y entropía de forma.
+Para el centro de masa se normaliza primero:
+\[
+w_t=\frac{x_t-\min x}{\max x-\min x},
+\qquad
+M(x)=\frac{\sum_t m_t w_t}{\sum_t w_t}.
+\]
+Para la entropía, si $p_t=w_t/\sum_s w_s$,
+\[
+H(x)=-\frac{\sum_t p_t\log p_t}{\log T}.
+\]
+$H$ cercano a uno describe una señal temporal difusa; valores menores concentran masa en
+pocos meses.
+
+\subsection{Condición 2025 respecto a un historial corto}
+
+La posición del valor 2025 dentro del rango histórico parcelario se define como
+\begin{equation}
+Q_{i,m}
+=
+\frac{x_{i,2025,m}-x_{i,\mathrm{hist,min}}}
+{x_{i,\mathrm{hist,max}}-x_{i,\mathrm{hist,min}}+\epsilon}.
+\label{eq:hist-position}
+\end{equation}
+
+Para NDVI se conserva una versión escalada y nombrada explícitamente
+\artifact{vci_like_short}. Está inspirada en la lógica de índices de condición vegetal
+\citep{Bokusheva2016,Serban2025}, pero no se presenta como VCI estándar: el historial sólo
+abarca 2022--2024 y los extremos son resúmenes parcelarios, no una climatología larga.
+Además, los valores no se recortan a $[0,1]$, de modo que una condición 2025 fuera del rango
+histórico sigue siendo observable.
+
+\subsection{Cambio simétrico estable}
+
+Los índices espectrales signed pueden acercarse a cero; una razón ordinaria puede explotar.
+Se introduce el contraste
+\begin{equation}
+D(a,b)=\frac{2(a-b)}{|a|+|b|+\epsilon}.
+\label{eq:symmetric-change}
+\end{equation}
+Esta transformación es adimensional, simétrica respecto a la magnitud de ambos términos y
+evita el comportamiento inestable de $a/b$ cuando $b\approx0$.
+
+Para una secuencia de cambios mensuales se resumen media estacional, RMS, máximo absoluto,
+media tardía, fracción de cambios positivos y fracción de inversiones de signo. Estos
+descriptores son empíricos; no se etiquetan como índices agronómicos canónicos.
+
+\subsection{Similitud temporal entre sensores}
+
+Además del error de nivel de 03A, 03B compara \emph{forma} temporal Sentinel-2 versus Planet
+mediante Pearson, Spearman, cosine similarity y RMSE normalizado por rango combinado. Sea
+$\bm x$ una trayectoria S2 y $\bm z$ una Planet:
+\[
+\cos(\bm x,\bm z)
+=
+\frac{\bm x^\top\bm z}
+{\|\bm x\|_2\|\bm z\|_2}.
+\]
+Las métricas no requieren que ambos sensores tengan calibración idéntica para detectar si
+suben y bajan de manera concordante.
+
+\subsection{Descubrimiento supervisado separado del dataset materializado}
+
+La contribución metodológica más delicada de 03B es separar la capa $X$-only de un
+\emph{miner} supervisado que nunca se materializa globalmente. Se configuran 24 primitivas.
+Dentro de cada training fold:
+\begin{enumerate}
+\item se rankean primitivas usando únicamente $y$ visible en ese training fold;
+\item se conservan las 12 primeras;
+\item se generan expresiones de una familia predefinida: sumas, diferencias, productos,
+safe ratios, reverse ratios y symmetric change;
+\item se rankean por asociación Spearman dentro del training fold;
+\item se conservan hasta 20;
+\item esas expresiones se transforman sobre train/validation sin volver a usar $y$ de
+validación.
+\end{enumerate}
+
+Formalmente, si $A$ denota el algoritmo de descubrimiento y $f$ un fold,
+\[
+\mathcal E_f=A(X_{\mathrm{train}(f)},y_{\mathrm{train}(f)}),
+\]
+y \emph{no}
+\[
+\mathcal E=A(X_{\Train},y_{\Train})
+\]
+reutilizado luego en los folds. La segunda construcción filtraría información de los holdouts
+hacia la representación.
+
+\subsection{Auditoría de recurrencia}
+
+La auditoría de estabilidad usa 138 parcelas, 24 primitivas, 12 primitivas por fit y 20
+expresiones por fit. A través de los diez folds de los dos protocolos se seleccionaron 88
+expresiones únicas. El objetivo no era estimar performance, sino identificar si el miner
+producía estructuras recurrentes.
+
+Siete expresiones aparecieron al menos en tres de cinco folds bajo \emph{ambos} protocolos.
+Sus componentes se concentran en:
+\begin{itemize}
+\item tendencia y media reciente de rendimiento municipal histórico SIAP;
+\item precipitación estacional 2025;
+\item GDD proxy base $5^\circ$C;
+\item carbono orgánico de suelo 0--30 cm.
+\end{itemize}
+
+Ejemplos estructurales:
+\[
+\frac{P_{2025}}
+{|\mathrm{SIAPtrend}|+\epsilon},
+\qquad
+\frac{SOC_{0-30}}
+{|P_{2025}|+\epsilon},
+\]
+y
+\[
+\frac{2(\mathrm{SIAPtrend}-P_{2025})}
+{|\mathrm{SIAPtrend}|+|P_{2025}|+\epsilon}.
+\]
+
+La alta correlación Spearman de entrenamiento de estas fórmulas no es evidencia de
+generalización. Sólo 03C, refitando el miner dentro de cada outer fold, puede responder si la
+familia de descubrimiento agrega valor predictivo.
+
+\subsection{Resultado conceptual}
+
+03B evita dos errores frecuentes en feature engineering small-$n$:
+\begin{enumerate}
+\item generar miles de combinaciones globales y escoger las que correlacionan con todo
+$y_{\Train}$ antes de CV;
+\item confundir estabilidad de una asociación dentro de train con performance out-of-sample.
+\end{enumerate}
+La capa determinista queda disponible para modelos y embeddings; el descubrimiento supervisado
+queda encapsulado como transformer fold-local.
