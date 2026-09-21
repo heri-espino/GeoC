@@ -96,6 +96,14 @@ from geocebada.evaluation.checkpoint04e import (
     predict_graph_external_residual,
     predict_local_external_residual,
 )
+from geocebada.evaluation.checkpoint04f import (
+    blend_method_name,
+    build_final_prediction_diagnostics,
+    build_final_prediction_table,
+    build_local_graph_blends,
+    leave_one_split_out_blend_selection,
+    summarize_blend_predictions,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -115,6 +123,12 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "blend_method_name",
+    "build_final_prediction_diagnostics",
+    "build_final_prediction_table",
+    "build_local_graph_blends",
+    "leave_one_split_out_blend_selection",
+    "summarize_blend_predictions",
     "blend_anchor_predictions",
     "predict_catboost_seed_ensemble",
     "residual_correlation_table",
