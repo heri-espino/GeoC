@@ -170,12 +170,15 @@ municipality-grouped stress protocol.
 Do not treat the current support-tier routing CSV as final: tier winners were selected on the
 same pseudo-test evidence and require out-of-sample routing validation.
 
-### 04D.1 — local/graph refinement — IMPLEMENTED, RUN NEXT
+### 04D.1 — local/graph refinement — COMPLETE
 
-Run:
+Canonical findings: `docs/CHECKPOINT_04D1_FINDINGS.md`.
 
-```powershell
-python tools\run_checkpoint_04d1.py
+```text
+best Local Ridge target-matched   0.4878
+LOSO method selection             0.4884
+LOSO support routing              0.4858
+robust graph grouped stress       0.5279
 ```
 
 This stage reuses the exact 04B pseudo-target memberships and searches only the method families
@@ -210,6 +213,23 @@ Evaluate:
 - parcel-specific blending based on support/uncertainty.
 
 ### 04E — external evidence
+
+#### 04E.1 — SIAP localization — IMPLEMENTED, RUN NEXT
+
+Run:
+
+```powershell
+python tools\run_checkpoint_04e1.py
+```
+
+The primary scope is `Cebada grano + Primavera-Verano + Temporal + exact
+CVEGEO + 2025`. The runner preserves cycle/modality detail from raw SIAP,
+records broader fallbacks explicitly, and validates SIAP as a direct municipal
+prior, calibrated prior, local-residual anchor and graph-residual anchor on the
+frozen 04B pseudo-competitions. Do not promote actual-target candidates before
+reviewing the generated 04E.1 evidence.
+
+
 
 External public evidence is desirable.
 
