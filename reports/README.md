@@ -89,3 +89,11 @@ LOSO anchor gate. Actual 59 predictions are candidates only.
 `reports/checkpoint_04e1/` is complete. Exact SIAP coverage was 197/197, but
 SIAP did not improve target-matched pseudo-competition RMSE. Canonical
 interpretation: `docs/CHECKPOINT_04E1_FINDINGS.md`.
+
+
+## Checkpoint 04F
+
+`reports/checkpoint_04f/` is the finalization namespace. The configured final
+rule is Local04D; the runner verifies provenance, audits a constrained
+Local/Graph blend family and writes exactly 59 `ID_POLIGONO,RENDIMIENTO_T_HA`
+rows plus separate uncertainty/disagreement diagnostics.
