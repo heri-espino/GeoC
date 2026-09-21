@@ -68,6 +68,17 @@ from geocebada.evaluation.checkpoint04b import (
     temporal_similarity_matrix,
     transductive_standardize,
 )
+from geocebada.evaluation.checkpoint04d1 import (
+    SplitPositions,
+    fit_pls_anchor_with_cross_fitted_residuals,
+    leave_one_split_out_method_selection,
+    leave_one_split_out_tier_routing,
+    predict_residual_graph_correction,
+    predict_weighted_local_ridge,
+    split_positions_from_membership,
+    summarize_nested_predictions,
+    summarize_predictions_by_method,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -87,6 +98,15 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "SplitPositions",
+    "fit_pls_anchor_with_cross_fitted_residuals",
+    "leave_one_split_out_method_selection",
+    "leave_one_split_out_tier_routing",
+    "predict_residual_graph_correction",
+    "predict_weighted_local_ridge",
+    "split_positions_from_membership",
+    "summarize_nested_predictions",
+    "summarize_predictions_by_method",
     "PseudoSplit",
     "build_knn_graph",
     "build_legacy_stress_splits",
