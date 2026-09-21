@@ -1,0 +1,150 @@
+\subsection{Fuentes oficiales}
+
+El sistema integra sensores remotos, geometría, clima, topografía y estadísticas públicas.
+La \cref{tab:cp01-sources} resume el inventario principal congelado en el contrato de
+datos.
+
+\begin{longtable}{p{0.20\linewidth}p{0.19\linewidth}p{0.49\linewidth}}
+\caption{Fuentes principales y semántica operacional.}
+\label{tab:cp01-sources}\\
+\toprule
+Fuente & Cobertura & Uso principal \\
+\midrule
+\endfirsthead
+\toprule
+Fuente & Cobertura & Uso principal \\
+\midrule
+\endhead
+Split oficial & 197 parcelas & ID, área, conjunto y rendimiento observado para 138 parcelas.\\
+Geometrías oficiales & 197 polígonos, EPSG:4326 & centroides, distancias, extracción espacial y QA administrativa.\\
+BASIC & $107{,}666\times96$; 2022--2025 & Sentinel-2/Landsat, fenología histórica y 2025, índices de vegetación/agua/estrés.\\
+PRO & $47{,}804\times20$; 2025 & Planet NDVI/EVI/LAI/MSAVI y estadísticos temporales.\\
+Clima oficial & 48 meses por variable, 2022--2025 & precipitación, Tmin, Tmax, climatología/anomalías.\\
+Topografía oficial & 120 m & elevación y pendiente.\\
+INEGI municipios & Hidalgo/Puebla/Tlaxcala & CVEGEO, unión SIAP y QA espacial.\\
+CHIRPS v3 & 214 días, abr--oct 2025 & precipitación diaria y episodios secos/extremos; excluido en varias fases por QC.\\
+WaPOR v3 & 21 dekads, abr--oct 2025 & AETI y NPP; balance hídrico/productividad.\\
+SoilGrids & 9 propiedades $\times$ 4 profundidades & perfil edáfico estático y heterogeneidad vertical.\\
+SIAP & 2003--2025 & contexto municipal histórico y proxy contemporáneo 2025.\\
+INEGI CEM & $\sim15$ m & elevación/relieve de mayor resolución.\\
+\bottomrule
+\end{longtable}
+
+\subsection{BASIC: representación longitudinal multiespectral}
+
+BASIC contiene 107,666 registros y 96 columnas. Los registros cubren las 197 parcelas entre
+2022-01-01 y 2025-12-31 y provienen de Landsat y Sentinel-2. Las fechas se interpretan
+estrictamente como \artifact{DD/MM/YYYY}; la llave parcela--fecha--sensor es única.
+
+La estructura de variables comprende 23 familias de índices con cuatro resúmenes espaciales
+por observación ---promedio, desviación estándar, máximo y mínimo---, además de metadatos de
+fecha, sensor y nubosidad. Dos decisiones son esenciales:
+\begin{enumerate}
+\item no se mezclan silenciosamente variables homónimas entre sensores;
+\item la ausencia sistemática de ciertos índices por sensor no se corrige con un fill global,
+porque esa ausencia es estructural y contiene provenance.
+\end{enumerate}
+
+En particular, fórmulas provider-specific como MRA y VI6T no se inventan. Se conserva su
+semántica tal como aparece en el suministro original. Esta política es importante porque un
+índice de nombre opaco no debe recibir una interpretación espectral creada a posteriori sólo
+para justificar una feature.
+
+\subsection{PRO: señal Planet 2025}
+
+PRO aporta 47,804 registros por 20 columnas, todas las parcelas y fechas de 2025-01-01 a
+2025-12-30. El sensor Planet contiene NDVI, EVI, LAI y MSAVI con estadísticos espaciales.
+Esta fuente es particularmente relevante para capturar el ciclo contemporáneo con mayor
+densidad/resolución, pero sigue siendo una colección de observaciones longitudinales. Su
+incorporación supervisada ocurre sólo después de agregarla de forma parcelaria o de construir
+métricas temporales que respetan la entidad parcela.
+
+La coexistencia de Sentinel-2 y Planet permite además construir features de concordancia
+inter-sensor. Esa comparación no presupone equivalencia radiométrica: se utiliza para
+cuantificar si ambas cadenas describen una forma temporal compatible para la misma parcela.
+
+\subsection{Clima oficial, CHIRPS y WaPOR}
+
+La fuente climática oficial contiene 48 rasters mensuales para cada una de precipitación,
+temperatura mínima y temperatura máxima, con continuidad 2022--2025 y CRS EPSG:4326. A partir
+de ella se construyen climatologías históricas, totales estacionales y anomalías 2025.
+
+CHIRPS v3 aporta precipitación diaria para 214 fechas entre abril y octubre de 2025. Aunque su
+resolución temporal permite construir número de días de lluvia, máximos móviles y duración de
+episodios secos, el pipeline mantuvo CHIRPS fuera de varias representaciones de modelado porque
+Feature Table v1 sólo retuvo una característica y se decidió no sobreinterpretar una
+extracción que requería QC adicional.
+
+WaPOR v3 aporta AETI y NPP en 21 periodos dekadales. Dado que sus bandas representan tasas,
+una agregación estacional correcta multiplica por la duración del dekad:
+\begin{equation}
+AETI_{\mathrm{season}}
+=
+\sum_{k=1}^{21} AETI_k d_k.
+\label{eq:wapor-duration}
+\end{equation}
+La misma regla se aplica a otros productos de tasa. Esta distinción impide sumar valores con
+unidades por día como si fueran acumulados. La capa agronómica utilizará posteriormente estas
+magnitudes para construir proxies de productividad hídrica \citep{Dhonthi2024}.
+
+\subsection{Suelo y topografía}
+
+SoilGrids aporta 36 GeoTIFF: nueve propiedades por cuatro profundidades:
+pH, arcilla, arena, limo, carbono orgánico, nitrógeno, capacidad de intercambio catiónico,
+densidad aparente y fracción de fragmentos gruesos. Los TIFF descargados mediante WCS pueden
+carecer de CRS en el header; sólo los productos positivamente identificados reciben el
+fallback ESRI:54052 definido por el contrato. Las conversiones de escala INT16 a unidades
+físicas se aplican según la especificación del producto, nunca por inferencia ad hoc.
+
+La topografía combina el producto oficial de 120 m y el CEM estatal de INEGI de
+aproximadamente 15 m. Las fuentes se mantienen separadas mediante prefijos para evitar que una
+resolución sustituya silenciosamente a otra. En modelos locales, la elevación y la pendiente
+pueden actuar como contexto ambiental; sin embargo, la distancia geográfica directa terminó
+teniendo una asociación más fuerte con diferencias de rendimiento que la distancia
+multivariada completa.
+
+\subsection{SIAP y la llave administrativa}
+
+El archivo histórico SIAP cubre 2003--2025. La llave municipal estable es
+\begin{equation}
+\mathrm{CVEGEO}
+=
+\mathrm{zfill}_2(\mathrm{Idestado})
+\Vert
+\mathrm{zfill}_3(\mathrm{Idmunicipio}),
+\label{eq:cvegeo}
+\end{equation}
+donde $\Vert$ denota concatenación. Nunca se une únicamente por
+\artifact{Idmunicipio}, porque dicho identificador no es globalmente único entre estados.
+
+Se identificaron al menos las categorías \artifact{Cebada grano} y
+\artifact{Cebada forrajera en verde}, además de ciclos Otoño--Invierno y
+Primavera--Verano y modalidades Riego/Temporal. Mezclar grano y forraje modificaría la
+semántica de la respuesta, por lo que se prohíbe explícitamente.
+
+En Feature Table v1 se preservó una versión histórica del agregador SIAP. En
+Checkpoint~04E.1 se volvió a la tabla detallada para filtrar de forma explícita
+\artifact{Cebada grano + Primavera-Verano + Temporal + CVEGEO + 2025}.
+La distinción entre el agregado legado y el scope exacto es importante para interpretar por
+qué una fuente administrativamente correcta puede seguir siendo un proxy pobre del rendimiento
+parcelario. Debe señalarse además que la elección de Primavera--Verano se alineó con el ciclo
+abril--octubre del reto; no se presenta aquí como una certificación externa independiente de
+semántica de ciclo.
+
+\subsection{Asignación municipal y casos de borde}
+
+La etiqueta administrativa oficial de parcela se preserva como referencia para joins. La
+superposición con polígonos INEGI se utiliza como QA/fallback y no sustituye silenciosamente
+el dato oficial. Se documentaron, entre otros, AGC\_020 con una pequeña intersección
+interestatal, AGC\_129 atravesando municipios en Hidalgo y AGC\_048 con discrepancia entre
+etiqueta oficial y overlay. Esta política evita que un algoritmo de overlay convierta
+automáticamente un caso geométrico limítrofe en una reasignación administrativa.
+
+\subsection{Fuentes investigadas pero no promovidas}
+
+ERA5-Land fue explorado y se implementó tooling de descarga, pero las solicitudes a CDS
+presentaron problemas repetidos de costo/backend y no se obtuvo un artefacto completo
+certificado para el pipeline. En lugar de permitir una fuente parcial, se declaró opcional y
+se excluyó de downstream. Esta decisión ilustra una regla general: una fuente potencialmente
+útil no entra al modelo por prestigio o disponibilidad nominal; debe tener cobertura,
+unidades y proceso de extracción auditables.
