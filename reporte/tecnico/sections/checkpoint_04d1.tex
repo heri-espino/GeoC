@@ -1,0 +1,226 @@
+\subsection{Objetivo del refinamiento}
+
+Checkpoint~04D.1 no vuelve a realizar una búsqueda genérica de modelos. Toma como evidencia
+previa que LocalRidge y Graph sobrevivieron 04B, reutiliza exactamente las 34 máscaras
+congeladas y explora únicamente grados de libertad relevantes para estas dos familias.
+
+El grid principal contiene 626 métodos predeclarados:
+\begin{itemize}
+\item 300 variantes de grafo;
+\item 324 variantes de Local Ridge;
+\item dos anchors fijos.
+\end{itemize}
+La gran cantidad de variantes no se interpreta como 626 hipótesis independientes; comparten
+estructura y muchos hiperparámetros adyacentes. Por eso se estudian superficies de estabilidad
+y luego se usa selección leave-one-split-out.
+
+\subsection{Topologías de distancia}
+
+Las topologías de distancia combinan geografía y embedding agronómico:
+\[
+d^{(\eta)}_{ij}
+=
+\eta\,\widetilde d^{geo}_{ij}
++
+(1-\eta)\,\widetilde d^{agro}_{ij},
+\]
+con variantes denominadas Geo, GeoAgro90, GeoAgro75, GeoAgro50 y GeoAgro25. En la
+nomenclatura, GeoAgro25 corresponde a 25\% geografía y 75\% componente agronómica
+normalizada.
+
+Local Ridge se prueba sobre C1 agronomic y C4 all deterministic, con topologías Geo,
+GeoAgro75 y GeoAgro50. La búsqueda usa
+\[
+k\in\{12,16,20,24,30,40\},
+\]
+\[
+\alpha\in\{30,100,300\},
+\qquad
+p\in\{0.5,1,2\},
+\]
+donde $p$ es la potencia de distancia en
+\[
+w_{qi}=\frac{1}{(d_{qi}+10^{-6})^p}.
+\]
+
+\subsection{Local Ridge query-specific}
+
+Para cada objetivo $q$ se seleccionan únicamente etiquetas visibles:
+\[
+\mathcal N_k(q)
+=
+\operatorname*{arg\,sort}_{i\in\Train^\star}
+d_{qi}[1:k].
+\]
+Entonces
+\begin{equation}
+\hat{\bm\beta}_q
+=
+\arg\min_{\bm\beta}
+\sum_{i\in\mathcal N_k(q)}
+w_{qi}
+(y_i-x_i^\top\bm\beta)^2
++
+\alpha\|\bm\beta\|_2^2.
+\label{eq:cp04d-localridge}
+\end{equation}
+
+La regularización es esencial: incluso con $k=24$, C4 tiene una dimensión mucho mayor que el
+tamaño del vecindario. Ridge no intenta identificar un vector causal de coeficientes; actúa
+como interpolador lineal regularizado en el subespacio local. La estabilidad proviene de
+$\alpha$ elevado respecto a un OLS local singular.
+
+\subsection{Búsqueda de grafos}
+
+Los grafos directos varían:
+\[
+k\in\{4,6,8,10,12\},\qquad
+\lambda\in\{0.25,0.5,1,2,4,8\}
+\]
+sobre cinco topologías. La solución sigue \cref{eq:graph-laplacian}. Valores mayores de
+$\lambda$ penalizan más la variación de la función sobre aristas:
+\[
+\bm f^\top L\bm f
+=
+\frac{1}{2}\sum_{i,j}w_{ij}(f_i-f_j)^2.
+\]
+Por tanto, el modelo asume smoothness local del rendimiento en el grafo $X$.
+
+\subsection{Corrección de residuos globales}
+
+Además del grafo directo se probó un modelo de corrección de residuos. Primero se ajusta PLS4
+sobre etiquetas visibles y se generan residuos cross-fitted dentro de ese mismo conjunto:
+\[
+r_i^{CF}
+=
+y_i-\hat y_i^{PLS,-fold(i)}.
+\]
+Se ajusta después un campo suave sobre el grafo:
+\[
+\hat r_q
+=
+\operatorname{GraphPropagate}(r^{CF}),
+\]
+y se predice
+\[
+\hat y_q
+=
+\hat y_q^{PLS,full}+\hat r_q.
+\]
+El uso de residuos cross-fitted es crítico. Si se propagaran residuos in-sample de un PLS
+ajustado sobre los mismos puntos, su magnitud y estructura estarían contaminadas por fit
+optimista.
+
+\subsection{Ranking target-matched}
+
+\begin{table}[H]
+\centering
+\caption{Mejores configuraciones del refinamiento 04D.1.}
+\label{tab:cp04d-ranking}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Método & RMSE medio & mediana & peor split \\
+\midrule
+C4 Geo $k=24,\alpha=30,p=1$ & \textbf{0.487845} & 0.468742 & 0.694700 \\
+C1 Geo $k=30,\alpha=30,p=1$ & 0.488302 & 0.4694 & 0.6921 \\
+C1 Geo $k=24,\alpha=30,p=1$ & 0.4885 & 0.4684 & 0.6953 \\
+C4 Geo $k=30,\alpha=30,p=1$ & 0.4887 & 0.4715 & 0.6925 \\
+C4 GeoAgro75 $k=24,\alpha=30,p=1$ & 0.4892 & 0.4718 & 0.6940 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La proximidad de varias configuraciones alrededor de $k=20$--30 y $\alpha=30$ es más
+importante que el orden exacto de las primeras filas: existe una cuenca estable, no un spike
+aislado. Esta observación aumenta la credibilidad del finalista.
+
+\safefigure{../../reports/checkpoint_04d1/figures/local_k_profile.png}
+{Perfil de desempeño de Local Ridge al variar el tamaño del vecindario.}
+{fig:cp04d-local-k}
+
+\subsection{El mejor modelo robusto no coincide con el mejor target-matched}
+
+El finalista de grafo más robusto es
+\artifact{GraphDirect_GeoAgro25_k6_lam8}:
+\[
+\begin{array}{lr}
+\text{target-matched} & 0.494881\\
+\text{state-random} & 0.467936\\
+\text{state-stratified} & 0.479161\\
+\text{municipality-grouped} & 0.527883.
+\end{array}
+\]
+
+El mejor Local Ridge obtiene 0.487845 target-matched, pero municipality-grouped cerca de
+0.687. La diferencia expresa dos objetivos estadísticos:
+\begin{itemize}
+\item Local Ridge aprovecha intensamente etiquetas geográficamente cercanas, condición que
+el matching indica que se parece al test real;
+\item GraphDirect conserva mejor comportamiento cuando se elimina un municipio completo.
+\end{itemize}
+
+No existe contradicción en conservar ambos como finalistas: uno maximiza la simulación primaria
+del test fijo; el otro es un hedge de extrapolación espacial.
+
+\safefigure{../../reports/checkpoint_04d1/figures/refinement_ranking.png}
+{Ranking del search local/grafo sobre pseudo-competiciones target-matched.}
+{fig:cp04d-refinement}
+
+\subsection{Graph residual versus graph directo}
+
+Las variantes de corrección de residuos PLS quedan alrededor de 0.537 target-matched y
+0.679--0.684 grouped, claramente por debajo del grafo directo. Esto sugiere que, en este
+problema, la estructura espacial no actúa sólo como una pequeña corrección de un anchor global:
+modelar directamente la función sobre el grafo es más competitivo.
+
+\subsection{Leave-one-split-out para selección de método}
+
+Para cada split $h$:
+\[
+\hat m_{-h}
+=
+\arg\min_m
+\frac{1}{15}
+\sum_{s\neq h}\RMSE_{s,m},
+\]
+y luego se calcula $\RMSE_{h,\hat m_{-h}}$. El resultado es:
+\[
+\overline{\RMSE}_{LOSO,\mathrm{method}}=0.488366,
+\qquad
+\RMSE_{\mathrm{pooled}}=0.496137.
+\]
+Quince de dieciséis selecciones eligieron el C4 Geo $k=24,\alpha=30,p=1$ y una eligió C1
+Geo $k=30,\alpha=30,p=1$. Esta concentración confirma que el optimum no depende de un solo
+split.
+
+\subsection{Routing por soporte y caveat posterior}
+
+04D.1 también ejecutó selección LOSO por tier y reportó:
+\[
+\overline{\RMSE}_{LOSO,\mathrm{tier}}=0.485815,
+\qquad
+\RMSE_{\mathrm{pooled}}=0.494213.
+\]
+Numéricamente es mejor que la regla única. Sin embargo, una auditoría posterior detectó una
+asimetría importante: el universo del selector LOSO de tiers podía incluir los 626 métodos
+predeclarados, mientras la propuesta actual para las 59 parcelas se construía sobre un
+subconjunto de finalistas. Una ganancia de aproximadamente 0.0026 no justifica ignorar esa
+diferencia de candidate universe.
+
+Además, los 16 pseudo-splits reutilizan parcelas; no son 16 datasets independientes. La
+selección split-excluded remueve optimismo de mismo split, pero no convierte los resultados
+en replicaciones estadísticamente independientes.
+
+\begin{decision}
+El routing por soporte se conserva como evidencia exploratoria, no como regla final. La
+solución final debe usar un candidate universe explícito y estable o elegir una regla única
+suficientemente robusta.
+\end{decision}
+
+\subsection{Candidato para las 59 parcelas}
+
+04D.1 materializa predicciones candidatas, incluyendo Local C4 y GraphDirect. Estos valores no
+se promueven todavía a entrega: sirven para medir discrepancia entre inductive biases y para
+que 04E/04C evalúen si evidencia externa o global puede reducir error antes del congelamiento
+de 04F.
