@@ -5,6 +5,7 @@ Esta carpeta concentra la documentación del proyecto, la referencia de la libre
 - `TRANSDUCTIVE_OBJECTIVE.md`: especificación canónica del objetivo activo: reconstrucción transductiva de las 59 parcelas fijas y validación pseudo-competition.
 - `CHECKPOINT_04A_FINDINGS.md`: interpretación canónica de topología, similitud y soporte.
 - `CHECKPOINT_04B_FINDINGS.md`: interpretación canónica de pseudo-competition y evidencia local/grafo.
+- `CHECKPOINT_04D1_FINDINGS.md`: interpretación canónica del refinamiento local/grafo, nested validation y robustez espacial.
 - `AGENT_GUIDE.md`: punto de entrada operativo para agentes/colaboradores; estado actual, reglas, artifacts y siguiente fase.
 - `PROJECT_HISTORY.md`: cronología de lo que se hizo, por qué y qué quedó validado.
 - `official/`: bases, lineamientos y documentos oficiales de la convocatoria. Inmutables.
