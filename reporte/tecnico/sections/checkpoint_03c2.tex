@@ -1,0 +1,149 @@
+\subsection{Diseño del benchmark anidado}
+
+Checkpoint~03C.2 abandona el benchmark de estimadores fijos y permite tuning disciplinado.
+El track activo pasa a ser exclusivamente competition. Se conservan cuatro representaciones:
+\begin{align*}
+C0 &: \text{base}, && p=1400,\\
+C1 &: \text{agronomic}, && p=350,\\
+C2 &: \text{base+agro+empirical+discovery}, && p=2085+20,\\
+C3 &: \text{base+agro+support empírico+discovery}, && p=1754+20.
+\end{align*}
+
+C3 es particularmente importante: no arrastra las 335 features empíricas, pero conserva las
+primitivas configuradas necesarias para que el miner pueda explorar relaciones tipo
+condición relativa/shape. Así se distingue entre usar una capa empírica completa y usar sólo
+su soporte para descubrimiento.
+
+\subsection{Nested cross-validation}
+
+Sea $f$ un outer fold. El conjunto outer-train se divide nuevamente en tres inner folds.
+Para cada configuración $\lambda\in\Lambda$:
+\[
+\widehat R_f(\lambda)
+=
+\frac{1}{3}\sum_{g=1}^{3}
+\RMSE\left(
+y_{V_{fg}},
+\hat f_{\lambda,T_{fg}}(X_{V_{fg}})
+\right),
+\]
+donde cualquier imputación, escalado, PCA, PLS y descubrimiento supervisado se ajusta sólo en
+$T_{fg}$. Se selecciona
+\[
+\hat\lambda_f
+=
+\arg\min_{\lambda\in\Lambda}\widehat R_f(\lambda),
+\]
+se refita el pipeline completo sobre el outer-train y sólo entonces se predice el outer
+holdout.
+
+El inner splitter refleja el propósito del outer protocol:
+\begin{itemize}
+\item outer state-stratified $\rightarrow$ inner state-stratified;
+\item outer municipality-grouped $\rightarrow$ inner group-by-municipality.
+\end{itemize}
+Esto evita seleccionar hiperparámetros bajo una geometría de validación que no corresponde a
+la evaluación exterior.
+
+\subsection{Familias de modelos}
+
+Se evaluaron Ridge, ElasticNet, ExtraTrees, CatBoost, PLS, PCA+RBF Kernel Ridge y
+PCA+polynomial-degree-2 Kernel Ridge.
+
+\paragraph{PLS.}
+PLS busca componentes latentes maximizando covarianza con $y$, por lo que puede ser útil en
+high-$p$/small-$n$ con covariables correlacionadas \citep{Wold2001}. Como es supervisado,
+sus componentes se ajustan exclusivamente dentro de train.
+
+\paragraph{CatBoost.}
+El boosting de árboles se ejecutó en GPU y se restringió a grids pequeños
+\citep{CatBoost2018}. El objetivo era comprobar si una no linealidad potente podía extraer
+señal de la capa agronómica compacta sin un barrido masivo.
+
+\paragraph{Kernels.}
+Los kernels no se materializan como datasets porque dependen de preprocessing e
+hiperparámetros. Para un RBF:
+\[
+K_\gamma(x,z)=\exp\{-\gamma\|x-z\|_2^2\},
+\]
+por lo que escalar $X$ fuera del fold alteraría directamente la geometría del modelo. El mismo
+principio justifica mantener PCA dentro del pipeline.
+
+\subsection{Ranking cross-protocol}
+
+La tabla de robustez ordena por el peor OOF RMSE entre state y grouped, y después por la media.
+Los tres finalistas individuales fueron:
+
+\begin{table}[H]
+\centering
+\caption{Finalistas individuales de 03C.2.}
+\label{tab:cp03c2-finalists}
+\begin{tabular}{llrr}
+\toprule
+Representación & Modelo & state OOF & grouped OOF \\
+\midrule
+C0 base & PLS & 0.5339 & \textbf{0.7621} \\
+C3 base+agro+discovery & Ridge & 0.5331 & 0.7650 \\
+C1 agronomic & CatBoost & \textbf{0.5235} & 0.7709 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El orden state por sí solo sería distinto. ExtraTrees C3 obtiene 0.4972, C2 0.4996 y C1
+0.5024, mejores que los tres finalistas en state, pero sus grouped RMSE son 0.8698, 0.9052 y
+0.8469 respectivamente. Por tanto, el proyecto no elige simplemente el mínimo state score:
+se penaliza la fragilidad espacial.
+
+\subsection{Protocol gap}
+
+Definimos para diagnóstico
+\[
+G(M)=
+\RMSE_{\mathrm{grouped}}(M)
+-
+\RMSE_{\mathrm{state}}(M).
+\]
+Para C0+PLS,
+\[
+G\approx0.2282;
+\]
+para C1+CatBoost,
+\[
+G\approx0.2474.
+\]
+Incluso los mejores finalistas muestran una brecha sustancial. Esto anticipa una conclusión
+fundamental de 04A: el rendimiento y los residuos tienen estructura espacial que los modelos
+globales no representan completamente bajo extrapolación por municipio.
+
+\subsection{Fracaso de PCA+RBF y PCA+Poly2}
+
+Los kernels no lineales presentan errores muy superiores: PCA+RBF alcanza aproximadamente
+3.24--4.05 RMSE, y PCA+Poly2 entre 0.72 y más de 2 dependiendo de representación/protocolo.
+Esto no significa que los kernels sean universalmente inadecuados. Significa que, con sólo 138
+etiquetas, el grid y preprocessing definidos no produjeron una geometría robusta. El proyecto
+no siguió gastando compute en una familia que ya mostraba una brecha enorme respecto a PLS,
+Ridge y árboles.
+
+\subsection{Por qué no se hizo una búsqueda gigantesca}
+
+Con $n=138$, aumentar el número de configuraciones evaluadas sobre los mismos folds incrementa
+la posibilidad de seleccionar ruido de validación. El compute disponible no es la restricción
+principal; la restricción es la cantidad de información independiente. Por ello 03C.2 utiliza
+candidate grids deterministas y relativamente pequeños.
+
+Esta política se mantiene posteriormente en 04C.1: aun disponiendo de GPU, sólo se reevalúan
+tres configuraciones CatBoost heredadas cuando ya existe una hipótesis concreta de diversidad.
+
+\subsection{Primera lectura científica}
+
+03C.2 demuestra que:
+\begin{enumerate}
+\item una representación simple C0 + PLS puede ser más robusta espacialmente que ensembles
+de árboles con mejor state RMSE;
+\item C1 agronomic contiene suficiente estructura para que CatBoost sea competitivo;
+\item la capa completa C2 no domina consistentemente a representaciones más pequeñas;
+\item el modelo global todavía sufre cuando se retienen municipios enteros.
+\end{enumerate}
+
+El checkpoint constituye el núcleo de la \emph{First Modeling Delivery}, pero todavía no usa
+la geometría específica de las 59 parcelas como parte explícita del proceso de selección.
