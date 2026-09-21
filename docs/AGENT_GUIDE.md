@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 04F — final transductive reconstruction implemented; workstation run pending  
+**Current phase:** Checkpoint 04F — final transductive reconstruction complete  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -255,28 +255,25 @@ Do not mix `Cebada grano` with forage barley.
 Also retain/evaluate CHIRPS, WaPOR, SoilGrids, CEM/topography, official climate and additional
 daily weather/stress data when there is a concrete hypothesis.
 
-### 04F — final reconstruction — ACTIVE
+### 04F — final reconstruction — COMPLETE
 
-04F is implemented as a finalization stage rather than another model search.
+Canonical findings: `docs/CHECKPOINT_04F_FINDINGS.md`.
 
-Run:
+The final rule is frozen to `Baseline_Local04D`, corresponding to
+`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`, with target-matched mean
+RMSE 0.487845 and pooled RMSE 0.495741.
 
-```powershell
-python tools\run_checkpoint_04f.py
-```
+Cross-checkpoint provenance is exact: Local04D and Graph04D actual-target
+predictions agree between 04D.1 and 04E.1 to maximum absolute difference 0.0.
 
-The configured final rule is `Baseline_Local04D`, corresponding to
-`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`. Before freezing the final
-59-row table, the runner verifies that the actual-target Local04D and Graph04D
-predictions are exactly reproduced across the frozen 04D.1 and 04E.1 artifacts.
+A fixed 75/25 Local/Graph sensitivity blend reaches 0.486768 on the full
+development table, but constrained LOSO weight selection reaches 0.487941 and
+does not improve the frozen local rule. The blend remains diagnostic only.
 
-A deliberately small Local/Graph blend sensitivity table and constrained LOSO
-blend-weight check are generated for audit. They do not automatically change
-the final rule. Graph04D is retained as a robustness and disagreement reference.
-
-The final artifact must contain exactly
-`ID_POLIGONO,RENDIMIENTO_T_HA` for the 59 official prediction parcels, with
-separate support/disagreement diagnostics.
+The canonical competition output is
+`reports/checkpoint_04f/final_predictions.csv`, containing exactly 59
+`ID_POLIGONO,RENDIMIENTO_T_HA` rows. Do not modify parcel predictions
+manually based on support or disagreement diagnostics.
 
 ## 8. Data and engineering invariants
 
