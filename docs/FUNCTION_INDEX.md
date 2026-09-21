@@ -106,6 +106,12 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `predict_affine_external_prior` | function | `geocebada.evaluation.checkpoint04e` | Calibrate the public municipal prior using only currently visible parcel labels. | `src/geocebada/evaluation/checkpoint04e.py` |
 | `predict_graph_external_residual` | function | `geocebada.evaluation.checkpoint04e` | Add graph-propagated parcel residuals to the SIAP municipal prior. | `src/geocebada/evaluation/checkpoint04e.py` |
 | `predict_local_external_residual` | function | `geocebada.evaluation.checkpoint04e` | Add a query-specific local Ridge correction to the SIAP municipal prior. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `blend_method_name` | function | `geocebada.evaluation.checkpoint04f` | Return the canonical Local/Graph blend label for one graph weight. | `src/geocebada/evaluation/checkpoint04f.py` |
+| `build_final_prediction_diagnostics` | function | `geocebada.evaluation.checkpoint04f` | Build support and Local-vs-Graph disagreement diagnostics for the 59 targets. | `src/geocebada/evaluation/checkpoint04f.py` |
+| `build_final_prediction_table` | function | `geocebada.evaluation.checkpoint04f` | Return the canonical two-column final prediction table. | `src/geocebada/evaluation/checkpoint04f.py` |
+| `build_local_graph_blends` | function | `geocebada.evaluation.checkpoint04f` | Build fixed Local04D/Graph04D blends for one validation family. | `src/geocebada/evaluation/checkpoint04f.py` |
+| `leave_one_split_out_blend_selection` | function | `geocebada.evaluation.checkpoint04f` | Select a fixed blend weight on all other splits and score the holdout. | `src/geocebada/evaluation/checkpoint04f.py` |
+| `summarize_blend_predictions` | function | `geocebada.evaluation.checkpoint04f` | Summarize fixed blend candidates using equal-weight split RMSE. | `src/geocebada/evaluation/checkpoint04f.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
