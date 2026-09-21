@@ -948,10 +948,11 @@ def run_checkpoint_04d1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
         primary_predictions,
         family=primary_family,
     )
+    routing_candidates = method_manifest["method"].astype(str).tolist()
     loso_tier_selection, loso_tier_predictions = leave_one_split_out_tier_routing(
         primary_predictions,
         family=primary_family,
-        candidate_methods=finalists,
+        candidate_methods=routing_candidates,
         tiers=config["nested_selection"]["support_tiers"],
     )
     loso_selection.to_csv(
