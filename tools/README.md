@@ -32,3 +32,11 @@ notebook cells.
 Checkpoint 03 is closed as the First Modeling Delivery. Checkpoint 04 is active. New scripts should support target topology/similarity, transductive pseudo-competition validation, local/graph/domain-adaptation models and external-evidence enrichment.
 
 See `docs/AGENT_GUIDE.md` before adding scripts.
+
+
+### `run_checkpoint_04e1.py`
+
+Runs the SIAP external-localization experiment on the exact frozen 04B
+pseudo-competition splits and writes audited scope/coverage, pseudo predictions,
+LOSO selection, actual-target candidate predictions and the canonical 04E.1
+report.
