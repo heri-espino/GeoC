@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-20  
-**Active phase:** Checkpoint 04C.1 focused global CatBoost anchor is implemented; workstation run is the immediate next action. 04D.1 and 04E.1 are complete.
+**Active phase:** Checkpoint 04F final transductive reconstruction is implemented; workstation run is the immediate next action. 04D.1, 04E.1 and 04C.1 are complete.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,22 +144,45 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run `python tools/run_checkpoint_04c1.py` on the workstation. The runner uses
-the compact competition-track agronomic C1 representation, three fixed CatBoost
-configurations inherited from 03C.2, three seeds per candidate, and the exact
-frozen 04B pseudo-competition memberships.
+Run `python tools/run_checkpoint_04f.py`.
 
-The default task type is GPU and automatic CPU fallback is disabled. Intentional
-CPU execution requires:
+04F is intentionally a finalization stage, not another search. It verifies
+cross-checkpoint prediction identity, computes a small Local/Graph sensitivity
+table and constrained LOSO blend-weight check, then freezes
+`Baseline_Local04D` as the configured final rule and writes exactly 59
+`ID_POLIGONO,RENDIMIENTO_T_HA` predictions.
+
+The selected rule maps to
+`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`. Graph04D remains a
+robustness/disagreement diagnostic only.
+
+## Checkpoint 04C.1 completed findings
+
+Canonical interpretation: `docs/CHECKPOINT_04C1_FINDINGS.md`. Generated
+evidence: `reports/checkpoint_04c1/`.
 
 ```text
-python tools/run_checkpoint_04c1.py --catboost-task-type CPU --confirm-cpu y
+Baseline Local04D target-matched mean RMSE      0.487845
+Local + CatBoost 10%                            0.487842
+Local + CatBoost 10% pooled RMSE                0.495915
+Baseline Local04D pooled RMSE                   0.495741
+controlled LOSO gate mean RMSE                  0.488884
+CatBoost standalone target-matched              ~0.515–0.521
+residual corr Local vs CatBoost                  0.9423
 ```
 
-Review `reports/checkpoint_04c1/checkpoint_04c1_report.md` before opening 04F.
-CatBoost should be carried into 04F only if low-weight blending or residual
-diversity is validated on target-matched pseudo-targets without a material
-robustness penalty.
+The nominal 0.0000035 mean-RMSE advantage of the 10% CatBoost blend is
+numerically negligible, reverses on pooled RMSE, and does not survive the
+split-excluded gate. CatBoost is therefore diagnostic only and is not a
+required 04F component.
+
+## Checkpoint 04F implementation status
+
+04F is implemented and run-pending. The configured final rule is
+`Baseline_Local04D`. Before writing the final file, the runner verifies that
+its 59 predictions exactly reproduce the frozen 04D.1 source method in 04E.1.
+It also performs a constrained Local/Graph blend-weight LOSO check but does not
+automatically replace the frozen rule based on that development table.
 
 ## Checkpoint 04E.1 completed findings
 
