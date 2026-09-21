@@ -23,7 +23,8 @@ notebook cells.
 | `run_checkpoint_03c2.py` | Competition-only nested model-family benchmark with fold-safe tuning/discovery | Checkpoint 03C.2 closed |
 | `run_checkpoint_03c3.py` | Deterministic OOF review of three finalists and fixed equal-weight ensembles | Checkpoint 03C.3 closed/frozen |
 | `run_checkpoint_04a.py` | Build 59-target geographic/feature/temporal topology, shift, autocorrelation, support tables and figures | Checkpoint 04A complete |
-| `run_checkpoint_04b.py` | Repeated transductive pseudo-competition RMSE for global, local, spatial, graph and blended methods | **Checkpoint 04B implemented; run on workstation** |
+| `run_checkpoint_04b.py` | Repeated transductive pseudo-competition RMSE for global, local, spatial, graph and blended methods | Checkpoint 04B complete |
+| `run_checkpoint_04d1.py` | Refine local Ridge and graph models, test residual graph correction, LOSO selection/routing and fixed-target candidate predictions | **Checkpoint 04D.1 implemented; run on workstation** |
 | `generate_function_index.py` | Regenerate `docs/FUNCTION_INDEX.md` from public package API | run after public API changes |
 | `inspect_reference_docx.py` | Inspect reference DOCX content | utility |
 | `_netcdf_catalog_worker.py` | Internal NetCDF catalog worker | internal; not a direct user workflow |
