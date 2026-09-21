@@ -19,7 +19,7 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint04d1.yaml` | Exhaustive local/graph refinement, residual-graph correction and LOSO routing validation | 04D.1 complete |
 | `checkpoint04c1.yaml` | Focused C1 agronomic CatBoost anchor and low-weight blend validation | **04C.1 implemented; workstation run next** |
 | `checkpoint04e1.yaml` | Exact SIAP 2025 localization and external-prior validation | 04E.1 complete |
-| `checkpoint04f.yaml` | Final Local04D freeze, Local/Graph sensitivity and 59-row output contract | **04F implemented; workstation run next** |
+| `checkpoint04f.yaml` | Final Local04D freeze, Local/Graph sensitivity and 59-row output contract | 04F complete/frozen |
 
 Do not silently edit frozen Checkpoint 01–03 configs to improve historical results. Checkpoint
 03 is preserved as the First Modeling Delivery.
