@@ -1,0 +1,5 @@
+scope,cycle,modality,rows_all_years,municipalities_2025,rows_2025
+exact,Primavera-Verano,Temporal,924,83,83
+cycle_allmode,Primavera-Verano,ALL,925,83,93
+temporal_allcycle,ALL,Temporal,929,83,83
+allgrain,ALL,ALL,930,83,94

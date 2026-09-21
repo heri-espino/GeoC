@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-21T03:45:32.617757+00:00",
+  "git_commit": "4f7fd258ee8a9ff7ba7cb7c68834ef7e249f79d9",
+  "stage": "external_siap_localization",
+  "hidden_prediction_targets_used": false,
+  "public_2025_external_outcome_used": true,
+  "siap_crop": "Cebada grano",
+  "siap_cycle": "Primavera-Verano",
+  "siap_modality": "Temporal",
+  "primary_family": "target_matched",
+  "total_splits": 34,
+  "methods_evaluated": 14,
+  "best_primary_method": "Baseline_Local04D",
+  "best_primary_rmse_mean": 0.48784531674343823,
+  "best_primary_rmse_worst": 0.6946996263427135,
+  "loso_rmse_mean": 0.48784531674343823,
+  "loso_pooled_rmse": 0.49574142871073495,
+  "exact_2025_parcel_coverage": 197,
+  "prior_parcel_coverage": 197,
+  "actual_target_prior_coverage": 59,
+  "prior_source_counts": {
+    "exact_2025": 197
+  },
+  "full_train_prior_rmse": 1.4925874918639326,
+  "full_train_prior_mae": 1.371950577065801,
+  "full_train_prior_spearman": -0.21807006088627512,
+  "legacy_siap_direct_rmse": 1.4893600057274354
+}

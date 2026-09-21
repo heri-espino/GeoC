@@ -76,3 +76,5 @@ build/
 dist/
 .coverage
 htmlcov/
+
+reports/checkpoint_04d1/primary_predictions.csv
