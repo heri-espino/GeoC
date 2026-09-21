@@ -1,0 +1,91 @@
+\subsection{Propósito del ensamble}
+
+Después de 03C.2 se congelan tres finalistas individuales:
+\[
+F_1=\text{C0+PLS},\qquad
+F_2=\text{C3+Ridge},\qquad
+F_3=\text{C1+CatBoost}.
+\]
+Checkpoint~03C.3 no abre tuning adicional. Su objetivo es comprobar si combinaciones
+deterministas y de pesos fijos reducen error OOF al promediar inductive biases distintos.
+
+Los ensambles son:
+\begin{align}
+E_{12}&=\frac{1}{2}(F_1+F_2),\\
+E_{13}&=\frac{1}{2}(F_1+F_3),\\
+E_{23}&=\frac{1}{2}(F_2+F_3),\\
+E_{123}&=\frac{1}{3}(F_1+F_2+F_3).
+\end{align}
+
+Los pesos no se optimizan contra OOF; de esta forma, 03C.3 mide únicamente el beneficio de
+promediado y diversidad entre finalistas.
+
+\subsection{Resultados}
+
+\begin{table}[H]
+\centering
+\caption{Primera entrega de modelos: RMSE OOF por protocolo.}
+\label{tab:cp03c3-results}
+\begin{tabular}{lrrr}
+\toprule
+Método & state & municipality-grouped & peor protocolo \\
+\midrule
+E123 & 0.5121 & \textbf{0.7481} & 0.7481 \\
+E13 & \textbf{0.5082} & 0.7488 & 0.7488 \\
+E23 & 0.5146 & 0.7544 & 0.7544 \\
+E12 & 0.5270 & 0.7546 & 0.7546 \\
+F1 C0+PLS & 0.5339 & 0.7621 & 0.7621 \\
+F2 C3+Ridge & 0.5331 & 0.7650 & 0.7650 \\
+F3 C1+CatBoost & 0.5235 & 0.7709 & 0.7709 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El ensamble reduce error respecto a cada componente. E13 es ligeramente mejor en state,
+mientras E123 es ligeramente mejor en grouped. La diferencia grouped de $0.0007$ entre ambos
+es demasiado pequeña para declarar un ganador sustantivo.
+
+\subsection{Interpretación de diversidad}
+
+Para dos predictores $\hat y^{(a)}$ y $\hat y^{(b)}$, el MSE del promedio es
+\[
+\MSE\left(\frac{\hat y^{(a)}+\hat y^{(b)}}{2}\right)
+=
+\frac{1}{4}
+\left[
+\MSE_a+\MSE_b
++2\,\mathbb E(e_a e_b)
+\right],
+\]
+ignorando aquí términos de notación asociados a sesgo. El promedio sólo puede aportar una
+reducción importante si los errores no están perfectamente correlacionados. PLS, Ridge y
+CatBoost constituyen inductive biases diferentes, por lo que el resultado de 03C.3 es
+coherente con diversidad parcial.
+
+Sin embargo, el beneficio del ensamble no resuelve la fragilidad espacial: grouped permanece
+cerca de 0.75 RMSE. Esto sugiere que la diversidad entre \emph{modelos globales} no sustituye
+una representación explícita de localidad.
+
+\subsection{Cierre de la First Modeling Delivery}
+
+Al terminar 03C.3, el proyecto dispone de:
+\begin{itemize}
+\item data contract y Feature Table reproducibles;
+\item capas agronómica y empírica;
+\item discovery supervisado fold-local;
+\item dos protocolos de CV congelados;
+\item un benchmark anidado de siete familias de modelos;
+\item una pequeña familia de ensambles sin tuning de pesos.
+\end{itemize}
+
+La mejor evidencia convencional es aproximadamente 0.508--0.512 state y 0.748 grouped. Este
+resultado es suficientemente fuerte como baseline, pero revela la limitación central que
+motiva Checkpoint~04: el conjunto real de 59 parcelas es conocido y su relación espacial con
+las 138 etiquetas no está siendo utilizada explícitamente.
+
+\begin{decision}
+Checkpoint~03 se congela como evidencia histórica. Sus folds y OOF siguen siendo útiles para
+diagnóstico, pero dejan de ser la única doctrina de selección. Checkpoint~04 define validación
+pseudo-competition que reproduce la información realmente disponible al predecir las 59
+parcelas.
+\end{decision}
