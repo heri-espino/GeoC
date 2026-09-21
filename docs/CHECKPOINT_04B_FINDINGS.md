@@ -101,6 +101,15 @@ The exploratory 04B tier-wise winners are:
 This produces an exploratory routing proposal of 27 actual targets to
 `LocalRidge_k30_a100` and 32 to `GeoKNN_10`.
 
+### Support score is not monotone prediction difficulty
+
+The pseudo-target results do **not** show a monotone relationship of
+`low support -> larger RMSE`. In this run, the mid-support stratum is harder than both low
+and high support. This means the current X-only support score is useful for describing the
+target geometry and as a candidate routing variable, but it is not yet a calibrated
+uncertainty score. Geography/municipality composition can make a nominally low-support parcel
+locally predictable.
+
 ### Important methodological boundary
 
 The tier routing is **not yet a validated final mixture-of-experts rule**. The same 16
