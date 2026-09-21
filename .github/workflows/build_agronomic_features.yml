@@ -1,20 +1,26 @@
 name: Build agronomic feature artifact
 
 on:
-  pull_request:
-    paths:
-      - "src/geocebada/features/agronomic.py"
-      - "configs/agronomic_features_v1.yaml"
-      - "tools/build_agronomic_features_v1.py"
-      - "data/processed/features_v1/**"
-      - ".github/workflows/build_agronomic_features.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout exact workflow commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Record short commit SHA
+        id: meta
+        shell: bash
+        run: echo "short_sha=${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,9 +34,13 @@ jobs:
       - name: Build Agronomic Features v1
         run: python tools/build_agronomic_features_v1.py
 
-      - name: Upload generated artifacts
+      - name: Upload generated feature artifact
         uses: actions/upload-artifact@v4
         with:
-          name: agronomic-features-v1
-          path: data/processed/agronomic_features_v1/
+          name: GeoCebada_agronomic-features_${{ steps.meta.outputs.short_sha }}
+          path: |
+            data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+            data/processed/agronomic_features_v1/feature_manifest.json
+            data/processed/agronomic_features_v1/build_report.json
           if-no-files-found: error
+          retention-days: 30
