@@ -1,0 +1,141 @@
+\subsection{Contrato del reto y unidad estadística}
+
+La primera decisión técnica fue separar con precisión la \emph{unidad de observación de las
+fuentes} de la \emph{unidad supervisada de predicción}. La unidad supervisada es la parcela,
+identificada de forma única por \artifact{ID_POLIGONO}. El archivo oficial de
+rendimiento/split contiene 197 parcelas: 138 filas de \artifact{ENTRENAMIENTO} con
+\artifact{RENDIMIENTO_T_HA} observado y 59 filas de \artifact{PREDICCION} con el objetivo
+reservado por FIRA.
+
+\begin{table}[H]
+\centering
+\caption{Contrato básico del problema supervisado.}
+\label{tab:cp01-contract}
+\begin{tabular}{lr}
+\toprule
+Elemento & Valor \\
+\midrule
+Parcelas totales & 197 \\
+Parcelas etiquetadas & 138 \\
+Parcelas objetivo & 59 \\
+Estados & Hidalgo, Puebla, Tlaxcala \\
+Identificador canónico & \artifact{ID_POLIGONO} \\
+Variable objetivo & \artifact{RENDIMIENTO_T_HA} \\
+Ciclo objetivo & abril--octubre de 2025 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El hecho de que BASIC y PRO contengan decenas de miles de filas no aumenta el tamaño muestral
+supervisado. Una fila BASIC corresponde conceptualmente a una observación
+parcela--fecha--sensor; una fila PRO tiene la misma naturaleza longitudinal. Por tanto,
+\[
+n_{\mathrm{supervisado}}=138,
+\]
+no $107{,}666$ ni $47{,}804$. Tratar las filas temporales como observaciones independientes
+con la etiqueta parcelaria replicada produciría pseudorreplicación severa, correlación
+intra-parcela ignorada y leakage entre train y validación. Toda la arquitectura de datos
+posterior conserva esta distinción.
+
+\subsection{Objetivo estadístico inicial y evolución posterior}
+
+Durante los Checkpoints~01--03 se mantuvo una formulación convencional de regresión:
+construir una representación parcelaria $x_i$ y estudiar modelos
+\[
+\hat y_i=f_\theta(x_i)
+\]
+bajo validación espacialmente consciente. Esta etapa era necesaria para establecer qué
+fuentes, representaciones y familias de modelos eran razonables antes de explotar la
+estructura fija del conjunto objetivo.
+
+Posteriormente, en el Checkpoint~04, la doctrina se refinó a una formulación
+transductiva. Esa reformulación no invalida los checkpoints previos: los convierte en
+evidencia de ingeniería, representación y baseline. La diferencia central es que en el
+problema final conocemos de antemano los 59 vectores $X_{\Target}$ que serán evaluados. Por
+ello, el objeto final no es una función universal para parcelas futuras sino el vector
+\[
+\widehat{\bm y}_{\Target}\in\R^{59}.
+\]
+
+\subsection{Frontera de información}
+
+Desde el primer checkpoint se mantuvo una separación estricta entre:
+\begin{enumerate}
+\item información observable y permitida;
+\item información derivada de etiquetas visibles;
+\item etiquetas reservadas.
+\end{enumerate}
+
+Para los 59 objetivos:
+\[
+X_{\Target}\;\text{es observable},\qquad
+\bm y_{\Target}\;\text{es no observable}.
+\]
+La regla se aplica no sólo al fit final sino también a selección de variables,
+hiperparámetros, elección de vecinos, thresholds de routing y decisiones de ensamble.
+
+En los checkpoints convencionales, transformaciones entrenables como imputación, escalado,
+PCA, PLS y descubrimiento supervisado se ajustan dentro de cada fold. En la fase transductiva
+se permite que transformaciones estrictamente $X$-only conozcan $X_{\Target}$, pero nunca
+$\bm y_{\Target}$. Esta distinción se vuelve especialmente importante para grafos,
+estandarización transductiva, densidad y selección de pseudo-competiciones.
+
+\subsection{Horizonte de información: clean frente a competition}
+
+La ingeniería de datos reconoció desde el principio que una variable puede ser válida para la
+competencia y, sin embargo, no corresponder a un sistema de pronóstico prospectivo. Por eso se
+crearon dos modos conceptuales.
+
+\paragraph{clean.}
+Incluye información histórica, estática o disponible bajo una interpretación prospectiva
+conservadora. Su objetivo es permitir una lectura científica de generalización sin usar
+resultados contemporáneos que sólo aparecen después del ciclo.
+
+\paragraph{competition.}
+Incluye el conjunto clean más información pública/transductiva permitida para reconstruir el
+rendimiento de las 59 parcelas después de observar el ciclo 2025. Ejemplos: series 2025
+completas, WaPOR 2025, clima 2025 y, posteriormente, SIAP 2025 como evidencia municipal
+contemporánea.
+
+La separación no equivale a \emph{seguro} frente a \emph{leakage}. Una variable competition es
+válida si procede de una fuente pública permitida y no codifica los 59 rendimientos ocultos.
+La categoría existe para conservar honestidad semántica sobre el momento en el que la
+información estaría disponible en un escenario de despliegue distinto.
+
+\subsection{Implicación small-\texorpdfstring{$n$}{n}/high-\texorpdfstring{$p$}{p}}
+
+Desde el inicio se anticipó que la tabla final sería de dimensión elevada respecto al número
+de etiquetas. Esta condición condiciona todo el proyecto:
+\[
+n_{\Train}=138,\qquad p\gg n.
+\]
+Consecuencias:
+\begin{itemize}
+\item cualquier selección guiada por $y$ tiene alta varianza;
+\item un grid de hiperparámetros muy grande puede sobreoptimizar los folds;
+\item los errores de validación deben leerse junto con dispersión y protocolos espaciales;
+\item Ridge y PLS son baselines fundamentales, no modelos demasiado simples;
+\item árboles/boosting requieren fuerte disciplina de validación;
+\item una mejora de milésimas en el mismo conjunto de desarrollo no debe interpretarse como
+ganancia real sin un control split-excluded.
+\end{itemize}
+
+Esta última regla resultó decisiva en Checkpoint~04F: un blend Local/Graph obtuvo un mínimo
+ligeramente inferior al LocalRidge en la tabla completa de desarrollo, pero no se promovió
+porque la selección leave-one-split-out no sostuvo la ventaja.
+
+\subsection{Definición operacional de éxito}
+
+El proyecto no busca maximizar una métrica abstracta de representación. Cada checkpoint debe
+reducir incertidumbre sobre una decisión concreta. En las primeras fases, la pregunta es si
+una fuente puede integrarse sin ambigüedad y si una representación mantiene señal bajo
+validación. En la fase transductiva, el criterio se hace más estricto:
+
+\begin{quote}
+¿La información observable de las 197 parcelas permite reducir el error en pseudo-competiciones
+que reproducen la geometría de las 59 parcelas reales, sin acceder en ningún momento a sus
+etiquetas ocultas?
+\end{quote}
+
+Esta formulación conecta ingeniería de datos, estadística espacial, aprendizaje supervisado y
+semi-supervisado en un único contrato de decisión.
