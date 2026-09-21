@@ -1,6 +1,6 @@
 # Checkpoint 04 — Transductive Competition Modeling
 
-**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, 04D.1 COMPLETE, 04E.1 COMPLETE, 04C.1 COMPLETE, 04F IMPLEMENTED / RUN PENDING  
+**Status:** COMPLETE — 04A, 04B, 04D.1, 04E.1, 04C.1 and 04F complete  
 **Opened:** 2026-09-19
 
 Checkpoint 04 begins after the closure of Checkpoint 03 as the **First Modeling Delivery**. Read `docs/TRANSDUCTIVE_OBJECTIVE.md` before implementing this checkpoint.
@@ -224,7 +224,7 @@ remains external-evidence and stress-test context but is not a required current 
 
 Canonical interpretation: `docs/CHECKPOINT_04E1_FINDINGS.md`.
 
-## 04F — Final transductive reconstruction — IMPLEMENTED / RUN PENDING
+## 04F — Final transductive reconstruction — COMPLETE
 
 04F is now a deliberately conservative finalization stage. The configured final
 rule is `Baseline_Local04D`, the same
@@ -246,6 +246,12 @@ The final output is exactly one 59-row table with
 `ID_POLIGONO,RENDIMIENTO_T_HA`, plus a separate diagnostics table containing
 X-support and Local-vs-Graph disagreement. Hidden FIRA y remains unavailable
 and is never scored.
+
+The workstation run completed successfully. The frozen final rule is
+`Baseline_Local04D` with target-matched mean RMSE 0.487845. The constrained
+LOSO Local/Graph weight check reached 0.487941, so the small full-table blend
+gain was not promoted. Canonical interpretation:
+`docs/CHECKPOINT_04F_FINDINGS.md`.
 
 ## Completion criteria
 
