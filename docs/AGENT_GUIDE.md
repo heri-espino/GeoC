@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 04D.1 — local/graph refinement; 04C focused global anchor is secondary  
+**Current phase:** Checkpoint 04D.1 — implementation complete; workstation refinement run pending  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -169,6 +169,26 @@ municipality-grouped stress protocol.
 
 Do not treat the current support-tier routing CSV as final: tier winners were selected on the
 same pseudo-test evidence and require out-of-sample routing validation.
+
+### 04D.1 — local/graph refinement — IMPLEMENTED, RUN NEXT
+
+Run:
+
+```powershell
+python tools\run_checkpoint_04d1.py
+```
+
+This stage reuses the exact 04B pseudo-target memberships and searches only the method families
+supported by 04B. It adds a leakage-safe residual-graph model: cross-fitted PLS residuals from
+visible labels are propagated over an X-only graph and added back to the full PLS anchor.
+
+Selection quality is measured leave-one-target-matched-split-out. Support-tier routing is also
+fitted on the other pseudo-splits and scored on the held-out split. Repeated splits share
+parcels, so this removes direct same-split tuning optimism but is not equivalent to 16
+independent datasets.
+
+Do not promote the 59 candidate predictions from 04D.1 to final output until nested evidence,
+stress robustness and later external/global-anchor experiments have been reviewed.
 
 ### 04C — stronger global models
 
