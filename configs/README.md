@@ -16,7 +16,8 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint04.yaml` | Fixed-target transductive objective, validation and phase contract | **Checkpoint 04 active** |
 | `checkpoint04a.yaml` | Target topology, temporal similarity, shift, autocorrelation and support diagnostics | 04A complete |
 | `checkpoint04b.yaml` | Repeated transductive pseudo-competition validation with global/local/graph methods and X-only routing | 04B complete |
-| `checkpoint04d1.yaml` | Exhaustive local/graph refinement, residual-graph correction and LOSO routing validation | **04D.1 implemented; workstation run next** |
+| `checkpoint04d1.yaml` | Exhaustive local/graph refinement, residual-graph correction and LOSO routing validation | 04D.1 complete |
+| `checkpoint04e1.yaml` | Exact SIAP 2025 localization and external-prior validation | **04E.1 implemented; workstation run next** |
 
 Do not silently edit frozen Checkpoint 01–03 configs to improve historical results. Checkpoint
 03 is preserved as the First Modeling Delivery.
