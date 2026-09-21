@@ -80,6 +80,7 @@ jobs:
           sudo apt-get install -y \
             latexmk \
             biber \
+            texlive-bibtex-extra \
             texlive-latex-extra \
             texlive-fonts-extra \
             texlive-lang-spanish \
