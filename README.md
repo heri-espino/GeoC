@@ -40,24 +40,37 @@ Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conoce
 
 
 
-## Ejecutar Checkpoint 04E.1
+## Ejecutar Checkpoint 04C.1
 
-04D.1 ya está completo. La fase activa ahora audita SIAP 2025 como prior municipal
-externo localizado. Después de actualizar el repositorio:
+04E.1 ya quedó ejecutado y documentado. SIAP 2025 tuvo cobertura completa, pero
+no mejoró el protocolo target-matched: Local04D quedó en RMSE medio **0.4878** y
+el mejor blend local+SIAP 25% en **0.4922**. La selección LOSO eligió
+Local04D en **16/16** holdouts. La interpretación canónica está en
+`docs/CHECKPOINT_04E1_FINDINGS.md`.
+
+La fase activa es ahora un **anchor global CatBoost enfocado**, no una nueva
+búsqueda masiva. Reutiliza sólo tres configuraciones heredadas de 03C.2 sobre la
+representación agronómica C1, promedia tres seeds por candidato y las evalúa en
+los mismos pseudo-concursos congelados de 04B.
 
 ```powershell
 git pull
 conda activate geocebada
-python tools\run_checkpoint_04e1.py
+python tools\run_checkpoint_04c1.py
 ```
 
-04E.1 filtra explícitamente `Cebada grano + Primavera-Verano + Temporal + CVEGEO`.
-Compara el prior SIAP directo, calibración affine, corrección residual con Local Ridge,
-corrección residual sobre grafo y blends fijos contra los supervivientes de 04D.1 usando
-exactamente los pseudo-concursos congelados de 04B.
+El default exige GPU. No hay fallback automático a CPU. Si se quiere ejecutar
+intencionalmente en CPU:
 
-Los resultados se escriben en `reports/checkpoint_04e1/`. Las predicciones para las 59
-parcelas siguen siendo candidatos de investigación; la tabla final se congelará en 04F.
+```powershell
+python tools\run_checkpoint_04c1.py --catboost-task-type CPU --confirm-cpu y
+```
+
+04C.1 compara CatBoost directo, blends fijos de 10/20/30% con Local04D y
+Graph04D, residual correlation y un gate LOSO con universo de candidatos
+controlado. Los resultados se escribirán en `reports/checkpoint_04c1/`.
+Las predicciones para las 59 parcelas siguen siendo candidatos; 04F decidirá
+la reconstrucción final.
 
 ## Checkpoint 04D.1 — completado
 
