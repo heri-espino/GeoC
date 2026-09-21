@@ -48,7 +48,12 @@ def plot_graph_k_profiles(
 ) -> None:
     """Plot best graph RMSE by neighborhood size for each topology and graph mode."""
 
-    merged = summary.merge(manifest, on="method", how="left")
+    required = {"method_family", "distance_name", "k"}
+    merged = (
+        summary.copy()
+        if required.issubset(summary.columns)
+        else summary.merge(manifest, on="method", how="left")
+    )
     graph = merged.loc[
         merged["method_family"].isin(["graph_direct", "graph_residual"])
     ].copy()
@@ -85,7 +90,12 @@ def plot_local_k_profile(
 ) -> None:
     """Plot best local-Ridge RMSE by neighborhood size and representation."""
 
-    merged = summary.merge(manifest, on="method", how="left")
+    required = {"method_family", "representation", "distance_name", "k"}
+    merged = (
+        summary.copy()
+        if required.issubset(summary.columns)
+        else summary.merge(manifest, on="method", how="left")
+    )
     local = merged.loc[merged["method_family"].eq("local")].copy()
     if local.empty:
         return
