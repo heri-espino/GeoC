@@ -1,0 +1,110 @@
+name: Build research outputs
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "What should be built?"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - figures
+          - paper
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-outputs-${{ github.ref }}-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout exact workflow commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Record short commit SHA
+        id: meta
+        shell: bash
+        run: echo "short_sha=${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Python
+        if: ${{ inputs.target == 'figures' || inputs.target == 'all' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install project dependencies for figure generation
+        if: ${{ inputs.target == 'figures' || inputs.target == 'all' }}
+        run: python -m pip install -e ".[dev,geo]"
+
+      - name: Regenerate repository-backed report figures
+        if: ${{ inputs.target == 'figures' || inputs.target == 'all' }}
+        shell: bash
+        run: |
+          python tools/run_checkpoint_04a.py
+          python tools/run_checkpoint_04b.py
+          python tools/run_checkpoint_04d1.py
+
+      - name: Upload figures and aggregate analysis summaries
+        if: ${{ inputs.target == 'figures' || inputs.target == 'all' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: GeoCebada_figures_${{ steps.meta.outputs.short_sha }}
+          path: |
+            reports/checkpoint_04a/figures/*.png
+            reports/checkpoint_04a/figures/target_temporal_panels/*.png
+            reports/checkpoint_04a/checkpoint_04a_report.md
+            reports/checkpoint_04a/similarity_yield_summary.csv
+            reports/checkpoint_04a/spatial_autocorrelation_summary.json
+            reports/checkpoint_04b/figures/*.png
+            reports/checkpoint_04b/checkpoint_04b_report.md
+            reports/checkpoint_04b/protocol_summary.csv
+            reports/checkpoint_04b/robustness_summary.csv
+            reports/checkpoint_04b/support_tier_summary.csv
+            reports/checkpoint_04d1/figures/*.png
+            reports/checkpoint_04d1/checkpoint_04d1_report.md
+            reports/checkpoint_04d1/primary_summary.csv
+            reports/checkpoint_04d1/nested_validation_summary.csv
+            reports/checkpoint_04d1/stress_summary.csv
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Install LaTeX toolchain
+        if: ${{ inputs.target == 'paper' || inputs.target == 'all' }}
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            latexmk \
+            biber \
+            texlive-latex-extra \
+            texlive-fonts-extra \
+            texlive-lang-spanish \
+            texlive-science
+
+      - name: Compile technical report
+        if: ${{ inputs.target == 'paper' || inputs.target == 'all' }}
+        working-directory: reporte/tecnico
+        run: latexmk -pdf -interaction=nonstopmode main.tex
+
+      - name: Upload compiled technical report
+        if: ${{ inputs.target == 'paper' || inputs.target == 'all' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: GeoCebada_technical-report_${{ steps.meta.outputs.short_sha }}
+          path: |
+            reporte/tecnico/main.pdf
+            reporte/tecnico/main.log
+            reporte/tecnico/main.blg
+          if-no-files-found: error
+          retention-days: 30
