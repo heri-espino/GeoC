@@ -205,6 +205,103 @@ def _canonical_siap_files(directory: Path, spec: Mapping[str, Any]) -> list[Path
     return files
 
 
+def load_siap_barley_detail(
+    contract: Mapping[str, Any],
+    *,
+    root: str | Path | None = None,
+    years: list[int] | tuple[int, ...] | None = None,
+) -> pd.DataFrame:
+    """Load target-state SIAP barley rows with cycle/modality detail preserved.
+
+    This loader is intended for competition-mode external-evidence audits where
+    crop, production cycle and water modality must remain explicit. It does not
+    aggregate across Nomcicloproductivo or Nommodalidad.
+    """
+
+    project_root = Path(root).resolve() if root is not None else find_project_root()
+    spec = contract["external"]["siap"]
+    directory = project_root / spec["root"]
+    target_states = {int(value) for value in spec["target_state_codes"]}
+    aliases = list(spec.get("crop_name_aliases", ["Nomcultivo"]))
+    requested_years = None if years is None else {int(value) for value in years}
+
+    required = [
+        "Anio",
+        "Idestado",
+        "Nomestado",
+        "Idmunicipio",
+        "Nommunicipio",
+        "Idciclo",
+        "Nomcicloproductivo",
+        "Idmodalidad",
+        "Nommodalidad",
+        "Idcultivo",
+        "Sembrada",
+        "Cosechada",
+        "Siniestrada",
+        "Volumenproduccion",
+        "Rendimiento",
+    ]
+    numeric = [
+        "Anio",
+        "Idestado",
+        "Idmunicipio",
+        "Idciclo",
+        "Idmodalidad",
+        "Idcultivo",
+        "Sembrada",
+        "Cosechada",
+        "Siniestrada",
+        "Volumenproduccion",
+        "Rendimiento",
+    ]
+
+    pieces: list[pd.DataFrame] = []
+    for path in _canonical_siap_files(directory, spec):
+        match = re.search(r"(\\d{4})", path.name)
+        file_year = int(match.group(1)) if match else None
+        if requested_years is not None and file_year not in requested_years:
+            continue
+
+        header = _read_csv_flexible(path, nrows=0)
+        crop_column = next((alias for alias in aliases if alias in header.columns), None)
+        if crop_column is None:
+            raise ValueError(f"No declared SIAP crop-name alias in {path.name}.")
+        missing = [column for column in required if column not in header.columns]
+        if missing:
+            raise ValueError(f"SIAP detail file {path.name} missing columns: {missing}")
+
+        frame = _read_csv_flexible(path, usecols=[*required, crop_column])
+        if crop_column != "Nomcultivo":
+            frame = frame.rename(columns={crop_column: "Nomcultivo"})
+
+        state = pd.to_numeric(frame["Idestado"], errors="coerce")
+        crop_mask = frame["Nomcultivo"].astype(str).str.contains(
+            spec["crop_discovery_regex"],
+            regex=True,
+            na=False,
+        )
+        frame = frame.loc[state.isin(target_states) & crop_mask].copy()
+        if frame.empty:
+            continue
+
+        for column in numeric:
+            frame[column] = pd.to_numeric(frame[column], errors="coerce")
+        state_int = frame["Idestado"].astype("Int64")
+        municipality_int = frame["Idmunicipio"].astype("Int64")
+        frame["cvegeo"] = (
+            state_int.astype("string").str.zfill(2)
+            + municipality_int.astype("string").str.zfill(3)
+        )
+        frame["source_file"] = path.name
+        pieces.append(frame)
+
+    if not pieces:
+        requested = "all years" if requested_years is None else sorted(requested_years)
+        raise ValueError(f"No detailed SIAP barley rows found for {requested}.")
+    return pd.concat(pieces, ignore_index=True)
+
+
 def load_siap_barley_history(
     contract: Mapping[str, Any],
     *,
