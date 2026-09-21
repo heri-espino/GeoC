@@ -1,0 +1,81 @@
+schema_version: 1
+updated: 2026-09-21
+
+stage:
+  name: final_transductive_reconstruction
+  checkpoint: 04F
+  status: implemented_run_pending
+  purpose: >
+    Freeze the final 59-value reconstruction after the target-matched, stress,
+    external-evidence and focused global-anchor checkpoints.
+  no_hidden_target_scoring: true
+
+inputs:
+  parcel_table: data/processed/features_v1/parcel_features_all.csv
+  pseudo_predictions: reports/checkpoint_04c1/pseudo_predictions.csv
+  actual_candidates_04d: reports/checkpoint_04d1/actual_candidate_predictions.csv
+  actual_candidates_04e: reports/checkpoint_04e1/actual_external_candidates.csv
+  protocol_summary_04c: reports/checkpoint_04c1/protocol_summary.csv
+
+outputs:
+  directory: reports/checkpoint_04f
+  blend_validation_summary: blend_validation_summary.csv
+  loso_blend_selection: loso_blend_selection.csv
+  loso_blend_predictions: loso_blend_predictions.csv
+  final_predictions: final_predictions.csv
+  final_prediction_diagnostics: final_prediction_diagnostics.csv
+  report_json: checkpoint_04f_report.json
+  report_markdown: checkpoint_04f_report.md
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  training_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+
+final_rule:
+  selected_method: Baseline_Local04D
+  source_method_04d: LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
+  secondary_method: Baseline_Graph04D
+  secondary_source_method_04d: GraphDirect_GeoAgro25_k6_lam8
+  expected_target_matched_rmse_mean: 0.48784531674343823
+  selection_policy: >
+    Freeze Local04D because it is the strongest stable target-matched predictor,
+    is reproduced exactly across 04D/04E, survived 04E LOSO selection on all
+    16 holdouts, and neither SIAP nor CatBoost added reproducible improvement.
+    Small post-hoc Local/Graph blend gains are retained only as diagnostics
+    because constrained split-excluded weight selection does not improve on
+    the frozen Local04D rule.
+
+blend_diagnostic:
+  family: target_matched
+  graph_weights:
+    - 0.00
+    - 0.10
+    - 0.20
+    - 0.25
+    - 0.30
+    - 0.40
+    - 0.50
+    - 1.00
+  diagnostic_weight: 0.25
+  note: >
+    These weights quantify Local/Graph sensitivity only. The final rule is not
+    automatically selected from this development table.
+
+validation:
+  expected_total_rows: 197
+  expected_training_rows: 138
+  expected_prediction_rows: 59
+  expected_primary_splits: 16
+  metric_tolerance: 1.0e-10
+  actual_prediction_tolerance: 1.0e-12
+
+finalization:
+  round_submission_decimals: null
+  preserve_full_precision: true
+  uncertainty_policy: >
+    Use absolute Local04D-vs-Graph04D disagreement and the frozen X-support tier
+    only as diagnostics. Do not alter final predictions per parcel after viewing
+    these values.
