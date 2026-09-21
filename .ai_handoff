@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-20  
-**Active phase:** Checkpoint 04E.1 SIAP external localization is implemented; workstation run is the immediate next action. 04D.1 is complete. 04C focused global-anchor work remains secondary.
+**Active phase:** Checkpoint 04C.1 focused global CatBoost anchor is implemented; workstation run is the immediate next action. 04D.1 and 04E.1 are complete.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,13 +144,60 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run `python tools/run_checkpoint_04e1.py`. The runner reads the local raw SIAP
-municipal closure, keeps crop/cycle/modality explicit, audits
-`Cebada grano + Primavera-Verano + Temporal + CVEGEO`, and evaluates the public
-2025 municipal prior against the frozen 04D.1 local/graph survivors on the exact
-04B pseudo-competition splits. Review `reports/checkpoint_04e1/` before opening
-04F or spending additional compute on 04C.
+Run `python tools/run_checkpoint_04c1.py` on the workstation. The runner uses
+the compact competition-track agronomic C1 representation, three fixed CatBoost
+configurations inherited from 03C.2, three seeds per candidate, and the exact
+frozen 04B pseudo-competition memberships.
 
+The default task type is GPU and automatic CPU fallback is disabled. Intentional
+CPU execution requires:
+
+```text
+python tools/run_checkpoint_04c1.py --catboost-task-type CPU --confirm-cpu y
+```
+
+Review `reports/checkpoint_04c1/checkpoint_04c1_report.md` before opening 04F.
+CatBoost should be carried into 04F only if low-weight blending or residual
+diversity is validated on target-matched pseudo-targets without a material
+robustness penalty.
+
+## Checkpoint 04E.1 completed findings
+
+Canonical interpretation: `docs/CHECKPOINT_04E1_FINDINGS.md`. Generated
+evidence: `reports/checkpoint_04e1/`.
+
+```text
+Baseline Local04D target-matched RMSE         0.48785
+Local + SIAP-local 25%                        0.49218
+Baseline Graph04D target-matched RMSE         0.49488
+Graph + SIAP-graph 25%                        0.50141
+SIAP direct                                   1.43684
+LOSO anchor selection                         Local04D in 16/16 holdouts
+SIAP prior coverage                           197/197; actual targets 59/59
+Spearman(SIAP prior, observed parcel yield)  -0.2181
+```
+
+SIAP remains useful as documented external evidence and as a municipality
+stress-test signal, but it is not a required component of the current final
+predictor.
+
+## Checkpoint 04C.1 implementation status
+
+04C.1 is implemented and run-pending. It deliberately avoids a broad search.
+It uses only the historically motivated C1 agronomic CatBoost candidates from
+03C.2:
+
+```text
+depth 4, learning_rate 0.03, l2 3
+depth 4, learning_rate 0.06, l2 6
+depth 5, learning_rate 0.06, l2 3
+```
+
+Each candidate averages seeds 42, 314 and 2718. The stable first candidate is
+also blended at fixed 10/20/30% weights with the frozen Local04D and Graph04D
+baselines. A controlled LOSO gate can select only Local04D, direct stable
+CatBoost, or the three Local+CatBoost blends. This avoids repeating the overly
+large candidate-universe issue observed in exploratory 04D routing.
 
 ## Checkpoint 04A implementation status
 
