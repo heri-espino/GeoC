@@ -40,37 +40,37 @@ Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conoce
 
 
 
-## Ejecutar Checkpoint 04C.1
+## Ejecutar Checkpoint 04F
 
-04E.1 ya quedó ejecutado y documentado. SIAP 2025 tuvo cobertura completa, pero
-no mejoró el protocolo target-matched: Local04D quedó en RMSE medio **0.4878** y
-el mejor blend local+SIAP 25% en **0.4922**. La selección LOSO eligió
-Local04D en **16/16** holdouts. La interpretación canónica está en
-`docs/CHECKPOINT_04E1_FINDINGS.md`.
+04C.1 ya quedó ejecutado y documentado. CatBoost C1 fue claramente peor como
+predictor individual (RMSE target-matched ~0.515–0.521), y el blend
+Local+CatBoost 10% quedó prácticamente empatado con Local04D: 0.487842 vs
+0.487845, con pooled RMSE ligeramente peor. El gate LOSO tampoco mejoró el
+baseline. La interpretación canónica está en `docs/CHECKPOINT_04C1_FINDINGS.md`.
 
-La fase activa es ahora un **anchor global CatBoost enfocado**, no una nueva
-búsqueda masiva. Reutiliza sólo tres configuraciones heredadas de 03C.2 sobre la
-representación agronómica C1, promedia tres seeds por candidato y las evalúa en
-los mismos pseudo-concursos congelados de 04B.
+La fase activa es ahora **04F**, cuyo objetivo es congelar una única tabla final
+de 59 rendimientos sin reabrir una búsqueda amplia. El final rule configurado es
+`Baseline_Local04D`, equivalente a
+`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`.
 
 ```powershell
 git pull
 conda activate geocebada
-python tools\run_checkpoint_04c1.py
+python tools\run_checkpoint_04f.py
 ```
 
-El default exige GPU. No hay fallback automático a CPU. Si se quiere ejecutar
-intencionalmente en CPU:
+04F verifica que Local04D y Graph04D coincidan exactamente entre los artefactos
+04D.1 y 04E.1, reconstruye sólo una pequeña sensibilidad Local/Graph, ejecuta un
+check LOSO de pesos con universo restringido y finalmente escribe:
 
-```powershell
-python tools\run_checkpoint_04c1.py --catboost-task-type CPU --confirm-cpu y
+```text
+reports/checkpoint_04f/final_predictions.csv
+reports/checkpoint_04f/final_prediction_diagnostics.csv
+reports/checkpoint_04f/checkpoint_04f_report.md
 ```
 
-04C.1 compara CatBoost directo, blends fijos de 10/20/30% con Local04D y
-Graph04D, residual correlation y un gate LOSO con universo de candidatos
-controlado. Los resultados se escribirán en `reports/checkpoint_04c1/`.
-Las predicciones para las 59 parcelas siguen siendo candidatos; 04F decidirá
-la reconstrucción final.
+La tabla final contiene exactamente
+`ID_POLIGONO, RENDIMIENTO_T_HA` para las 59 parcelas `PREDICCION`.
 
 ## Checkpoint 04D.1 — completado
 
