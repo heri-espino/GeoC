@@ -75,3 +75,17 @@ prediction disagreement analysis for the actual 59 targets.
 
 - `checkpoint_04e1/`: exact SIAP 2025 grain-barley/Primavera-Verano/Temporal
   audit and external-prior pseudo-competition validation.
+
+
+## Checkpoint 04C.1
+
+`reports/checkpoint_04c1/` is the active focused global-anchor namespace. The
+runner compares three inherited C1 agronomic CatBoost candidates, fixed low-weight
+Local04D/Graph04D blends, target-matched residual correlation and a controlled
+LOSO anchor gate. Actual 59 predictions are candidates only.
+
+## Checkpoint 04E.1
+
+`reports/checkpoint_04e1/` is complete. Exact SIAP coverage was 197/197, but
+SIAP did not improve target-matched pseudo-competition RMSE. Canonical
+interpretation: `docs/CHECKPOINT_04E1_FINDINGS.md`.
