@@ -40,24 +40,35 @@ Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conoce
 
 
 
-## Ejecutar Checkpoint 04D.1
+## Ejecutar Checkpoint 04E.1
 
-La fase activa ya está implementada. Después de actualizar el repositorio:
+04D.1 ya está completo. La fase activa ahora audita SIAP 2025 como prior municipal
+externo localizado. Después de actualizar el repositorio:
 
 ```powershell
 git pull
 conda activate geocebada
-python tools\run_checkpoint_04d1.py
+python tools\run_checkpoint_04e1.py
 ```
 
-04D.1 reutiliza exactamente los pseudo-concursos de 04B y busca 626 configuraciones
-predefinidas de Local Ridge, graph-Laplacian y corrección espacial de residuos PLS. La
-selección de hiperparámetros y el routing por soporte se vuelven a medir
-leave-one-pseudo-split-out antes de evaluar finalistas en los stress tests.
+04E.1 filtra explícitamente `Cebada grano + Primavera-Verano + Temporal + CVEGEO`.
+Compara el prior SIAP directo, calibración affine, corrección residual con Local Ridge,
+corrección residual sobre grafo y blends fijos contra los supervivientes de 04D.1 usando
+exactamente los pseudo-concursos congelados de 04B.
 
-Los resultados se escriben en `reports/checkpoint_04d1/`. También se generan predicciones
-candidatas para las 59 parcelas sólo para análisis de desacuerdo y blending posterior; todavía
-no constituyen la entrega final.
+Los resultados se escriben en `reports/checkpoint_04e1/`. Las predicciones para las 59
+parcelas siguen siendo candidatos de investigación; la tabla final se congelará en 04F.
+
+## Checkpoint 04D.1 — completado
+
+La búsqueda de 626 configuraciones confirmó una región local estable. El mejor
+target-matched fue `LocalRidge_C4_all_deterministic_Geo_k24_a30_p1` con RMSE
+medio **0.4878**; la selección leave-one-split-out quedó en **0.4884** y el
+routing LOSO en **0.4858**.
+
+El grafo `GraphDirect_GeoAgro25_k6_lam8` quedó en **0.4949** target-matched,
+pero fue mucho más robusto en municipality-grouped (**0.5279**). La interpretación
+canónica está en `docs/CHECKPOINT_04D1_FINDINGS.md`.
 
 ## Checkpoint 04B — completado
 
