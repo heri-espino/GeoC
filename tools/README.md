@@ -24,7 +24,8 @@ notebook cells.
 | `run_checkpoint_03c3.py` | Deterministic OOF review of three finalists and fixed equal-weight ensembles | Checkpoint 03C.3 closed/frozen |
 | `run_checkpoint_04a.py` | Build 59-target geographic/feature/temporal topology, shift, autocorrelation, support tables and figures | Checkpoint 04A complete |
 | `run_checkpoint_04b.py` | Repeated transductive pseudo-competition RMSE for global, local, spatial, graph and blended methods | Checkpoint 04B complete |
-| `run_checkpoint_04d1.py` | Refine local Ridge and graph models, test residual graph correction, LOSO selection/routing and fixed-target candidate predictions | **Checkpoint 04D.1 implemented; run on workstation** |
+| `run_checkpoint_04c1.py` | Focused C1 agronomic CatBoost anchor, low-weight blends, residual diversity and controlled LOSO gate | **Checkpoint 04C.1 implemented; run on workstation** |
+| `run_checkpoint_04d1.py` | Refine local Ridge and graph models, test residual graph correction, LOSO selection/routing and fixed-target candidate predictions | Checkpoint 04D.1 complete |
 | `generate_function_index.py` | Regenerate `docs/FUNCTION_INDEX.md` from public package API | run after public API changes |
 | `inspect_reference_docx.py` | Inspect reference DOCX content | utility |
 | `_netcdf_catalog_worker.py` | Internal NetCDF catalog worker | internal; not a direct user workflow |
@@ -40,3 +41,10 @@ Runs the SIAP external-localization experiment on the exact frozen 04B
 pseudo-competition splits and writes audited scope/coverage, pseudo predictions,
 LOSO selection, actual-target candidate predictions and the canonical 04E.1
 report.
+
+
+### `run_checkpoint_04c1.py`
+
+Runs the deferred focused CatBoost anchor on the exact frozen 04B memberships.
+GPU is the default and there is no automatic CPU fallback. Use
+`--catboost-task-type CPU --confirm-cpu y` only for intentional CPU execution.
