@@ -454,6 +454,7 @@ def generate_target_matched_splits(
 
     return splits
 
+
 def generate_state_random_splits(
     frame: pd.DataFrame,
     *,
