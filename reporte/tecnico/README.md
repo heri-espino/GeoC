@@ -47,22 +47,29 @@ convertir el archivo principal en un bloque monolítico.
 
 ## Compilación oficial
 
-Desde la carpeta del reporte:
+El entry point recomendado es:
 
-    cd reporte\tecnico
+    python reporte/tecnico/build.py
+
+El builder valida primero que existan todos los \\input, las figuras congeladas referenciadas y
+las claves bibliográficas, y luego ejecuta el comando LaTeX oficial:
+
     latexmk -pdf -interaction=nonstopmode main.tex
 
-latexmk detecta BibLaTeX y ejecuta Biber cuando es necesario.
+Para validar sin compilar:
 
-Alternativa manual:
+    python reporte/tecnico/build.py --check
 
+El builder no recalcula modelos, tablas científicas ni figuras. Los PNG ya versionados bajo
+reports/ se consideran inputs congelados del documento.
+
+La alternativa manual sigue siendo:
+
+    cd reporte\tecnico
     pdflatex main.tex
     biber main
     pdflatex main.tex
     pdflatex main.tex
-
-Las figuras se referencian mediante rutas relativas hacia ../../reports/...; por ello se
-recomienda compilar con el directorio de trabajo en reporte/tecnico/.
 
 ## GitHub Actions
 
@@ -73,10 +80,15 @@ La compilación del reporte es manual. En GitHub:
     → Run workflow
     → target = paper
 
-El target all regenera primero las figuras reproducibles respaldadas por el repositorio y
-después compila el reporte. El target figures ejecuta los runners oficiales de 04A, 04B y
-04D.1. Las figuras SIAP de 04E.1 se empaquetan desde los outputs congelados ya versionados,
-porque la fuente raw externa de SIAP no forma parte del checkout de GitHub.
+Las figuras ya fueron generadas durante los checkpoints y están versionadas. El workflow no
+vuelve a ejecutar 04A, 04B, 04D.1, 04E.1 ni ningún otro experimento científico.
+
+- target = figures: empaqueta las figuras y summaries congelados que ya existen;
+- target = paper: valida esos inputs y compila el PDF;
+- target = all: empaqueta las figuras existentes y compila el PDF.
+
+La compilación usa python reporte/tecnico/build.py; regenerar una figura requiere ejecutar
+explícitamente el runner científico correspondiente fuera de este build documental.
 
 Los artifacts se conservan 30 días y llevan el SHA corto del commit en el nombre. El workflow
 no hace commits automáticos.
@@ -93,3 +105,16 @@ La tabla canónica de predicciones finales permanece en:
 
 El apéndice del reporte muestra valores redondeados sólo para lectura. No reemplaza el CSV de
 precisión completa.
+
+
+## Referencias
+
+El reporte usa BibLaTeX/Biber y la bibliografía canónica es:
+
+    reporte/tecnico/references.bib
+
+Incluye referencias metodológicas (Ridge, PLS, ExtraTrees, CatBoost, aprendizaje
+semi-supervisado, Moran), literatura agronómica/de teledetección de cebada y referencias de
+fuentes de datos (FIRA, CHIRPS, SoilGrids, WaPOR, SIAP e INEGI). Las citas se insertan en el
+texto con `\citep{...}` / `\citet{...}`, y `build.py --check` falla si una clave citada
+no existe en el archivo BibTeX.
