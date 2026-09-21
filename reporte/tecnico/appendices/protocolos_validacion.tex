@@ -1,0 +1,173 @@
+\section{Matriz conceptual de protocolos}
+
+No existe un único score que responda todas las preguntas del proyecto. La
+\cref{tab:validation-matrix} resume los protocolos principales.
+
+\begin{longtable}{p{0.22\linewidth}p{0.18\linewidth}p{0.22\linewidth}p{0.27\linewidth}}
+\caption{Protocolos de validación y su interpretación.}
+\label{tab:validation-matrix}\\
+\toprule
+Protocolo & Tamaño & X objetivo visible & Pregunta principal \\
+\midrule
+\endfirsthead
+\toprule
+Protocolo & Tamaño & X objetivo visible & Pregunta principal \\
+\midrule
+\endhead
+state-stratified & 5 folds sobre 138 & no como target fijo en 02--03 & interpolación con estados representados.\\
+municipality-grouped & 5 folds sobre 138 & no como target fijo en 02--03 & extrapolación a municipios retenidos.\\
+target-matched & 16 $\times$ 41 & sí, bajo contrato transductivo & aproximación primaria a la geometría de las 59 parcelas.\\
+state-random & 8 $\times$ 41 & sí & control aleatorio respetando estado.\\
+LOSO de pseudo-splits & 16 holdouts & sí & controlar selección de método/peso contra mismo split.\\
+\bottomrule
+\end{longtable}
+
+\section{Nested CV de Checkpoint 03}
+
+La nested CV separa dos capas:
+\[
+\text{inner CV}\rightarrow \text{selección de hiperparámetro},
+\]
+\[
+\text{outer holdout}\rightarrow \text{estimación de desempeño}.
+\]
+Formalmente, para outer fold $f$:
+\[
+\hat\lambda_f=
+\arg\min_{\lambda\in\Lambda}
+\widehat R_{\mathrm{inner},f}(\lambda),
+\]
+\[
+\widehat R_{\mathrm{outer},f}
+=
+R\left(
+y_{V_f},
+f_{\hat\lambda_f,T_f}(X_{V_f})
+\right).
+\]
+La primera operación no puede observar $y_{V_f}$. Esto incluye selección de expresiones
+supervisadas, número de componentes PCA/PLS cuando se tunearon y parámetros de modelos.
+
+\section{Pseudo-competition de Checkpoint 04}
+
+En una pseudo-competición $s$, definimos:
+\[
+\Train_s=\Train\setminus\Target_s^\star,
+\qquad
+|\Target_s^\star|=41.
+\]
+El modelo puede usar
+\[
+X_{\Train},X_{\Target}
+\]
+para transformaciones $X$-only globales, y puede usar
+\[
+X_{\Target_s^\star}
+\]
+durante el diseño de topología. Sin embargo, el operador supervisado satisface:
+\[
+\hat f_s
+=
+A(X_{\Train_s},y_{\Train_s};X_{\Target_s^\star}),
+\]
+con
+\[
+y_{\Target_s^\star}
+\]
+reservado hasta evaluación.
+
+Esta distinción es la razón por la que un PCA transductivo puede ser correcto mientras una
+selección de variables por correlación con todas las 138 etiquetas no lo sería.
+
+\section{Matching de pseudo-targets}
+
+El target matching utiliza únicamente descriptores de $X$ y metadata. Sea $q(S)$ una función
+de calidad de una máscara candidata $S$ que combina distancia entre perfiles, composición
+municipal y penalización de diversidad. La máscara seleccionada es aproximadamente:
+\[
+S^\star
+=
+\arg\min_{S:|S|=41}
+q(S;X_{\Target}),
+\]
+entre un conjunto finito de candidatos generados con seed congelada.
+
+La validez del procedimiento depende de no introducir ninguna estadística derivada de
+$y_S$ en $q$. Las diferencias de yield de vecinos observadas en 04A pueden usarse para
+diagnóstico científico, pero no para escoger qué etiquetas se ocultan.
+
+\section{Leave-one-pseudo-split-out}
+
+Para candidate set $\mathcal M$, la selección de método en holdout $h$ es:
+\[
+m_h^\star
+=
+\arg\min_{m\in\mathcal M}
+\frac{1}{S-1}
+\sum_{s\neq h}\RMSE_{s,m}.
+\]
+Entonces:
+\[
+R_h
+=
+\RMSE_{h,m_h^\star}.
+\]
+El resumen LOSO es
+\[
+\bar R_{\mathrm{LOSO}}=\frac1S\sum_h R_h.
+\]
+
+Este procedimiento controla el error más directo de escoger el mejor método usando el mismo
+split que se puntúa. No elimina toda dependencia porque las máscaras reutilizan parcelas. Su
+interpretación correcta es \emph{split-excluded selection}, no nested CV con $S$ datasets
+independientes.
+
+\section{Candidate universe}
+
+Una condición sutil es que $\mathcal M$ debe ser el mismo universo de métodos que la regla
+final pretende utilizar. Si el LOSO puede escoger entre 626 métodos pero la regla real sólo
+puede escoger entre diez finalistas, la aparente performance del selector y la regla aplicada
+no son el mismo procedimiento.
+
+Este caveat motivó no promover el routing LOSO de 04D.1 pese a su RMSE medio 0.4858. En 04C.1
+y 04F el candidate universe se redujo explícitamente antes de seleccionar:
+\begin{itemize}
+\item 04C.1: Local, CatBoost estable y tres blends Local/CatBoost;
+\item 04F: ocho pesos Local/Graph predeclarados.
+\end{itemize}
+
+\section{Lectura de diferencias pequeñas}
+
+Para dos métodos $a,b$:
+\[
+\Delta=\overline{\RMSE}_a-\overline{\RMSE}_b.
+\]
+Cuando $|\Delta|$ es del orden de $10^{-3}$ o menor, el proyecto exige evidencia adicional:
+\begin{enumerate}
+\item estabilidad entre splits;
+\item pooled RMSE compatible;
+\item selección LOSO que no revierta la ventaja;
+\item ausencia de un incremento desproporcionado de complejidad;
+\item comportamiento razonable en stress protocols.
+\end{enumerate}
+
+Este criterio evita convertir ruido de selección en una narrativa de mejora. El caso extremo es
+Local+CatBoost10: $\Delta$ en mean RMSE es de apenas $3.5\times10^{-6}$ y no se sostiene en
+pooled ni LOSO.
+
+\section{Protocolos de estrés versus objetivo primario}
+
+Municipality-grouped no se optimiza como si fuera el score oculto real; se usa para detectar
+fragilidad. Una regla puede ser aceptable si:
+\[
+R_{\mathrm{target}} \text{ es muy bajo}
+\]
+y
+\[
+R_{\mathrm{grouped}} \text{ no introduce un riesgo incompatible},
+\]
+aun si no es el mínimo grouped.
+
+Graph04D se conserva precisamente por esta razón: no gana el objetivo primario, pero ofrece
+una referencia robusta que permite detectar parcelas donde Local puede ser especialmente
+sensible a la disponibilidad de vecinos.
