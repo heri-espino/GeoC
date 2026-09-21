@@ -1,0 +1,197 @@
+\subsection{Reformulación transductiva}
+
+Checkpoint~04 cambia la pregunta de modelado. Sea $\Train$ el conjunto etiquetado y
+$\Target$ el conjunto fijo de 59 parcelas objetivo. La estimación final tiene forma
+\[
+\widehat{\bm y}_{\Target}
+=
+\mathcal A(X_{\Train},y_{\Train},X_{\Target}),
+\]
+donde $\mathcal A$ puede explotar la geometría conjunta de todos los $X$. Esto corresponde a
+aprendizaje transductivo/semi-supervisado en el sentido de que el conjunto no etiquetado
+específico participa en la representación \citep{Chapelle2006,Belkin2006}.
+
+El primer paso no fue entrenar un modelo más complejo. Fue preguntar si la cercanía entre
+parcelas realmente transfiere rendimiento y si los 59 objetivos forman un dominio distinto.
+
+\subsection{Representaciones para topología}
+
+Se construyeron tres espacios:
+\begin{description}
+\item[C0 base] Feature Table competition;
+\item[C1 agronomic] las 350 features agronómicas;
+\item[C4 all deterministic] base + agronomic + empirical, excluyendo expresiones
+supervisadas descubiertas con $y$.
+\end{description}
+
+Para distancias multivariadas se imputa/estandariza usando exclusivamente $X$ y se obtiene un
+embedding PCA de 20 componentes sobre las 197 parcelas. Esta operación es transductiva pero
+$X$-only:
+\[
+Z=\mathrm{PCA}_{20}\bigl(\mathrm{scale}(X_{\Train}\cup X_{\Target})\bigr).
+\]
+No se usa $y$ para orientar los componentes.
+
+\subsection{Clasificación adversarial train--target}
+
+Se define una etiqueta auxiliar
+\[
+d_i=
+\begin{cases}
+0,&i\in\Train,\\
+1,&i\in\Target.
+\end{cases}
+\]
+Un clasificador cross-validated intenta distinguir ambos grupos a partir de C4/PCA. Si su AUC
+estuviera muy por encima de 0.5, habría evidencia de covariate shift multivariado global. El
+resultado fue
+\[
+\mathrm{AUC}=0.4892.
+\]
+Por tanto, los 59 objetivos no constituyen una población globalmente separable en la
+representación examinada.
+
+Este resultado no contradice que algunas parcelas individuales estén en bajo soporte. AUC
+global cercano a azar implica solapamiento agregado, no que cada punto objetivo tenga un buen
+vecino etiquetado.
+
+\safefigure{../../reports/checkpoint_04a/figures/adversarial_roc.png}
+{ROC de la clasificación adversarial train frente a target.}
+{fig:cp04a-adversarial}
+
+\subsection{¿Qué distancia transfiere rendimiento?}
+
+Sobre las 138 etiquetas se construyeron todos los
+\[
+{138\choose2}=9{,}453
+\]
+pares. Para cada par $(i,j)$ se calcula
+\[
+\Delta y_{ij}=|y_i-y_j|
+\]
+y diversas métricas de disimilitud/similitud. La asociación se resume con Spearman, lo que
+evita asumir linealidad entre distancia y diferencia de rendimiento.
+
+\begin{table}[H]
+\centering
+\caption{Asociación entre similitud de covariables y diferencia absoluta de rendimiento.}
+\label{tab:cp04a-transfer}
+\begin{tabular}{lr}
+\toprule
+Métrica & Spearman con $|y_i-y_j|$ \\
+\midrule
+distancia geográfica & \textbf{0.4882} \\
+distancia PCA C1 agronomic & 0.2200 \\
+distancia PCA C4 deterministic & 0.1833 \\
+distancia PCA C0 base & 0.1673 \\
+DTW temporal & 0.0763 \\
+Pearson temporal & -0.0503 \\
+best-lag temporal correlation & -0.0482 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Para distancias, una asociación positiva es la dirección útil: parcelas más lejanas tienden a
+diferir más en rendimiento. Para similitudes tipo correlación, la dirección útil es negativa.
+La geografía domina claramente a la similitud temporal mensual aislada.
+
+\safefigure{../../reports/checkpoint_04a/figures/similarity_vs_yield_geo.png}
+{Distancia geográfica frente a diferencia absoluta de rendimiento para pares etiquetados.}
+{fig:cp04a-geo-transfer}
+
+\subsection{Similitud temporal}
+
+Se analizaron 11 trayectorias mensuales abril--octubre 2025: Sentinel-2 NDVI/EVI/LAI/FAPAR/
+NDWI/MSI, Landsat VI6T y Planet NDVI/EVI/LAI/MSAVI. Para dos secuencias se calcularon
+Pearson, Spearman, mejor correlación con lags de hasta dos meses y una distancia DTW
+normalizada.
+
+El resultado no es que la temporalidad carezca de información. Algunas parcelas tienen
+análogos temporales convincentes. El hallazgo es más específico: \emph{como regla de
+transferencia de rendimiento por sí sola}, la similitud mensual es mucho más débil que la
+geografía. Por ello se evita construir el predictor final como nearest-neighbor temporal.
+
+\subsection{Autocorrelación espacial de rendimiento}
+
+La evidencia más fuerte de 04A proviene de Moran's $I$ \citep{Moran1950}. Para una matriz de
+pesos espaciales $W=(w_{ij})$ y $z_i=y_i-\bar y$:
+\begin{equation}
+I
+=
+\frac{n}{\sum_{i,j}w_{ij}}
+\frac{\sum_{i,j}w_{ij}z_i z_j}
+{\sum_i z_i^2}.
+\label{eq:moran}
+\end{equation}
+
+Sobre un grafo de cinco vecinos, el rendimiento observado produce
+\[
+I=0.6797,\qquad p_{\mathrm{perm}}=0.001,
+\qquad \mathbb E_0[I]\approx-0.0073.
+\]
+Existe, por tanto, autocorrelación espacial positiva intensa.
+
+\safefigure{../../reports/checkpoint_04a/figures/moran_yield.png}
+{Moran scatter del rendimiento observado bajo el grafo espacial de cinco vecinos.}
+{fig:cp04a-moran}
+
+\subsection{Autocorrelación residual y dependencia del protocolo}
+
+Los residuos OOF de los ensambles de 03C.3 muestran una diferencia reveladora:
+\begin{table}[H]
+\centering
+\caption{Moran's $I$ de residuos OOF de la primera entrega.}
+\label{tab:cp04a-residual-moran}
+\begin{tabular}{lrr}
+\toprule
+Residuo & $I$ & $p_{\mathrm{perm}}$ \\
+\midrule
+E13 state-stratified & -0.0470 & 0.314 \\
+E123 state-stratified & -0.0375 & 0.429 \\
+E13 municipality-grouped & 0.5589 & 0.001 \\
+E123 municipality-grouped & 0.5483 & 0.001 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cuando entrenamiento contiene parcelas cercanas, el modelo global absorbe parte de la
+estructura espacial y sus residuos dejan de autocorrelacionarse fuertemente. Cuando se
+retienen municipios, permanece una gran estructura espacial sin explicar. Esta observación
+justifica modelos locales/grafo y explica la enorme brecha grouped de Checkpoint~03.
+
+\subsection{Soporte de las 59 parcelas}
+
+El diagnóstico 04A combina geografía, distancia C4, temporalidad, probabilidad adversarial y
+consistencia de vecinos etiquetados en un score descriptivo. La taxonomía inicial fue:
+\[
+5\ \mathrm{A\ high}
++2\ \mathrm{B\ feature}
++5\ \mathrm{C\ geographic}
++13\ \mathrm{D\ extrapolation}
++34\ \mathrm{E\ mixed}.
+\]
+
+Entre los objetivos de mayor soporte aparecen AGC\_088, AGC\_190, AGC\_126, AGC\_128 y
+AGC\_086. Entre los de menor soporte aparecen AGC\_173, AGC\_029, AGC\_120, AGC\_183 y
+AGC\_003.
+
+El score no es una probabilidad calibrada ni una predicción de rendimiento. Su función es
+responder: ¿qué tan representado está un objetivo por la nube etiquetada?
+
+\safefigure{../../reports/checkpoint_04a/figures/target_support_ranking.png}
+{Ranking descriptivo de soporte de las 59 parcelas objetivo.}
+{fig:cp04a-support}
+
+\subsection{Decisión de transición}
+
+Los resultados descartan dos rutas como prioridad: domain adaptation global agresiva y
+nearest-neighbor temporal puro. En cambio, sostienen:
+\begin{enumerate}
+\item validación que reproduzca la geometría de las 59 parcelas;
+\item local Ridge con vecindarios geográficos;
+\item grafos sobre las 197 parcelas;
+\item blends global/local sólo si reducen pseudo-test RMSE;
+\item uso del soporte como hipótesis que debe validarse, no como regla manual.
+\end{enumerate}
+
+El siguiente checkpoint convierte estas hipótesis descriptivas en performance out-of-sample.
