@@ -1,0 +1,134 @@
+\subsection{Data Contract v2}
+
+La etapa de datos se cerró mediante un contrato ejecutable, no mediante una inspección manual
+única. Los artefactos centrales son \artifact{configs/data_contract_v2.yaml} y
+\artifact{tools/audit_data_contract_v2.py}. El audit completo produjo:
+\[
+46\ \text{PASS},\qquad
+0\ \text{WARN},\qquad
+0\ \text{FAIL},\qquad
+1\ \text{SKIP}.
+\]
+
+Entre las invariantes comprobadas están:
+\begin{itemize}
+\item 197 IDs oficiales únicos;
+\item partición exacta 138/59;
+\item target visible sólo en entrenamiento;
+\item formas BASIC $107{,}666\times96$ y PRO $47{,}804\times20$;
+\item cobertura de las 197 parcelas en ambas tablas satelitales;
+\item parsing estricto de fechas y unicidad parcela--fecha--sensor;
+\item validez geométrica y CRS;
+\item continuidad de rasters climáticos;
+\item continuidad diaria CHIRPS;
+\item metadatos/unidades WaPOR;
+\item inventario SoilGrids y reglas de CRS;
+\item cobertura SIAP 2003--2025, schemas y duplicados;
+\item inventario CEM;
+\item exclusión explícita de ERA5-Land como fuente no certificada.
+\end{itemize}
+
+El contrato funciona como \emph{gate}: si cambian fuentes crudas, primero debe volver a
+ejecutarse el audit; ningún checkpoint posterior debería asumir que una descarga nueva conserva
+las mismas unidades o cobertura.
+
+\subsection{Inmutabilidad de fuentes y transformación versionada}
+
+El repositorio separa:
+\begin{enumerate}
+\item evidencia fuente inmutable bajo \artifact{data/source/};
+\item datos externos reproducibles/locales bajo \artifact{data/raw/external/};
+\item artefactos derivados pequeños y versionados;
+\item reportes generados por checkpoints.
+\end{enumerate}
+
+Las correcciones no se escriben sobre el archivo fuente. Por ejemplo, metadata defectuosa de
+un NetCDF puede normalizarse en un artefacto derivado, pero el input original permanece
+intacto. Esto permite reconstruir la cadena
+\[
+\text{source}
+\longrightarrow
+\text{loader}
+\longrightarrow
+\text{normalización}
+\longrightarrow
+\text{feature}
+\longrightarrow
+\text{modelo}.
+\]
+
+La separación tiene una consecuencia estadística: cualquier resultado puede auditarse contra
+la versión exacta de la tabla que lo generó, reduciendo el riesgo de que un mismo nombre de
+feature represente transformaciones distintas en checkpoints diferentes.
+
+\subsection{Integration fixtures}
+
+Se creó un fixture real de 12 parcelas con IDs compartidos entre fuentes. La selección incluye
+dos parcelas por estrato Estado$\times$CONJUNTO, diversidad target-free y casos de borde
+administrativos. El fixture contiene
+\[
+12\ \text{parcelas},\qquad
+192\ \text{filas BASIC},\qquad
+96\ \text{filas PRO},\qquad
+201\ \text{filas SIAP},
+\]
+además de geometrías, clima, CHIRPS, topografía, SoilGrids, WaPOR y CEM. El conjunto ocupa
+aproximadamente 3.77 MiB y permite probar joins/extractores sin requerir el archivo externo
+completo.
+
+La selección del fixture no usa \artifact{RENDIMIENTO_T_HA}. Esto es relevante porque incluso
+un dataset de integración podría introducir un sesgo sutil si se eligieran ejemplos por
+valores extremos de $y$.
+
+\subsection{CRS y operaciones espaciales}
+
+Las operaciones espaciales se realizan con una política explícita de CRS. EPSG:4326 es
+adecuado para almacenamiento/intercambio de coordenadas angulares, pero no para interpretar
+distancias euclidianas en grados como kilómetros. Por ello, cualquier cálculo métrico debe
+transformarse o usar una fórmula geodésica apropiada.
+
+En etapas posteriores, la componente geográfica de las distancias transductivas se deriva de
+centroides parcelarios y se normaliza antes de combinarse con distancias agronómicas. La
+consistencia de CRS es especialmente importante porque la geografía terminó siendo la señal
+de transferencia más fuerte del proyecto.
+
+\subsection{Missingness como semántica y no sólo como problema numérico}
+
+La política de datos distingue tres casos:
+\begin{enumerate}
+\item valor ausente porque la fuente no cubre una parcela/fecha;
+\item variable no definida para un sensor;
+\item valor eliminado por QA.
+\end{enumerate}
+No todos los NaN significan lo mismo. Durante la construcción se eliminan columnas
+completamente nulas porque no pueden aportar información. Las columnas parcialmente faltantes
+se conservan y la imputación aprendida se delega al pipeline de modelado. De esta forma, una
+decisión de ingeniería no utiliza accidentalmente distribución de validación.
+
+\subsection{Hashing, manifest y trazabilidad}
+
+Los builds derivados registran hashes de inputs, commit de Git y manifest de features. Esta
+trazabilidad permite responder tres preguntas que son particularmente importantes en una
+competencia con múltiples fuentes:
+\begin{enumerate}
+\item ¿qué archivo crudo originó una variable?;
+\item ¿qué versión de código produjo la tabla usada por un modelo?;
+\item ¿qué features pertenecían realmente al conjunto clean o competition en ese commit?
+\end{enumerate}
+
+La respuesta no depende de memoria humana ni de nombres de notebooks. El estado reproducible
+queda materializado en YAML, JSON y CSV versionados.
+
+\subsection{Criterios de cierre del Checkpoint 01}
+
+Checkpoint~01 no produjo todavía un modelo ni una tabla final $197\times p$. Su cierre
+significó algo más fundamental: cada fuente relevante tenía una semántica, una política de
+unidades, una llave de unión, un tratamiento de missingness y un mecanismo de auditoría
+documentados. El Checkpoint~02 pudo entonces operar sobre una base reproducible en vez de
+incorporar limpieza implícita dentro del código de modelado.
+
+\begin{decision}
+Una feature sólo puede entrar a modelado si puede trazarse hasta una fuente y una regla de
+transformación. La ausencia de provenance se trata como un defecto de datos, no como un
+detalle de documentación.
+\end{decision}
