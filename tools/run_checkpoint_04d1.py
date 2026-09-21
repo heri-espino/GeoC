@@ -884,7 +884,10 @@ def run_checkpoint_04d1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
             random_state=int(config["validation"]["random_state"]) + index,
         )
         support = _support_for_split(support_lookup, split, frame)
-        for spec in method_manifest.itertuples(index=False):
+        for method_index, spec in enumerate(
+            method_manifest.itertuples(index=False),
+            start=1,
+        ):
             spec_series = pd.Series(spec._asdict())
             predicted = _predict_one(
                 spec_series,
@@ -906,6 +909,12 @@ def run_checkpoint_04d1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
                     support,
                 )
             )
+            if method_index % 100 == 0 or method_index == len(method_manifest):
+                print(
+                    f"      methods {method_index:03d}/{len(method_manifest):03d} "
+                    f"for {split.split_id}",
+                    flush=True,
+                )
         print(
             f"  [{index:02d}/{len(primary_splits):02d}] {split.split_id} complete "
             f"({perf_counter() - start:.1f}s elapsed)",
