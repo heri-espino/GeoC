@@ -1,0 +1,147 @@
+\section{Por qué documentar resultados negativos}
+
+Con 138 etiquetas, una parte importante del valor científico del proyecto consiste en cerrar
+hipótesis. Si sólo se conservaran los experimentos ganadores, futuros integrantes podrían
+repetir búsquedas ya realizadas o interpretar la ausencia de una variable como una omisión
+accidental. Este apéndice registra hipótesis plausibles que fueron evaluadas y no se
+promovieron.
+
+\section{Más dimensionalidad determinista}
+
+La combinación de base, agronomic y empirical alcanza más de 2,000 variables en 03C.1. No
+domina consistentemente a representaciones más compactas. El resultado evita la heurística
+\[
+p_{\mathrm{nuevo}}>p_{\mathrm{viejo}}
+\Longrightarrow
+\text{modelo mejor}.
+\]
+En high-$p$/small-$n$, agregar ruido o variables redundantes puede deteriorar regularización,
+distancias y estabilidad.
+
+\section{Empirical-only}
+
+B2 empirical es débil como representación aislada en 03C.1: por ejemplo, competition +
+ExtraTrees produce OOF RMSE alrededor de 0.647 frente a 0.500 de B0. La conclusión no es que
+sus variables sean inútiles. Algunas ayudan como support primitives y C4, pero la capa no
+sustituye a la información source/agronómica.
+
+\section{Kernel Ridge no lineal}
+
+PCA+RBF y PCA+polynomial-2 quedaron muy por detrás de PLS/Ridge/trees en nested CV. El
+proyecto no siguió expandiendo grado, gamma o dimensiones PCA sólo porque el hardware lo
+permitía. La evidencia disponible indicaba que la familia no justificaba el aumento del
+search space.
+
+\section{Temporal nearest neighbors como predictor principal}
+
+Pearson, best-lag correlation y DTW de trayectorias mensuales muestran asociación muy débil con
+diferencia absoluta de yield. La temporalidad se retiene como feature/contexto, pero no como
+la métrica principal de vecinos.
+
+\section{Domain adaptation global agresiva}
+
+El clasificador adversarial train--target produce AUC 0.4892. No existe evidencia de un
+separation boundary global fuerte. Por ello, importance weighting global no se convirtió en
+la prioridad de 04D.
+
+\section{Graph residual sobre PLS}
+
+La hipótesis
+\[
+\hat y=\hat y^{PLS}+\hat r^{Graph}
+\]
+parecía natural a partir de los residuos espacialmente autocorrelacionados bajo grouped CV.
+Sin embargo, las variantes de residual graph quedan aproximadamente en 0.537 target-matched,
+muy por detrás de GraphDirect y LocalRidge. La estructura espacial útil no parece limitarse a
+una corrección residual pequeña de PLS.
+
+\section{Routing por soporte}
+
+Un primer routing de 04B y el LOSO de 04D sugieren que diferentes tiers pueden favorecer
+métodos distintos. Sin embargo:
+\begin{itemize}
+\item el candidate universe de la validación LOSO no coincidía perfectamente con la regla
+operacional final;
+\item la ganancia era pequeña;
+\item las pseudo-competiciones son dependientes.
+\end{itemize}
+Por ello no se aplican 59 decisiones de modelo específicas por tier en el output final.
+
+\section{SIAP directo y calibrado}
+
+SIAP exact-scope tiene cobertura completa, pero:
+\[
+\RMSE_{\mathrm{direct,target}}\approx1.4368,
+\]
+y sobre las 138 etiquetas completas:
+\[
+\RMSE\approx1.4926,\qquad
+\rho_S\approx-0.2181.
+\]
+La calibración affine mejora respecto al uso directo pero sigue alrededor de 0.837 RMSE. Los
+modelos residuales tampoco alcanzan Local/Graph.
+
+La señal sí mejora extrapolación municipality-grouped en un blend de grafo, por lo que no se
+declara inútil. La conclusión precisa es: \emph{no aporta valor suficiente al protocolo
+primario para recibir peso en la reconstrucción final}.
+
+\section{CatBoost como final anchor}
+
+CatBoost C1 fue competitivo en 03C.2, pero una vez que se introducen métodos locales:
+\[
+\RMSE_{CB}\approx0.515\text{--}0.521
+>
+0.487845=\RMSE_{Local}.
+\]
+Un peso 10\% en Local produce una diferencia en mean RMSE de sólo
+$3.5\times10^{-6}$ y pooled RMSE peor. El gate LOSO queda en 0.488884. No hay base para
+promoverlo.
+
+\section{Blend Local/Graph seleccionado post hoc}
+
+El 75/25 produce 0.486768 en el conjunto completo de 16 pseudo-splits, nominalmente mejor que
+0.487845. Sin embargo, seleccionar el peso usando 15 splits y aplicarlo al dieciseisavo
+produce 0.487941. El mínimo full-table se registra como sensibilidad, no como regla final.
+
+\section{Heat excess mensual a \texorpdfstring{$25^\circ$C}{25 C}}
+
+La base
+\[
+H_{25}
+=
+\sum_m d_m\max(T_{\mathrm{mean},m}-25,0)
+\]
+resultó constante en la tabla canónica. Las temperaturas medias mensuales no tienen suficiente
+resolución para capturar episodios de calor corto. La feature y su interacción hídrica se
+eliminan, mostrando por qué una hipótesis mecanicista debe pasar checks de variación antes de
+modelado.
+
+\section{CHIRPS en la capa agronómica v1}
+
+Aunque CHIRPS ofrece precipitación diaria, sólo una feature sobrevivió Feature Table v1 y se
+mantuvo una alerta de QC. 03A y varias representaciones 04 excluyen CHIRPS explícitamente.
+Esto evita que una fuente de alta resolución aparente añada sofisticación cuando la cadena de
+extracción todavía no está suficientemente certificada.
+
+\section{ERA5-Land}
+
+La fuente fue investigada, pero los problemas de descarga/costo del backend impidieron
+certificar un artefacto completo. No se mezclan archivos parciales con fuentes completas. Una
+fuente no disponible de manera reproducible se trata como hipótesis futura, no como input
+oculto del modelo final.
+
+\section{Conclusión de los resultados negativos}
+
+La estrategia no fue probar métodos hasta que alguno mejorara unas milésimas. El proyecto
+avanzó cerrando ramas:
+\[
+\text{hipótesis}
+\rightarrow
+\text{protocolo}
+\rightarrow
+\text{resultado}
+\rightarrow
+\text{decisión}.
+\]
+Esa trazabilidad es especialmente importante para trabajo en equipo: permite distinguir una
+idea aún no probada de una idea ya evaluada y descartada bajo un contrato explícito.
