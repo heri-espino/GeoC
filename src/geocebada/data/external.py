@@ -187,7 +187,19 @@ def build_admin_mapping(
     return result
 
 
-def _canonical_siap_files(directory: Path, spec: Mapping[str, Any]) -> list[Path]:
+def _canonical_siap_files(
+    directory: Path,
+    spec: Mapping[str, Any],
+    *,
+    years: set[int] | None = None,
+) -> list[Path]:
+    """Return one deterministic SIAP file per requested year.
+
+    When years is omitted, require the full Data Contract v2 range. When a
+    caller requests a subset, validate only those years instead of requiring
+    unrelated historical files.
+    """
+
     pattern = re.compile(spec["yearly_file_regex"])
     grouped: dict[int, list[Path]] = {}
     for path in sorted(directory.glob("*.csv")):
@@ -195,15 +207,24 @@ def _canonical_siap_files(directory: Path, spec: Mapping[str, Any]) -> list[Path
         if match:
             grouped.setdefault(int(match.group(1)), []).append(path)
 
-    files = []
-    for year in range(int(spec["year_min"]), int(spec["year_max"]) + 1):
+    if years is None:
+        requested_years = list(
+            range(int(spec["year_min"]), int(spec["year_max"]) + 1)
+        )
+    else:
+        requested_years = sorted({int(year) for year in years})
+
+    files: list[Path] = []
+    for year in requested_years:
         candidates = grouped.get(year, [])
         if not candidates:
-            raise FileNotFoundError(f"Missing SIAP year {year}.")
+            raise FileNotFoundError(
+                f"Missing SIAP year {year} in {directory}. "
+                f"Requested years: {requested_years}."
+            )
         canonical = directory / f"Cierre_agricola_mun_{year}.csv"
         files.append(canonical if canonical in candidates else candidates[0])
     return files
-
 
 def load_siap_barley_detail(
     contract: Mapping[str, Any],
@@ -257,11 +278,11 @@ def load_siap_barley_detail(
     ]
 
     pieces: list[pd.DataFrame] = []
-    for path in _canonical_siap_files(directory, spec):
-        match = re.search(r"(\d{4})", path.name)
-        file_year = int(match.group(1)) if match else None
-        if requested_years is not None and file_year not in requested_years:
-            continue
+    for path in _canonical_siap_files(
+        directory,
+        spec,
+        years=requested_years,
+    ):
 
         header = _read_csv_flexible(path, nrows=0)
         crop_column = next((alias for alias in aliases if alias in header.columns), None)
