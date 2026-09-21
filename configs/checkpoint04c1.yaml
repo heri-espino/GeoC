@@ -1,0 +1,123 @@
+schema_version: 1
+updated: 2026-09-21
+
+stage:
+  name: focused_global_catboost_anchor
+  checkpoint: 04C.1
+  status: run_pending
+  purpose: >
+    Test whether a small, historically motivated C1 agronomic CatBoost anchor
+    adds validated diversity to the stronger Local04D and Graph04D predictors
+    on the exact frozen pseudo-competition splits.
+  no_hidden_target_scoring: true
+
+scope:
+  active_track: competition
+  deferred_after_04e: true
+  broad_search: false
+  policy: >
+    This is not a new general model-family benchmark. Candidate hyperparameters
+    are inherited from Checkpoint 03C.2, with a small seed ensemble to reduce
+    stochastic variance. Selection evidence comes from the frozen Checkpoint
+    04B pseudo-competition splits.
+
+inputs:
+  base_table: data/processed/features_v1/parcel_features_all.csv
+  agronomic_table: data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+  agronomic_manifest: data/processed/agronomic_features_v1/feature_manifest.json
+  pseudo_membership: reports/checkpoint_04b/pseudo_competition_splits.csv
+  frozen_baseline_predictions: reports/checkpoint_04e1/pseudo_predictions.csv
+  frozen_actual_baselines: reports/checkpoint_04e1/actual_external_candidates.csv
+
+outputs:
+  directory: reports/checkpoint_04c1
+  pseudo_predictions: pseudo_predictions.csv
+  split_metrics: split_metrics.csv
+  protocol_summary: protocol_summary.csv
+  loso_anchor_gate_selection: loso_anchor_gate_selection.csv
+  loso_anchor_gate_predictions: loso_anchor_gate_predictions.csv
+  residual_correlation: residual_correlation.csv
+  actual_anchor_candidates: actual_anchor_candidates.csv
+  report_json: checkpoint_04c1_report.json
+  report_markdown: checkpoint_04c1_report.md
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+
+validation:
+  primary_family: target_matched
+  expected_total_rows: 197
+  expected_training_rows: 138
+  expected_prediction_rows: 59
+  expected_primary_splits: 16
+  baseline_methods:
+    - Baseline_Local04D
+    - Baseline_Graph04D
+  anchor_gate_methods:
+    - Baseline_Local04D
+    - CatBoost_C1_d4_lr003_l2_3
+    - Blend_Local_CatBoost_w0p10
+    - Blend_Local_CatBoost_w0p20
+    - Blend_Local_CatBoost_w0p30
+
+representation:
+  name: C1_agronomic
+  modes:
+    - clean
+    - competition
+  note: >
+    Uses the compact 350-feature agronomic layer. Checkpoint 03C.2 identified
+    C1 agronomic as the strongest CatBoost representation among its reviewed
+    finalists.
+
+catboost:
+  task_type: GPU
+  devices: "0"
+  iterations: 400
+  seeds:
+    - 42
+    - 314
+    - 2718
+  candidates:
+    CatBoost_C1_d4_lr003_l2_3:
+      depth: 4
+      learning_rate: 0.03
+      l2_leaf_reg: 3.0
+      rationale: >
+        Stable Checkpoint 03C.2 candidate; selected by inner CV in 6 of the 10
+        C1 CatBoost outer folds.
+    CatBoost_C1_d4_lr006_l2_6:
+      depth: 4
+      learning_rate: 0.06
+      l2_leaf_reg: 6.0
+      rationale: >
+        Secondary shallow candidate already present in the frozen 03C.2 grid.
+    CatBoost_C1_d5_lr006_l2_3:
+      depth: 5
+      learning_rate: 0.06
+      l2_leaf_reg: 3.0
+      rationale: >
+        Secondary slightly deeper candidate already present in the frozen
+        03C.2 grid.
+
+blends:
+  anchor_method: CatBoost_C1_d4_lr003_l2_3
+  anchor_weights:
+    - 0.10
+    - 0.20
+    - 0.30
+  baselines:
+    Local: Baseline_Local04D
+    Graph: Baseline_Graph04D
+  policy: >
+    Only fixed low CatBoost weights are tested because the local and graph
+    predictors are already materially stronger under target-matched validation.
+
+runtime:
+  progress: true
+  automatic_cpu_fallback: false
+  cpu_requires_explicit_override: true
