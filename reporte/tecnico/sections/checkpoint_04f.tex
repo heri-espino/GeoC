@@ -1,0 +1,197 @@
+\subsection{Principio de cierre}
+
+Checkpoint~04F no debe convertirse en una última búsqueda de hiperparámetros. Llegado este
+punto, Local04D, Graph04D, SIAP y CatBoost ya han sido evaluados bajo las mismas
+pseudo-competiciones. La función de 04F es congelar una regla reproducible y demostrar que
+cualquier alternativa aparentemente mejor supera controles de selección suficientemente
+estrictos.
+
+El finalista principal es
+\[
+\boxed{
+\text{\artifact{LocalRidge_C4_all_deterministic_Geo_k24_a30_p1}}
+}.
+\]
+Su nombre codifica:
+\begin{itemize}
+\item representación C4 all deterministic;
+\item vecindad definida por distancia geográfica;
+\item $k=24$ etiquetas visibles por consulta;
+\item Ridge $\alpha=30$;
+\item pesos de distancia inversa con potencia $p=1$.
+\end{itemize}
+
+\subsection{Provenance de las 59 predicciones}
+
+Antes de escribir el archivo final, 04F compara las predicciones Local04D materializadas en
+04D.1 y 04E.1. La diferencia absoluta máxima es
+\[
+\max_{i\in\Target}
+\left|
+\hat y^{04D}_{i,Local}
+-
+\hat y^{04E}_{i,Local}
+\right|
+=0.
+\]
+La misma prueba para Graph04D produce exactamente 0. Esto garantiza que no existe una variante
+oculta del modelo bajo el mismo alias y que el vector congelado es trazable a un método
+específico.
+
+\subsection{Performance congelada}
+
+Para Local04D en los 16 target-matched splits:
+\[
+\overline{\RMSE}=0.4878453167,
+\qquad
+\RMSE_{\mathrm{pooled}}=0.4957414287,
+\]
+\[
+\MAE_{\mathrm{pooled}}=0.3425011445,
+\qquad
+R^2_{\mathrm{pooled}}=0.6543403.
+\]
+
+El peor split tiene RMSE aproximadamente 0.6947. Reportar sólo la media escondería esa
+heterogeneidad; por eso el documento conserva mediana, peor split y diagnósticos de soporte.
+
+\subsection{Última hipótesis: blend Local/Graph}
+
+Dado que Graph04D es más robusto bajo municipality-grouped, se evalúa una familia simple:
+\[
+\hat y^{(w)}
+=
+(1-w)\hat y^{Local}
++
+w\hat y^{Graph}.
+\]
+Sobre toda la tabla target-matched:
+\begin{table}[H]
+\centering
+\caption{Sensibilidad final Local/Graph.}
+\label{tab:cp04f-blends}
+\begin{tabular}{rrrrr}
+\toprule
+$w_{Graph}$ & RMSE medio & pooled RMSE & pooled MAE & peor split \\
+\midrule
+0.25 & \textbf{0.486768} & \textbf{0.494892} & 0.340479 & 0.693090 \\
+0.30 & 0.486780 & 0.494943 & 0.340151 & 0.692886 \\
+0.20 & 0.486832 & 0.494914 & 0.340816 & 0.693334 \\
+0.40 & 0.487032 & 0.495268 & 0.339582 & 0.692595 \\
+0.10 & 0.487188 & 0.495180 & 0.341582 & 0.693939 \\
+0.50 & 0.487588 & 0.495887 & \textbf{0.339077} & 0.692461 \\
+0.00 & 0.487845 & 0.495741 & 0.342501 & 0.694700 \\
+1.00 & 0.494881 & 0.503346 & 0.340288 & 0.694149 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La superficie es suave y tiene un mínimo alrededor de 20--30\% de grafo. Si se observara sólo
+esta tabla, el 75/25 parecería preferible a Local puro por aproximadamente 0.00108 RMSE medio.
+
+\subsection{Por qué no se usa el 75/25 en el archivo final}
+
+El peso óptimo anterior fue observado usando las mismas 16 pseudo-competiciones que se están
+resumiendo. Para cuantificar el optimismo de selección, se ejecuta un leave-one-split-out:
+en cada holdout $h$ se selecciona $w$ usando los otros 15 splits y se aplica al holdout.
+
+Los pesos escogidos fueron:
+\[
+w=0.20\text{ en 3 splits},\quad
+w=0.25\text{ en 5},\quad
+w=0.30\text{ en 7},\quad
+w=0.40\text{ en 1}.
+\]
+El resultado concatenado:
+\[
+\overline{\RMSE}_{LOSO}=0.4879409616,
+\qquad
+\RMSE_{\mathrm{pooled,LOSO}}=0.4959874245.
+\]
+Esto es ligeramente peor que Local puro. El experimento no prueba que el peso óptimo real sea
+cero; demuestra que la evidencia disponible no es suficientemente fuerte para justificar
+cambiar una regla ya estable por una mejora de desarrollo de aproximadamente una milésima.
+
+\subsection{Principio de conservadurismo estadístico}
+
+La decisión final puede expresarse como una penalización implícita de complejidad de selección.
+Entre dos reglas:
+\[
+\mathcal R_0=\text{Local fijo},
+\qquad
+\mathcal R_1=\text{seleccionar peso Local/Graph},
+\]
+$\mathcal R_1$ tiene un grado de libertad adicional. Para promoverla se exige que su mejora
+sobreviva selección fuera del split. No ocurre.
+
+El mismo argumento descarta:
+\begin{itemize}
+\item el routing por soporte de 04D.1, por la asimetría del candidate universe;
+\item Local+CatBoost10, por diferencia de $3.5\times10^{-6}$ que no sobrevive LOSO;
+\item SIAP, porque LOSO escoge Local 16/16.
+\end{itemize}
+
+\subsection{Discrepancia Local versus Graph como incertidumbre estructural}
+
+Aunque Graph no entra en el valor final, la diferencia
+\[
+u_i=
+|\hat y_i^{Local}-\hat y_i^{Graph}|
+\]
+es un diagnóstico útil de sensibilidad a inductive bias. En las 59 parcelas:
+\[
+\bar u=0.1056\ \mathrm{t/ha},
+\qquad
+\operatorname{median}(u)=0.0769\ \mathrm{t/ha},
+\qquad
+\max u=0.4980\ \mathrm{t/ha}.
+\]
+El máximo corresponde a AGC\_003, justamente una parcela que 04A había identificado como
+bajo soporte. Esta coherencia es informativa, pero no se usa para cambiar manualmente el
+rendimiento: hacerlo después de observar discrepancia sin una regla validada reabriría
+overfitting de decisión.
+
+\subsection{Archivo canónico}
+
+El output final es
+\[
+\artifact{reports/checkpoint_04f/final_predictions.csv}
+\]
+con exactamente 59 filas y dos columnas:
+\[
+\artifact{ID_POLIGONO},\qquad
+\artifact{RENDIMIENTO_T_HA}.
+\]
+No se redondea artificialmente en el artefacto; se conserva precisión completa. El archivo
+\artifact{final_prediction_diagnostics.csv} es separado y contiene soporte, Graph04D y
+discrepancia. Esta separación impide confundir una variable de diagnóstico con el valor que
+se entregará.
+
+\subsection{Estado final de las hipótesis}
+
+\begin{table}[H]
+\centering
+\caption{Estado de hipótesis al cierre de Checkpoint 04.}
+\label{tab:cp04f-hypotheses}
+\small
+\begin{tabular}{p{0.30\linewidth}p{0.23\linewidth}p{0.36\linewidth}}
+\toprule
+Hipótesis & Estado & Evidencia \\
+\midrule
+Localidad geográfica & retenida & mejora target-matched; Moran y pairwise support \\
+Grafo semi-supervisado & retenido como diagnóstico & fuerte robustez grouped \\
+Temporal-only neighbors & no prioritario & asociación pairwise débil \\
+SIAP municipal 2025 & diagnóstico/stress & 16/16 LOSO prefieren Local \\
+CatBoost global & diagnóstico & standalone peor; blend no sobrevive gate \\
+Routing por soporte & exploratorio & pequeña ganancia con caveat de candidate universe \\
+Blend Local/Graph & sensibilidad & mínimo full-table, no mejora LOSO \\
+Local C4 Geo k24 & \textbf{final} & mejor regla simple estable \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{decision}
+La predicción final se congela a Local04D puro. A partir de este checkpoint, una nueva
+búsqueda sólo tendría sentido si aparece una fuente o hipótesis nueva y explícita; no se
+reabre tuning para perseguir diferencias de milésimas sobre los mismos pseudo-splits.
+\end{decision}
