@@ -1,0 +1,169 @@
+\section{Arquitectura reproducible}
+
+El proyecto separa configuración, lógica reusable, runners y outputs. Los checkpoints no se
+definen por una secuencia informal de notebooks, sino por contratos versionados.
+
+\begin{longtable}{p{0.24\linewidth}p{0.65\linewidth}}
+\toprule
+Componente & Rol \\
+\midrule
+\endhead
+\artifact{configs/} & contratos YAML, grids, paths, thresholds e invariantes. \\
+\artifact{src/geocebada/data/} & loaders y normalización de fuentes. \\
+\artifact{src/geocebada/features/} & construcción determinista de capas de features. \\
+\artifact{src/geocebada/evaluation/} & split logic, estimadores y métricas de checkpoints. \\
+\artifact{src/geocebada/visualization/} & figuras derivadas de artefactos numéricos. \\
+\artifact{tools/} & entry points reproducibles para ejecutar cada checkpoint. \\
+\artifact{reports/} & métricas, predicciones OOF/pseudo-test, figuras y candidatos. \\
+\artifact{docs/} & doctrina, hallazgos canónicos, fuentes e historial. \\
+\bottomrule
+\end{longtable}
+
+\section{Mapa de ejecución}
+
+La secuencia principal puede reproducirse conceptualmente con:
+
+\begin{lstlisting}[language=bash]
+python tools/audit_data_contract_v2.py
+python tools/build_parcel_feature_table.py
+
+python tools/build_agronomic_features_v1.py
+python tools/run_checkpoint_03b.py
+python tools/run_checkpoint_03c.py
+python tools/run_checkpoint_03c2.py
+python tools/run_checkpoint_03c3.py
+
+python tools/run_checkpoint_04a.py
+python tools/run_checkpoint_04b.py
+python tools/run_checkpoint_04d1.py
+python tools/run_checkpoint_04e1.py
+python tools/run_checkpoint_04c1.py
+python tools/run_checkpoint_04f.py
+\end{lstlisting}
+
+El orden 04E/04C anterior refleja el orden real de implementación de las hipótesis finales;
+la numeración conceptual mantiene 04C como rama global, 04D como local/grafo, 04E como
+evidencia externa y 04F como congelamiento.
+
+\section{Artefactos canónicos por checkpoint}
+
+\subsection*{Checkpoint 01}
+\begin{itemize}
+\item \artifact{configs/data_contract_v2.yaml}
+\item \artifact{reports/data_audit_v2.json}
+\item \artifact{reports/data_audit_v2.md}
+\item \artifact{data/integration_fixture/}
+\end{itemize}
+
+\subsection*{Checkpoint 02}
+\begin{itemize}
+\item \artifact{data/processed/features_v1/parcel_features_all.csv}
+\item \artifact{data/processed/features_v1/feature_manifest.json}
+\item \artifact{reports/checkpoint_02/cv_folds.csv}
+\item \artifact{reports/checkpoint_02/baseline_summary.csv}
+\item \artifact{reports/checkpoint_02/checkpoint_02_report.md}
+\end{itemize}
+
+\subsection*{Checkpoint 03}
+\begin{itemize}
+\item \artifact{data/processed/agronomic_features_v1/}
+\item \artifact{data/processed/empirical_features_v1/}
+\item \artifact{reports/checkpoint_03b/expression_discovery_report.md}
+\item \artifact{reports/checkpoint_03c/checkpoint_03c_report.md}
+\item \artifact{reports/checkpoint_03c2/checkpoint_03c2_report.md}
+\item \artifact{reports/checkpoint_03c3/}
+\end{itemize}
+
+\subsection*{Checkpoint 04}
+\begin{itemize}
+\item \artifact{reports/checkpoint_04a/}
+\item \artifact{reports/checkpoint_04b/pseudo_competition_splits.csv}
+\item \artifact{reports/checkpoint_04d1/}
+\item \artifact{reports/checkpoint_04e1/}
+\item \artifact{reports/checkpoint_04c1/}
+\item \artifact{reports/checkpoint_04f/final_predictions.csv}
+\item \artifact{reports/checkpoint_04f/final_prediction_diagnostics.csv}
+\end{itemize}
+
+\section{Invariantes que deben comprobarse antes de una entrega}
+
+\begin{enumerate}
+\item El archivo final tiene 59 filas de datos y exactamente dos columnas.
+\item \artifact{ID_POLIGONO} es único y coincide exactamente con el set oficial
+\artifact{PREDICCION}.
+\item No existe ningún target observado en esas 59 filas dentro del input de modelado.
+\item La columna final se denomina exactamente \artifact{RENDIMIENTO_T_HA}.
+\item Las predicciones Local04D coinciden con los candidatos congelados de 04D.1/04E.1.
+\item El CSV final conserva precisión numérica completa.
+\item Cualquier versión redondeada del reporte o de la app se trata sólo como presentación.
+\end{enumerate}
+
+\section{GPU y determinismo}
+
+CatBoost se ejecuta en GPU cuando corresponde. Las seeds y configuraciones se congelan en YAML.
+El predictor final LocalRidge es determinista dados:
+\begin{itemize}
+\item la misma tabla C4;
+\item las mismas coordenadas/IDs;
+\item $k=24$, $\alpha=30$, $p=1$;
+\item el mismo conjunto de 138 etiquetas.
+\end{itemize}
+
+El uso de GPU no forma parte de la semántica del modelo final. Fue una decisión de eficiencia
+para los benchmarks CatBoost.
+
+\section{Separación entre artefacto generado y narrativa}
+
+Las tablas de este documento se transcriben de artefactos congelados, pero no constituyen la
+fuente de verdad primaria. Si el texto y un CSV/JSON generado difieren, debe investigarse el
+runner y corregirse el reporte; nunca debe editarse el output numérico para que coincida con la
+narrativa.
+
+\section{Versionado y provenance}
+
+Cada reporte generado registra timestamp y commit cuando el runner lo soporta. La cadena de
+provenance final es:
+\[
+\text{source data}
+\rightarrow
+\text{Feature Table v1}
+\rightarrow
+\text{C4 deterministic}
+\rightarrow
+\text{04B memberships}
+\rightarrow
+\text{04D LocalRidge}
+\rightarrow
+\text{04F frozen CSV}.
+\]
+
+Los Checkpoints~04E y 04C son ramas de validación de hipótesis: pueden generar predicciones
+candidatas, pero no alteran silenciosamente la cadena final si sus gates no justifican el
+cambio.
+
+\section{Política de outputs pesados}
+
+Los reportes, PDFs y figuras son outputs derivados. En el repositorio, su regeneración pesada
+no debe dispararse automáticamente por cada push; los workflows costosos deben ejecutarse de
+forma manual y subir artifacts, mientras CI ligero puede revisar tests, lint y estructura.
+Esta separación evita convertir una actualización documental en un job de cómputo
+innecesario.
+
+\section{Recompilación de este reporte}
+
+Desde \artifact{reporte/tecnico/}:
+\begin{lstlisting}[language=bash]
+latexmk -pdf -interaction=nonstopmode main.tex
+\end{lstlisting}
+
+La bibliografía requiere BibTeX. Si no existe latexmk:
+\begin{lstlisting}[language=bash]
+pdflatex main.tex
+bibtex main
+pdflatex main.tex
+pdflatex main.tex
+\end{lstlisting}
+
+Las figuras usan rutas relativas a \artifact{../../reports/}. La macro
+\artifact{\\safefigure} deja un placeholder si una figura no está disponible, permitiendo que
+el texto siga compilando en checkouts parciales.
