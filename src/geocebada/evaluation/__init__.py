@@ -68,6 +68,12 @@ from geocebada.evaluation.checkpoint04b import (
     temporal_similarity_matrix,
     transductive_standardize,
 )
+from geocebada.evaluation.checkpoint04c import (
+    blend_anchor_predictions,
+    predict_catboost_seed_ensemble,
+    residual_correlation_table,
+    resolve_agronomic_competition_features,
+)
 from geocebada.evaluation.checkpoint04d1 import (
     SplitPositions,
     fit_pls_anchor_with_cross_fitted_residuals,
@@ -109,6 +115,10 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "blend_anchor_predictions",
+    "predict_catboost_seed_ensemble",
+    "residual_correlation_table",
+    "resolve_agronomic_competition_features",
     "aggregate_siap_scope",
     "attach_siap_panel_to_parcels",
     "blend_predictions",
