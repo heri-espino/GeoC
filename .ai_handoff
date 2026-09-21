@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-20  
-**Active phase:** Checkpoint 04D.1 local/graph refinement is implemented; workstation run is the immediate next action. 04C focused global-anchor work remains secondary.
+**Active phase:** Checkpoint 04E.1 SIAP external localization is implemented; workstation run is the immediate next action. 04D.1 is complete. 04C focused global-anchor work remains secondary.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,7 +144,12 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run `python tools/run_checkpoint_04d1.py`. Review `reports/checkpoint_04d1/` before opening 04C or 04E. The decisive outputs are the exhaustive target-matched ranking, LOSO hyperparameter-selection RMSE, LOSO support-tier routing RMSE, finalist stress robustness and finalist disagreement on the actual 59 targets.
+Run `python tools/run_checkpoint_04e1.py`. The runner reads the local raw SIAP
+municipal closure, keeps crop/cycle/modality explicit, audits
+`Cebada grano + Primavera-Verano + Temporal + CVEGEO`, and evaluates the public
+2025 municipal prior against the frozen 04D.1 local/graph survivors on the exact
+04B pseudo-competition splits. Review `reports/checkpoint_04e1/` before opening
+04F or spending additional compute on 04C.
 
 
 ## Checkpoint 04A implementation status
@@ -309,3 +314,39 @@ by cross-fitting within the visible pseudo-training labels.
 
 The actual 59 receive finalist candidate predictions only after validation. They are not the
 final 04F output.
+
+
+## Checkpoint 04D.1 completed findings
+
+Canonical interpretation: `docs/CHECKPOINT_04D1_FINDINGS.md`. Generated evidence:
+`reports/checkpoint_04d1/`.
+
+```text
+best target-matched Local Ridge C4 Geo k24 a30 p1  0.48785
+LOSO model selection                               0.48837
+LOSO support-tier routing                          0.48581
+GraphDirect GeoAgro25 k6 lambda8 target-matched    0.49488
+GraphDirect GeoAgro25 k6 lambda8 grouped stress    0.52788
+```
+
+The local optimum is stable across nearby configurations. The direct graph remains
+the strongest robustness hedge when municipality-local labels are withheld. PLS
+residual graph correction did not improve the direct graph.
+
+## Checkpoint 04E.1 implementation status
+
+04E.1 is implemented and run-pending. It adds a detailed SIAP loader that preserves
+`Nomcicloproductivo` and `Nommodalidad`, then evaluates the following public
+external-prior uses under the frozen 04B validation contract:
+
+```text
+SIAP direct municipal prior
+visible-label affine calibration
+SIAP + local Ridge residual correction
+SIAP + graph residual correction
+fixed blends with the 04D.1 local/graph survivors
+```
+
+The primary SIAP scope is exactly `Cebada grano + Primavera-Verano + Temporal +
+CVEGEO + 2025`. Broader grain-barley scopes are explicit named fallbacks only.
+No hidden parcel yield is accessed.
