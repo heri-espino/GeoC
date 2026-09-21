@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-20  
-**Active phase:** Checkpoint 04F final transductive reconstruction is implemented; workstation run is the immediate next action. 04D.1, 04E.1 and 04C.1 are complete.
+**Active phase:** Checkpoint 04F final transductive reconstruction is complete. The canonical 59-row prediction table is frozen.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,17 +144,34 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run `python tools/run_checkpoint_04f.py`.
+Do not reopen model selection without a new, explicit hypothesis. The canonical
+competition prediction file is
+`reports/checkpoint_04f/final_predictions.csv`.
 
-04F is intentionally a finalization stage, not another search. It verifies
-cross-checkpoint prediction identity, computes a small Local/Graph sensitivity
-table and constrained LOSO blend-weight check, then freezes
-`Baseline_Local04D` as the configured final rule and writes exactly 59
-`ID_POLIGONO,RENDIMIENTO_T_HA` predictions.
+Next work should focus on final submission packaging, technical justification,
+application/interface alignment and provenance—not additional unconstrained
+model search.
 
-The selected rule maps to
-`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`. Graph04D remains a
-robustness/disagreement diagnostic only.
+## Checkpoint 04F completed findings
+
+Canonical interpretation: `docs/CHECKPOINT_04F_FINDINGS.md`. Generated
+evidence: `reports/checkpoint_04f/`.
+
+```text
+selected final rule                 Baseline_Local04D
+source method                       LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
+target-matched mean RMSE            0.487845
+pooled RMSE                         0.495741
+LOSO Local/Graph blend check        0.487941
+final prediction rows               59
+Local04D cross-checkpoint max diff  0.0
+Graph04D cross-checkpoint max diff  0.0
+```
+
+The fixed 75/25 Local/Graph blend reaches 0.486768 on the full development
+table but is not promoted because constrained split-excluded weight selection
+does not improve the frozen Local04D rule.
+
 
 ## Checkpoint 04C.1 completed findings
 
