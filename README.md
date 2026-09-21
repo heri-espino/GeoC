@@ -393,6 +393,6 @@ final frozen pipeline
 
 ## Calidad y trazabilidad
 
-CI valida Ruff, pytest, sincronización de `FUNCTION_INDEX` y build de Sphinx con warnings como errores.
+CI ligero valida Ruff, pytest, sincronización de `FUNCTION_INDEX` y build de Sphinx con warnings como errores. Los builds pesados de features, figuras y el reporte técnico/PDF son manuales mediante `workflow_dispatch`; un `push` normal no los ejecuta ni hace commits automáticos de outputs. Ver `docs/GITHUB_ACTIONS.md`.
 
 El uso material de IA se registra en `docs/AI_USAGE.md`. `.ai_handoff` y `AGENTS.md` son handoffs operativos y no sustituyen el registro solicitado por FIRA.
