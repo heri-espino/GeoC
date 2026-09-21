@@ -40,9 +40,9 @@ Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conoce
 
 
 
-## Ejecutar Checkpoint 04B
+## Checkpoint 04B — completado
 
-04B ya está implementado y es la fase activa. Después de actualizar el repositorio:
+04B ya fue ejecutado y sus resultados están versionados. Para reproducirlo:
 
 ```powershell
 git pull
@@ -56,8 +56,9 @@ mantiene sus `X` visibles, y calcula RMSE para modelos globales, kNN geográfico
 modelos locales, grafos y blends. También conserva los folds state/municipality de Checkpoint 03
 como stress tests.
 
-Los resultados se generan en `reports/checkpoint_04b/`. No produce todavía los 59 rendimientos
-finales; produce evidencia para decidir qué estrategia usar y cuándo confiar en modelos locales.
+Los resultados se generan en `reports/checkpoint_04b/`. La interpretación canónica está en `docs/CHECKPOINT_04B_FINDINGS.md`.
+
+El resultado principal favorece modelos locales y de grafo: LocalRidge k20 alcanza RMSE target-matched 0.4946 y Graph k8/lambda2 0.4974, con el grafo como opción más robusta bajo stress tests. La siguiente fase activa es refinamiento local/graph; el modelado global de alta capacidad queda como anchor secundario.
 
 ## Checkpoint 04A — completado
 
