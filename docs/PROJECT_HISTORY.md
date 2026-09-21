@@ -977,3 +977,29 @@ The blend diagnostics do not automatically change the final rule. The final
 runner writes exactly 59 `ID_POLIGONO,RENDIMIENTO_T_HA` rows plus a separate
 diagnostics table with X-support and Local-vs-Graph disagreement. Hidden FIRA y
 remains unavailable and is never scored.
+
+
+---
+
+## 2026-09-21 — Checkpoint 04F completed and final 59-value table frozen
+
+The workstation completed the final transductive reconstruction stage. The
+configured final rule, `Baseline_Local04D`
+(`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`), reproduced the frozen
+target-matched mean RMSE 0.487845 and pooled RMSE 0.495741.
+
+Checkpoint 04F verified exact actual-target provenance across earlier stages:
+the maximum absolute difference for Local04D predictions between 04D.1 and
+04E.1 was 0.0, and the same check for Graph04D was also 0.0.
+
+A deliberately constrained Local/Graph sensitivity analysis found a nominal
+full-development optimum around 25–30% graph weight; the 75/25 blend reached
+0.486768 mean split RMSE. However, leave-one-target-matched-split-out
+weight selection reached 0.487941 mean RMSE and pooled RMSE 0.495987, so the
+small development-table gain was not promoted.
+
+The canonical final competition artifact is now
+`reports/checkpoint_04f/final_predictions.csv`, with exactly 59 rows and
+columns `ID_POLIGONO,RENDIMIENTO_T_HA`. A separate diagnostics table keeps
+X-support and Local-vs-Graph disagreement without changing any final parcel
+prediction. The hidden FIRA y values were never loaded or scored.
