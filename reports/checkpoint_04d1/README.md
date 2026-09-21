@@ -1,8 +1,10 @@
 # Checkpoint 04D.1 reports
 
-**Status:** runner implemented; workstation run pending.
+**Status:** COMPLETE. Generated workstation evidence is committed.
 
-Run:
+Canonical interpretation: `docs/CHECKPOINT_04D1_FINDINGS.md`.
+
+Reproduce with:
 
 ```powershell
 python tools\run_checkpoint_04d1.py
