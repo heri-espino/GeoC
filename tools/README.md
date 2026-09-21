@@ -24,7 +24,8 @@ notebook cells.
 | `run_checkpoint_03c3.py` | Deterministic OOF review of three finalists and fixed equal-weight ensembles | Checkpoint 03C.3 closed/frozen |
 | `run_checkpoint_04a.py` | Build 59-target geographic/feature/temporal topology, shift, autocorrelation, support tables and figures | Checkpoint 04A complete |
 | `run_checkpoint_04b.py` | Repeated transductive pseudo-competition RMSE for global, local, spatial, graph and blended methods | Checkpoint 04B complete |
-| `run_checkpoint_04c1.py` | Focused C1 agronomic CatBoost anchor, low-weight blends, residual diversity and controlled LOSO gate | **Checkpoint 04C.1 implemented; run on workstation** |
+| `run_checkpoint_04c1.py` | Focused C1 agronomic CatBoost anchor, low-weight blends, residual diversity and controlled LOSO gate | Checkpoint 04C.1 complete |
+| `run_checkpoint_04f.py` | Verify frozen finalist provenance, audit Local/Graph blending and write exactly 59 final yields | **Checkpoint 04F implemented; run on workstation** |
 | `run_checkpoint_04d1.py` | Refine local Ridge and graph models, test residual graph correction, LOSO selection/routing and fixed-target candidate predictions | Checkpoint 04D.1 complete |
 | `generate_function_index.py` | Regenerate `docs/FUNCTION_INDEX.md` from public package API | run after public API changes |
 | `inspect_reference_docx.py` | Inspect reference DOCX content | utility |
@@ -48,3 +49,11 @@ report.
 Runs the deferred focused CatBoost anchor on the exact frozen 04B memberships.
 GPU is the default and there is no automatic CPU fallback. Use
 `--catboost-task-type CPU --confirm-cpu y` only for intentional CPU execution.
+
+
+### `run_checkpoint_04f.py`
+
+Finalizes the competition reconstruction without reopening model search. It
+verifies frozen Local04D/Graph04D candidate identity, runs a constrained
+Local/Graph blend audit and writes the canonical 59-row prediction table plus
+separate support/disagreement diagnostics.
