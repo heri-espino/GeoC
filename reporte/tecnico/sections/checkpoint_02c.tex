@@ -1,0 +1,110 @@
+\subsection{Dos protocolos de validación}
+
+Checkpoint~02 congeló cinco folds para dos objetivos distintos.
+
+\paragraph{fold state stratified.}
+Preserva aproximadamente la composición por estado en cada fold. Es un protocolo de
+interpolación más cercano a parcelas nuevas dentro de regiones representadas.
+
+\paragraph{fold municipality grouped.}
+Mantiene juntas las parcelas de un mismo municipio, por lo que un municipio retenido no
+aparece parcialmente en train y validación. Este protocolo es deliberadamente más severo y
+mide sensibilidad espacial/administrativa.
+
+La diferencia entre ambos no se considera un defecto del benchmark. Es evidencia sobre el
+tipo de generalización que cada modelo logra. Si
+\[
+\RMSE_{\mathrm{grouped}}\gg\RMSE_{\mathrm{state}},
+\]
+la explicación natural es que una parte de la capacidad predictiva depende de contexto local
+que desaparece al retener municipios completos.
+
+\subsection{Baselines deliberadamente simples}
+
+La fase inicial evaluó DummyMean, Ridge de alpha fijo y ExtraTrees regularizado. La imputación
+por mediana se ajustó dentro de cada fold. No se hizo PCA global, selección supervisada global,
+Optuna ni CatBoost en esta etapa.
+
+Ridge resuelve
+\begin{equation}
+\widehat{\bm\beta}
+=
+\arg\min_{\bm\beta}
+\left\{
+\sum_{i\in\Train_f}
+(y_i-\beta_0-x_i^\top\bm\beta)^2
++\lambda\|\bm\beta\|_2^2
+\right\},
+\label{eq:ridge-global}
+\end{equation}
+lo que ofrece una referencia lineal regularizada en presencia de colinealidad
+\citep{HoerlKennard1970}. ExtraTrees proporciona un contraste no lineal basado en árboles
+altamente aleatorizados \citep{Geurts2006}.
+
+\subsection{Resultados seleccionados}
+
+\begin{table}[H]
+\centering
+\caption{Resultados representativos del Checkpoint 02.}
+\label{tab:cp02-baselines}
+\small
+\begin{tabular}{llrr}
+\toprule
+Protocolo & Modelo/ablación & RMSE medio & $R^2$ medio \\
+\midrule
+state-stratified & ExtraTrees A0 & 0.5095 & 0.6272 \\
+state-stratified & ExtraTrees A3 & 0.5035 & 0.6360 \\
+state-stratified & ExtraTrees A7 & \textbf{0.4966} & 0.6498 \\
+state-stratified & Ridge A3 & 0.5298 & 0.6025 \\
+state-stratified & Ridge A7 & 0.6515 & 0.3964 \\
+state-stratified & DummyMean & 0.8506 & -0.0179 \\
+\midrule
+municipality-grouped & Ridge A3 & \textbf{0.7426} & -5.1998 \\
+municipality-grouped & Ridge A6 & 0.8178 & -4.0401 \\
+municipality-grouped & ExtraTrees A7 & 0.8916 & -6.4127 \\
+municipality-grouped & DummyMean & 1.0066 & -6.1150 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los $R^2$ muy negativos de algunos folds grouped no implican necesariamente una implementación
+incorrecta. Con folds pequeños y distribuciones de $y$ localmente estrechas, el denominador
+de $R^2$ puede ser pequeño; un modelo con error absoluto moderado puede quedar muy por debajo
+del predictor de la media del fold. Por eso RMSE es la métrica central.
+
+\subsection{Out-of-fold como objeto de primera clase}
+
+No basta con guardar una media de scores. Para cada modelo se conservan predicciones OOF:
+\[
+\widehat y_i^{\mathrm{OOF}}
+=
+f_{\widehat\theta_{-f(i)}}(x_i),
+\]
+donde $f(i)$ es el fold que contiene a $i$. Esto permite posteriormente:
+\begin{itemize}
+\item computar métricas pooled sobre las 138 parcelas;
+\item analizar residuos espacialmente;
+\item formar ensambles sin usar predicción in-sample;
+\item detectar si un fold o municipio domina una métrica.
+\end{itemize}
+La persistencia de OOF fue crucial en 04A, donde los residuos de ensambles convencionales se
+analizaron con Moran's $I$.
+
+\subsection{Hallazgo metodológico}
+
+El checkpoint revela una tensión importante: bajo state-stratified, ExtraTrees con competition
+completo se acerca a 0.50 RMSE; bajo municipality-grouped, los mismos métodos pueden superar
+0.85--0.90. Esta brecha es mucho mayor que las diferencias de milésimas entre
+hiperparámetros.
+
+La consecuencia fue priorizar:
+\begin{enumerate}
+\item representaciones compactas con estructura agronómica;
+\item evaluación grouped como señal de robustez;
+\item selección fold-local;
+\item más adelante, métodos explícitamente espaciales/locales.
+\end{enumerate}
+
+Checkpoint~02 no seleccionó el modelo final. Congeló el terreno experimental sobre el que
+Checkpoint~03 pudo comparar ingeniería de representaciones sin cambiar simultáneamente folds,
+preprocessing y familia de estimador.
