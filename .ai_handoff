@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-20  
-**Active phase:** Checkpoint 04D.1 local/graph refinement, with 04C focused global-anchor work as a secondary branch.
+**Active phase:** Checkpoint 04D.1 local/graph refinement is implemented; workstation run is the immediate next action. 04C focused global-anchor work remains secondary.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,7 +144,7 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Checkpoint 04B is complete. Read `docs/CHECKPOINT_04B_FINDINGS.md` and `reports/checkpoint_04b/checkpoint_04b_report.md`. Next refine graph/local models under the same target-matched pseudo-competition protocol; run a focused global CatBoost/PLS/Ridge anchor only as a component, not as the primary strategy.
+Run `python tools/run_checkpoint_04d1.py`. Review `reports/checkpoint_04d1/` before opening 04C or 04E. The decisive outputs are the exhaustive target-matched ranking, LOSO hyperparameter-selection RMSE, LOSO support-tier routing RMSE, finalist stress robustness and finalist disagreement on the actual 59 targets.
 
 
 ## Checkpoint 04A implementation status
@@ -160,7 +160,7 @@ Checkpoint 04B is complete. Read `docs/CHECKPOINT_04B_FINDINGS.md` and `reports/
 - one support/typology row for every one of the 59 targets;
 - summary figures plus per-target Planet-NDVI neighbor panels.
 
-No 04A numerical result should be claimed until the workstation run completes.
+04A is complete; its canonical interpretation is `docs/CHECKPOINT_04A_FINDINGS.md`.
 
 
 ## Checkpoint 04A completed findings
@@ -262,3 +262,50 @@ Next priority:
 3. validate any routing/gating rule out of sample;
 4. run a focused high-compute CatBoost global anchor;
 5. test SIAP 2025 municipality-level evidence as a local prior/node feature.
+
+
+## Checkpoint 04D.1 implementation status
+
+The local/graph refinement runner is committed:
+
+```text
+configs/checkpoint04d1.yaml
+src/geocebada/evaluation/checkpoint04d1.py
+src/geocebada/visualization/checkpoint04d1.py
+tools/run_checkpoint_04d1.py
+tests/test_checkpoint04d1.py
+reports/checkpoint_04d1/README.md
+```
+
+The exhaustive primary grid contains 626 predefined methods:
+
+```text
+300 graph variants:
+  5 distance topologies
+  x 5 graph k values
+  x 6 Laplacian regularization values
+  x {direct y, cross-fitted-PLS-residual correction}
+
+324 local Ridge variants:
+  2 X representations (C1/C4)
+  x 3 neighborhood distance topologies
+  x 6 neighborhood sizes
+  x 3 Ridge alphas
+  x 3 inverse-distance powers
+
+2 fixed anchors:
+  GeoKNN10
+  PLS4
+```
+
+Only the 16 target-matched splits receive the exhaustive search. The runner then performs
+leave-one-split-out hyperparameter selection over that grid, selects three finalists per
+graph/local family plus fixed anchors, and evaluates only those finalists on the 18 non-primary
+stress splits.
+
+Residual graph correction is leakage-safe with respect to pseudo-target y: the global PLS
+anchor is fitted on visible labels, and the residual signal supplied to the graph is generated
+by cross-fitting within the visible pseudo-training labels.
+
+The actual 59 receive finalist candidate predictions only after validation. They are not the
+final 04F output.
