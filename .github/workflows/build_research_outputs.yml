@@ -76,6 +76,10 @@ jobs:
             reports/checkpoint_04d1/primary_summary.csv
             reports/checkpoint_04d1/nested_validation_summary.csv
             reports/checkpoint_04d1/stress_summary.csv
+            reports/checkpoint_04e1/figures/*.png
+            reports/checkpoint_04e1/checkpoint_04e1_report.md
+            reports/checkpoint_04e1/protocol_summary.csv
+            reports/checkpoint_04e1/siap_scope_audit.csv
           if-no-files-found: error
           retention-days: 30
 
