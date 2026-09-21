@@ -2,57 +2,70 @@
 \usepackage[T1]{fontenc}
 \usepackage[spanish,es-nodecimaldot]{babel}
 \decimalpoint
-\usepackage[a4paper,margin=2.4cm,headheight=15pt]{geometry}
-\usepackage{lmodern}
-\usepackage{microtype}
-\usepackage{setspace}
-\setstretch{1.08}
-\usepackage{amsmath,amssymb,mathtools}
+
+% Project house style supplied by the author.
+% general: author-year bibliography for ML/statistics
+% final: no draft overfull-rule markers
+% compact: 1.8 cm A4 margins
+\usepackage[general,final,compact]{velvetblue}
+\addbibresource{references.bib}
+
+% Additional packages not provided by velvetblue.
+\usepackage{amssymb,mathtools}
 \usepackage{bm}
-\usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{tabularx}
-\usepackage{array}
 \usepackage{multirow}
 \usepackage{siunitx}
 \sisetup{detect-all,group-separator={,},group-minimum-digits=4}
-\usepackage{graphicx}
 \usepackage{float}
 \usepackage{placeins}
 \usepackage{subcaption}
-\usepackage{xcolor}
 \usepackage{enumitem}
 \usepackage{listings}
 \usepackage{fancyhdr}
 \usepackage{titlesec}
-\usepackage{natbib}
-\usepackage{hyperref}
-\usepackage[nameinlink,noabbrev]{cleveref}
+\usepackage{setspace}
+\setstretch{1.08}
 
-\definecolor{GeoBlue}{HTML}{164A70}
+% Local report colors complement VelvetBlue without overriding the house style.
 \definecolor{GeoGold}{HTML}{D6A128}
 \definecolor{GeoGray}{HTML}{5B6573}
 \definecolor{GeoLight}{HTML}{F3F6F8}
-\hypersetup{colorlinks=true,linkcolor=GeoBlue,citecolor=GeoBlue,urlcolor=GeoBlue,
-pdftitle={GeoCebada: Reporte técnico integral},pdfauthor={Equipo GeoCebada}}
+
+\hypersetup{
+  pdftitle={GeoCebada: Reporte técnico integral},
+  pdfauthor={Equipo GeoCebada}
+}
+
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{GeoCebada}
 \fancyhead[R]{Reporte técnico}
 \fancyfoot[C]{\thepage}
+
 \titleformat{\chapter}[display]
-{\normalfont\huge\bfseries\color{GeoBlue}}
+{\normalfont\huge\bfseries\color{VelvetBlue}}
 {\chaptername\ \thechapter}{12pt}{\Huge}
 \titleformat{\section}
-{\normalfont\Large\bfseries\color{GeoBlue}}
+{\normalfont\Large\bfseries\color{VelvetBlue}}
 {\thesection}{0.7em}{}
 \titleformat{\subsection}
 {\normalfont\large\bfseries}{\thesubsection}{0.7em}{}
+
 \setlist[itemize]{topsep=0.3em,itemsep=0.2em}
 \setlist[enumerate]{topsep=0.3em,itemsep=0.2em}
-\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{GeoLight},frame=single,
-rulecolor=\color{GeoGray},breaklines=true,columns=fullflexible,keepspaces=true,
-showstringspaces=false}
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{GeoLight},
+  frame=single,
+  rulecolor=\color{GeoGray},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false
+}
+
 \newcommand{\artifact}[1]{\nolinkurl{#1}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Train}{\mathcal{L}}
@@ -64,10 +77,12 @@ showstringspaces=false}
 \newcommand{\MAE}{\operatorname{MAE}}
 \newcommand{\MSE}{\operatorname{MSE}}
 \newcommand{\diag}{\operatorname{diag}}
+
 \newcommand{\statusbox}[2]{%
-\begin{center}\fcolorbox{GeoBlue}{GeoLight}{%
+\begin{center}\fcolorbox{VelvetBlue}{GeoLight}{%
 \begin{minipage}{0.92\linewidth}\textbf{#1}\quad #2\end{minipage}}
 \end{center}}
+
 \newcommand{\safefigure}[4][0.92\linewidth]{%
 \begin{figure}[H]\centering
 \IfFileExists{#2}{\includegraphics[width=#1]{#2}}{%
@@ -75,9 +90,10 @@ showstringspaces=false}
 Figura no encontrada durante la compilación local.\\
 Ruta esperada: \texttt{\detokenize{#2}}}}}
 \caption{#3}\label{#4}\end{figure}}
+
 \newenvironment{technicalnote}
 {\begin{quote}\small\color{GeoGray}\textbf{Nota técnica.}\ }
 {\end{quote}}
 \newenvironment{decision}
-{\begin{quote}\small\color{GeoBlue}\textbf{Decisión metodológica.}\ }
+{\begin{quote}\small\color{VelvetBlue}\textbf{Decisión metodológica.}\ }
 {\end{quote}}
