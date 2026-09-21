@@ -1,23 +1,26 @@
 name: Build empirical feature artifact
 
 on:
-  pull_request:
-    paths:
-      - "src/geocebada/features/empirical.py"
-      - "src/geocebada/features/discovery.py"
-      - "configs/empirical_features_v1.yaml"
-      - "tools/build_empirical_features_v1.py"
-      - "tools/run_expression_discovery_03b.py"
-      - "data/processed/features_v1/**"
-      - "data/processed/agronomic_features_v1/**"
-      - ".github/workflows/build_empirical_features.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout exact workflow commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Record short commit SHA
+        id: meta
+        shell: bash
+        run: echo "short_sha=${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,16 +37,24 @@ jobs:
       - name: Run fold-local expression stability audit
         run: python tools/run_expression_discovery_03b.py
 
-      - name: Upload generated artifacts
+      - name: Upload generated feature artifact
         uses: actions/upload-artifact@v4
         with:
-          name: empirical-features-v1
-          path: data/processed/empirical_features_v1/
+          name: GeoCebada_empirical-features_${{ steps.meta.outputs.short_sha }}
+          path: |
+            data/processed/empirical_features_v1/parcel_empirical_features.csv
+            data/processed/empirical_features_v1/feature_manifest.json
+            data/processed/empirical_features_v1/build_report.json
           if-no-files-found: error
+          retention-days: 30
 
       - name: Upload expression discovery audit
         uses: actions/upload-artifact@v4
         with:
-          name: checkpoint-03b-expression-discovery
-          path: reports/checkpoint_03b/
+          name: GeoCebada_checkpoint-03b-audit_${{ steps.meta.outputs.short_sha }}
+          path: |
+            reports/checkpoint_03b/expression_discovery_report.md
+            reports/checkpoint_03b/discovery_report.json
+            reports/checkpoint_03b/expression_stability.csv
           if-no-files-found: error
+          retention-days: 30
