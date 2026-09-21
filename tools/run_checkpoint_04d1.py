@@ -435,10 +435,14 @@ def _select_finalists(
     manifest: pd.DataFrame,
     config: dict[str, Any],
 ) -> list[str]:
-    merged = summary.merge(
-        manifest[["method", "method_family"]],
-        on="method",
-        how="left",
+    merged = (
+        summary.copy()
+        if "method_family" in summary.columns
+        else summary.merge(
+            manifest[["method", "method_family"]],
+            on="method",
+            how="left",
+        )
     )
     count = int(config["finalists"]["top_per_family"])
     selected: list[str] = []
