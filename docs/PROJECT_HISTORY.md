@@ -950,3 +950,30 @@ correlation, and applies a deliberately small LOSO gate whose candidate universe
 fixed in advance. GPU is the default and automatic CPU fallback is disabled. Actual
 59-target predictions are generated only as candidates for 04F; hidden FIRA y remains
 unavailable and is never scored.
+
+
+---
+
+## 2026-09-21 — Checkpoint 04C.1 completed; Checkpoint 04F finalization implemented
+
+The focused C1 agronomic CatBoost run completed on GPU using three inherited
+03C.2 configurations and three seeds per candidate. Standalone CatBoost remained
+weaker than Local04D on target-matched pseudo-competitions, with mean RMSE about
+0.515–0.521. The nominal Local+CatBoost 10% mean RMSE was 0.487842 versus
+0.487845 for Local04D, but pooled RMSE was slightly worse and the controlled
+leave-one-target-matched-split-out gate reached 0.488884. Residual correlation
+between Local04D and the stable CatBoost anchor was 0.9423. CatBoost therefore
+remains a diagnostic rather than a required final component.
+
+Checkpoint 04F was then implemented as a conservative finalization stage. Its
+configured final rule is `Baseline_Local04D`, corresponding to
+`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`. Before writing the final
+table, the runner cross-checks the actual 59 Local04D and Graph04D predictions
+between the frozen 04D.1 and 04E.1 artifacts, reconstructs a deliberately small
+Local/Graph blend sensitivity grid, and performs constrained LOSO blend-weight
+selection.
+
+The blend diagnostics do not automatically change the final rule. The final
+runner writes exactly 59 `ID_POLIGONO,RENDIMIENTO_T_HA` rows plus a separate
+diagnostics table with X-support and Local-vs-Graph disagreement. Hidden FIRA y
+remains unavailable and is never scored.
