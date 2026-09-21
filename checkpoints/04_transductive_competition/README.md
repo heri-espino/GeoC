@@ -1,6 +1,6 @@
 # Checkpoint 04 — Transductive Competition Modeling
 
-**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, 04D.1 IMPLEMENTED / RUN PENDING  
+**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, 04D.1 COMPLETE, 04E.1 IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-09-19
 
 Checkpoint 04 begins after the closure of Checkpoint 03 as the **First Modeling Delivery**. Read `docs/TRANSDUCTIVE_OBJECTIVE.md` before implementing this checkpoint.
@@ -129,7 +129,7 @@ Revisit strong global families with a larger compute budget. Candidate work incl
 
 GPU should be used where supported.
 
-## 04D.1 — Local/graph refinement — IMPLEMENTED, RUN PENDING
+## 04D.1 — Local/graph refinement — COMPLETE
 
 04D.1 operationalizes the strongest 04B evidence instead of reopening a generic model search.
 It reuses the exact committed 04B pseudo-target memberships and exhaustively refines:
@@ -160,6 +160,22 @@ Evaluate target-specific kNN/local regression, mixed spatial + phenological dist
 
 Model choice and blending must be justified by pseudo-competition RMSE, not subjective visual inspection of the 59 final predictions.
 
+## 04D.1 completed evidence
+
+Canonical interpretation: `docs/CHECKPOINT_04D1_FINDINGS.md`.
+
+```text
+best target-matched Local Ridge                  RMSE 0.4878
+LOSO model selection                            RMSE 0.4884
+LOSO support-tier routing                       RMSE 0.4858
+GraphDirect GeoAgro25 k6 lambda8 target-matched RMSE 0.4949
+GraphDirect GeoAgro25 k6 lambda8 grouped stress RMSE 0.5279
+```
+
+The local optimum is stable across nearby k/alpha settings. The direct graph is
+less competitive on the primary target-matched mean but substantially more
+robust under municipality-grouped stress.
+
 ## 04E — External-evidence enrichment
 
 Highest priority is a fresh SIAP audit focused on the closest valid contemporaneous proxy: `Cebada grano` + relevant cycle + `Temporal` + correct municipality.
@@ -167,6 +183,32 @@ Highest priority is a fresh SIAP audit focused on the closest valid contemporane
 Also evaluate CHIRPS after QC, WaPOR, SoilGrids, terrain and richer public daily weather/stress data where a concrete non-redundant hypothesis exists.
 
 Do not create thousands of external features without an ablation plan.
+
+### 04E.1 implementation — SIAP localization
+
+The first external-evidence stage is implemented and deliberately narrow. It
+audits raw SIAP records without collapsing cycle or modality, constructs an
+explicit specificity hierarchy, and validates external-prior methods on the
+frozen 04B splits.
+
+Primary scope:
+
+```text
+Cebada grano + Primavera-Verano + Temporal + exact CVEGEO + 2025
+```
+
+Broader 2025 grain-barley scopes are retained only as named fallbacks. The
+runner compares direct SIAP, affine calibration, SIAP-anchored local residuals,
+SIAP-anchored graph residuals and fixed blends against the frozen 04D.1 local
+and graph baselines.
+
+Run:
+
+```powershell
+python tools\run_checkpoint_04e1.py
+```
+
+Outputs go to `reports/checkpoint_04e1/`.
 
 ## 04F — Final transductive ensemble
 
