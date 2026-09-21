@@ -1,0 +1,227 @@
+\subsection{Por qué CV convencional ya no es suficiente}
+
+Una validación convencional toma una partición aleatoria o agrupada de las 138 etiquetas, pero
+no intenta que el pseudo-test se parezca específicamente a las 59 parcelas de competencia.
+En un problema de objetivo fijo, la pregunta relevante es condicional a $X_{\Target}$.
+
+Checkpoint~04B introduce una pseudo-competición. Para una máscara
+$\Target^\star\subset\Train$:
+\begin{enumerate}
+\item se oculta $y_i$ para $i\in\Target^\star$;
+\item se mantiene visible $X_{\Target^\star}$;
+\item toda transformación $X$-only puede usar las 197 covariables;
+\item cualquier fit supervisado usa sólo
+$\Train^\star=\Train\setminus\Target^\star$;
+\item se producen predicciones para $\Target^\star$;
+\item sólo después se revela $y_{\Target^\star}$ para calcular métricas.
+\end{enumerate}
+
+De esta forma la frontera de información de cada pseudo-split reproduce la frontera real:
+\[
+(X_{\Train^\star},y_{\Train^\star},X_{\Target^\star})
+\quad\longrightarrow\quad
+\widehat y_{\Target^\star}.
+\]
+
+\subsection{Tamaño de la pseudo-competición}
+
+La competencia tiene una fracción objetivo
+\[
+\pi_U=\frac{59}{197}\approx0.2995.
+\]
+Aplicada al universo de 138 etiquetas:
+\[
+138\pi_U\approx41.3.
+\]
+Por eso cada pseudo-competición target-matched y state-random oculta 41 parcelas.
+
+Se congelaron:
+\begin{itemize}
+\item 16 target-matched repeats;
+\item 8 state-random repeats;
+\item 5 folds state-stratified legados;
+\item 5 folds municipality-grouped legados.
+\end{itemize}
+En total se evalúan 34 splits con propósitos distintos.
+
+\subsection{Construcción target-matched}
+
+Las máscaras target-matched no usan $y$. Entre múltiples candidatos se busca aproximar la
+geometría del conjunto real en:
+\begin{itemize}
+\item composición state/municipality;
+\item nearest geographic distance;
+\item nearest agronomic distance;
+\item temporal similarity;
+\item adversarial target probability.
+\end{itemize}
+
+La calidad se resume, entre otros, por total variation de la distribución municipal y distancia
+entre perfiles estandarizados. El procedimiento logra:
+\[
+TV_{\mathrm{municipio}}:
+0.0547\ \text{target-matched}
+\quad\text{vs}\quad
+0.0889\ \text{state-random},
+\]
+y
+\[
+d_{\mathrm{perfil}}:
+0.5369\ \text{target-matched}
+\quad\text{vs}\quad
+0.9227\ \text{state-random}.
+\]
+Esto verifica que el protocolo principal se parece más a los 59 objetivos en $X$, sin
+conocer sus $y$.
+
+\safefigure{../../reports/checkpoint_04b/figures/split_match_quality.png}
+{Calidad de matching de las pseudo-competiciones respecto al conjunto objetivo real.}
+{fig:cp04b-match}
+
+\subsection{Modelos candidatos}
+
+04B mezcla baselines globales y métodos explícitamente locales.
+
+\paragraph{Geographic kNN.}
+Para una consulta $q$ y sus $k$ vecinos visibles $\mathcal N_k(q)$:
+\[
+\hat y_q
+=
+\frac{\sum_{i\in\mathcal N_k(q)}
+(d_{qi}+\epsilon)^{-p}y_i}
+{\sum_{i\in\mathcal N_k(q)}
+(d_{qi}+\epsilon)^{-p}}.
+\]
+
+\paragraph{Local Ridge.}
+Para cada consulta se construye un training set diferente de $k$ vecinos y se resuelve
+\begin{equation}
+\hat\beta_q
+=
+\arg\min_{\beta}
+\sum_{i\in\mathcal N_k(q)}
+w_{qi}
+(y_i-x_i^\top\beta)^2
++\alpha\|\beta\|_2^2,
+\qquad
+w_{qi}=(d_{qi}+\epsilon)^{-1}.
+\label{eq:local-ridge}
+\end{equation}
+La predicción es $\hat y_q=x_q^\top\hat\beta_q$. Este modelo es query-specific: dos objetivos
+pueden usar subconjuntos de etiquetas diferentes.
+
+\paragraph{Graph Laplacian.}
+A partir de una matriz de distancias $D_X$ se crea un kNN simétrico con pesos RBF:
+\[
+w_{ij}
+=
+\exp\left[
+-\frac12\left(\frac{d_{ij}}{\sigma}\right)^2
+\right],
+\]
+donde $\sigma$ es la mediana de distancias de aristas positivas. Sea $A=(w_{ij})$,
+$D=\diag(A\bm 1)$ y $L=D-A$. Con máscara $M$ de nodos etiquetados se resuelve
+\begin{equation}
+(M+\lambda L+\epsilon I)\bm f
+=
+M(\bm y-\bar y\bm 1).
+\label{eq:graph-laplacian}
+\end{equation}
+La predicción en nodos query es $\bar y+f_q$. Esta formulación propaga una función suave sobre
+la geometría $X$ \citep{Zhou2004,Belkin2006}.
+
+\paragraph{Distancias mixtas.}
+Se evaluaron combinaciones normalizadas:
+\[
+d_{\mathrm{mix}}
+=
+a\,d_{\mathrm{geo}}
++b\,d_{\mathrm{agro}}
++c\,d_{\mathrm{temporal}},
+\qquad a+b+c=1.
+\]
+El mejor resultado inicial no requiere una componente temporal dominante, consistente con 04A.
+
+\subsection{Resultados target-matched}
+
+\begin{table}[H]
+\centering
+\caption{Ranking principal de Checkpoint 04B.}
+\label{tab:cp04b-primary}
+\begin{tabular}{lrrrr}
+\toprule
+Método & RMSE medio & mediana & peor split & comentario \\
+\midrule
+LocalRidge $k=20,\alpha=100$ & \textbf{0.4946} & 0.4778 & 0.6927 & mejor media \\
+Graph $k=8,\lambda=2$ & 0.4974 & 0.4878 & 0.6995 & robusto \\
+LocalRidge $k=30,\alpha=100$ & 0.4976 & 0.4847 & 0.6950 & cercano \\
+GeoKNN $k=10$ & 0.5021 & 0.4794 & 0.7137 & baseline local \\
+Blend PLS8+Graph8 & 0.5093 & 0.5012 & 0.6968 & blend \\
+GlobalPLS C0 4 & 0.5379 & -- & -- & global \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El mejor local mejora aproximadamente 8\% respecto a GlobalPLS C0 en el mismo protocolo
+target-matched:
+\[
+\frac{0.5379-0.4946}{0.5379}\approx0.0805.
+\]
+Esto es una ganancia material comparada con las diferencias de milésimas entre variantes
+globales de 03C.
+
+\safefigure{../../reports/checkpoint_04b/figures/primary_method_ranking.png}
+{Ranking de métodos bajo las 16 pseudo-competiciones target-matched.}
+{fig:cp04b-ranking}
+
+\subsection{Robustez del grafo}
+
+El Graph $k=8,\lambda=2$ obtiene:
+\[
+\begin{array}{lr}
+\text{target-matched} & 0.4974\\
+\text{state-random} & 0.4655\\
+\text{state-stratified} & 0.4779\\
+\text{municipality-grouped} & 0.5466.
+\end{array}
+\]
+Su peor familia, 0.5466, es muy inferior al grouped 0.7481 de E123. No es una comparación
+perfectamente idéntica porque 04B permite topología transductiva $X$-only; precisamente ése es
+el punto: la estructura del problema permite un estimador más apropiado.
+
+LocalRidge lidera en target-matched pero se deteriora mucho más al retirar municipios enteros.
+La tensión entre Local y Graph se conserva hasta 04F: Local optimiza la simulación más cercana
+a los 59 objetivos, Graph funciona como hedge de robustez espacial.
+
+\subsection{Routing por soporte: primera hipótesis y limitación}
+
+04B agrupó pseudo-targets en tiers low/mid/high según un score estrictamente $X$-only
+recalculado dentro del split. En la tabla agregada:
+\[
+\begin{array}{lll}
+\text{low}: & \text{LocalRidge30}, & \RMSE=0.4174,\\
+\text{mid}: & \text{GeoKNN10}, & \RMSE=0.5645,\\
+\text{high}: & \text{LocalRidge30}, & \RMSE=0.3198.
+\end{array}
+\]
+Esto generó una propuesta inicial para las 59 parcelas: 32 GeoKNN10 y 27 LocalRidge30.
+
+Sin embargo, la misma evidencia pseudo-test se utilizaba para identificar el ganador del tier
+y medirlo. Por tanto, el routing es exploratorio. La solución correcta es seleccionar reglas
+en splits distintos de aquellos donde se evalúan; 04D.1 introduce precisamente un
+leave-one-split-out.
+
+\subsection{Resultado de diseño}
+
+04B cambia el centro del proyecto. Ya no es razonable invertir la mayor parte del esfuerzo en
+modelos globales. La evidencia indica:
+\begin{enumerate}
+\item la geografía transfiere rendimiento;
+\item LocalRidge puede superar el mejor anchor global en la geometría target-matched;
+\item Graph ofrece una robustez extraordinariamente mejor al extrapolar espacialmente;
+\item cualquier routing o tuning adicional debe reutilizar exactamente estas máscaras
+congeladas para evitar mover simultáneamente objetivo y método.
+\end{enumerate}
+
+El siguiente gran bloque, 04D.1, refina sólo las familias locales/grafo que ya sobrevivieron
+esta prueba.
