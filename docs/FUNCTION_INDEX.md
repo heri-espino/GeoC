@@ -84,6 +84,10 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `temporal_distance_matrix` | function | `geocebada.evaluation.checkpoint04b` | Convert correlation-like similarity to a nonnegative distance. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `temporal_similarity_matrix` | function | `geocebada.evaluation.checkpoint04b` | Build the symmetric train-train/target-train temporal similarity matrix. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `transductive_standardize` | function | `geocebada.evaluation.checkpoint04b` | Standardize an X-only representation using all visible covariate rows. | `src/geocebada/evaluation/checkpoint04b.py` |
+| `blend_anchor_predictions` | function | `geocebada.evaluation.checkpoint04c` | Blend a frozen baseline with a global anchor using a fixed convex weight. | `src/geocebada/evaluation/checkpoint04c.py` |
+| `predict_catboost_seed_ensemble` | function | `geocebada.evaluation.checkpoint04c` | Fit one CatBoost model per seed on visible labels and average predictions. | `src/geocebada/evaluation/checkpoint04c.py` |
+| `residual_correlation_table` | function | `geocebada.evaluation.checkpoint04c` | Return pairwise residual correlations for selected methods within one family. | `src/geocebada/evaluation/checkpoint04c.py` |
+| `resolve_agronomic_competition_features` | function | `geocebada.evaluation.checkpoint04c` | Resolve numeric clean+competition agronomic features from the manifest. | `src/geocebada/evaluation/checkpoint04c.py` |
 | `SplitPositions` | class | `geocebada.evaluation.checkpoint04d1` | Resolved pseudo-train and pseudo-target row positions for one frozen split. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `fit_pls_anchor_with_cross_fitted_residuals` | function | `geocebada.evaluation.checkpoint04d1` | Fit a full PLS anchor and cross-fitted residuals on visible labels only. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `leave_one_split_out_method_selection` | function | `geocebada.evaluation.checkpoint04d1` | Evaluate split-level hyperparameter selection without scoring on its training splits. | `src/geocebada/evaluation/checkpoint04d1.py` |
