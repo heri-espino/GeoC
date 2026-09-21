@@ -40,37 +40,36 @@ Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conoce
 
 
 
-## Ejecutar Checkpoint 04F
+## Checkpoint 04F — completado
 
-04C.1 ya quedó ejecutado y documentado. CatBoost C1 fue claramente peor como
-predictor individual (RMSE target-matched ~0.515–0.521), y el blend
-Local+CatBoost 10% quedó prácticamente empatado con Local04D: 0.487842 vs
-0.487845, con pooled RMSE ligeramente peor. El gate LOSO tampoco mejoró el
-baseline. La interpretación canónica está en `docs/CHECKPOINT_04C1_FINDINGS.md`.
-
-La fase activa es ahora **04F**, cuyo objetivo es congelar una única tabla final
-de 59 rendimientos sin reabrir una búsqueda amplia. El final rule configurado es
+La reconstrucción transductiva final ya está congelada. La regla final es
 `Baseline_Local04D`, equivalente a
 `LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`.
 
-```powershell
-git pull
-conda activate geocebada
-python tools\run_checkpoint_04f.py
+Resultados finales de validación:
+
+```text
+target-matched mean RMSE     0.487845
+pooled RMSE                  0.495741
+LOSO Local/Graph check       0.487941
 ```
 
-04F verifica que Local04D y Graph04D coincidan exactamente entre los artefactos
-04D.1 y 04E.1, reconstruye sólo una pequeña sensibilidad Local/Graph, ejecuta un
-check LOSO de pesos con universo restringido y finalmente escribe:
+Un blend fijo 75% Local / 25% Graph alcanza 0.486768 en la tabla completa de
+desarrollo, pero el check leave-one-split-out no mejora el baseline congelado.
+Por eso se conserva Local04D sin tuning adicional post-hoc.
+
+La tabla canónica de entrega está en:
 
 ```text
 reports/checkpoint_04f/final_predictions.csv
-reports/checkpoint_04f/final_prediction_diagnostics.csv
-reports/checkpoint_04f/checkpoint_04f_report.md
 ```
 
-La tabla final contiene exactamente
-`ID_POLIGONO, RENDIMIENTO_T_HA` para las 59 parcelas `PREDICCION`.
+y contiene exactamente 59 filas con
+`ID_POLIGONO,RENDIMIENTO_T_HA`. Los diagnósticos de soporte y discrepancia
+Local–Graph están separados en
+`reports/checkpoint_04f/final_prediction_diagnostics.csv`.
+
+Interpretación canónica: `docs/CHECKPOINT_04F_FINDINGS.md`.
 
 ## Checkpoint 04D.1 — completado
 
