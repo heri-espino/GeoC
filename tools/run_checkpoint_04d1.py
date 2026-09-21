@@ -847,7 +847,10 @@ def run_checkpoint_04d1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
     )
     method_manifest = _build_method_manifest(config)
     graphs = _graph_cache(method_manifest, distances)
-    method_manifest.to_csv(output_dir / "method_manifest.csv", index=False)
+    method_manifest.to_csv(
+        output_dir / str(outputs["method_manifest"]),
+        index=False,
+    )
 
     print("[04D.1 3/8] Resolving the exact committed 04B pseudo-competition splits...")
     splits = split_positions_from_membership(
