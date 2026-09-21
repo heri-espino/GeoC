@@ -83,6 +83,15 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `temporal_distance_matrix` | function | `geocebada.evaluation.checkpoint04b` | Convert correlation-like similarity to a nonnegative distance. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `temporal_similarity_matrix` | function | `geocebada.evaluation.checkpoint04b` | Build the symmetric train-train/target-train temporal similarity matrix. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `transductive_standardize` | function | `geocebada.evaluation.checkpoint04b` | Standardize an X-only representation using all visible covariate rows. | `src/geocebada/evaluation/checkpoint04b.py` |
+| `SplitPositions` | class | `geocebada.evaluation.checkpoint04d1` | Resolved pseudo-train and pseudo-target row positions for one frozen split. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `fit_pls_anchor_with_cross_fitted_residuals` | function | `geocebada.evaluation.checkpoint04d1` | Fit a full PLS anchor and cross-fitted residuals on visible labels only. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `leave_one_split_out_method_selection` | function | `geocebada.evaluation.checkpoint04d1` | Evaluate split-level hyperparameter selection without scoring on its training splits. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `leave_one_split_out_tier_routing` | function | `geocebada.evaluation.checkpoint04d1` | Validate support-tier method routing on pseudo-splits excluded from route fitting. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `predict_residual_graph_correction` | function | `geocebada.evaluation.checkpoint04d1` | Add graph-propagated cross-fitted residuals to a global anchor. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `predict_weighted_local_ridge` | function | `geocebada.evaluation.checkpoint04d1` | Fit one inverse-distance weighted Ridge model per query parcel. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `split_positions_from_membership` | function | `geocebada.evaluation.checkpoint04d1` | Resolve committed 04B split membership into row-position tuples. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `summarize_nested_predictions` | function | `geocebada.evaluation.checkpoint04d1` | Summarize nested selected/routed predictions with equal-weight split RMSE. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `summarize_predictions_by_method` | function | `geocebada.evaluation.checkpoint04d1` | Summarize equal-weight split RMSE and pooled row metrics by method. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
@@ -160,6 +169,12 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `plot_support_tier_method_rmse` | function | `geocebada.visualization.checkpoint04b` | Plot RMSE by X-only support tier for top overall methods. | `src/geocebada/visualization/checkpoint04b.py` |
 | `plot_target_support_routing_scatter` | function | `geocebada.visualization.checkpoint04b` | Plot actual target X-support score by parcel and routed method. | `src/geocebada/visualization/checkpoint04b.py` |
 | `plot_top_method_rmse_boxplot` | function | `geocebada.visualization.checkpoint04b` | Plot split-to-split RMSE dispersion for top primary-family methods. | `src/geocebada/visualization/checkpoint04b.py` |
+| `plot_actual_candidate_spread` | function | `geocebada.visualization.checkpoint04d1` | Plot finalist prediction spread for each of the 59 actual targets. | `src/geocebada/visualization/checkpoint04d1.py` |
+| `plot_graph_k_profiles` | function | `geocebada.visualization.checkpoint04d1` | Plot best graph RMSE by neighborhood size for each topology and graph mode. | `src/geocebada/visualization/checkpoint04d1.py` |
+| `plot_local_k_profile` | function | `geocebada.visualization.checkpoint04d1` | Plot best local-Ridge RMSE by neighborhood size and representation. | `src/geocebada/visualization/checkpoint04d1.py` |
+| `plot_loso_selection_frequency` | function | `geocebada.visualization.checkpoint04d1` | Plot how often each method is selected by leave-one-split-out search. | `src/geocebada/visualization/checkpoint04d1.py` |
+| `plot_nested_validation_comparison` | function | `geocebada.visualization.checkpoint04d1` | Compare leave-one-split-out selection and routing performance. | `src/geocebada/visualization/checkpoint04d1.py` |
+| `plot_refinement_ranking` | function | `geocebada.visualization.checkpoint04d1` | Plot top target-matched 04D.1 methods by mean split RMSE. | `src/geocebada/visualization/checkpoint04d1.py` |
 | `correlation_heatmap` | function | `geocebada.visualization.exploration` | Build an interactive correlation heatmap for selected numeric variables. | `src/geocebada/visualization/exploration.py` |
 | `correlation_scatter` | function | `geocebada.visualization.exploration` | Build an interactive scatter plot for exploring bivariate relationships. | `src/geocebada/visualization/exploration.py` |
 | `distribution_figure` | function | `geocebada.visualization.exploration` | Build an interactive histogram for one numeric variable. | `src/geocebada/visualization/exploration.py` |
