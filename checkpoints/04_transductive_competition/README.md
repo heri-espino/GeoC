@@ -1,6 +1,6 @@
 # Checkpoint 04 — Transductive Competition Modeling
 
-**Status:** OPEN — 04A COMPLETE, 04B IMPLEMENTED / RUN PENDING  
+**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, LOCAL/GRAPH REFINEMENT NEXT  
 **Opened:** 2026-09-19
 
 Checkpoint 04 begins after the closure of Checkpoint 03 as the **First Modeling Delivery**. Read `docs/TRANSDUCTIVE_OBJECTIVE.md` before implementing this checkpoint.
@@ -74,7 +74,7 @@ The workstation run is complete and committed. Canonical interpretation: `docs/C
 Key evidence: adversarial AUC 0.4892; geographic distance vs absolute yield difference Spearman rho 0.4882; observed-y Moran's I 0.6797 (p=0.001); municipality-grouped E123 residual Moran's I 0.5483 (p=0.001); 5 high-support, 13 extrapolation and 41 intermediate/mixed targets.
 
 
-## 04B — Transductive pseudo-competition validation — IMPLEMENTED, RUN PENDING
+## 04B — Transductive pseudo-competition validation — COMPLETE
 
 Create repeated pseudo-target splits from the 138 labels. For each split, pseudo-target X is visible throughout X-only transductive learning while pseudo-target y is hidden until scoring.
 
