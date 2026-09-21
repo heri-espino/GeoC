@@ -1,0 +1,35 @@
+{
+  "actual_disagreement": {
+    "max_abs_local_graph": 0.49803237364113695,
+    "mean_abs_local_graph": 0.10557031774541108,
+    "median_abs_local_graph": 0.07689802985235605
+  },
+  "actual_hidden_y_scored": false,
+  "blend_candidate_count": 8,
+  "final_columns": [
+    "ID_POLIGONO",
+    "RENDIMIENTO_T_HA"
+  ],
+  "generated_at": "2026-09-21T21:19:39.386565+00:00",
+  "git_commit": "77aac47d9e4a08ec50c7f12a50aba5b736182261",
+  "graph04d_cross_checkpoint_max_abs_diff": 0.0,
+  "hidden_prediction_targets_used": false,
+  "local04d_cross_checkpoint_max_abs_diff": 0.0,
+  "loso_blend": {
+    "n_predictions": 656,
+    "n_splits": 16,
+    "pooled_mae": 0.34096966875209006,
+    "pooled_r2": 0.6539972156072313,
+    "pooled_rmse": 0.49598742453829153,
+    "rmse_mean": 0.4879409616359732,
+    "rmse_median": 0.4798498162735426,
+    "rmse_worst": 0.6930903913044197
+  },
+  "prediction_rows": 59,
+  "schema_version": 1,
+  "secondary_method": "Baseline_Graph04D",
+  "selected_method": "Baseline_Local04D",
+  "selected_source_method_04d": "LocalRidge_C4_all_deterministic_Geo_k24_a30_p1",
+  "selected_target_matched_rmse_mean": 0.4878453167434382,
+  "stage": "final_transductive_reconstruction"
+}
