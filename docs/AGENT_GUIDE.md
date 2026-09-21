@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 04E.1 — SIAP external localization implemented; workstation run pending  
+**Current phase:** Checkpoint 04C.1 — focused global CatBoost anchor implemented; workstation run pending  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -193,11 +193,25 @@ independent datasets.
 Do not promote the 59 candidate predictions from 04D.1 to final output until nested evidence,
 stress robustness and later external/global-anchor experiments have been reviewed.
 
-### 04C — stronger global models
+### 04C — focused global anchor — ACTIVE
 
-The 03C.2 search was deliberately small. Revisit CatBoost with a larger GPU budget, more
-iterations, early stopping, stronger regularization/search and multiple seeds. Keep PLS/Ridge
-because they were genuinely competitive with only 138 labels.
+Checkpoint 04C.1 is implemented as a deliberately narrow CatBoost diversity test rather than
+a new broad search. It reuses only three C1 agronomic CatBoost configurations already present
+in the frozen 03C.2 grid and averages seeds 42, 314 and 2718.
+
+Run:
+
+```powershell
+python tools\run_checkpoint_04c1.py
+```
+
+The stable CatBoost candidate is compared directly and at fixed 10/20/30% weights against
+Local04D and Graph04D on the exact frozen 04B memberships. A controlled LOSO gate may choose
+only Local04D, stable CatBoost or the three Local+CatBoost blends. Automatic CPU fallback is
+disabled; CPU execution requires `--catboost-task-type CPU --confirm-cpu y`.
+
+Carry CatBoost into 04F only if it adds target-matched blend value or useful residual diversity
+without a material robustness penalty.
 
 ### 04D — target-specific/local/transductive models
 
@@ -214,20 +228,20 @@ Evaluate:
 
 ### 04E — external evidence
 
-#### 04E.1 — SIAP localization — IMPLEMENTED, RUN NEXT
+#### 04E.1 — SIAP localization — COMPLETE
 
-Run:
+Canonical findings: `docs/CHECKPOINT_04E1_FINDINGS.md`.
 
-```powershell
-python tools\run_checkpoint_04e1.py
-```
+The exact `Cebada grano + Primavera-Verano + Temporal + CVEGEO + 2025` prior
+covered all 197 parcels and all 59 targets, but it did not improve the primary
+target-matched protocol. Local04D remained best at 0.4878 mean split RMSE;
+Local+SIAP 25% worsened to 0.4922, and the controlled LOSO selector chose
+Local04D in 16/16 holdouts. Direct SIAP RMSE on the 138 observed parcels was
+1.4926 with Spearman correlation -0.2181.
 
-The primary scope is `Cebada grano + Primavera-Verano + Temporal + exact
-CVEGEO + 2025`. The runner preserves cycle/modality detail from raw SIAP,
-records broader fallbacks explicitly, and validates SIAP as a direct municipal
-prior, calibrated prior, local-residual anchor and graph-residual anchor on the
-frozen 04B pseudo-competitions. Do not promote actual-target candidates before
-reviewing the generated 04E.1 evidence.
+The 25% graph/SIAP blend did help the municipality-grouped stress protocol
+(0.5279 -> 0.5096), so SIAP remains documented external evidence and a stress
+signal, but it is not a required current final-predictor component.
 
 
 
