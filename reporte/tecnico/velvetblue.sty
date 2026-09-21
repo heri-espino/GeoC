@@ -1,0 +1,113 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{velvetblue}[2026/09/15 Personal academic draft style]
+
+% Options
+\newif\ifVelvetMath
+\newif\ifVelvetDraft
+\newif\ifVelvetCompact
+
+\VelvetMathfalse
+\VelvetDrafttrue
+\VelvetCompactfalse
+
+\DeclareOption{general}{\VelvetMathfalse}
+\DeclareOption{math}{\VelvetMathtrue}
+\DeclareOption{draft}{\VelvetDrafttrue}
+\DeclareOption{final}{\VelvetDraftfalse}
+\DeclareOption{compact}{\VelvetCompacttrue}
+\DeclareOption{generous}{\VelvetCompactfalse}
+\ProcessOptions\relax
+
+% Mathematics
+\RequirePackage{amsmath}
+
+% Typography
+\RequirePackage{libertinus}
+\RequirePackage[
+    protrusion=false,
+    expansion=false
+]{microtype}
+\emergencystretch=2em
+
+% Page geometry
+\ifVelvetCompact
+    \RequirePackage[
+        a4paper,
+        top=1.8cm,
+        bottom=1.8cm,
+        left=1.8cm,
+        right=1.8cm
+    ]{geometry}
+\else
+    \RequirePackage[
+        a4paper,
+        textwidth=148.5mm,
+        textheight=210mm,
+        hcentering,
+        vcentering
+    ]{geometry}
+\fi
+
+% Figures and tables
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{caption}
+\RequirePackage{pdflscape}
+
+% Color
+\RequirePackage{xcolor}
+\definecolor{VelvetBlue}{HTML}{00166C}
+
+% Bibliography
+\ifVelvetMath
+    \RequirePackage[
+        backend=biber,
+        style=numeric-comp,
+        sorting=none,
+        maxbibnames=99,
+        giveninits=true,
+        doi=true,
+        url=false,
+        isbn=false,
+        eprint=false
+    ]{biblatex}
+\else
+    \RequirePackage[
+        backend=biber,
+        style=authoryear-comp,
+        sorting=nyt,
+        maxcitenames=2,
+        maxbibnames=99,
+        giveninits=true,
+        dashed=false,
+        doi=true,
+        url=false,
+        isbn=false,
+        eprint=false
+    ]{biblatex}
+\fi
+
+% natbib-like aliases
+\let\citep\parencite
+\let\citet\textcite
+
+% URLs and hyperlinks
+\RequirePackage{xurl}
+\RequirePackage[
+    colorlinks=true,
+    linkcolor=VelvetBlue,
+    citecolor=VelvetBlue,
+    urlcolor=VelvetBlue
+]{hyperref}
+\RequirePackage[
+    nameinlink,
+    noabbrev
+]{cleveref}
+
+% Draft diagnostics
+\ifVelvetDraft
+    \overfullrule=5pt
+\else
+    \overfullrule=0pt
+\fi
