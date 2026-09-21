@@ -1,0 +1,37 @@
+{
+  "active_track": "competition",
+  "actual_candidate_rows": 531,
+  "actual_hidden_y_scored": false,
+  "automatic_cpu_fallback": false,
+  "catboost_task_type": "GPU",
+  "families": [
+    "fold_municipality_grouped",
+    "fold_state_stratified",
+    "state_random",
+    "target_matched"
+  ],
+  "generated_at": "2026-09-21T19:58:38.624345+00:00",
+  "git_commit": "b8d878df267f0782ece043ddc8263bd50a6259d9",
+  "hidden_prediction_targets_used": false,
+  "loso_anchor_gate": {
+    "label": "04C.1 controlled anchor gate",
+    "n_predictions": 656,
+    "n_splits": 16,
+    "pooled_mae": 0.3431809827280177,
+    "pooled_r2": 0.6528099079130565,
+    "pooled_rmse": 0.4968376855527492,
+    "rmse_mean": 0.4888835233107527,
+    "rmse_median": 0.47106300906386933,
+    "rmse_worst": 0.6946996263427138
+  },
+  "n_anchor_candidates": 3,
+  "n_features": 350,
+  "n_seeds": 3,
+  "prediction_rows": 59,
+  "primary_family": "target_matched",
+  "primary_splits": 16,
+  "schema_version": 1,
+  "stage": "focused_global_catboost_anchor",
+  "total_rows": 197,
+  "training_rows": 138
+}

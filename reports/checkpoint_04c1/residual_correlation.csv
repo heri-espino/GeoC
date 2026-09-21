@@ -1,0 +1,4 @@
+family,method_a,method_b,n_pairs,residual_correlation
+target_matched,Baseline_Local04D,Baseline_Graph04D,656,0.9707247059948044
+target_matched,Baseline_Local04D,CatBoost_C1_d4_lr003_l2_3,656,0.9422682059658536
+target_matched,Baseline_Graph04D,CatBoost_C1_d4_lr003_l2_3,656,0.9142508866553926
