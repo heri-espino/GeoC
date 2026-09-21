@@ -69,13 +69,13 @@ La fuente climática oficial contiene 48 rasters mensuales para cada una de prec
 temperatura mínima y temperatura máxima, con continuidad 2022--2025 y CRS EPSG:4326. A partir
 de ella se construyen climatologías históricas, totales estacionales y anomalías 2025.
 
-CHIRPS v3 aporta precipitación diaria para 214 fechas entre abril y octubre de 2025. Aunque su
+CHIRPS v3 aporta precipitación diaria para 214 fechas entre abril y octubre de 2025 \citep{Funk2015CHIRPS}. Aunque su
 resolución temporal permite construir número de días de lluvia, máximos móviles y duración de
 episodios secos, el pipeline mantuvo CHIRPS fuera de varias representaciones de modelado porque
 Feature Table v1 sólo retuvo una característica y se decidió no sobreinterpretar una
 extracción que requería QC adicional.
 
-WaPOR v3 aporta AETI y NPP en 21 periodos dekadales. Dado que sus bandas representan tasas,
+WaPOR v3 aporta AETI y NPP en 21 periodos dekadales \citep{FAOWaPOR}. Dado que sus bandas representan tasas,
 una agregación estacional correcta multiplica por la duración del dekad:
 \begin{equation}
 AETI_{\mathrm{season}}
@@ -89,14 +89,14 @@ magnitudes para construir proxies de productividad hídrica \citep{Dhonthi2024}.
 
 \subsection{Suelo y topografía}
 
-SoilGrids aporta 36 GeoTIFF: nueve propiedades por cuatro profundidades:
+SoilGrids aporta 36 GeoTIFF: nueve propiedades por cuatro profundidades \citep{Poggio2021SoilGrids}:
 pH, arcilla, arena, limo, carbono orgánico, nitrógeno, capacidad de intercambio catiónico,
 densidad aparente y fracción de fragmentos gruesos. Los TIFF descargados mediante WCS pueden
 carecer de CRS en el header; sólo los productos positivamente identificados reciben el
 fallback ESRI:54052 definido por el contrato. Las conversiones de escala INT16 a unidades
 físicas se aplican según la especificación del producto, nunca por inferencia ad hoc.
 
-La topografía combina el producto oficial de 120 m y el CEM estatal de INEGI de
+La topografía combina el producto oficial de 120 m y el CEM estatal de INEGI \citep{INEGICEM} de
 aproximadamente 15 m. Las fuentes se mantienen separadas mediante prefijos para evitar que una
 resolución sustituya silenciosamente a otra. En modelos locales, la elevación y la pendiente
 pueden actuar como contexto ambiental; sin embargo, la distancia geográfica directa terminó
@@ -105,7 +105,7 @@ multivariada completa.
 
 \subsection{SIAP y la llave administrativa}
 
-El archivo histórico SIAP cubre 2003--2025. La llave municipal estable es
+El archivo histórico SIAP cubre 2003--2025 \citep{SIAPDatos}. La llave municipal estable es
 \begin{equation}
 \mathrm{CVEGEO}
 =
