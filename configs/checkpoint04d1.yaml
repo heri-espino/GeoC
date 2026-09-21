@@ -107,7 +107,7 @@ finalists:
 
 nested_selection:
   support_tiers: [low, mid, high]
-  routing_scope: finalists
+  routing_scope: all_predeclared_methods
 
 figures:
   dpi: 170
