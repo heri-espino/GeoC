@@ -1,6 +1,6 @@
 # Checkpoint 04 — Transductive Competition Modeling
 
-**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, 04D.1 COMPLETE, 04E.1 COMPLETE, 04C.1 IMPLEMENTED / RUN PENDING  
+**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, 04D.1 COMPLETE, 04E.1 COMPLETE, 04C.1 COMPLETE, 04F IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-09-19
 
 Checkpoint 04 begins after the closure of Checkpoint 03 as the **First Modeling Delivery**. Read `docs/TRANSDUCTIVE_OBJECTIVE.md` before implementing this checkpoint.
@@ -224,15 +224,28 @@ remains external-evidence and stress-test context but is not a required current 
 
 Canonical interpretation: `docs/CHECKPOINT_04E1_FINDINGS.md`.
 
-## 04F — Final transductive ensemble
+## 04F — Final transductive reconstruction — IMPLEMENTED / RUN PENDING
 
-Only after 04B is stable:
+04F is now a deliberately conservative finalization stage. The configured final
+rule is `Baseline_Local04D`, the same
+`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1` candidate that led 04D.1.
 
-- assemble pseudo-test predictions from surviving global/local/graph/domain-adaptation models;
-- evaluate blending/stacking with the same transductive validation contract;
-- inspect target-specific support and uncertainty;
-- fit the final rule using all 138 labels and all 197 X;
-- generate exactly one canonical table of 59 reconstructed yields keyed by `ID_POLIGONO`.
+Before writing the final file, the runner verifies that the 59 Local04D and
+Graph04D actual-target predictions are identical between the frozen 04D.1 and
+04E.1 artifacts. It then reconstructs a small Local/Graph blend sensitivity
+grid and performs constrained leave-one-target-matched-split-out weight
+selection. This audit does not automatically replace the configured final rule.
+
+Run:
+
+```powershell
+python tools\run_checkpoint_04f.py
+```
+
+The final output is exactly one 59-row table with
+`ID_POLIGONO,RENDIMIENTO_T_HA`, plus a separate diagnostics table containing
+X-support and Local-vs-Graph disagreement. Hidden FIRA y remains unavailable
+and is never scored.
 
 ## Completion criteria
 
