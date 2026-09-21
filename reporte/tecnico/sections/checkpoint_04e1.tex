@@ -1,0 +1,195 @@
+\subsection{Hipótesis externa}
+
+El fuerte Moran's $I$ y la sensibilidad municipal sugieren que una estadística pública
+localizada podría aportar un prior regional. SIAP 2025 es especialmente interesante porque es
+contemporáneo y público. La hipótesis de 04E.1 no es que SIAP sea equivalente al target
+parcelario, sino que
+\[
+y_i = g(z_{m(i),2025}) + r_i,
+\]
+donde $z_{m(i),2025}$ es una señal municipal y $r_i$ una corrección parcelaria, podría tener
+menor varianza que modelar $y_i$ sin prior.
+
+Para probarla de manera semánticamente correcta se vuelve a la tabla SIAP detallada, evitando
+la agregación legada que mezclaba ciclos/modalidades.
+
+\subsection{Scope exacto y fallbacks explícitos}
+
+El scope principal se define como:
+\[
+\text{Cebada grano}
++\text{Primavera--Verano}
++\text{Temporal}
++\text{CVEGEO}
++\text{2025}.
+\]
+La elección de Primavera--Verano se alinea con el ciclo abril--octubre del reto. En este
+documento se mantiene como decisión operacional del proyecto, no como una validación externa
+independiente de nomenclatura SIAP.
+
+La auditoría conserva scopes progresivamente más amplios:
+\begin{description}
+\item[exact] ciclo y modalidad exactos;
+\item[cycle all-mode] ciclo exacto, modalidad libre;
+\item[temporal all-cycle] modalidad Temporal, ciclo libre;
+\item[all-grain] toda Cebada grano.
+\end{description}
+Los fallbacks se nombran en el artefacto; nunca se mezclan silenciosamente.
+
+\begin{table}[H]
+\centering
+\caption{Auditoría de scopes SIAP en 04E.1.}
+\label{tab:cp04e-scope}
+\begin{tabular}{lrrr}
+\toprule
+Scope & filas históricas & municipios 2025 & filas 2025 \\
+\midrule
+exact & 924 & 83 & 83 \\
+cycle all-mode & 925 & 83 & 93 \\
+temporal all-cycle & 929 & 83 & 83 \\
+all-grain & 930 & 83 & 94 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La cobertura exacta alcanza 197/197 parcelas. El prior seleccionado tiene cobertura 197/197
+antes de fallback por mediana, incluyendo 59/59 objetivos reales. Por tanto, cualquier fracaso
+predictivo no puede atribuirse a missingness de SIAP.
+
+\safefigure{../../reports/checkpoint_04e1/figures/siap_scope_coverage.png}
+{Cobertura de los scopes SIAP auditados.}
+{fig:cp04e-coverage}
+
+\subsection{Construcción del rendimiento municipal}
+
+En un municipio-año, la agregación evita promediar rendimientos reportados sin peso cuando
+existen varias filas. Se conservan tanto el rendimiento reconstruido
+\[
+Y^{prod/harv}_{m,t}
+=
+\frac{\sum_r \mathrm{VolumenProduccion}_{r}}
+{\sum_r \mathrm{Cosechada}_{r}},
+\]
+como el rendimiento reportado ponderado por superficie cuando corresponde. También se deriva
+tasa de siniestro. El objetivo es mantener una definición reproducible aun cuando el source
+tenga varias categorías administrativas.
+
+\subsection{Usos evaluados del prior}
+
+Se probaron cuatro formas principales.
+
+\paragraph{Directo.}
+\[
+\hat y_i=z_{m(i),2025}.
+\]
+
+\paragraph{Calibración affine.}
+Sobre etiquetas visibles:
+\[
+y_i=\beta_0+\beta_1z_i+\varepsilon_i,
+\]
+con Ridge sobre $(1,z_i)$.
+
+\paragraph{Local residual.}
+Se define
+\[
+r_i=y_i-z_i
+\]
+para etiquetas visibles y se ajusta Local Ridge para $r_q$:
+\[
+\hat y_q=z_q+\hat r_q.
+\]
+
+\paragraph{Graph residual.}
+Los residuos visibles se propagan sobre el grafo:
+\[
+\hat y_q=z_q+\operatorname{Graph}(r)_q.
+\]
+
+Finalmente, se prueban blends fijos del 25, 50 y 75\% contra los baselines 04D.
+
+\subsection{Resultados target-matched}
+
+\begin{table}[H]
+\centering
+\caption{Resultados principales de SIAP 04E.1.}
+\label{tab:cp04e-results}
+\small
+\begin{tabular}{lrr}
+\toprule
+Método & RMSE medio & pooled MAE \\
+\midrule
+Local04D & \textbf{0.4878} & 0.3425 \\
+Local + SIAP-local 25\% & 0.4922 & 0.3528 \\
+Graph04D & 0.4949 & \textbf{0.3403} \\
+Graph + SIAP-graph 25\% & 0.5014 & 0.3500 \\
+SIAP local residual & 0.5456 & 0.4151 \\
+SIAP graph residual & 0.5558 & 0.3976 \\
+SIAP affine & $\approx0.837$ & $\approx0.717$ \\
+SIAP directo & 1.4368 & 1.3095 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La cobertura perfecta no se traduce en resolución parcelaria. En las 138 etiquetas completas:
+\[
+\RMSE(z,y)=1.4926,
+\qquad
+\rho_{\mathrm{Spearman}}(z,y)=-0.2181.
+\]
+La feature SIAP 2025 legada produce RMSE directo 1.4894, prácticamente igual de pobre. Filtrar
+correctamente ciclo/modalidad mejora semántica, no garantiza señal parcelaria.
+
+\safefigure{../../reports/checkpoint_04e1/figures/siap_proxy_vs_yield.png}
+{Proxy SIAP municipal frente al rendimiento observado de parcela.}
+{fig:cp04e-siap-yield}
+
+\subsection{LOSO y evidencia contra la incorporación}
+
+El selector leave-one-target-matched-split-out dispone de Local04D, Graph04D y las variantes
+SIAP. En 16/16 holdouts elige Local04D. Esta unanimidad es evidencia más fuerte que comparar
+el mejor promedio de una tabla completa: cada holdout se evalúa después de seleccionar con los
+otros splits.
+
+\subsection{Resultado grouped que sí favorece SIAP}
+
+El fracaso primario no es uniforme. Bajo municipality-grouped:
+\[
+\RMSE(\mathrm{Graph04D})=0.5279,
+\]
+mientras un blend 25\% Graph/SIAP llega a aproximadamente
+\[
+0.5096.
+\]
+Esto tiene interpretación coherente: cuando se elimina un municipio completo, un prior
+municipal externo puede suplir parte de la información que ya no existe en los labels
+cercanos.
+
+Sin embargo, el test real no es un leave-one-municipality-out puro. Las máscaras
+target-matched son la simulación diseñada para la geometría específica de los 59 objetivos, y
+allí el mismo blend empeora. Por ello el resultado grouped se conserva como stress evidence,
+no como autorización para introducir SIAP al predictor final.
+
+\safefigure{../../reports/checkpoint_04e1/figures/external_method_ranking.png}
+{Ranking de métodos con evidencia SIAP en el protocolo target-matched.}
+{fig:cp04e-ranking}
+
+\subsection{Lección de resolución espacial}
+
+Este checkpoint ilustra un principio general de data fusion: la contemporaneidad no compensa
+una discordancia de resolución. SIAP observa un outcome administrativo municipal; el target es
+parcelario. Si dentro de un municipio existe heterogeneidad considerable, el prior
+$z_m$ tiene un error irreducible para parcelas individuales.
+
+La evidencia externa sigue siendo metodológicamente valiosa porque:
+\begin{itemize}
+\item verifica una hipótesis razonable;
+\item documenta el significado exacto de SIAP;
+\item cuantifica su utilidad bajo extrapolación municipal;
+\item evita que el equipo incorpore el proxy final por intuición.
+\end{itemize}
+
+\begin{decision}
+SIAP se conserva como fuente pública documentada y señal de stress. No recibe peso positivo
+obligatorio en 04F.
+\end{decision}
