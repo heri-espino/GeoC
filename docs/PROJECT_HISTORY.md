@@ -849,3 +849,29 @@ python tools\run_checkpoint_04b.py
 ```
 
 No 04B numerical conclusions are recorded until that run completes.
+
+
+---
+
+## 2026-09-20 — Checkpoint 04B completed: local/graph methods survive pseudo-competition
+
+The 04B workstation run was committed as `f9ad005d51bcbe488cfad96c6a7ea8434ab6709d`.
+Generated artifacts live in `reports/checkpoint_04b/`; canonical interpretation is
+`docs/CHECKPOINT_04B_FINDINGS.md`.
+
+The 16 target-matched 41-parcel pseudo-competitions identify LocalRidge k20/alpha100
+(RMSE 0.4946), Graph k8/lambda2 (0.4974), LocalRidge k30/alpha100 (0.4976) and GeoKNN k10
+(0.5021) as the strongest tested methods. GlobalPLS C0 with four components reaches 0.5379 in
+the same primary protocol.
+
+Graph k8/lambda2 is the most robust candidate across all validation families and reaches
+0.5466 RMSE on the frozen municipality-grouped stress protocol. This is consistent with the
+strong spatial autocorrelation discovered in 04A and makes graph/local refinement the main
+active direction.
+
+The target-matched split generator also worked as intended: its mean municipality-TV distance
+to the real target set is 0.0547 versus 0.0889 for state-random masks, and its standardized
+profile-mean distance is 0.5369 versus 0.9227.
+
+The initial support-tier routing is retained only as an exploratory hypothesis. It must be
+validated with out-of-split method selection before it can influence final reconstruction.
