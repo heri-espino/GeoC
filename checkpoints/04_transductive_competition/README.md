@@ -1,6 +1,6 @@
 # Checkpoint 04 — Transductive Competition Modeling
 
-**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, LOCAL/GRAPH REFINEMENT NEXT  
+**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, 04D.1 IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-09-19
 
 Checkpoint 04 begins after the closure of Checkpoint 03 as the **First Modeling Delivery**. Read `docs/TRANSDUCTIVE_OBJECTIVE.md` before implementing this checkpoint.
@@ -128,6 +128,31 @@ Revisit strong global families with a larger compute budget. Candidate work incl
 - carefully justified feature subsets and representations.
 
 GPU should be used where supported.
+
+## 04D.1 — Local/graph refinement — IMPLEMENTED, RUN PENDING
+
+04D.1 operationalizes the strongest 04B evidence instead of reopening a generic model search.
+It reuses the exact committed 04B pseudo-target memberships and exhaustively refines:
+
+- direct graph-Laplacian regression over five geography/agronomy topologies;
+- graph correction of cross-fitted PLS4 residuals;
+- local Ridge over C1/C4 embeddings, three distance topologies, neighborhood sizes,
+  regularization strengths and inverse-distance powers;
+- fixed GeoKNN10 and PLS4 anchors.
+
+Primary search uses the 16 target-matched pseudo-competition splits. Hyperparameter selection
+is evaluated leave-one-pseudo-split-out, and support-tier routing is also validated on a split
+excluded from route fitting. Only finalists are then evaluated on state-random and frozen
+state/municipality stress splits.
+
+Run:
+
+```powershell
+python tools\run_checkpoint_04d1.py
+```
+
+Outputs go to `reports/checkpoint_04d1/`. Candidate predictions for the real 59 are retained
+for disagreement analysis and later 04F blending, but are explicitly not the final submission.
 
 ## 04D — Local, graph and domain-adaptation models
 
