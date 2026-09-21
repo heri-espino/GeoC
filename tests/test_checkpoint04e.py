@@ -25,7 +25,18 @@ def _siap_detail() -> pd.DataFrame:
         # Same crop/cycle but irrigation: must not enter exact scope.
         [2025, "21001", "Cebada grano", "Primavera-Verano", "Riego", 5, 5, 0, 25, 5.0],
         # Forage barley: must never enter grain scope.
-        [2025, "21001", "Cebada forrajera en verde", "Primavera-Verano", "Temporal", 5, 5, 0, 50, 10.0],
+        [
+            2025,
+            "21001",
+            "Cebada forrajera en verde",
+            "Primavera-Verano",
+            "Temporal",
+            5,
+            5,
+            0,
+            50,
+            10.0,
+        ],
     ]
     return pd.DataFrame(
         rows,
