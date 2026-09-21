@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-21T02:44:22.271769+00:00",
+  "git_commit": "b76f2167fe2a80482292cb125cb9b2c7ec2b1364",
+  "stage": "local_graph_refinement",
+  "hidden_prediction_targets_used": false,
+  "target_covariates_used_transductively": true,
+  "primary_family": "target_matched",
+  "primary_splits": 16,
+  "stress_splits": 18,
+  "methods_searched": 626,
+  "finalists": 11,
+  "best_primary_method": "LocalRidge_C4_all_deterministic_Geo_k24_a30_p1",
+  "best_primary_rmse_mean": 0.48784531674343823,
+  "best_primary_rmse_worst": 0.6946996263427135,
+  "best_robust_method": "GraphDirect_GeoAgro25_k6_lam8",
+  "best_robust_worst_family_rmse": 0.5278830300557841,
+  "loso_method_selection_rmse_mean": 0.48836588059211494,
+  "loso_tier_routing_rmse_mean": 0.48581470334504695,
+  "distance_scales": {
+    "geographic_nearest_median_km": 0.3997454830447382,
+    "agronomic_nearest_median": 8.587081592359525
+  },
+  "c0_features_used": 1397,
+  "actual_targets": 59,
+  "actual_candidate_methods": 11,
+  "actual_route_counts": {
+    "LocalRidge_C4_all_deterministic_Geo_k24_a30_p1": 51,
+    "LocalRidge_C1_agronomic_Geo_k30_a30_p1": 8
+  }
+}

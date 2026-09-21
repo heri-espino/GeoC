@@ -1,0 +1,12 @@
+method,method_family,kind,representation,distance_name,k,alpha,distance_power,regularization,primary_rmse
+Baseline_GeoKNN10,baseline,geo_knn,,Geo,10.0,,1.0,,0.5020772232487754
+Anchor_PLS4,baseline,pls_anchor,C0_base,,,,,,0.5378519895717773
+GraphDirect_GeoAgro25_k6_lam8,graph_direct,graph_direct,,GeoAgro25,6.0,,,8.0,0.4948813033518763
+GraphDirect_GeoAgro25_k6_lam4,graph_direct,graph_direct,,GeoAgro25,6.0,,,4.0,0.495064946522078
+GraphDirect_GeoAgro25_k10_lam2,graph_direct,graph_direct,,GeoAgro25,10.0,,,2.0,0.4955403842594708
+GraphResidualPLS4_GeoAgro25_k8_lam8,graph_residual,graph_residual,C0_base,GeoAgro25,8.0,,,8.0,0.537430008316317
+GraphResidualPLS4_GeoAgro25_k10_lam8,graph_residual,graph_residual,C0_base,GeoAgro25,10.0,,,8.0,0.5375342050670304
+GraphResidualPLS4_GeoAgro25_k12_lam4,graph_residual,graph_residual,C0_base,GeoAgro25,12.0,,,4.0,0.5377685381127311
+LocalRidge_C4_all_deterministic_Geo_k24_a30_p1,local,local,C4_all_deterministic,Geo,24.0,30.0,1.0,,0.48784531674343823
+LocalRidge_C1_agronomic_Geo_k30_a30_p1,local,local,C1_agronomic,Geo,30.0,30.0,1.0,,0.4883016074422816
+LocalRidge_C1_agronomic_Geo_k24_a30_p1,local,local,C1_agronomic,Geo,24.0,30.0,1.0,,0.4884970412392552
