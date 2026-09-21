@@ -54,5 +54,20 @@ See `docs/AGENT_GUIDE.md` for current project state and reporting rules.
 pseudo-target y while keeping pseudo-target X visible and compares global/local/spatial/graph
 methods with repeated RMSE.
 
-Until the workstation run finishes, only `reports/checkpoint_04b/README.md` should exist.
-Generated numerical artifacts must come from `python tools/run_checkpoint_04b.py`.
+Checkpoint 04B is complete and its generated artifacts are frozen reference evidence.
+
+
+## Checkpoint 04D.1
+
+`reports/checkpoint_04d1/` is the active local/graph refinement namespace. Until the
+workstation run finishes, its README is the only expected artifact.
+
+Generated numerical results must come from:
+
+```powershell
+python tools\run_checkpoint_04d1.py
+```
+
+The runner reuses frozen 04B memberships, performs exhaustive target-matched refinement,
+leave-one-split-out selection/routing validation, finalist stress testing and candidate
+prediction disagreement analysis for the actual 59 targets.
