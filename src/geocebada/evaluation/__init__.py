@@ -79,6 +79,17 @@ from geocebada.evaluation.checkpoint04d1 import (
     summarize_nested_predictions,
     summarize_predictions_by_method,
 )
+from geocebada.evaluation.checkpoint04e import (
+    aggregate_siap_scope,
+    attach_siap_panel_to_parcels,
+    blend_predictions,
+    build_siap_external_panel,
+    complete_external_prior,
+    normalize_siap_label,
+    predict_affine_external_prior,
+    predict_graph_external_residual,
+    predict_local_external_residual,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -98,6 +109,15 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "aggregate_siap_scope",
+    "attach_siap_panel_to_parcels",
+    "blend_predictions",
+    "build_siap_external_panel",
+    "complete_external_prior",
+    "normalize_siap_label",
+    "predict_affine_external_prior",
+    "predict_graph_external_residual",
+    "predict_local_external_residual",
     "SplitPositions",
     "fit_pls_anchor_with_cross_fitted_residuals",
     "leave_one_split_out_method_selection",
