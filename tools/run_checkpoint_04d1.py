@@ -708,7 +708,8 @@ def _render_report(
             "",
             "The LOSO procedure chooses hyperparameters or support-tier routes using the other",
             "target-matched splits and scores the held-out split only afterward. Because repeated",
-            "pseudo-splits reuse parcels, this removes direct same-split tuning optimism but is not",
+            "pseudo-splits reuse parcels, this removes direct same-split tuning optimism but "
+            "is not",
             "equivalent to 16 statistically independent experiments.",
             "",
             "## Exploratory route fitted on all primary splits",
