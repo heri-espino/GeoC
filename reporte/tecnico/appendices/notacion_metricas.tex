@@ -1,0 +1,215 @@
+\section{Conjuntos e índices}
+
+\begin{longtable}{p{0.20\linewidth}p{0.68\linewidth}}
+\toprule
+Símbolo & Definición \\
+\midrule
+\endhead
+$\Train$ & conjunto de 138 parcelas con rendimiento observado. \\
+$\Target$ & conjunto de 59 parcelas objetivo con rendimiento oculto. \\
+$\Target^\star$ & conjunto pseudo-target ocultado dentro de las 138 etiquetas. \\
+$\Train^\star$ & etiquetas visibles de una pseudo-competición,
+$\Train\setminus\Target^\star$. \\
+$x_i$ & vector de covariables de la parcela $i$. \\
+$y_i$ & rendimiento observado de parcela $i$, en toneladas por hectárea. \\
+$X_{\Train}$ & matriz de covariables de parcelas etiquetadas. \\
+$X_{\Target}$ & matriz observable de covariables de las 59 parcelas objetivo. \\
+$W$ o $A$ & matriz de pesos/adyacencia de un grafo. \\
+$D$ & matriz diagonal de grados del grafo. \\
+$L=D-A$ & Laplaciano no normalizado. \\
+$d_{ij}$ & distancia entre parcelas $i,j$ en una topología especificada. \\
+$\mathcal N_k(q)$ & $k$ vecinos etiquetados seleccionados para query $q$. \\
+\bottomrule
+\end{longtable}
+
+\section{Métricas de regresión}
+
+Para observaciones $y_i$ y predicciones $\hat y_i$:
+\begin{align}
+\MSE
+&=
+\frac{1}{n}\sum_{i=1}^n(y_i-\hat y_i)^2,\\
+\RMSE
+&=
+\sqrt{\MSE},\\
+\MAE
+&=
+\frac{1}{n}\sum_{i=1}^n|y_i-\hat y_i|,\\
+R^2
+&=
+1-
+\frac{\sum_i(y_i-\hat y_i)^2}
+{\sum_i(y_i-\bar y)^2}.
+\end{align}
+
+En reportes con múltiples splits se distinguen:
+\begin{align}
+\overline{\RMSE}_{split}
+&=
+\frac{1}{S}\sum_{s=1}^S\RMSE_s,\\
+\RMSE_{\mathrm{pooled}}
+&=
+\sqrt{
+\frac{\sum_s\sum_{i\in s}(y_i-\hat y_i)^2}
+{\sum_s n_s}
+}.
+\end{align}
+El primer término da igual peso a cada split; el segundo da igual peso a cada fila
+pseudo-predicha. Ambos se conservan porque los tamaños de folds grouped pueden ser
+desiguales.
+
+\section{Spearman}
+
+Para pares de variables $u,v$, Spearman es la correlación de Pearson de sus rangos:
+\[
+\rho_S(u,v)
+=
+\rho_P(\operatorname{rank}(u),\operatorname{rank}(v)).
+\]
+En 04A se usa para cuantificar asociación monotónica entre distancia en $X$ y
+$|y_i-y_j|$ sin asumir relación lineal.
+
+\section{Moran's \texorpdfstring{$I$}{I}}
+
+Con desviaciones $z_i=y_i-\bar y$ y matriz de pesos $W$:
+\[
+I
+=
+\frac{n}{S_0}
+\frac{\sum_i\sum_jw_{ij}z_i z_j}
+{\sum_i z_i^2},
+\qquad
+S_0=\sum_i\sum_jw_{ij}.
+\]
+El $p$ reportado en 04A se obtiene por permutación de valores sobre la topología fija. Moran's
+$I$ positivo indica que valores similares tienden a ocupar nodos vecinos
+\citep{Moran1950}.
+
+\section{Ridge global y local}
+
+Ridge global:
+\[
+\widehat\beta
+=
+\arg\min_\beta
+\|y-X\beta\|_2^2+\alpha\|\beta\|_2^2.
+\]
+Si las columnas están centradas y la matriz es de rango apropiado, la solución cerrada es
+\[
+\widehat\beta
+=
+(X^\top X+\alpha I)^{-1}X^\top y.
+\]
+
+Local Ridge reemplaza la suma global por vecinos y pesos:
+\[
+\widehat\beta_q
+=
+\arg\min_\beta
+\sum_{i\in\mathcal N_k(q)}
+w_{qi}(y_i-x_i^\top\beta)^2
++\alpha\|\beta\|_2^2.
+\]
+En el finalista,
+\[
+k=24,\qquad
+\alpha=30,\qquad
+w_{qi}=(d^{geo}_{qi}+10^{-6})^{-1}.
+\]
+
+\section{PLS}
+
+PLS construye componentes latentes supervisados. A nivel conceptual:
+\[
+t_h=Xw_h,
+\]
+con direcciones $w_h$ seleccionadas para capturar covarianza con $y$ sujeto a la deflación de
+componentes previos \citep{Wold2001}. Dado que $w_h$ depende de $y$, el fit de PLS debe ocurrir
+dentro de train en cada fold.
+
+\section{PCA}
+
+PCA es $X$-only. Para matriz centrada $X$, busca
+\[
+v_1=\arg\max_{\|v\|=1}v^\top X^\top Xv,
+\]
+y componentes siguientes ortogonales. En 04A, PCA transductivo puede usar las 197 filas porque
+no usa etiquetas y la tarea fija permite conocer $X_{\Target}$.
+
+\section{kNN con pesos}
+
+Para $p\ge0$:
+\[
+w_{qi}
+=
+(d_{qi}+\epsilon)^{-p},
+\qquad
+\hat y_q
+=
+\frac{\sum_{i\in\mathcal N_k(q)}w_{qi}y_i}
+{\sum_{i\in\mathcal N_k(q)}w_{qi}}.
+\]
+$p=0$ corresponde a vecinos con peso uniforme.
+
+\section{Grafo y Laplaciano}
+
+El grafo kNN usa
+\[
+A_{ij}
+=
+\exp\left[-\frac12(d_{ij}/\sigma)^2\right]
+\]
+para aristas seleccionadas y se simetriza tomando el peso máximo en ambas direcciones.
+\[
+D=\diag(A\mathbf 1),\qquad
+L=D-A.
+\]
+La energía de suavidad:
+\[
+f^\top Lf
+=
+\frac12\sum_{ij}A_{ij}(f_i-f_j)^2.
+\]
+El estimador de 04B/04D resuelve:
+\[
+(M+\lambda L+\epsilon I)f
+=
+M(y-\bar y\mathbf1),
+\]
+donde $M$ tiene uno en nodos etiquetados visibles y cero en nodos sin etiqueta.
+
+\section{Blend convexo}
+
+Para predictores $a$ y $b$:
+\[
+\hat y^{(w)}=(1-w)\hat y^{(a)}+w\hat y^{(b)},
+\qquad w\in[0,1].
+\]
+Un mínimo aparente de $w$ sobre la misma validación no se toma automáticamente como regla
+final. Checkpoint~04F selecciona $w$ leave-one-split-out antes de decidir si la complejidad
+adicional está justificada.
+
+\section{Target-matched pseudo-competition}
+
+El pseudo-target count se deriva de:
+\[
+n_{\Target^\star}
+\approx
+|\Train|\frac{|\Target|}{|\Train|+|\Target|}
+=
+138\frac{59}{197}
+\approx41.
+\]
+La construcción de la máscara sólo usa $X$ y metadata. El score del método se calcula
+posteriormente con $y_{\Target^\star}$, ya con la predicción congelada.
+
+\section{Discrepancia de finalistas}
+
+En 04F se conserva
+\[
+u_i=
+|\hat y_i^{Local}-\hat y_i^{Graph}|
+\]
+como medida de sensibilidad a modelo, no como desviación estándar probabilística. Para
+interpretarla como intervalo predictivo sería necesaria calibración específica de cobertura,
+que no se realizó.
