@@ -875,3 +875,29 @@ profile-mean distance is 0.5369 versus 0.9227.
 
 The initial support-tier routing is retained only as an exploratory hypothesis. It must be
 validated with out-of-split method selection before it can influence final reconstruction.
+
+
+---
+
+## 2026-09-20 — Checkpoint 04D.1 implemented: local/graph refinement and nested routing
+
+After 04B showed LocalRidge, graph-Laplacian and geographic kNN outperforming the tested global
+anchors, the repository implemented a focused refinement stage rather than a generic model
+sweep.
+
+04D.1 reuses the exact committed 04B pseudo-competition memberships. The primary target-matched
+grid contains 626 predefined methods: 300 graph variants, 324 local-Ridge variants and two
+fixed anchors. Graph search varies geography/agronomy topology, k and Laplacian
+regularization. Local Ridge varies C1/C4 representation, distance topology, neighborhood size,
+Ridge alpha and inverse-distance power.
+
+A new residual-graph strategy fits PLS4 on visible pseudo-training labels, obtains residuals by
+cross-fitting inside those visible labels, propagates that residual field over the 197-node
+X-only graph, and adds the correction to the full global anchor prediction.
+
+To reduce the routing optimism identified in 04B, 04D.1 evaluates both global method selection
+and support-tier routing leave-one-target-matched-split-out. Finalists only are then scored on
+state-random and frozen state/municipality stress protocols.
+
+The runner also materializes candidate predictions from finalists for the actual 59 targets.
+These candidates are diagnostics for later blending and are not a final submission.
