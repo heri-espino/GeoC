@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 04C.1 — focused global CatBoost anchor implemented; workstation run pending  
+**Current phase:** Checkpoint 04F — final transductive reconstruction implemented; workstation run pending  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -193,25 +193,19 @@ independent datasets.
 Do not promote the 59 candidate predictions from 04D.1 to final output until nested evidence,
 stress robustness and later external/global-anchor experiments have been reviewed.
 
-### 04C — focused global anchor — ACTIVE
+### 04C.1 — focused global anchor — COMPLETE
 
-Checkpoint 04C.1 is implemented as a deliberately narrow CatBoost diversity test rather than
-a new broad search. It reuses only three C1 agronomic CatBoost configurations already present
-in the frozen 03C.2 grid and averages seeds 42, 314 and 2718.
+Canonical findings: `docs/CHECKPOINT_04C1_FINDINGS.md`.
 
-Run:
+CatBoost remained weaker than Local04D on the target-matched pseudo-competitions
+(standalone RMSE about 0.515–0.521). A 10% Local+CatBoost blend was numerically
+indistinguishable from Local04D (0.487842 vs 0.487845 mean split RMSE) and had
+slightly worse pooled RMSE. The controlled LOSO gate reached 0.488884 and did
+not improve on the frozen local rule. Residual correlation Local-vs-CatBoost
+was still high at 0.9423.
 
-```powershell
-python tools\run_checkpoint_04c1.py
-```
-
-The stable CatBoost candidate is compared directly and at fixed 10/20/30% weights against
-Local04D and Graph04D on the exact frozen 04B memberships. A controlled LOSO gate may choose
-only Local04D, stable CatBoost or the three Local+CatBoost blends. Automatic CPU fallback is
-disabled; CPU execution requires `--catboost-task-type CPU --confirm-cpu y`.
-
-Carry CatBoost into 04F only if it adds target-matched blend value or useful residual diversity
-without a material robustness penalty.
+CatBoost remains a sensitivity/diversity diagnostic only and is not a required
+final component.
 
 ### 04D — target-specific/local/transductive models
 
@@ -261,15 +255,28 @@ Do not mix `Cebada grano` with forage barley.
 Also retain/evaluate CHIRPS, WaPOR, SoilGrids, CEM/topography, official climate and additional
 daily weather/stress data when there is a concrete hypothesis.
 
-### 04F — final reconstruction
+### 04F — final reconstruction — ACTIVE
 
-Only after pseudo-competition validation is stable:
+04F is implemented as a finalization stage rather than another model search.
 
-- compare surviving global/local/graph/domain-adaptation methods;
-- blend/stack with transductive OOF evidence;
-- fit using all 138 labels and all 197 X;
-- output exactly 59 `ID_POLIGONO, RENDIMIENTO_T_HA` predictions;
-- freeze provenance and uncertainty diagnostics.
+Run:
+
+```powershell
+python tools\run_checkpoint_04f.py
+```
+
+The configured final rule is `Baseline_Local04D`, corresponding to
+`LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`. Before freezing the final
+59-row table, the runner verifies that the actual-target Local04D and Graph04D
+predictions are exactly reproduced across the frozen 04D.1 and 04E.1 artifacts.
+
+A deliberately small Local/Graph blend sensitivity table and constrained LOSO
+blend-weight check are generated for audit. They do not automatically change
+the final rule. Graph04D is retained as a robustness and disagreement reference.
+
+The final artifact must contain exactly
+`ID_POLIGONO,RENDIMIENTO_T_HA` for the 59 official prediction parcels, with
+separate support/disagreement diagnostics.
 
 ## 8. Data and engineering invariants
 
