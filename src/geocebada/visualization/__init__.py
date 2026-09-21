@@ -29,6 +29,11 @@ from geocebada.visualization.checkpoint04d1 import (
     plot_nested_validation_comparison,
     plot_refinement_ranking,
 )
+from geocebada.visualization.checkpoint04e import (
+    plot_external_ranking,
+    plot_siap_proxy_vs_yield,
+    plot_siap_scope_coverage,
+)
 from geocebada.visualization.exploration import (
     correlation_heatmap,
     correlation_scatter,
@@ -41,6 +46,9 @@ from geocebada.visualization.exploration import (
 from geocebada.visualization.geospatial import parcel_map_figure
 
 __all__ = [
+    "plot_external_ranking",
+    "plot_siap_proxy_vs_yield",
+    "plot_siap_scope_coverage",
     "plot_actual_candidate_spread",
     "plot_graph_k_profiles",
     "plot_local_k_profile",
