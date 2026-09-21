@@ -1,0 +1,196 @@
+\section{Evolución de la evidencia a través de los checkpoints}
+
+La solución final no surge de seleccionar el mínimo de una única tabla. Cada checkpoint reduce
+un conjunto distinto de incertidumbres.
+
+Checkpoint~01 reduce incertidumbre \emph{semántica}: qué significa cada fila, qué unidad tiene
+cada raster, qué identificador puede usarse para unir fuentes y qué información está realmente
+disponible. Checkpoint~02 reduce incertidumbre \emph{representacional}: qué resumen parcelario
+se puede construir sin destruir provenance y qué familias muestran shift o sensibilidad.
+Checkpoint~03 reduce incertidumbre \emph{de modelo global}: qué representaciones compactas y
+qué inductive biases sobreviven nested CV. Checkpoint~04 reduce incertidumbre
+\emph{específica del conjunto objetivo}: qué significa la geometría de los 59 $X$ conocidos y
+qué métodos transfieren mejor rendimiento hacia esos puntos.
+
+Esta secuencia puede resumirse como:
+\[
+\text{semántica}
+\rightarrow
+\text{representación}
+\rightarrow
+\text{generalización}
+\rightarrow
+\text{transducción}
+\rightarrow
+\text{congelamiento}.
+\]
+
+\section{Qué información terminó siendo decisiva}
+
+El hallazgo estadístico dominante es espacial. La asociación de distancia geográfica con
+diferencia absoluta de rendimiento, $\rho=0.4882$, supera ampliamente a la distancia C1/C4 y
+a la similitud temporal mensual. Moran's $I=0.6797$ confirma que el patrón no es únicamente
+una correlación de pares: existe clustering espacial del rendimiento.
+
+Esta estructura explica simultáneamente tres resultados que, vistos por separado, podrían
+parecer desconectados:
+\begin{enumerate}
+\item los modelos globales de 03C tienen buen state RMSE pero grouped RMSE mucho peor;
+\item LocalRidge mejora drásticamente en pseudo-competiciones donde existen vecinos
+representativos;
+\item GraphDirect conserva mucho mejor performance cuando se retienen municipios completos.
+\end{enumerate}
+
+El predictor final es, por tanto, local no porque local models sean universalmente mejores,
+sino porque la topología observada del reto hace valiosa la transferencia desde vecinos
+geográficos.
+
+\section{Qué información no fue decisiva}
+
+\subsection{Más variables no fue equivalente a más señal}
+
+B2 empirical completo, B5 all y otras representaciones masivas no dominan consistentemente a
+C0/C1. En small-$n$, la dimensionalidad adicional puede aumentar varianza, diluir métricas de
+distancia o requerir regularización más fuerte.
+
+\subsection{La temporalidad mensual aislada fue débil}
+
+Las trayectorias satelitales son valiosas para construir features de fenología y estado del
+cultivo, pero la regla nearest-neighbor temporal aislada no tiene suficiente asociación con
+$|y_i-y_j|$ para desplazar geografía. Esto no equivale a negar valor a remote sensing:
+gran parte de C4 y de la capa agronómica procede precisamente de esas series.
+
+\subsection{El proxy municipal contemporáneo no sustituyó una etiqueta parcelaria}
+
+SIAP 2025 tiene cobertura completa y gran relevancia contextual, pero su resolución
+administrativa es demasiado gruesa para actuar como target directo. El resultado es una
+lección de multi-resolution data fusion: una fuente contemporánea sólo ayuda si su escala
+espacial es compatible o si existe una corrección local suficientemente informativa.
+
+\subsection{Compute no fue la restricción final}
+
+CatBoost GPU permitió evaluar configuraciones eficientemente, pero aumentar compute no
+resuelve $n=138$. Una vez que los errores CatBoost permanecen altamente correlacionados con
+Local/Graph y su RMSE standalone es mayor, un grid más grande sobre los mismos folds tendría
+rendimientos estadísticos decrecientes y mayor riesgo de selección optimista.
+
+\section{Lectura de las métricas finales}
+
+El RMSE target-matched de 0.487845 debe interpretarse como una estimación interna bajo el
+protocolo diseñado para parecerse al conjunto objetivo, no como una garantía del RMSE oculto
+de FIRA. Las 16 máscaras comparten parcelas y no constituyen 16 realizaciones independientes
+del proceso generador.
+
+Por ello el reporte conserva simultáneamente:
+\begin{itemize}
+\item RMSE medio por split;
+\item RMSE pooled;
+\item peor split;
+\item protocolos state-random/state/grouped;
+\item estabilidad de hiperparámetros;
+\item selección leave-one-split-out;
+\item discrepancia entre finalistas.
+\end{itemize}
+
+La evidencia se considera fuerte cuando varias de estas vistas apuntan en la misma dirección,
+no cuando una métrica aislada mejora por una cantidad marginal.
+
+\section{Limitaciones estadísticas}
+
+\subsection{Tamaño muestral}
+
+La limitación fundamental es que sólo existen 138 rendimientos observados. Ningún número de
+features o seeds crea observaciones independientes adicionales. Las inferencias sobre
+diferencias menores a pocas milésimas deben tratarse con extrema cautela.
+
+\subsection{Dependencia espacial}
+
+Las parcelas no son IID. La propia razón por la que LocalRidge funciona implica que una
+interpretación IID de la varianza de CV sería incorrecta. Municipality-grouped funciona como
+stress test, pero también representa un dominio más difícil que el conjunto real en algunas
+regiones.
+
+\subsection{Dependencia entre pseudo-splits}
+
+Los 16 target-matched repeats reutilizan etiquetas. El leave-one-split-out impide escoger una
+regla con el mismo split que luego se califica, pero la información de parcelas se solapa
+entre los otros 15 y el holdout. El resultado reduce optimismo de selección, no produce un
+estimador completamente independiente.
+
+\subsection{Resolución temporal}
+
+Las métricas temporales de 04A usan trayectorias mensuales canónicas. BASIC/PRO contienen
+capturas más finas; una investigación posterior podría usar secuencias de mayor resolución.
+No se continuó porque la temporalidad mensual ya mostró una transferencia mucho menor que la
+geografía y el objetivo del reto exigía priorizar hipótesis con mejor evidencia.
+
+\subsection{SIAP}
+
+El scope exacto se implementó correctamente a nivel de grano/ciclo/modalidad/CVEGEO, pero la
+alineación del ciclo Primavera--Verano con abril--octubre es una decisión del proyecto.
+Además, un rendimiento municipal puede incorporar composición de productores, manejo y
+superficies distintas de las parcelas del reto.
+
+\section{Limitaciones causales}
+
+Ningún resultado del pipeline debe leerse como estimación causal. Si SOC$\times$CEC,
+precipitación o NDVI aparecen en una representación útil, no se concluye que intervenir sobre
+esa variable causaría la variación observada de rendimiento. El objetivo es predicción/
+reconstrucción bajo datos observacionales.
+
+La autocorrelación espacial también puede representar múltiples mecanismos latentes:
+agroclima, manejo, variedad, calendario, estructura edáfica o procesos administrativos. El
+grafo es un modelo de dependencia predictiva, no una identificación causal.
+
+\section{Reproducibilidad y separación entre investigación y entrega}
+
+El repositorio conserva explícitamente:
+\begin{itemize}
+\item configuraciones YAML por checkpoint;
+\item código reusable bajo \artifact{src/geocebada/};
+\item runners bajo \artifact{tools/};
+\item artefactos generados bajo \artifact{reports/};
+\item handoffs e historial metodológico;
+\item registro de asistencia de IA;
+\item un archivo final de predicciones separado de diagnósticos.
+\end{itemize}
+
+La entrega no debe construirse copiando valores desde una gráfica ni desde este PDF. El
+artefacto canónico es el CSV de 04F con precisión completa.
+
+\section{Resultado final}
+
+La cadena de evidencia lleva a una conclusión simple, aunque el camino sea técnicamente
+extenso:
+\[
+\boxed{
+\widehat{\bm y}_{\Target}
+=
+\operatorname{LocalRidge}_{C4,\ Geo,\ k=24,\ \alpha=30,\ p=1}
+(X_{\Train},y_{\Train},X_{\Target})
+}.
+\]
+
+La complejidad de los checkpoints tiene precisamente la función de justificar por qué una
+regla final relativamente simple es preferible a una mezcla más elaborada. Se probaron
+representaciones de alta dimensión, árboles, CatBoost, PLS, kernels, grafos, priors externos,
+routing y blends. LocalRidge C4 no se eligió por simplicidad estética: fue la regla que
+combinó mejor RMSE target-matched, estabilidad local del hiperparámetro, reproducibilidad y
+resistencia a controles de selección.
+
+\section{Siguiente etapa operativa}
+
+Con el modelado congelado, el siguiente bloque del proyecto no debería ser otro search. Debe
+centrarse en:
+\begin{enumerate}
+\item empaquetado del archivo de entrega;
+\item aplicación/interfaz para explorar parcelas, features y predicciones;
+\item explicación de soporte/incertidumbre sin presentar discrepancia como intervalo
+probabilístico calibrado;
+\item documentación del uso de fuentes externas y de IA;
+\item validaciones finales de esquema, IDs y reproducibilidad.
+\end{enumerate}
+
+La aplicación puede mostrar Local04D, Graph04D y soporte como contexto, pero el valor
+submission-facing debe permanecer igual al CSV congelado salvo que exista una nueva hipótesis
+documentada y se reabra formalmente el checkpoint.
