@@ -1,0 +1,69 @@
+\chapter*{Contrato metodológico global}
+\addcontentsline{toc}{chapter}{Contrato metodológico global}
+\label{chap:contract}
+\statusbox{Regla de oro}{
+Las 59 etiquetas ocultas de FIRA nunca se cargan, reconstruyen indirectamente ni se utilizan
+para selección. Toda operación que usa $y$ se ajusta exclusivamente con etiquetas visibles
+dentro de la partición correspondiente. Las operaciones estrictamente $X$-only pueden usar
+las covariables de las 197 parcelas cuando el protocolo transductivo lo permite.
+}
+
+\section*{Universo estadístico}
+Sea $\Train$ el conjunto de 138 parcelas con rendimiento observado y $\Target$ el conjunto
+de 59 parcelas de predicción. Para cada parcela $i$ se observa $x_i\in\R^p$ y, si
+$i\in\Train$, un rendimiento $y_i$. El objeto de inferencia es
+\[
+\widehat{\bm y}_{\Target}=(\hat y_i:i\in\Target),
+\]
+comparado por el evaluador con el vector reservado $\bm y_{\Target}$.
+
+La información disponible durante el desarrollo es
+\[
+\mathcal I=
+\{X_{\Train},\bm y_{\Train},X_{\Target},G,E_{\mathrm{public}}\},
+\]
+donde $G$ denota geometría/estructura espacial y $E_{\mathrm{public}}$ denota evidencia
+externa pública permitida. Por construcción,
+\[
+\bm y_{\Target}\notin\mathcal I.
+\]
+
+\section*{Inducción, transducción y por qué la distinción importa}
+En un problema inductivo convencional se pretende aprender una función
+$f:\mathcal X\rightarrow\mathbb R$ que generalice a puntos futuros no conocidos. Aquí el
+conjunto de consultas $X_{\Target}$ está fijado de antemano. Esto habilita transformaciones
+transductivas dependientes de la geometría conjunta de $\Xall$: estandarización $X$-only,
+PCA $X$-only, densidad, vecindarios, grafos y métricas de soporte. La restricción es
+\[
+T_X=T(X_{\Train},X_{\Target})\quad\text{es admisible si no usa }\bm y_{\Target},
+\]
+mientras cualquier transformación supervisada debe recalcularse usando exclusivamente las
+etiquetas permitidas por el fold.
+
+\section*{Métricas}
+Para un conjunto de evaluación $S$,
+\begin{align}
+\RMSE(S)&=\sqrt{\frac{1}{|S|}\sum_{i\in S}(y_i-\hat y_i)^2},\\
+\MAE(S)&=\frac{1}{|S|}\sum_{i\in S}|y_i-\hat y_i|,\\
+R^2(S)&=
+1-\frac{\sum_{i\in S}(y_i-\hat y_i)^2}
+{\sum_{i\in S}(y_i-\bar y_S)^2}.
+\end{align}
+
+La selección principal del Checkpoint~04 usa RMSE medio entre pseudo-competiciones
+target-matched. También se conservan RMSE pooled, MAE, peor split y protocolos de estrés,
+porque con $n=138$ las conclusiones pueden cambiar si un split espacial domina el promedio.
+
+\section*{Jerarquía de evidencia}
+La interpretación final sigue esta prioridad:
+\begin{enumerate}
+\item invariantes y semántica de fuentes;
+\item predicciones pseudo-target realmente out-of-sample respecto a $y$;
+\item estabilidad entre splits y protocolos;
+\item robustez espacial/grupada;
+\item diagnósticos de soporte, discrepancia y plausibilidad;
+\item sólo al final, predicciones de las 59 parcelas, sin utilizarlas para ajustar reglas.
+\end{enumerate}
+Esta jerarquía evita seleccionar modelos por el aspecto visual de sus 59 valores finales,
+optimizar hiperparámetros contra un único protocolo conveniente o reinterpretar información
+pública municipal como si fuese etiqueta parcelaria.
