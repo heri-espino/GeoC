@@ -136,6 +136,16 @@ def _historical_stats(
                 f"{prefix}_years": int(finite.sum()),
             }
         )
+    if not rows:
+        return pd.DataFrame(
+            columns=[
+                "cvegeo",
+                f"{prefix}_mean",
+                f"{prefix}_std",
+                f"{prefix}_trend",
+                f"{prefix}_years",
+            ]
+        )
     return pd.DataFrame(rows)
 
 
