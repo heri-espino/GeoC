@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 04B — transductive pseudo-competition validation (implemented; workstation run pending)  
+**Current phase:** Checkpoint 04D.1 — local/graph refinement; 04C focused global anchor is secondary  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -158,21 +158,17 @@ Use original BASIC/PRO trajectories to test:
 Do not assume a time-series similarity metric transfers yield until this is measured on the 138
 labeled parcels.
 
-### 04B — pseudo-competition validation — IMPLEMENTED, RUN NEXT
+### 04B — pseudo-competition validation — COMPLETE
 
-Run:
+Canonical interpretation: `docs/CHECKPOINT_04B_FINDINGS.md`.
 
-```powershell
-python tools\run_checkpoint_04b.py
-```
+The primary 16 target-matched splits show LocalRidge k20 (RMSE 0.4946), Graph k8/lambda2
+(0.4974), LocalRidge k30 (0.4976) and GeoKNN k10 (0.5021) as the strongest methods. Graph
+k8/lambda2 is the most robust across validation families and reaches 0.5466 RMSE on the frozen
+municipality-grouped stress protocol.
 
-04B creates repeated 41-parcel target-matched pseudo-target masks using only X-derived profile
-information, plus state-random and frozen state/municipality stress protocols. It compares
-global means, municipality shrinkage, geographic/agronomic/mixed kNN, Ridge, PLS, local Ridge,
-graph-Laplacian regression and fixed blends.
-
-The dynamic support variable used for method routing is X-only. Do not reuse the 04A composite
-support score for validation routing because 04A also included consistency of labeled-neighbor y.
+Do not treat the current support-tier routing CSV as final: tier winners were selected on the
+same pseudo-test evidence and require out-of-sample routing validation.
 
 ### 04C — stronger global models
 
