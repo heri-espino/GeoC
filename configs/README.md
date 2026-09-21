@@ -17,7 +17,8 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint04a.yaml` | Target topology, temporal similarity, shift, autocorrelation and support diagnostics | 04A complete |
 | `checkpoint04b.yaml` | Repeated transductive pseudo-competition validation with global/local/graph methods and X-only routing | 04B complete |
 | `checkpoint04d1.yaml` | Exhaustive local/graph refinement, residual-graph correction and LOSO routing validation | 04D.1 complete |
-| `checkpoint04e1.yaml` | Exact SIAP 2025 localization and external-prior validation | **04E.1 implemented; workstation run next** |
+| `checkpoint04c1.yaml` | Focused C1 agronomic CatBoost anchor and low-weight blend validation | **04C.1 implemented; workstation run next** |
+| `checkpoint04e1.yaml` | Exact SIAP 2025 localization and external-prior validation | 04E.1 complete |
 
 Do not silently edit frozen Checkpoint 01–03 configs to improve historical results. Checkpoint
 03 is preserved as the First Modeling Delivery.
@@ -34,3 +35,11 @@ Checkpoint 04E.1 external-localization configuration. Freezes the exact SIAP
 scope (`Cebada grano + Primavera-Verano + Temporal + CVEGEO`), historical
 window, 04D.1 local/graph anchors, affine calibration strengths and fixed blend
 weights.
+
+
+### `checkpoint04c1.yaml`
+
+Checkpoint 04C.1 focused global-anchor configuration. It freezes three CatBoost
+candidates inherited from 03C.2, seeds 42/314/2718, GPU-first execution, fixed
+10/20/30% blend weights and the controlled target-matched LOSO candidate universe.
+Automatic CPU fallback is disabled.
