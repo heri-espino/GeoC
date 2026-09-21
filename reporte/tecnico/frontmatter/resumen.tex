@@ -1,0 +1,42 @@
+Este documento consolida el desarrollo técnico completo de \textbf{GeoCebada} para el Reto
+AgroCebada FIRA 2026. El problema operativo consiste en reconstruir el rendimiento
+\artifact{RENDIMIENTO_T_HA} de un conjunto fijo de 59 parcelas de cebada, disponiendo de 138
+parcelas etiquetadas y de covariables observables para las 197 parcelas. La solución final no
+se plantea como un ejercicio genérico de pronóstico para parcelas futuras, sino como una
+\emph{regresión transductiva de objetivo fijo}: el vector de covariables de las 59 parcelas
+objetivo es conocido y puede participar en transformaciones estrictamente $X$-only, mientras
+que sus rendimientos permanecen completamente ocultos durante todo el desarrollo.
+
+La tubería se construyó por checkpoints reproducibles. El Checkpoint~01 fijó la semántica de
+las fuentes oficiales y externas, auditó identificadores, fechas, sistemas de referencia,
+unidades y reglas de unión, y cerró el contrato de datos sin hallazgos de fallo. El
+Checkpoint~02 comprimió las series satelitales y fuentes ambientales a una tabla parcelaria
+de 197 filas y 1,403 predictores, separando explícitamente señales \emph{clean} y
+\emph{competition}. El Checkpoint~03 añadió una capa agronómica de 350 variables, una capa
+empírica $X$-only de 335 variables, un mecanismo de descubrimiento de expresiones ajustado
+dentro de folds, un benchmark de representaciones y un benchmark anidado de familias de
+modelos. Esa fase cerró con una primera entrega convencional basada en PLS, Ridge, CatBoost
+y ensambles simples.
+
+El Checkpoint~04 reformuló el problema con la estructura real de la competencia. Se
+caracterizó la topología de las 59 parcelas, se midió autocorrelación espacial, se construyeron
+pseudo-competiciones que ocultan sólo $y$ y mantienen visibles los $X$ de los pseudo-objetivos,
+y se evaluaron modelos globales, vecinos, regresiones locales y regularización sobre grafos.
+La señal dominante resultó ser espacial: el rendimiento observado mostró Moran's
+$I=0.6797$ con $p=0.001$, y la distancia geográfica presentó correlación de Spearman
+$\rho=0.4882$ con la diferencia absoluta de rendimiento entre pares etiquetados.
+
+El modelo finalmente congelado es
+\artifact{LocalRidge_C4_all_deterministic_Geo_k24_a30_p1}: para cada consulta ajusta una
+regresión Ridge local usando los 24 vecinos etiquetados geográficamente más próximos,
+ponderados por distancia inversa, sobre la representación determinista C4. En las 16
+pseudo-competiciones target-matched obtuvo RMSE medio $0.487845$ y RMSE agrupado
+$0.495741$. La tabla final contiene exactamente 59 pares
+\artifact{ID_POLIGONO, RENDIMIENTO_T_HA}. SIAP 2025, CatBoost y mezclas Local/Graph fueron
+retenidos como evidencia de sensibilidad o robustez cuando correspondía, pero no alteran el
+vector final porque sus aparentes ganancias no sobrevivieron controles de selección
+split-excluded suficientemente conservadores.
+
+El reporte está escrito como documento interno de ciencia de datos: prioriza formulación
+matemática, fronteras de información, prevención de leakage, definición exacta de artefactos,
+resultados por protocolo y justificación de cada transición metodológica.
