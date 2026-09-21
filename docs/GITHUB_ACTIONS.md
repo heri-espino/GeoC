@@ -33,25 +33,24 @@ The manual workflow has a `target` choice:
 - `paper`
 - `all`
 
-The figure path reuses the official project runners:
+The research-output workflow does not rerun scientific checkpoints. Figures and aggregate
+summaries already versioned under reports/ are treated as frozen inputs.
 
-    python tools/run_checkpoint_04a.py
-    python tools/run_checkpoint_04b.py
-    python tools/run_checkpoint_04d1.py
+The report build entry point is:
 
-These regenerate the repository-backed figures used by the technical report.
+    python reporte/tecnico/build.py
 
-Checkpoint 04E.1 is intentionally not rerun in GitHub Actions because its detailed SIAP raw
-input lives under the ignored external-data area rather than in the repository checkout. Its
-already-versioned aggregate figures/report are included in the figure artifact. Checkpoint
-04C.1 is also not rerun by this workflow because the canonical runner is GPU-first and
-GitHub-hosted `ubuntu-latest` runners do not provide the project's required GPU execution
-environment.
+The script first validates all LaTeX inputs, frozen figure references, and bibliography keys.
+It then invokes the repository's documented LaTeX command:
 
-The technical report is compiled with the project's documented command:
-
-    cd reporte/tecnico
     latexmk -pdf -interaction=nonstopmode main.tex
+
+For static validation only:
+
+    python reporte/tecnico/build.py --check
+
+The figures target merely packages the existing versioned figures. Regenerating a figure
+requires an explicit scientific runner invocation outside this document-build workflow.
 
 ## Artifacts
 
