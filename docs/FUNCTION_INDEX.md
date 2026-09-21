@@ -10,6 +10,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `load_config` | function | `geocebada.config` | Load a YAML configuration file. | `src/geocebada/config.py` |
 | `build_admin_mapping` | function | `geocebada.data.external` | Resolve official administrative keys and spatial-overlap QA per parcel. | `src/geocebada/data/external.py` |
 | `load_inegi_municipalities` | function | `geocebada.data.external` | Load and normalize the three INEGI municipality layers from Data Contract v2. | `src/geocebada/data/external.py` |
+| `load_siap_barley_detail` | function | `geocebada.data.external` | Load target-state SIAP barley rows with cycle/modality detail preserved. | `src/geocebada/data/external.py` |
 | `load_siap_barley_history` | function | `geocebada.data.external` | Load only target-state barley rows from the canonical SIAP yearly files. | `src/geocebada/data/external.py` |
 | `concatenate_csvs` | function | `geocebada.data.files` | Read and concatenate a collection of CSV files. | `src/geocebada/data/files.py` |
 | `discover_files` | function | `geocebada.data.files` | Return sorted files matching ``pattern`` below ``directory``. | `src/geocebada/data/files.py` |
@@ -92,6 +93,15 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `split_positions_from_membership` | function | `geocebada.evaluation.checkpoint04d1` | Resolve committed 04B split membership into row-position tuples. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `summarize_nested_predictions` | function | `geocebada.evaluation.checkpoint04d1` | Summarize nested selected/routed predictions with equal-weight split RMSE. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `summarize_predictions_by_method` | function | `geocebada.evaluation.checkpoint04d1` | Summarize equal-weight split RMSE and pooled row metrics by method. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `aggregate_siap_scope` | function | `geocebada.evaluation.checkpoint04e` | Aggregate one explicit SIAP crop/cycle/modality scope by municipality-year. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `attach_siap_panel_to_parcels` | function | `geocebada.evaluation.checkpoint04e` | Attach one municipal SIAP panel row to every parcel. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `blend_predictions` | function | `geocebada.evaluation.checkpoint04e` | Return a fixed convex blend of two prediction vectors. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `build_siap_external_panel` | function | `geocebada.evaluation.checkpoint04e` | Build audited exact/fallback SIAP municipal priors and scope diagnostics. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `complete_external_prior` | function | `geocebada.evaluation.checkpoint04e` | Fill residual missing external priors with the visible-reference median. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `normalize_siap_label` | function | `geocebada.evaluation.checkpoint04e` | Return a stable accent/case-insensitive SIAP label. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `predict_affine_external_prior` | function | `geocebada.evaluation.checkpoint04e` | Calibrate the public municipal prior using only currently visible parcel labels. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `predict_graph_external_residual` | function | `geocebada.evaluation.checkpoint04e` | Add graph-propagated parcel residuals to the SIAP municipal prior. | `src/geocebada/evaluation/checkpoint04e.py` |
+| `predict_local_external_residual` | function | `geocebada.evaluation.checkpoint04e` | Add a query-specific local Ridge correction to the SIAP municipal prior. | `src/geocebada/evaluation/checkpoint04e.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
