@@ -1,0 +1,114 @@
+\subsection{Objetivo de la compresión parcelaria}
+
+Feature Table v1 transforma fuentes heterogéneas y longitudinales en una representación
+determinista de una fila por parcela. El artefacto no es un dataset limpio en el sentido
+de haber aplicado imputación global o escalado aprendido; es una tabla \emph{model-ready}
+porque resuelve las uniones, unidades, agregaciones y provenance, dejando cualquier
+transformación entrenable dentro de la validación.
+
+El build validado produjo:
+\begin{table}[H]
+\centering
+\caption{Dimensiones de Feature Table v1.}
+\label{tab:cp02-featuretable}
+\begin{tabular}{lrr}
+\toprule
+Artefacto & Filas & Columnas \\
+\midrule
+\artifact{parcel_features_clean.csv} & 197 & 699 \\
+\artifact{parcel_features_competition.csv} & 197 & 1,408 \\
+\artifact{parcel_features_all.csv} & 197 & 1,408 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El manifest contiene 1,403 predictores: 694 clean y 709 competition-only. Las columnas
+adicionales corresponden a ID/metadata/target/split. Todas las tablas preservan exactamente
+197 IDs, 138 targets observados y 59 targets missing.
+
+\subsection{Familias de variables}
+
+El inventario de Checkpoint~02 clasifica las features por source, family y mode. Entre las
+features clean aparecen 539 BASIC históricos, 90 SoilGrids, 24 de clima oficial histórico,
+14 SIAP históricos, ocho de topografía, seis geométricas y cinco CEM, además de campos
+administrativos. La capa competition añade 539 BASIC 2025, 97 PRO, 45 clima 2025, 22 WaPOR,
+cinco SIAP contemporáneas y la feature CHIRPS disponible.
+
+Esta taxonomía permite realizar ablaciones semánticas. No basta con preguntar si una columna
+mejora RMSE; interesa identificar si el incremento proviene de geometría, clima, historial
+satelital, señal contemporánea o una estadística administrativa.
+
+\subsection{Agregación temporal}
+
+Para una serie longitudinal $x_{i,s,t}$ de parcela $i$, sensor $s$ y fecha $t$, Feature Table
+v1 genera resúmenes compatibles con el source contract: históricos, 2025, mensuales,
+estacionales y por sensor. La operación conceptual es
+\begin{equation}
+x_{i,s,\mathcal T}^{(g)}
+=
+g\left(\{x_{i,s,t}:t\in\mathcal T\}\right),
+\label{eq:feature-aggregation}
+\end{equation}
+donde $g$ puede ser media, desviación, mínimo, máximo u otro resumen explícito.
+
+La agregación no cruza sensores por conveniencia. Por ejemplo, Sentinel-2 NDVI y Landsat NDVI
+son variables distintas aun si comparten nombre del índice. Esta decisión evita que
+disponibilidad temporal/sensor-specific missingness se convierta en un promedio sin
+interpretación física.
+
+La tabla final no pretende agotar el contenido temporal. El Checkpoint~04A vuelve a
+trayectorias mensuales para construir correlación, lag y DTW. En otras palabras, Feature Table
+v1 es una proyección tabular de los datos longitudinales, no una afirmación de suficiencia
+estadística.
+
+\subsection{Invariantes numéricas}
+
+El build elimina features completamente nulas y verifica ausencia de infinitos. Esto es
+diferente de imputar missingness de forma supervisada. Sea $X$ la matriz derivada. La etapa de
+datos puede retirar una columna $j$ si
+\[
+\forall i,\; X_{ij}=\mathrm{NaN},
+\]
+porque no contiene información en ninguna parcela. En cambio, para una columna parcialmente
+observada, la imputación debe estimarse en el conjunto de entrenamiento del fold:
+\[
+\tilde X_{ij}=
+\begin{cases}
+X_{ij}, & X_{ij}\text{ observado},\\
+\widehat m_j^{(\mathrm{train})}, & X_{ij}\text{ missing}.
+\end{cases}
+\]
+Usar una mediana calculada con el fold de validación no usa $y$, pero en una evaluación
+inductiva puede transferir información de distribución. Por disciplina, Checkpoints~02--03
+mantuvieron el preprocessing aprendido dentro del pipeline.
+
+\subsection{Representación y provenance}
+
+Cada entrada del manifest registra nombre de columna, fuente, familia y modo. El manifest
+funciona como un esquema semántico que permite formar subconjuntos sin depender de regex
+frágiles sobre miles de nombres.
+
+Esta estructura fue crítica en Checkpoint~03, donde se construyeron capas agronómicas y
+empíricas separadas, y en Checkpoint~04, donde C0, C1 y C4 se resolvieron mediante provenance
+en vez de mantener listas manuales de columnas.
+
+\subsection{Por qué no escalar el target}
+
+En discusiones tempranas se consideró multiplicar el rendimiento por 100 para evitar RMSE
+numéricamente menor que uno. Esa transformación no mejora el problema. Si
+\[
+y_i'=c\,y_i,\qquad \hat y_i'=c\,\hat y_i,
+\]
+entonces
+\[
+\RMSE(y',\hat y')=|c|\,\RMSE(y,\hat y).
+\]
+La escala cambia la magnitud reportada, pero no el orden relativo de modelos ni la calidad de
+la reconstrucción. Por ello se conserva la unidad natural de toneladas por hectárea.
+
+\subsection{Condición de congelamiento}
+
+Feature Table v1 queda congelada como artefacto reproducible. Las capas posteriores son
+\emph{aditivas}: no reescriben las columnas base ni modifican retrospectivamente un build para
+hacer que un resultado posterior parezca parte de la representación original. Esta política
+hace posible comparar B0, B1, B2, etc. bajo la misma fuente de verdad.
