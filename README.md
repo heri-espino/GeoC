@@ -40,6 +40,25 @@ Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conoce
 
 
 
+## Ejecutar Checkpoint 04D.1
+
+La fase activa ya está implementada. Después de actualizar el repositorio:
+
+```powershell
+git pull
+conda activate geocebada
+python tools\run_checkpoint_04d1.py
+```
+
+04D.1 reutiliza exactamente los pseudo-concursos de 04B y busca 626 configuraciones
+predefinidas de Local Ridge, graph-Laplacian y corrección espacial de residuos PLS. La
+selección de hiperparámetros y el routing por soporte se vuelven a medir
+leave-one-pseudo-split-out antes de evaluar finalistas en los stress tests.
+
+Los resultados se escriben en `reports/checkpoint_04d1/`. También se generan predicciones
+candidatas para las 59 parcelas sólo para análisis de desacuerdo y blending posterior; todavía
+no constituyen la entrega final.
+
 ## Checkpoint 04B — completado
 
 04B ya fue ejecutado y sus resultados están versionados. Para reproducirlo:
