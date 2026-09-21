@@ -1,0 +1,99 @@
+\documentclass[11pt,oneside]{report}
+\input{preamble}
+\title{\textbf{GeoCebada}\\[0.4em]
+Reconstrucción transductiva del rendimiento de cebada\\
+\large Reporte técnico integral de ciencia de datos}
+\author{Equipo GeoCebada}
+\date{\today}
+\begin{document}
+\pagenumbering{roman}
+\maketitle
+\begin{abstract}
+\input{frontmatter/resumen}
+\end{abstract}
+\clearpage
+\input{frontmatter/contrato_metodologico}
+\clearpage
+\tableofcontents
+\clearpage
+\listoftables
+\clearpage
+\listoffigures
+\clearpage
+\pagenumbering{arabic}
+\chapter{Checkpoint 01: Fundación de datos, semántica y contrato reproducible}
+\label{chap:checkpoint01}
+\section{01A. Unidad de análisis, objetivo y frontera de información}
+\label{sec:checkpoint01a}
+\input{sections/checkpoint_01a}
+\section{01B. Inventario multifuente y semántica de los datos}
+\label{sec:checkpoint01b}
+\input{sections/checkpoint_01b}
+\section{01C. Auditoría, contrato de datos e integración reproducible}
+\label{sec:checkpoint01c}
+\input{sections/checkpoint_01c}
+\chapter{Checkpoint 02: Tabla parcelaria, diagnóstico de covariables y validación congelada}
+\label{chap:checkpoint02}
+\section{02A. Feature Table v1 y separación clean/competition}
+\label{sec:checkpoint02a}
+\input{sections/checkpoint_02a}
+\section{02B. Diagnóstico train--prediction, soporte y ablaciones}
+\label{sec:checkpoint02b}
+\input{sections/checkpoint_02b}
+\section{02C. Protocolos de validación y modelos base}
+\label{sec:checkpoint02c}
+\input{sections/checkpoint_02c}
+\chapter{Checkpoint 03: Ingeniería de representaciones y primera entrega de modelado}
+\label{chap:checkpoint03}
+\section{03A. Capa agronómica no lineal}
+\label{sec:checkpoint03a}
+\input{sections/checkpoint_03a}
+\section{03B. Capa empírica y descubrimiento fold-local de expresiones}
+\label{sec:checkpoint03b}
+\input{sections/checkpoint_03b}
+\section{03C.1. Benchmark controlado de representaciones}
+\label{sec:checkpoint03c1}
+\input{sections/checkpoint_03c1}
+\section{03C.2. Benchmark anidado de familias de modelos}
+\label{sec:checkpoint03c2}
+\input{sections/checkpoint_03c2}
+\section{03C.3. Ensambles finalistas de la primera entrega}
+\label{sec:checkpoint03c3}
+\input{sections/checkpoint_03c3}
+\chapter{Checkpoint 04: Modelado transductivo para los 59 objetivos fijos}
+\label{chap:checkpoint04}
+\section{04A. Topología del conjunto objetivo, similitud y autocorrelación espacial}
+\label{sec:checkpoint04a}
+\input{sections/checkpoint_04a}
+\section{04B. Validación pseudo-competition transductiva}
+\label{sec:checkpoint04b}
+\input{sections/checkpoint_04b}
+\section{04C.1. Anchor global CatBoost enfocado}
+\label{sec:checkpoint04c1}
+\input{sections/checkpoint_04c1}
+\section{04D.1. Refinamiento local y de grafos}
+\label{sec:checkpoint04d1}
+\input{sections/checkpoint_04d1}
+\section{04E.1. Evidencia externa SIAP localizada}
+\label{sec:checkpoint04e1}
+\input{sections/checkpoint_04e1}
+\section{04F. Reconstrucción final y congelamiento del vector de 59 rendimientos}
+\label{sec:checkpoint04f}
+\input{sections/checkpoint_04f}
+\chapter{Síntesis técnica, limitaciones y lectura operativa}
+\label{chap:synthesis}
+\input{sections/sintesis_final}
+\appendix
+\chapter{Notación, métricas y formulaciones}
+\label{app:notation}
+\input{appendices/notacion_metricas}
+\chapter{Mapa de artefactos y reproducibilidad}
+\label{app:repro}
+\input{appendices/reproducibilidad}
+\chapter{Predicciones finales para las 59 parcelas}
+\label{app:predictions}
+\input{appendices/predicciones_finales}
+\clearpage
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}
