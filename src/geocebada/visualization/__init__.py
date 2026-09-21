@@ -21,6 +21,14 @@ from geocebada.visualization.checkpoint04b import (
     plot_target_support_routing_scatter,
     plot_top_method_rmse_boxplot,
 )
+from geocebada.visualization.checkpoint04d1 import (
+    plot_actual_candidate_spread,
+    plot_graph_k_profiles,
+    plot_local_k_profile,
+    plot_loso_selection_frequency,
+    plot_nested_validation_comparison,
+    plot_refinement_ranking,
+)
 from geocebada.visualization.exploration import (
     correlation_heatmap,
     correlation_scatter,
@@ -33,6 +41,12 @@ from geocebada.visualization.exploration import (
 from geocebada.visualization.geospatial import parcel_map_figure
 
 __all__ = [
+    "plot_actual_candidate_spread",
+    "plot_graph_k_profiles",
+    "plot_local_k_profile",
+    "plot_loso_selection_frequency",
+    "plot_nested_validation_comparison",
+    "plot_refinement_ranking",
     "plot_actual_method_routing",
     "plot_actual_vs_pseudo_support",
     "plot_primary_method_ranking",
