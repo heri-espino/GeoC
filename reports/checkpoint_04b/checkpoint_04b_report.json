@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-21T01:08:30.150695+00:00",
+  "git_commit": "fd16bd0bbc77d4cf2afaaece4fda6739a48aaa5b",
+  "stage": "transductive_pseudo_competition_validation",
+  "active_track": "competition",
+  "hidden_prediction_targets_used": false,
+  "target_covariates_used_transductively": true,
+  "total_rows": 197,
+  "training_rows": 138,
+  "prediction_rows": 59,
+  "n_pseudo_targets": 41,
+  "target_matched_repeats": 16,
+  "state_random_repeats": 8,
+  "legacy_stress_splits": 10,
+  "total_splits": 34,
+  "methods_evaluated": 25,
+  "primary_family": "target_matched",
+  "best_primary_method": "LocalRidge_k20_a100",
+  "best_primary_rmse_mean": 0.49462611978969423,
+  "best_primary_rmse_median": 0.4777567669497974,
+  "best_primary_rmse_worst": 0.6926661797706771,
+  "distance_scales": {
+    "geographic_nearest_median_km": 0.3997454830447382,
+    "agronomic_nearest_median": 8.587081592359525,
+    "temporal_distance_nearest_median": 0.01834624614450503
+  },
+  "c0_features_used": 1397,
+  "actual_target_x_support_counts": {
+    "mid": 32,
+    "low": 19,
+    "high": 8
+  }
+}
