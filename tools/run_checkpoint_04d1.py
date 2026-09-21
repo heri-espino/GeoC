@@ -798,7 +798,7 @@ def run_checkpoint_04d1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
     embeddings = pd.read_csv(a04_dir / str(inputs["checkpoint04a_embeddings"]))
     membership = pd.read_csv(b04_dir / str(inputs["checkpoint04b_membership"]))
     pseudo_predictions_04b = pd.read_csv(
-        b04_dir / "pseudo_test_predictions.csv",
+        b04_dir / str(inputs["checkpoint04b_pseudo_predictions"]),
         usecols=[
             "split_id",
             ID_COLUMN,
@@ -1051,7 +1051,10 @@ def run_checkpoint_04d1(root: Path, config: dict[str, Any]) -> dict[str, Any]:
         stress_summary,
         finalists,
     )
-    robustness.to_csv(output_dir / "finalist_robustness.csv", index=False)
+    robustness.to_csv(
+        output_dir / str(outputs["finalist_robustness"]),
+        index=False,
+    )
 
     print("[04D.1 7/8] Generating candidate predictions for the fixed 59 targets...")
     actual_anchor, actual_residuals = fit_pls_anchor_with_cross_fitted_residuals(
