@@ -1,6 +1,6 @@
 # Checkpoint 04 — Transductive Competition Modeling
 
-**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, 04D.1 COMPLETE, 04E.1 IMPLEMENTED / RUN PENDING  
+**Status:** OPEN — 04A COMPLETE, 04B COMPLETE, 04D.1 COMPLETE, 04E.1 COMPLETE, 04C.1 IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-09-19
 
 Checkpoint 04 begins after the closure of Checkpoint 03 as the **First Modeling Delivery**. Read `docs/TRANSDUCTIVE_OBJECTIVE.md` before implementing this checkpoint.
@@ -117,17 +117,28 @@ At least two split families should be retained:
 
 Every 04C–04F model must produce reproducible pseudo-target predictions and RMSE.
 
-## 04C — Higher-compute global models
+## 04C.1 — Focused global CatBoost anchor — IMPLEMENTED / RUN PENDING
 
-Revisit strong global families with a larger compute budget. Candidate work includes:
+The deferred global-anchor step is now intentionally smaller than the original 04C concept.
+03C.2 already showed that C1 agronomic CatBoost was the most relevant global boosting anchor,
+while 04D.1 established substantially stronger local/graph predictors. Therefore 04C.1 tests
+complementarity rather than reopening a broad model-family search.
 
-- CatBoost with larger iteration budget, early stopping, depth/regularization/column-sampling search and multiple seeds;
-- PLS component search;
-- Ridge/ElasticNet variants;
-- ExtraTrees/boosting where transductive validation supports them;
-- carefully justified feature subsets and representations.
+It evaluates three CatBoost configurations inherited from the frozen 03C.2 grid, each averaged
+over seeds 42, 314 and 2718. The stable depth-4 / lr-0.03 / l2-3 anchor is blended at fixed
+10/20/30% weights with Local04D and Graph04D.
 
-GPU should be used where supported.
+Run:
+
+```powershell
+python tools\run_checkpoint_04c1.py
+```
+
+The default requires GPU and has no automatic CPU fallback. Intentional CPU execution requires
+`--catboost-task-type CPU --confirm-cpu y`.
+
+A controlled LOSO gate is restricted to Local04D, stable direct CatBoost and the three
+Local+CatBoost blends. This keeps the candidate universe fixed and small before 04F.
 
 ## 04D.1 — Local/graph refinement — COMPLETE
 
@@ -184,7 +195,7 @@ Also evaluate CHIRPS after QC, WaPOR, SoilGrids, terrain and richer public daily
 
 Do not create thousands of external features without an ablation plan.
 
-### 04E.1 implementation — SIAP localization
+### 04E.1 completed evidence — SIAP localization
 
 The first external-evidence stage is implemented and deliberately narrow. It
 audits raw SIAP records without collapsing cycle or modality, constructs an
@@ -202,13 +213,16 @@ runner compares direct SIAP, affine calibration, SIAP-anchored local residuals,
 SIAP-anchored graph residuals and fixed blends against the frozen 04D.1 local
 and graph baselines.
 
-Run:
+The workstation run is complete. Exact-scope coverage was 197/197, but the municipal
+prior did not improve the primary target-matched evidence. Local04D remained best at 0.4878
+mean split RMSE, Local+SIAP 25% worsened to 0.4922, and the controlled LOSO selector chose
+Local04D in 16/16 holdouts. Direct SIAP RMSE on the 138 observed parcels was 1.4926 with
+Spearman correlation -0.2181.
 
-```powershell
-python tools\run_checkpoint_04e1.py
-```
+The graph+SIAP 25% blend did improve municipality-grouped stress (0.5279 to 0.5096), so SIAP
+remains external-evidence and stress-test context but is not a required current final component.
 
-Outputs go to `reports/checkpoint_04e1/`.
+Canonical interpretation: `docs/CHECKPOINT_04E1_FINDINGS.md`.
 
 ## 04F — Final transductive ensemble
 
