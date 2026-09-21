@@ -1,0 +1,132 @@
+schema_version: 1
+updated: 2026-09-20
+
+stage:
+  name: local_graph_refinement
+  checkpoint: 04D.1
+  active_track: competition
+  hidden_prediction_targets_used: false
+  purpose: >
+    Refine the local and graph methods that survived Checkpoint 04B. Use the
+    exact committed 04B pseudo-competition memberships, search graph topology
+    and local Ridge hyperparameters on target-matched splits, validate model
+    selection leave-one-split-out, and test finalists on state-random and
+    frozen state/municipality stress protocols.
+
+inputs:
+  base_directory: data/processed/features_v1
+  base_table: parcel_features_all.csv
+  base_manifest: feature_manifest.json
+  checkpoint04a_directory: reports/checkpoint_04a
+  checkpoint04a_embeddings: transductive_embeddings.csv
+  checkpoint04b_directory: reports/checkpoint_04b
+  checkpoint04b_membership: pseudo_competition_splits.csv
+  checkpoint04b_support: actual_target_x_support.csv
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  state_column: meta_estado
+  latitude_column: base_centroid_lat
+  longitude_column: base_centroid_lon
+
+feature_policy:
+  allowed_modes: [clean, competition]
+  exclude_sources:
+    - external_chirps_daily
+  exclude_columns: []
+
+representations:
+  c0_name: C0_base
+  c1_name: C1_agronomic
+  c4_name: C4_all_deterministic
+  c0_layers: [base]
+
+validation:
+  primary_family: target_matched
+  stress_families:
+    - state_random
+    - fold_state_stratified
+    - fold_municipality_grouped
+  random_state: 20260920
+  anchor_crossfit_folds: 5
+
+distance_topologies:
+  Geo:
+    geographic: 1.00
+    agronomic: 0.00
+  GeoAgro90:
+    geographic: 0.90
+    agronomic: 0.10
+  GeoAgro75:
+    geographic: 0.75
+    agronomic: 0.25
+  GeoAgro50:
+    geographic: 0.50
+    agronomic: 0.50
+  GeoAgro25:
+    geographic: 0.25
+    agronomic: 0.75
+
+graph_search:
+  k_values: [4, 6, 8, 10, 12]
+  regularization_values: [0.25, 0.5, 1.0, 2.0, 4.0, 8.0]
+  modes:
+    - direct
+    - residual_pls4
+
+local_ridge_search:
+  representations:
+    - C1_agronomic
+    - C4_all_deterministic
+  distance_names:
+    - Geo
+    - GeoAgro75
+    - GeoAgro50
+  k_values: [12, 16, 20, 24, 30, 40]
+  alpha_values: [30.0, 100.0, 300.0]
+  distance_powers: [0.5, 1.0, 2.0]
+
+baselines:
+  geo_knn:
+    k: 10
+    distance_name: Geo
+    power: 1.0
+  pls_anchor:
+    n_components: 4
+
+finalists:
+  top_per_family: 3
+  always_include:
+    - Baseline_GeoKNN10
+    - Anchor_PLS4
+
+nested_selection:
+  support_tiers: [low, mid, high]
+  routing_scope: finalists
+
+figures:
+  dpi: 170
+  ranking_top_n: 20
+
+outputs:
+  directory: reports/checkpoint_04d1
+  figures_directory: figures
+  primary_predictions: primary_predictions.csv
+  primary_summary: primary_summary.csv
+  primary_split_metrics: primary_split_metrics.csv
+  finalist_manifest: finalist_manifest.csv
+  stress_predictions: stress_predictions.csv
+  stress_summary: stress_summary.csv
+  loso_method_selection: loso_method_selection.csv
+  loso_method_predictions: loso_method_predictions.csv
+  loso_tier_selection: loso_tier_selection.csv
+  loso_tier_predictions: loso_tier_predictions.csv
+  nested_validation_summary: nested_validation_summary.csv
+  actual_candidate_predictions: actual_candidate_predictions.csv
+  actual_routing_proposal: actual_routing_proposal.csv
+  report_json: checkpoint_04d1_report.json
+  report_markdown: checkpoint_04d1_report.md
