@@ -918,3 +918,35 @@ modality, audits `Cebada grano + Primavera-Verano + Temporal + CVEGEO`, keeps
 broader grain scopes as explicit fallbacks, and evaluates direct/calibrated,
 local-residual, graph-residual and fixed-blend uses on the exact frozen 04B
 pseudo-competition splits. Actual-target outputs remain candidates until 04F.
+
+
+---
+
+## 2026-09-21 — Checkpoint 04E.1 completed; focused Checkpoint 04C.1 implemented
+
+The workstation completed the SIAP localization experiment with the full local SIAP
+archive available. Exact `Cebada grano + Primavera-Verano + Temporal + CVEGEO + 2025`
+coverage reached 197/197 parcels and all 59 actual competition targets.
+
+The external municipal proxy did not improve the primary target-matched protocol.
+Local04D reproduced its 0.48785 mean split RMSE, while the 25% Local+SIAP blend
+reached 0.49218. The direct SIAP prior reached 1.43684 target-matched RMSE; on the
+138 observed parcels its direct RMSE was 1.4926 and Spearman correlation with parcel
+yield was -0.2181. The controlled leave-one-target-matched-split-out selector chose
+Local04D in all 16 holdouts. A 25% graph/SIAP blend did improve the
+municipality-grouped stress score from 0.52788 to 0.50965, so SIAP is retained as
+external-evidence and stress-test context rather than a required final component.
+Canonical interpretation is in `docs/CHECKPOINT_04E1_FINDINGS.md`.
+
+The deferred global-model step was then narrowed to Checkpoint 04C.1. Instead of
+reopening a broad model-family search, 04C.1 tests whether the historically relevant
+C1 agronomic CatBoost signal adds complementary information to the stronger 04D.1
+local and graph predictors. Three CatBoost configurations are inherited from the
+frozen 03C.2 grid and averaged across seeds 42, 314 and 2718. The stable shallow
+candidate is blended at fixed 10/20/30% weights with Local04D and Graph04D.
+
+04C.1 reuses the exact frozen 04B pseudo-competition memberships, computes residual
+correlation, and applies a deliberately small LOSO gate whose candidate universe is
+fixed in advance. GPU is the default and automatic CPU fallback is disabled. Actual
+59-target predictions are generated only as candidates for 04F; hidden FIRA y remains
+unavailable and is never scored.
