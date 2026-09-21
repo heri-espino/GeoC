@@ -74,3 +74,5 @@ No incluir secretos, contraseñas, tokens ni datos personales.
 ## Nota de trazabilidad
 
 Los archivos `.ai_handoff` y `AGENTS.md` sirven para continuidad operativa entre asistentes/agentes. No sustituyen este registro ni los prompts que deban anexarse en los entregables oficiales del reto.
+
+| 2026-09-20 | ChatGPT | Checkpoint 04E.1 SIAP localization | After 04D.1 completion, implement the next competition-focused external-evidence experiment | Added detailed SIAP cycle/modality loader, exact/fallback municipal prior construction, frozen-split direct/calibrated/local-residual/graph-residual validation, LOSO selection, actual-target candidate predictions, config/tests/figures/report namespace, and synchronized Checkpoint 04 documentation | Uses only public SIAP data and observed training yields; hidden 59 yields remain unavailable and are never scored. Primary external scope is explicitly Cebada grano + Primavera-Verano + Temporal + CVEGEO + 2025. |
