@@ -258,7 +258,7 @@ def load_siap_barley_detail(
 
     pieces: list[pd.DataFrame] = []
     for path in _canonical_siap_files(directory, spec):
-        match = re.search(r"(\\d{4})", path.name)
+        match = re.search(r"(\d{4})", path.name)
         file_year = int(match.group(1)) if match else None
         if requested_years is not None and file_year not in requested_years:
             continue
