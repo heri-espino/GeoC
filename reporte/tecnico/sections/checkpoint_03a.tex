@@ -1,0 +1,207 @@
+\subsection{Motivación: no linealidad con semántica agronómica}
+
+El Checkpoint~03A introduce una capa aditiva de 350 variables derivadas sin utilizar
+\artifact{RENDIMIENTO_T_HA}. El objetivo no es reemplazar Feature Table v1, sino codificar
+hipótesis no lineales interpretables antes de abrir una búsqueda de modelos. Con aproximadamente
+1,400 predictores base, una expansión polinómica completa de segundo orden generaría del orden
+de $10^6$ interacciones; esa estrategia es inadecuada para $n=138$. En su lugar, se construyen
+familias pequeñas cuya razón agronómica puede enunciarse antes de observar $y$.
+
+El build final contiene 197 filas y 350 features: 123 clean y 227 competition. No hay missing
+ni infinitos. Tres variables de calor resultaron constantes y se eliminaron automáticamente.
+Las familias retenidas son:
+\[
+\begin{array}{lr}
+\text{fenología} & 162\\
+\text{anomalías fenológicas} & 41\\
+\text{agua/productividad} & 40\\
+\text{térmicas} & 36\\
+\text{cross-domain} & 19\\
+\text{perfil de suelo} & 18\\
+\text{timing de agua} & 10\\
+\text{sensor agreement} & 9\\
+\text{interacciones de suelo} & 8\\
+\text{bases no lineales} & 7
+\end{array}
+\]
+
+\subsection{Fenología y forma estacional}
+
+Para una trayectoria mensual $x_t$, $t\in\{4,\ldots,10\}$, se calculan media estacional,
+amplitud, AUC, mes de máximo, medias temprana/tardía, cambio junio--agosto y pendientes de
+green-up/senescence. Por ejemplo,
+\begin{align}
+\bar x &= \frac{1}{T}\sum_{t=1}^{T}x_t,\\
+A(x) &= \max_t x_t-\min_t x_t,\\
+AUC(x) &\approx
+\sum_{t=1}^{T-1}\frac{x_t+x_{t+1}}{2}
+(m_{t+1}-m_t),\\
+t_{\max} &= \arg\max_t x_t.
+\end{align}
+
+Las pendientes son coeficientes de regresiones lineales locales sobre bloques de meses:
+\[
+x_t=\alpha+\beta t+\varepsilon_t.
+\]
+No se afirma que la fenología real sea lineal; $\beta$ funciona como descriptor compacto de
+dirección de cambio. La literatura de cebada y estimación de rendimiento por teledetección
+motiva conservar timing y forma en lugar de depender sólo de una media
+\citep{Chanev2025,Sharifi2020,Mirosavljevic2018}.
+
+\subsection{Anomalías 2025 frente a historia}
+
+Una parcela puede tener productividad estructuralmente alta o baja y, al mismo tiempo, mostrar
+una condición 2025 inusual respecto a su propia historia. La capa separa ambas dimensiones
+mediante diferencias y razones:
+\begin{align}
+\Delta\bar x_i
+&=
+\bar x_{i,2025}-\bar x_{i,\mathrm{hist}},\\
+R_{x,i}
+&=
+\frac{\bar x_{i,2025}}
+{\bar x_{i,\mathrm{hist}}+\epsilon},\\
+\Delta AUC_i
+&=
+AUC_{i,2025}-AUC_{i,\mathrm{hist}}.
+\end{align}
+
+También se incluyen delta de agosto, delta de late-season y desplazamiento del mes de pico.
+Para NDWI se evita deliberadamente una razón de medias, porque el denominador puede cruzar
+cero al tratarse de un índice signed. Esta es una decisión numérica y semántica: una feature
+de gran magnitud causada por un denominador cercano a cero no debe confundirse con una señal
+agronómica extrema.
+
+\subsection{Concordancia inter-sensor}
+
+Sentinel-2 y Planet 2025 se comparan para NDVI, EVI y LAI mediante diferencia de media,
+razón de media y RMSE mensual:
+\begin{equation}
+\RMSE_{\mathrm{sensor},i}
+=
+\sqrt{
+\frac{1}{T}\sum_t
+\left(x^{S2}_{i,t}-x^{Planet}_{i,t}\right)^2
+}.
+\label{eq:sensor-rmse}
+\end{equation}
+La feature no presupone equivalencia de nivel entre productos. Su interpretación es
+diagnóstica: si dos sensores describen de manera muy distinta la misma parcela, esa
+discordancia puede contener información de cobertura, procesamiento, nubosidad o dinámica
+vegetal.
+
+\subsection{Desarrollo térmico}
+
+A partir de temperatura máxima y mínima se construye
+\[
+T_{\mathrm{mean},m}=\frac{T_{\max,m}+T_{\min,m}}{2},
+\qquad
+DTR_m=T_{\max,m}-T_{\min,m}.
+\]
+Se agregan proxies mensuales de growing degree days:
+\begin{equation}
+GDD_{\mathrm{proxy}}(T_b)
+=
+\sum_m d_m\max(T_{\mathrm{mean},m}-T_b,0),
+\label{eq:gdd-proxy}
+\end{equation}
+para $T_b=0^\circ$C y $5^\circ$C. Se usa explícitamente la palabra proxy porque los inputs
+climáticos son mensuales, no diarios. La acumulación térmica es una construcción habitual en
+fenología de cereales \citep{McMaster1997,McMaster2005,Hajkova2019}, pero el valor exacto aquí
+no debe confundirse con un GDD agronómico diario de alta resolución.
+
+Se propuso también
+\[
+H_{25}
+=
+\sum_m d_m\max(T_{\mathrm{mean},m}-25,0).
+\]
+En la build canónica resultó constante tanto histórica como contemporáneamente y fue eliminado,
+junto con la interacción que lo utilizaba. Este comportamiento es útil: el pipeline no fuerza
+a conservar una hipótesis sólo porque conceptualmente sea razonable.
+
+\subsection{Timing de precipitación}
+
+La precipitación se separa en ventanas:
+\begin{align}
+P_{\mathrm{early}} &= P_{\mathrm{Apr}}+P_{\mathrm{May}}+P_{\mathrm{Jun}},\\
+P_{\mathrm{mid}} &= P_{\mathrm{Jun}}+P_{\mathrm{Jul}}+P_{\mathrm{Aug}},\\
+P_{\mathrm{late}} &= P_{\mathrm{Aug}}+P_{\mathrm{Sep}}+P_{\mathrm{Oct}}.
+\end{align}
+También se calculan coeficiente de variación y fracción tardía. La motivación es que la
+respuesta del cultivo a déficit hídrico depende de la etapa de desarrollo
+\citep{Bello2022,Mogensen1980,Zhang2015}. El total estacional no contiene por sí solo
+información sobre cuándo ocurrió el agua.
+
+\subsection{Productividad hídrica y WaPOR}
+
+AETI y NPP se combinan en:
+\begin{align}
+WP_{\mathrm{NPP}}
+&=
+\frac{NPP}{AETI+\epsilon},\\
+R_{ET/P}
+&=
+\frac{AETI}{P+\epsilon},\\
+WB
+&=
+P-AETI.
+\end{align}
+La primera es un proxy de productividad de biomasa por agua observada desde teledetección, no
+una definición de water-use efficiency de grano. De forma similar, $AETI/P$ no es un índice de
+sequía: el cociente puede estar influido por almacenamiento de agua en suelo, riego u otras
+fuentes. La nomenclatura deliberadamente evita atribuir causalidad fisiológica a una
+transformación predictiva \citep{Dhonthi2024}.
+
+Se añaden interacciones como
+\[
+NPP\times NDVI,\qquad LAI\times AETI,
+\]
+para permitir a modelos lineales expresar que la biomasa y el uso de agua pueden tener
+efectos dependientes del estado del dosel.
+
+\subsection{Perfil edáfico y bases no lineales}
+
+Para cada propiedad $p$ de SoilGrids se construyen contraste vertical y razón:
+\begin{align}
+G_p &= p_{0-30}-p_{30-60},\\
+R_p &= \frac{p_{0-30}}{p_{30-60}+\epsilon}.
+\end{align}
+Adicionalmente se crean interacciones compactas: SOC$\times$CEC,
+SOC$\times$N, clay$\times$SOC, clay$\times$CEC, bulk-density$\times$clay,
+clay/sand, clay+silt y $pH^2$. La forma cuadrática de pH no fija un óptimo; simplemente
+permite que un modelo lineal represente curvatura junto con el término lineal. La respuesta de
+cebada a química y cationes de suelo puede ser no lineal \citep{Holland2021}.
+
+Variables positivas y sesgadas reciben una base
+\[
+z=\log(1+x),
+\]
+principalmente para estabilizar escalas en modelos lineales.
+
+\subsection{Interacciones cross-domain}
+
+Se crean hipótesis entre dominios, entre ellas:
+\[
+Y_{\mathrm{SIAP,hist}}\times\Delta NDVI_{2025},
+\qquad
+Y_{\mathrm{SIAP,hist}}\times NPP_{2025},
+\]
+así como slope$\times$precipitación, elevación$\times$temperatura,
+clay$\times$precipitación, SOC$\times$precipitación, N de suelo$\times$NDVI,
+NDVI$\times$NDWI y EVI$\times$LAI. El objetivo es proporcionar bases físicamente
+interpretables sin enumerar todas las interacciones posibles.
+
+\subsection{Clases de evidencia}
+
+El manifest asigna a cada feature una clase:
+\begin{description}
+\item[literature-backed] la relación general está motivada por literatura;
+\item[mechanistic proxy] la transformación tiene interpretación física/agronómica clara,
+pero la fórmula exacta es un proxy del proyecto;
+\item[experimental] base matemática target-free que debe demostrar valor predictivo.
+\end{description}
+
+Esta clasificación impide escribir retrospectivamente que una interacción que funcionó en CV
+es una ley agronómica. La validez predictiva se decide en Checkpoint~03C; la validez
+mecanicista no se infiere del score.
