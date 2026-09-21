@@ -19,6 +19,7 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint04d1.yaml` | Exhaustive local/graph refinement, residual-graph correction and LOSO routing validation | 04D.1 complete |
 | `checkpoint04c1.yaml` | Focused C1 agronomic CatBoost anchor and low-weight blend validation | **04C.1 implemented; workstation run next** |
 | `checkpoint04e1.yaml` | Exact SIAP 2025 localization and external-prior validation | 04E.1 complete |
+| `checkpoint04f.yaml` | Final Local04D freeze, Local/Graph sensitivity and 59-row output contract | **04F implemented; workstation run next** |
 
 Do not silently edit frozen Checkpoint 01–03 configs to improve historical results. Checkpoint
 03 is preserved as the First Modeling Delivery.
@@ -43,3 +44,10 @@ Checkpoint 04C.1 focused global-anchor configuration. It freezes three CatBoost
 candidates inherited from 03C.2, seeds 42/314/2718, GPU-first execution, fixed
 10/20/30% blend weights and the controlled target-matched LOSO candidate universe.
 Automatic CPU fallback is disabled.
+
+
+### `checkpoint04f.yaml`
+
+Checkpoint 04F freezes `Baseline_Local04D` as the final rule, verifies exact
+04D.1/04E.1 prediction provenance, limits Local/Graph blending to a diagnostic
+sensitivity grid and specifies the exact 59-row final-output contract.
