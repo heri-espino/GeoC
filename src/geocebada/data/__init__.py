@@ -3,6 +3,7 @@
 from geocebada.data.external import (
     build_admin_mapping,
     load_inegi_municipalities,
+    load_siap_barley_detail,
     load_siap_barley_history,
 )
 from geocebada.data.files import concatenate_csvs, discover_files
@@ -23,6 +24,7 @@ from geocebada.data.targets import (
 
 __all__ = [
     "attach_yield_split_metadata",
+    "load_siap_barley_detail",
     "load_siap_barley_history",
     "load_inegi_municipalities",
     "build_admin_mapping",
