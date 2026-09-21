@@ -1,0 +1,89 @@
+schema_version: 1
+updated: 2026-09-20
+
+stage:
+  name: external_siap_localization
+  checkpoint: 04E.1
+  active_track: competition
+  hidden_prediction_targets_used: false
+  purpose: >
+    Audit and validate SIAP 2025 as a localized public external prior at the
+    most specific defensible grain-barley scope: Cebada grano +
+    Primavera-Verano + Temporal + municipality. Compare direct, calibrated,
+    local-residual and graph-residual uses against the frozen 04D.1 survivors
+    on the exact 04B pseudo-competition splits.
+
+inputs:
+  data_contract: configs/data_contract_v2.yaml
+  base_directory: data/processed/features_v1
+  base_table: parcel_features_all.csv
+  checkpoint04a_directory: reports/checkpoint_04a
+  checkpoint04a_embeddings: transductive_embeddings.csv
+  checkpoint04b_directory: reports/checkpoint_04b
+  checkpoint04b_membership: pseudo_competition_splits.csv
+  checkpoint04b_pseudo_predictions: pseudo_test_predictions.csv
+  checkpoint04b_support: actual_target_x_support.csv
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  cvegeo_column: admin_cvegeo
+
+siap:
+  crop: Cebada grano
+  cycle: Primavera-Verano
+  modality: Temporal
+  competition_year: 2025
+  history_start_year: 2015
+  history_end_year: 2024
+
+representations:
+  c1_name: C1_agronomic
+  c4_name: C4_all_deterministic
+
+validation:
+  primary_family: target_matched
+  stress_families:
+    - state_random
+    - fold_state_stratified
+    - fold_municipality_grouped
+
+baselines:
+  local:
+    representation: C4_all_deterministic
+    distance_name: Geo
+    k: 24
+    alpha: 30.0
+    distance_power: 1.0
+  graph:
+    distance_name: GeoAgro25
+    geographic_weight: 0.25
+    agronomic_weight: 0.75
+    k: 6
+    regularization: 8.0
+
+external_models:
+  affine_alphas: [0.1, 1.0, 10.0]
+  blend_weights: [0.25, 0.50, 0.75]
+
+figures:
+  dpi: 170
+  ranking_top_n: 12
+
+outputs:
+  directory: reports/checkpoint_04e1
+  figures_directory: figures
+  siap_scope_audit: siap_scope_audit.csv
+  siap_municipal_panel: siap_municipal_panel.csv
+  siap_parcel_panel: siap_parcel_panel.csv
+  predictions: pseudo_predictions.csv
+  split_metrics: split_metrics.csv
+  protocol_summary: protocol_summary.csv
+  loso_selection: loso_method_selection.csv
+  loso_predictions: loso_selected_predictions.csv
+  actual_candidates: actual_external_candidates.csv
+  report_json: checkpoint_04e1_report.json
+  report_markdown: checkpoint_04e1_report.md
