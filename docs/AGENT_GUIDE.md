@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 04D.1 — implementation complete; workstation refinement run pending  
+**Current phase:** Checkpoint 04E.1 — SIAP external localization implemented; workstation run pending  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
