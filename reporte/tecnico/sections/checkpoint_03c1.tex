@@ -1,0 +1,118 @@
+\subsection{Pregunta experimental}
+
+Con Feature Table v1, la capa agronómica y la capa empírica disponibles, Checkpoint~03C.1
+separa el efecto de la \emph{representación} del efecto de la familia de modelo. Para hacerlo,
+usa exactamente los mismos dos estimadores de referencia ---Ridge10 y ExtraTrees--- sobre
+siete representaciones por track y conserva los folds de Checkpoint~02.
+
+El diseño evita una comparación confusa del tipo representación A + modelo muy ajustado contra
+representación B + modelo distinto. Aquí la pregunta es:
+\[
+\Delta_{\mathrm{representation}}
+=
+\RMSE(M,X^{(r_2)})-\RMSE(M,X^{(r_1)})
+\]
+para un mismo modelo $M$ y un mismo protocolo.
+
+\subsection{Representaciones evaluadas}
+
+\begin{table}[H]
+\centering
+\caption{Representaciones de 03C.1.}
+\label{tab:cp03c1-reps}
+\small
+\begin{tabular}{llrr}
+\toprule
+Track & Representación & $p$ & Discovery \\
+\midrule
+clean & B0 base & 692 & no \\
+clean & B1 agronomic & 123 & no \\
+clean & B2 empirical & 91 & no \\
+clean & B3 base+agro & 815 & no \\
+clean & B4 base+empirical & 783 & no \\
+clean & B5 all & 906 & no \\
+clean & B7 all+discovery & 906 & sí, hasta 20 \\
+\midrule
+competition & B0 base & 1,400 & no \\
+competition & B1 agronomic & 350 & no \\
+competition & B2 empirical & 335 & no \\
+competition & B3 base+agro & 1,750 & no \\
+competition & B4 base+empirical & 1,735 & no \\
+competition & B5 all & 2,085 & no \\
+competition & B7 all+discovery & 2,085 & sí, hasta 20 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+En B7 las columnas base son fijas, pero las expresiones supervisadas no lo son: cada outer
+training fold descubre sus propias expresiones. El número 20 indica un máximo por fit, no un
+set global de 20 fórmulas preseleccionadas.
+
+\subsection{Métrica OOF versus promedio de folds}
+
+03C.1 conserva dos resúmenes que no son idénticos cuando los folds tienen tamaños distintos.
+Si $F$ es el conjunto de folds:
+\[
+\overline{\RMSE}_{\mathrm{fold}}
+=
+\frac{1}{|F|}
+\sum_{f\in F}\RMSE_f,
+\]
+mientras
+\[
+\RMSE_{\mathrm{OOF}}
+=
+\sqrt{
+\frac{1}{138}
+\sum_{i=1}^{138}
+(y_i-\hat y_i^{\mathrm{OOF}})^2
+}.
+\]
+El primero pondera cada fold por igual; el segundo pondera cada parcela por igual. En
+municipality-grouped, donde los folds pueden ser muy desiguales, reportar ambos evita esconder
+la influencia de un municipio grande.
+
+\subsection{Resultados en state-stratified}
+
+Para competition + ExtraTrees, B7 obtiene OOF RMSE 0.4992, B0 0.5003, B1 0.5041 y B5
+0.5045. Es decir, bajo este protocolo las diferencias entre representaciones ricas son
+pequeñas; la capa empírica sola B2 es claramente peor, con 0.6470.
+
+Con Ridge10 el comportamiento cambia: B0 alcanza 0.6534, B4 0.6587, B3 0.6644, B7 0.6679 y
+B1 0.6809. La compactación agronómica que puede ser razonable para árboles no mejora
+automáticamente un Ridge de alpha fijo en este track.
+
+En clean, ExtraTrees B7 alcanza 0.4948 OOF y B3 0.5021, mientras Ridge sobre la capa
+agronómica compacta B1 alcanza 0.5888 frente a 0.6718 de B0. Esto muestra que el valor de una
+representación depende fuertemente de la inductive bias del modelo.
+
+\subsection{Resultados en municipality-grouped}
+
+Bajo el protocolo espacialmente más exigente, competition + ExtraTrees favorece B1 agronomic:
+\[
+\RMSE_{\mathrm{OOF}}=0.8590,
+\]
+seguido por B7=0.8675 y B0=0.8974. Para Ridge, B0 es claramente mejor:
+0.8059, frente a B4=0.8464, B3=0.8676, B5=0.8976 y B7=0.9142.
+
+En clean, ExtraTrees B7 llega a 0.8488 y B1 a 0.8762; Ridge B0 queda en 0.8741. Ninguna
+representación produce una mejora universal. La diferencia entre protocolos sigue siendo más
+grande que muchas diferencias internas de representación.
+
+\subsection{Lección de 03C.1}
+
+Tres conclusiones pasan a 03C.2:
+
+\begin{enumerate}
+\item \textbf{C0/base debe sobrevivir}: pese a la alta dimensionalidad, sigue siendo una
+representación competitiva para modelos lineales latentes como PLS/Ridge.
+\item \textbf{C1/agronomic merece un benchmark propio}: su compactación funciona bien con
+árboles bajo el stress grouped y ofrece una representación de sólo 350 columnas.
+\item \textbf{El bulk empírico no se añade por default}: B2 solo es débil y B5 puede
+degradar algunos modelos; las primitivas empíricas más útiles se retienen de forma controlada
+para discovery.
+\end{enumerate}
+
+Por ello, 03C.2 reduce el espacio de representaciones en vez de continuar acumulando capas.
+Este es un patrón deliberado del proyecto: cada checkpoint debe \emph{cerrar} grados de
+libertad antes de abrir una búsqueda más costosa.
