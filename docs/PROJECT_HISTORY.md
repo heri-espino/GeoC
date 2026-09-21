@@ -901,3 +901,20 @@ state-random and frozen state/municipality stress protocols.
 
 The runner also materializes candidate predictions from finalists for the actual 59 targets.
 These candidates are diagnostics for later blending and are not a final submission.
+
+
+## 2026-09-20 — Checkpoint 04D.1 completed; 04E.1 SIAP localization implemented
+
+The workstation completed 04D.1 and committed the generated evidence. The
+626-method refinement found a stable local optimum around geographic Local Ridge
+(k 20–30, alpha 30), with best target-matched mean RMSE 0.48785. LOSO method
+selection remained at 0.48837 and LOSO support-tier routing at 0.48581. The
+direct GeoAgro25 graph (k=6, lambda=8) was the strongest robustness hedge, with
+municipality-grouped RMSE 0.52788.
+
+The next stage was narrowed to a direct test of public SIAP 2025 localization.
+04E.1 now loads detailed SIAP rows without collapsing production cycle or
+modality, audits `Cebada grano + Primavera-Verano + Temporal + CVEGEO`, keeps
+broader grain scopes as explicit fallbacks, and evaluates direct/calibrated,
+local-residual, graph-residual and fixed-blend uses on the exact frozen 04B
+pseudo-competition splits. Actual-target outputs remain candidates until 04F.
