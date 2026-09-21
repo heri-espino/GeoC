@@ -185,6 +185,9 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `plot_loso_selection_frequency` | function | `geocebada.visualization.checkpoint04d1` | Plot how often each method is selected by leave-one-split-out search. | `src/geocebada/visualization/checkpoint04d1.py` |
 | `plot_nested_validation_comparison` | function | `geocebada.visualization.checkpoint04d1` | Compare leave-one-split-out selection and routing performance. | `src/geocebada/visualization/checkpoint04d1.py` |
 | `plot_refinement_ranking` | function | `geocebada.visualization.checkpoint04d1` | Plot top target-matched 04D.1 methods by mean split RMSE. | `src/geocebada/visualization/checkpoint04d1.py` |
+| `plot_external_ranking` | function | `geocebada.visualization.checkpoint04e` | Plot the strongest methods under the primary pseudo-competition family. | `src/geocebada/visualization/checkpoint04e.py` |
+| `plot_siap_proxy_vs_yield` | function | `geocebada.visualization.checkpoint04e` | Plot observed parcel yield against the attached public SIAP municipal prior. | `src/geocebada/visualization/checkpoint04e.py` |
+| `plot_siap_scope_coverage` | function | `geocebada.visualization.checkpoint04e` | Plot 2025 municipality coverage for the SIAP scope hierarchy. | `src/geocebada/visualization/checkpoint04e.py` |
 | `correlation_heatmap` | function | `geocebada.visualization.exploration` | Build an interactive correlation heatmap for selected numeric variables. | `src/geocebada/visualization/exploration.py` |
 | `correlation_scatter` | function | `geocebada.visualization.exploration` | Build an interactive scatter plot for exploring bivariate relationships. | `src/geocebada/visualization/exploration.py` |
 | `distribution_figure` | function | `geocebada.visualization.exploration` | Build an interactive histogram for one numeric variable. | `src/geocebada/visualization/exploration.py` |
