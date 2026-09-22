@@ -117,6 +117,25 @@ If interrupted after one or more completed outer splits:
 
     python tools\run_checkpoint_05.py --resume
 
+### Nested PLS feasibility guard
+
+A workstation run on 2026-09-22 exposed an edge case after 29/34 outer splits:
+municipality-grouped meta cross-fitting produced a 34-label training block whose
+inner CV contained an 18-row training fold, while the inherited PLS grid still
+contained `n_components=20`. Scikit-learn correctly rejected that candidate.
+
+Checkpoint 05 now computes, independently inside each nested fit,
+
+    K_max = min(n_features, minimum inner-training-fold size)
+
+and removes only component candidates above `K_max`. This is an X/sample-size
+feasibility constraint, not target-based tuning. Larger folds retain the original
+20-component candidate when it is valid.
+
+The split-level partial artifacts are written only after a complete outer split.
+Therefore a crash during the next split can be resumed without recomputing the
+already completed splits.
+
 Intentional CPU execution requires:
 
     python tools\run_checkpoint_05.py --catboost-task-type CPU --confirm-cpu y
