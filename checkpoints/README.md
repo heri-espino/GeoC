@@ -18,9 +18,9 @@ metadata, the source evidence wins and the checkpoint must be corrected.
 | [03c_representation_benchmark](03c_representation_benchmark/README.md) | Closed | Clean/competition B0/B1/B2/B3/B4/B5/B7 representation benchmark using frozen folds and fixed Ridge10/ExtraTrees. |
 | [03c2_competition_modeling](03c2_competition_modeling/README.md) | Closed | Competition-only nested model-family tuning over C0/C1/C2/C3; workstation run completed with CatBoost on GPU. |
 | [03c3_finalist_ensembles](03c3_finalist_ensembles/README.md) | Closed | Fixed equal-weight OOF ensemble review; retained E13/E123 as historical baseline evidence. |
-| [04_transductive_competition](04_transductive_competition/README.md) | **Open / current** | Fixed-target transductive reconstruction: target topology, pseudo-competition validation, local/graph/domain adaptation, external enrichment and final 59-value reconstruction. |
+| [04_transductive_competition](04_transductive_competition/README.md) | Closed / incumbent line | Fixed-target transductive reconstruction: target topology, pseudo-competition validation, local/graph/domain adaptation, external enrichment and frozen 04F incumbent. |\n| [05_global_local_mixture](05_global_local_mixture/README.md) | **Open / current** | Final cross-fitted global-local stacking and support-conditioned mixture-of-experts; workstation run pending. |
 
-Checkpoint **03_modeling** is frozen as the First Modeling Delivery. Checkpoint **04_transductive_competition** is now the active phase:
+Checkpoint **03_modeling** is frozen as the First Modeling Delivery. Checkpoint **04_transductive_competition** is closed as the incumbent transductive line. Checkpoint **05_global_local_mixture** is the active final modeling phase:
 
 ```text
 checkpoints/
