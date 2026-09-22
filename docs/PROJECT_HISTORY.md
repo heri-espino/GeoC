@@ -5,7 +5,7 @@ validated, and what remains open so future collaborators and AI agents do not re
 silently overwrite earlier decisions.
 
 **Last updated:** 2026-09-19  
-**Current phase:** Checkpoint 04 — Transductive Competition Modeling. Checkpoint 03 is closed as the First Modeling Delivery.
+**Current phase:** Checkpoint 05 — final global/local cross-fitted mixture. Checkpoint 03 is closed as the First Modeling Delivery; Checkpoint 04 is closed as the incumbent transductive/local line and remains canonical until Checkpoint 05 passes its promotion gate.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
