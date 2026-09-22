@@ -184,7 +184,7 @@ joblib bundle before declaring success.
 Canonical plan: `docs/CHECKPOINT_05_PLAN.md`.
 Runner: `tools/run_checkpoint_05.py`.
 Config: `configs/checkpoint05.yaml`.
-Preflight: `python tools/run_checkpoint_05.py --preflight` now validates required inputs, the 197/138/59 contract, representations, frozen split bank, X-only confirmation profile, exact 04F Local/Graph reproduction and GPU visibility without fitting global/meta models.
+Preflight: `python tools/run_checkpoint_05.py --preflight` validates required inputs, the 197/138/59 contract, representations, frozen split bank, constructs and validates the full 16×41 fresh X-only confirmation bank with no exact development-mask duplicates, reproduces 04F Local/Graph exactly and checks GPU visibility without fitting global/meta models.
 
 04F remains the canonical 59-row prediction file until 05 completes and the
 promotion rule is evaluated.
