@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 04F — final transductive reconstruction complete  
+**Current phase:** Checkpoint 05 — global/local cross-fitted mixture implemented; workstation run pending  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -12,12 +12,13 @@ Before changing modeling or data logic, read:
 1. `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 2. `.ai_handoff`.
 3. this file.
-4. `checkpoints/04_transductive_competition/README.md`.
-5. `docs/PROJECT_HISTORY.md`.
-6. `data/.ai_handoff` and `docs/DATA_SOURCES.md`.
-7. `reports/checkpoint_03c2/checkpoint_03c2_report.md` and `checkpoints/03c3_finalist_ensembles/README.md` only as frozen First Modeling Delivery evidence.
-8. `docs/FUNCTION_INDEX.md` before adding reusable functions.
-9. `app/AGENTS.md` before app/deployment work.
+4. `docs/CHECKPOINT_05_PLAN.md` and `checkpoints/05_global_local_mixture/README.md`.
+5. `checkpoints/04_transductive_competition/README.md`.
+6. `docs/PROJECT_HISTORY.md`.
+7. `data/.ai_handoff` and `docs/DATA_SOURCES.md`.
+8. `reports/checkpoint_03c2/checkpoint_03c2_report.md` and `checkpoints/03c3_finalist_ensembles/README.md` only as frozen First Modeling Delivery evidence.
+9. `docs/FUNCTION_INDEX.md` before adding reusable functions.
+10. `app/AGENTS.md` before app/deployment work.
 
 Do not infer the active objective from old Checkpoint 03 text. Checkpoint 03 is historical.
 
@@ -312,3 +313,26 @@ After substantive work:
 If historical documentation conflicts with the current doctrine, preserve the historical
 artifact and add a clear historical/current distinction instead of silently rewriting old
 results.
+
+
+## 11. Checkpoint 05 — active final combination
+
+Checkpoint 05 is intentionally separate from Checkpoints 03 and 04 because it
+combines their surviving experts under one validation contract.
+
+Global experts:
+- PLS C0;
+- Ridge C3 with fold-local discovery;
+- CatBoost C1 with a three-seed prediction average after inner tuning;
+- ExtraTrees C1.
+
+Transductive experts:
+- Local04D = C4 / Geo / k24 / alpha30 / p1;
+- Graph04D = GeoAgro25 / k6 / lambda8.
+
+Meta-training is based only on repeated cross-fitted base predictions. The new
+primary hypothesis is a support-conditioned softmax mixture-of-experts, with
+simpler stacking models retained as controls.
+
+The incumbent remains Checkpoint 04F until the predeclared 05 promotion rule
+passes. A lower all-split development score alone is insufficient.
