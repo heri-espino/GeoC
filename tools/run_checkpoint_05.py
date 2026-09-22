@@ -777,10 +777,9 @@ def _predict_all_candidates(
 ]:
     train = _add_derived_global_ensembles(meta_train, config)
     query = _add_derived_global_ensembles(base_query, config)
-    predictions: dict[str, np.ndarray] = {
-        "Local04D": query["Local04D"].to_numpy(float),
-        "Graph04D": query["Graph04D"].to_numpy(float),
-    }
+    predictions: dict[str, np.ndarray] = {}
+    for expert in config["meta_model"]["expert_columns"]:
+        predictions[str(expert)] = query[str(expert)].to_numpy(float)
 
     for name in config["derived_global_ensembles"]:
         predictions[str(name)] = query[str(name)].to_numpy(float)
@@ -1305,6 +1304,16 @@ def run_checkpoint_05(
             final_diagnostics[method] = np.asarray(values, dtype=float)
     final_diagnostics["selected_method"] = final_method
     final_diagnostics["selected_prediction"] = actual_predictions[final_method]
+
+    moe_model = actual_meta_models.get("MoE_Support")
+    if moe_model is not None:
+        expert_columns = list(map(str, config["meta_model"]["expert_columns"]))
+        support_columns = list(map(str, config["meta_model"]["support_columns"]))
+        moe_weights = moe_model.estimator.expert_weights(
+            actual_base_query.loc[:, support_columns].to_numpy(float)
+        )
+        for index, expert in enumerate(expert_columns):
+            final_diagnostics[f"moe_weight__{expert}"] = moe_weights[:, index]
 
     selected_meta_model = actual_meta_models.get(final_method)
     model_manifest = {
