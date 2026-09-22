@@ -133,15 +133,19 @@ The runner writes:
       checkpoint_05_report.json
       checkpoint_05_report.md
 
-It also writes the local serialized bundle:
+It also writes two local serialized bundles:
 
+    models/final/checkpoint05_app_bundle.joblib
     models/final/checkpoint05_model.joblib
 
-The model bundle is intentionally ignored by Git. It is intended for exact local
-reproducibility and the later Python/Streamlit application. Before the runner
-reports PASS, it serializes the bundle, reloads it, and verifies that the stored
-59-row final table reproduces the selected actual candidate to numerical
-tolerance.
+The lightweight app bundle contains the fixed 59 prediction/diagnostic contract
+without fitted estimator objects and is the preferred input for the later
+Streamlit interface. The full model bundle additionally preserves fitted global
+experts and meta-models for reproducibility. Both are ignored by Git.
+
+Before the runner reports PASS, it serializes and reloads both bundles and
+verifies that the stored 59-row final table reproduces the selected actual
+candidate to numerical tolerance.
 
 Until Checkpoint 05 finishes and the promotion gate is evaluated, the canonical competition
 prediction file remains Checkpoint 04F.
