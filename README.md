@@ -57,11 +57,17 @@ ExtraTrees/HistGB shallow y blends Local+E13/E123.
 El incumbent sigue siendo Local04D con RMSE target-matched 0.487845 hasta que
 05 termine y pase el gate leave-one-pseudo-split-out.
 
-En la workstation:
+En la workstation, primero conviene ejecutar el preflight rápido:
 
 ```powershell
 git pull
 conda activate geocebada
+python tools\run_checkpoint_05.py --preflight
+```
+
+Si pasa, iniciar el run largo:
+
+```powershell
 python tools\run_checkpoint_05.py
 ```
 
