@@ -231,15 +231,21 @@ segundo search space.
 
 \subsection{Exportación}
 
-El runner produce un archivo de predicciones final y un bundle serializado:
+El runner produce el archivo de predicciones final y dos bundles serializados:
 \[
+\artifact{models/final/checkpoint05_app_bundle.joblib},
+\qquad
 \artifact{models/final/checkpoint05_model.joblib}.
 \]
-El bundle contiene los expertos globales ajustados, los meta-modelos, provenance, IDs de
-entrenamiento/objetivo y las predicciones de las 59 parcelas. En esta fase su scope de
-inferencia es explícitamente el conjunto fijo de 59 objetivos de competencia. La futura app
-podrá consumirlo directamente para reproducir la salida congelada; una API para parcelas
-arbitrariamente nuevas se implementará separadamente para no confundir ambos contratos.
+El primero es deliberadamente ligero: contiene la predicción congelada de las 59 parcelas,
+candidatos, diagnósticos, manifest y esquema, sin objetos entrenados de CatBoost o
+scikit-learn. Es el artefacto preferido para la futura app cuando sólo se necesita reproducir
+el conjunto fijo de competencia.
+
+El segundo conserva además los expertos globales ajustados y los meta-modelos para
+reproducibilidad del procedimiento. En esta fase ambos tienen scope de inferencia
+explícitamente restringido a los 59 objetivos fijos. Una API para parcelas arbitrariamente
+nuevas se implementará separadamente para no confundir ambos contratos.
 
 \subsection{Estado}
 
