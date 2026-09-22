@@ -12,6 +12,60 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.preprocessing import StandardScaler
 
 
+
+def constrain_component_param_grid(
+    param_grid: list[dict[str, list[Any]]],
+    *,
+    parameter: str,
+    inner_splits: list[tuple[np.ndarray, np.ndarray]],
+    n_features: int,
+) -> tuple[list[dict[str, list[Any]]], int]:
+    """Restrict component-count candidates to values feasible in every inner fold.
+
+    Component models such as PLS are bounded by both feature dimension and the
+    number of training rows seen by the estimator. Nested cross-fitting can make
+    an inner training fold much smaller than the outer visible-label set, so a
+    grid that was valid in Checkpoint 03 can become invalid in Checkpoint 05.
+    """
+
+    if int(n_features) < 1:
+        raise ValueError("Component-grid constraint requires at least one feature.")
+    if not inner_splits:
+        raise ValueError("Component-grid constraint requires at least one inner split.")
+
+    min_inner_train = min(
+        len(np.asarray(train_idx, dtype=int))
+        for train_idx, _ in inner_splits
+    )
+    max_components = min(int(n_features), int(min_inner_train))
+    if max_components < 1:
+        raise ValueError("No feasible component count is available.")
+
+    constrained: list[dict[str, list[Any]]] = []
+    for candidate in param_grid:
+        current = dict(candidate)
+        if parameter not in current:
+            constrained.append(current)
+            continue
+
+        values = [int(value) for value in current[parameter]]
+        feasible = [
+            value
+            for value in values
+            if 1 <= value <= max_components
+        ]
+        if feasible:
+            current[parameter] = feasible
+            constrained.append(current)
+
+    if not constrained:
+        raise ValueError(
+            f"No {parameter} candidate is feasible with upper bound "
+            f"{max_components}."
+        )
+    return constrained, max_components
+
+
 def _nearest_reference_distances(
     distance_matrix: np.ndarray,
     positions: np.ndarray,
