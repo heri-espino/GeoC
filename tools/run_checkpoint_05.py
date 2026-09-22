@@ -1995,8 +1995,10 @@ def run_checkpoint_05(
 
 
 def _preflight(root: Path, config: dict[str, Any], task_type: str) -> None:
-    """Fail fast before a long workstation run if required inputs/GPU are missing."""
+    """Fail fast before a long workstation run without fitting global/meta models."""
 
+    inputs = config["inputs"]
+    identity = config["identity"]
     required_inputs = [
         "base_table",
         "base_manifest",
@@ -2016,15 +2018,195 @@ def _preflight(root: Path, config: dict[str, Any], task_type: str) -> None:
         "frozen_final_diagnostics",
     ]
     missing = [
-        str(root / str(config["inputs"][key]))
+        str(root / str(inputs[key]))
         for key in required_inputs
-        if not (root / str(config["inputs"][key])).is_file()
+        if not (root / str(inputs[key])).is_file()
     ]
     if missing:
         raise FileNotFoundError(
             "Checkpoint 05 preflight is missing required files:\n  - "
             + "\n  - ".join(missing)
         )
+
+    print("Checkpoint 05 preflight: loading deterministic inputs...")
+    base = pd.read_csv(root / str(inputs["base_table"]))
+    agronomic = pd.read_csv(root / str(inputs["agronomic_table"]))
+    empirical = pd.read_csv(root / str(inputs["empirical_table"]))
+    joined = join_empirical_features(
+        join_agronomic_features(base, agronomic),
+        empirical,
+    )
+    _validate_contract(joined, config)
+
+    manifests = {
+        "base": _load_json(root / str(inputs["base_manifest"])),
+        "agronomic": _load_json(root / str(inputs["agronomic_manifest"])),
+        "empirical": _load_json(root / str(inputs["empirical_manifest"])),
+    }
+    empirical_config = _load_yaml(root / str(inputs["empirical_config"]))
+    checkpoint03c2_config = _load_yaml(
+        root / str(inputs["checkpoint03c2_config"])
+    )
+    checkpoint04d1_config = _load_yaml(
+        root / str(inputs["checkpoint04d1_config"])
+    )
+    checkpoint04b_config = _load_yaml(
+        root / str(inputs["checkpoint04b_config"])
+    )
+
+    representations = build_competition_representation_specs(
+        joined=joined,
+        manifests=manifests,
+        config=checkpoint03c2_config,
+        empirical_config=empirical_config,
+    )
+    expected_representations = {
+        str(spec["representation"])
+        for spec in config["global_experts"].values()
+    }
+    missing_representations = expected_representations.difference(
+        representations
+    )
+    if missing_representations:
+        raise KeyError(
+            "Checkpoint 05 missing configured representations: "
+            f"{sorted(missing_representations)}"
+        )
+    missing_models = {
+        str(spec["model"])
+        for spec in config["global_experts"].values()
+    }.difference(checkpoint03c2_config["models"])
+    if missing_models:
+        raise KeyError(
+            "Checkpoint 05 missing configured model definitions: "
+            f"{sorted(missing_models)}"
+        )
+
+    membership = pd.read_csv(root / str(inputs["pseudo_membership"]))
+    splits = split_positions_from_membership(
+        joined,
+        membership,
+        train_value=str(identity["train_value"]),
+        split_column=str(identity["split_column"]),
+    )
+    primary_family = str(config["validation"]["primary_family"])
+    primary_count = sum(split.family == primary_family for split in splits)
+    expected_primary = int(config["validation"]["expected_primary_splits"])
+    if primary_count != expected_primary:
+        raise ValueError(
+            f"Checkpoint 05 expected {expected_primary} primary splits, "
+            f"found {primary_count}."
+        )
+
+    embeddings = pd.read_csv(root / str(inputs["transductive_embeddings"]))
+    matrices = _distance_system(
+        joined,
+        embeddings,
+        config,
+        checkpoint04d1_config,
+    )
+    y = pd.to_numeric(
+        joined[identity["target_column"]],
+        errors="coerce",
+    ).to_numpy(float)
+    train_positions = np.flatnonzero(
+        joined[identity["split_column"]]
+        .eq(identity["train_value"])
+        .to_numpy()
+    )
+    target_positions = np.flatnonzero(
+        joined[identity["split_column"]]
+        .eq(identity["prediction_value"])
+        .to_numpy()
+    )
+    local, graph = _predict_local_graph(
+        matrices=matrices,
+        y=y,
+        observed_positions=train_positions,
+        query_positions=target_positions,
+        config=config,
+    )
+
+    ids = joined.iloc[target_positions][ID_COLUMN].astype(str).to_numpy()
+    local_frame = pd.DataFrame(
+        {ID_COLUMN: ids, "predicted": local}
+    ).set_index(ID_COLUMN)
+    graph_frame = pd.DataFrame(
+        {ID_COLUMN: ids, "predicted": graph}
+    ).set_index(ID_COLUMN)
+    frozen_final = pd.read_csv(
+        root / str(inputs["frozen_final_predictions"])
+    ).set_index(ID_COLUMN)
+    frozen_diag = pd.read_csv(
+        root / str(inputs["frozen_final_diagnostics"])
+    ).set_index(ID_COLUMN)
+
+    local_diff = float(
+        np.max(
+            np.abs(
+                local_frame.loc[frozen_final.index, "predicted"].to_numpy(float)
+                - frozen_final[identity["target_column"]].to_numpy(float)
+            )
+        )
+    )
+    graph_diff = float(
+        np.max(
+            np.abs(
+                graph_frame.loc[frozen_diag.index, "predicted"].to_numpy(float)
+                - frozen_diag["predicted_graph"].to_numpy(float)
+            )
+        )
+    )
+    if local_diff > 1.0e-10 or graph_diff > 1.0e-10:
+        raise RuntimeError(
+            "Checkpoint 05 preflight cannot reproduce frozen 04F experts "
+            f"(Local diff={local_diff:g}, Graph diff={graph_diff:g})."
+        )
+
+    confirmation = config["validation"]["confirmation"]
+    if bool(confirmation.get("enabled", True)):
+        if int(confirmation["repeats"]) < 1:
+            raise ValueError("Confirmation bank must contain at least one split.")
+        if int(confirmation["n_pseudo_targets"]) != 41:
+            raise ValueError(
+                "Checkpoint 05 confirmation must preserve the 41-row "
+                "pseudo-target contract."
+            )
+        if int(confirmation["random_state"]) == int(
+            config["validation"]["random_state"]
+        ):
+            raise ValueError(
+                "Confirmation seed must differ from the development seed."
+            )
+
+        temporal_pairs = pd.read_csv(root / str(inputs["temporal_pairs"]))
+        adversarial_scores = pd.read_csv(
+            root / str(inputs["adversarial_scores"])
+        )
+        temporal = temporal_similarity_matrix(
+            joined,
+            temporal_pairs,
+            value_column=str(
+                checkpoint04b_config["distance"]["temporal_component"]
+            ),
+        )
+        profile = build_static_x_profile(
+            joined,
+            geographic_distances=matrices["geographic"],
+            agronomic_distances=matrices["agronomic"],
+            temporal_similarities=temporal,
+            adversarial_scores=adversarial_scores,
+        )
+        coordinates = standardized_profile_coordinates(
+            profile,
+            columns=checkpoint04b_config["profile_matching"]["columns"],
+        )
+        if coordinates.shape[0] != int(
+            config["validation"]["expected_total_rows"]
+        ):
+            raise ValueError(
+                "Confirmation profile does not cover all 197 parcels."
+            )
 
     if str(task_type).upper() == "GPU":
         try:
@@ -2038,12 +2220,22 @@ def _preflight(root: Path, config: dict[str, Any], task_type: str) -> None:
             raise RuntimeError(
                 "Checkpoint 05 is configured for GPU but CatBoost sees no GPU device."
             )
-        print(f"Checkpoint 05 preflight: CatBoost sees {gpu_count} GPU device(s).")
+        print(
+            f"Checkpoint 05 preflight: CatBoost sees {gpu_count} GPU device(s)."
+        )
     else:
         print("Checkpoint 05 preflight: intentional CPU mode selected.")
 
+    print(
+        "Checkpoint 05 preflight: frozen Local/Graph reproduction PASS "
+        f"(max diffs {local_diff:g}, {graph_diff:g})."
+    )
+    print(
+        "Checkpoint 05 preflight: representations, split bank, confirmation "
+        "profile and required inputs PASS."
+    )
     print("Checkpoint 05 preflight: PASS")
-    print("No scientific fit was executed.")
+    print("No global expert, stacker or mixture-of-experts fit was executed.")
 
 
 def parse_args() -> argparse.Namespace:
