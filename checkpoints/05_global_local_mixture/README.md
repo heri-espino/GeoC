@@ -16,6 +16,18 @@ with target-matched mean RMSE 0.487845.
 Checkpoint 05 evaluates whether global and local errors are sufficiently complementary to
 justify replacing that incumbent.
 
+## Competition-only data contract
+
+Checkpoint 05 is pinned to
+`data/processed/features_v1/parcel_features_competition.csv`. The historical
+`parcel_features_all.csv` artifact is not an active input for this stage. A base feature may
+still be available in both the clean and competition availability modes; that does not change
+the active track. The operative rule is that model construction runs from the competition
+table and the competition representation policy only.
+
+The runner validates this contract before either preflight or the full scientific run, and a
+regression test prevents the config from silently drifting back to `all`.
+
 ## Base experts
 
 Global experts are refit and tuned strictly inside the visible labels of each pseudo-split:
