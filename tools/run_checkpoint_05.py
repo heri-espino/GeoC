@@ -1051,7 +1051,7 @@ def run_checkpoint_05(
     output_dir = root / str(outputs["directory"])
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print("[05 1/8] Loading frozen Checkpoint 03/04 artifacts and representations...")
+    print("[05 1/9] Loading frozen Checkpoint 03/04 artifacts and representations...")
     base = pd.read_csv(root / str(inputs["base_table"]))
     agronomic = pd.read_csv(root / str(inputs["agronomic_table"]))
     empirical = pd.read_csv(root / str(inputs["empirical_table"]))
@@ -1148,7 +1148,7 @@ def run_checkpoint_05(
         print(f"  resume: {len(completed)} outer splits already complete")
 
     print(
-        f"[05 2/8] Running nested cross-fitted experts on "
+        f"[05 2/9] Running nested cross-fitted experts on "
         f"{len(splits)} outer splits..."
     )
     start = perf_counter()
@@ -1263,7 +1263,7 @@ def run_checkpoint_05(
     base_oof = pd.concat(base_blocks, ignore_index=True)
     meta_details_frame = pd.DataFrame(detail_rows)
 
-    print("[05 3/8] Summarizing candidate performance and residual diversity...")
+    print("[05 3/9] Summarizing candidate performance and residual diversity...")
     split_metrics = _split_metrics(predictions)
     protocol_summary = summarize_predictions_by_method(predictions)
     promotion_candidates = _promotion_candidates(config)
@@ -1292,7 +1292,7 @@ def run_checkpoint_05(
         methods=residual_methods,
     )
 
-    print("[05 4/8] Running leave-one-pseudo-split-out promotion gate...")
+    print("[05 4/9] Running leave-one-development-split-out promotion gate...")
     loso_selection, loso_predictions = leave_one_split_out_method_selection(
         predictions,
         family=primary_family,
@@ -1315,7 +1315,7 @@ def run_checkpoint_05(
         ["rmse_mean", "pooled_rmse", "method"]
     ).iloc[0]
     best_method = str(best_row["method"])
-    promotion_passed = bool(
+    preliminary_passed = bool(
         best_method != incumbent_method
         and float(best_row["rmse_mean"])
         < float(incumbent_row["rmse_mean"])
@@ -1326,9 +1326,205 @@ def run_checkpoint_05(
         and float(loso_summary_dict["pooled_rmse"])
         < float(incumbent_row["pooled_rmse"])
     )
+
+    confirmation_membership = pd.DataFrame(
+        columns=[
+            "split_id",
+            "family",
+            "repeat",
+            ID_COLUMN,
+            "role",
+            "match_objective",
+            "municipality_tv",
+            "profile_mean_distance",
+            "max_jaccard_vs_development",
+        ]
+    )
+    confirmation_predictions = pd.DataFrame(
+        columns=[
+            "family",
+            "split_id",
+            "method",
+            ID_COLUMN,
+            "observed",
+            "predicted",
+        ]
+    )
+    confirmation_summary = pd.DataFrame(
+        columns=[
+            "family",
+            "method",
+            "n_splits",
+            "n_predictions",
+            "rmse_mean",
+            "rmse_median",
+            "rmse_worst",
+            "pooled_rmse",
+            "pooled_mae",
+            "pooled_r2",
+        ]
+    )
+    confirmation_passed = False
+
+    if preliminary_passed:
+        print(
+            "[05 5/9] Evaluating the preselected candidate on a fresh "
+            "target-matched confirmation bank..."
+        )
+        confirmation_splits, confirmation_membership = (
+            _fresh_confirmation_splits(
+                frame=joined,
+                matrices=matrices,
+                temporal_pairs=temporal_pairs,
+                adversarial_scores=adversarial_scores,
+                checkpoint04b_config=checkpoint04b_config,
+                config=config,
+                development_splits=development_splits,
+            )
+        )
+
+        confirmation_blocks: list[pd.DataFrame] = []
+        completed_confirmation: set[str] = set()
+        if resume and partial_confirmation.is_file():
+            existing_confirmation = pd.read_csv(partial_confirmation)
+            confirmation_blocks.append(existing_confirmation)
+            completed_confirmation = set(
+                existing_confirmation["split_id"].astype(str).unique()
+            )
+            print(
+                "  resume confirmation: "
+                f"{len(completed_confirmation)} splits already complete"
+            )
+
+        confirm_start = perf_counter()
+        for confirm_index, split in enumerate(
+            confirmation_splits,
+            start=1,
+        ):
+            if split.split_id in completed_confirmation:
+                continue
+            observed_positions = np.asarray(
+                split.observed_positions,
+                dtype=int,
+            )
+            query_positions = np.asarray(
+                split.query_positions,
+                dtype=int,
+            )
+            confirm_meta_train, _ = _crossfit_base_experts(
+                joined=joined,
+                y=y,
+                visible_positions=observed_positions,
+                family=split.family,
+                representations=representations,
+                config=config,
+                checkpoint03c2_config=checkpoint03c2_config,
+                empirical_config=empirical_config,
+                matrices=matrices,
+                random_state=(
+                    int(config["validation"]["confirmation"]["random_state"])
+                    + confirm_index * 1000
+                ),
+                task_type=task_type,
+            )
+            confirm_base_query, _, _ = _fit_base_experts(
+                joined=joined,
+                y=y,
+                train_positions=observed_positions,
+                query_positions=query_positions,
+                family=split.family,
+                representations=representations,
+                config=config,
+                checkpoint03c2_config=checkpoint03c2_config,
+                empirical_config=empirical_config,
+                matrices=matrices,
+                random_state=(
+                    int(config["validation"]["confirmation"]["random_state"])
+                    + confirm_index * 1000
+                    + 777
+                ),
+                task_type=task_type,
+                return_estimators=False,
+            )
+            confirm_candidates, _, _ = _predict_all_candidates(
+                meta_train=confirm_meta_train,
+                base_query=confirm_base_query,
+                family=split.family,
+                config=config,
+                requested_methods={best_method},
+            )
+            selected_predictions = {
+                method: values
+                for method, values in confirm_candidates.items()
+                if method in {incumbent_method, best_method}
+            }
+            if set(selected_predictions) != {
+                incumbent_method,
+                best_method,
+            }:
+                raise RuntimeError(
+                    "Fresh confirmation did not produce both the incumbent "
+                    "and the preselected candidate."
+                )
+            confirmation_blocks.append(
+                candidate_prediction_frame(
+                    confirm_base_query[ID_COLUMN].astype(str).tolist(),
+                    confirm_base_query["observed"].to_numpy(float),
+                    selected_predictions,
+                    family=split.family,
+                    split_id=split.split_id,
+                )
+            )
+            pd.concat(
+                confirmation_blocks,
+                ignore_index=True,
+            ).to_csv(partial_confirmation, index=False)
+            elapsed = (perf_counter() - confirm_start) / 60.0
+            print(
+                f"  confirmation [{confirm_index:02d}/"
+                f"{len(confirmation_splits):02d}] {split.split_id} "
+                f"complete ({elapsed:.1f} min elapsed)",
+                flush=True,
+            )
+
+        confirmation_predictions = pd.concat(
+            confirmation_blocks,
+            ignore_index=True,
+        )
+        confirmation_summary = summarize_predictions_by_method(
+            confirmation_predictions
+        )
+        confirmation_incumbent = confirmation_summary.loc[
+            confirmation_summary["method"].eq(incumbent_method)
+        ]
+        confirmation_candidate = confirmation_summary.loc[
+            confirmation_summary["method"].eq(best_method)
+        ]
+        if len(confirmation_incumbent) != 1 or len(confirmation_candidate) != 1:
+            raise RuntimeError(
+                "Fresh confirmation summary does not contain exactly one "
+                "incumbent and one candidate row."
+            )
+        confirm_local = confirmation_incumbent.iloc[0]
+        confirm_best = confirmation_candidate.iloc[0]
+        confirmation_passed = bool(
+            float(confirm_best["rmse_mean"])
+            < float(confirm_local["rmse_mean"])
+            and float(confirm_best["pooled_rmse"])
+            < float(confirm_local["pooled_rmse"])
+        )
+    else:
+        print(
+            "[05 5/9] Fresh confirmation skipped: the development/LOSO "
+            "gate did not justify a challenger."
+        )
+
+    promotion_passed = bool(
+        preliminary_passed and confirmation_passed
+    )
     final_method = best_method if promotion_passed else incumbent_method
 
-    print("[05 5/8] Fitting full-label experts and meta-models for the actual 59...")
+    print("[05 6/9] Fitting full-label experts and meta-models for the actual 59...")
     train_positions = np.flatnonzero(
         joined[identity["split_column"]].eq(identity["train_value"]).to_numpy()
     )
@@ -1382,7 +1578,7 @@ def run_checkpoint_05(
         actual_predictions,
     )
 
-    print("[05 6/8] Verifying exact Local04D/Graph04D provenance against 04F...")
+    print("[05 7/9] Verifying exact Local04D/Graph04D provenance against 04F...")
     frozen_final = pd.read_csv(
         root / str(inputs["frozen_final_predictions"])
     )
@@ -1438,7 +1634,7 @@ def run_checkpoint_05(
             "Final Checkpoint 05 table does not contain exactly 59 rows."
         )
 
-    print("[05 7/8] Exporting model bundle, manifest and diagnostics...")
+    print("[05 8/9] Exporting model bundle, manifest and diagnostics...")
     final_diagnostics = actual_base_query.copy()
     for method, values in actual_predictions.items():
         if method not in final_diagnostics.columns:
@@ -1511,7 +1707,7 @@ def run_checkpoint_05(
     if bool(config["runtime"].get("persist_model_bundle", True)):
         joblib.dump(bundle, model_bundle_path, compress=3)
 
-    print("[05 8/8] Writing final Checkpoint 05 artifacts...")
+    print("[05 9/9] Writing final Checkpoint 05 artifacts...")
     base_oof.to_csv(
         output_dir / str(outputs["base_oof_predictions"]),
         index=False,
