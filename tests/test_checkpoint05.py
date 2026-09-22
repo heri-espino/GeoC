@@ -12,6 +12,7 @@ from geocebada.evaluation.checkpoint05 import (
 )
 from geocebada.models.checkpoint05 import (
     fixed_target_predictions,
+    load_checkpoint05_bundle,
     verify_fixed_target_bundle,
 )
 
@@ -158,3 +159,40 @@ def test_fixed_target_bundle_helpers_reproduce_selected_candidate() -> None:
     assert len(recovered) == 59
     assert verification["verified"] is True
     assert verification["max_abs_difference"] == pytest.approx(0.0)
+
+
+
+def test_checkpoint05_bundle_roundtrip_loader(tmp_path) -> None:
+    ids = [f"AGC_{index:03d}" for index in range(59)]
+    values = np.linspace(2.0, 5.0, 59)
+    bundle = {
+        "manifest": {
+            "checkpoint": "05",
+            "inference_scope": "fixed_59_competition_targets",
+        },
+        "final_method": "Local04D",
+        "final_predictions": pd.DataFrame(
+            {
+                "ID_POLIGONO": ids,
+                "RENDIMIENTO_T_HA": values,
+            }
+        ),
+        "actual_candidates": pd.DataFrame(
+            {
+                "ID_POLIGONO": ids,
+                "method": ["Local04D"] * 59,
+                "predicted": values,
+            }
+        ),
+        "final_diagnostics": pd.DataFrame({"ID_POLIGONO": ids}),
+        "target_ids": ids,
+    }
+
+    path = tmp_path / "checkpoint05_model.joblib"
+    import joblib
+
+    joblib.dump(bundle, path)
+    loaded = load_checkpoint05_bundle(path)
+
+    assert loaded["final_method"] == "Local04D"
+    assert verify_fixed_target_bundle(loaded)["verified"] is True
