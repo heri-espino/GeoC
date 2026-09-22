@@ -13,20 +13,19 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint03c.yaml` | Representation benchmark | Checkpoint 03C.1 closed/frozen |
 | `checkpoint03c2.yaml` | Competition-only nested model-family benchmark | Checkpoint 03C.2 closed/frozen |
 | `checkpoint03c3.yaml` | Fixed finalist/equal-weight OOF ensemble review | Checkpoint 03C.3 closed/frozen |
-| `checkpoint04.yaml` | Fixed-target transductive objective, validation and phase contract | **Checkpoint 04 active** |
+| `checkpoint04.yaml` | Fixed-target transductive objective and Checkpoint 04 validation contract | Checkpoint 04 closed/frozen |
 | `checkpoint04a.yaml` | Target topology, temporal similarity, shift, autocorrelation and support diagnostics | 04A complete |
 | `checkpoint04b.yaml` | Repeated transductive pseudo-competition validation with global/local/graph methods and X-only routing | 04B complete |
 | `checkpoint04d1.yaml` | Exhaustive local/graph refinement, residual-graph correction and LOSO routing validation | 04D.1 complete |
 | `checkpoint04c1.yaml` | Focused C1 agronomic CatBoost anchor and low-weight blend validation | **04C.1 implemented; workstation run next** |
 | `checkpoint04e1.yaml` | Exact SIAP 2025 localization and external-prior validation | 04E.1 complete |
 | `checkpoint04f.yaml` | Final Local04D freeze, Local/Graph sensitivity and 59-row output contract | 04F complete/frozen |
-| `checkpoint05.yaml` | Cross-fitted global/local stacking, support-conditioned mixture-of-experts and conservative promotion gate | **05 implemented; workstation run next** |
+| `checkpoint05.yaml` | Cross-fitted global/local stacking, support-conditioned mixture-of-experts and conservative promotion gate | **05 implemented; workstation preflight/run next** |
 
 Do not silently edit frozen Checkpoint 01–03 configs to improve historical results. Checkpoint
 03 is preserved as the First Modeling Delivery.
 
-Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`; active implementation should
-create Checkpoint 04-specific configuration rather than mutating historical contracts.
+Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`. Checkpoint 05 is the active final-combination implementation; historical Checkpoint 01–04 configs remain frozen evidence.
 
 See `docs/AGENT_GUIDE.md` and `docs/PROJECT_HISTORY.md`.
 
