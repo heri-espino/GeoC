@@ -97,8 +97,7 @@ Before committing the workstation to the long run, use the fail-fast preflight:
     conda activate geocebada
     python tools\run_checkpoint_05.py --preflight
 
-This checks required inputs, CatBoost installation and GPU visibility without fitting any
-scientific model. Then start the final run:
+This checks required inputs, the 197/138/59 contract, configured representations and split bank, the X-only confirmation profile, exact Local04D/Graph04D reproduction against frozen 04F, CatBoost installation and GPU visibility without fitting any global expert, stacker or mixture-of-experts. Then start the final run:
 
     python tools\run_checkpoint_05.py
 
