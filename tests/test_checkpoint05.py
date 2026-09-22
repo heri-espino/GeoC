@@ -11,6 +11,7 @@ from geocebada.evaluation.checkpoint05 import (
     ConvexStackRegressor,
     SupportMixtureOfExperts,
     candidate_prediction_frame,
+    constrain_component_param_grid,
     support_descriptors,
 )
 from geocebada.models.checkpoint05 import (
@@ -32,6 +33,59 @@ def test_checkpoint05_config_is_competition_only() -> None:
         Path(config["inputs"]["base_table"]).name
         == "parcel_features_competition.csv"
     )
+
+
+
+def test_component_grid_is_clipped_to_smallest_inner_training_fold() -> None:
+    grid = [
+        {"model__n_components": [2]},
+        {"model__n_components": [4]},
+        {"model__n_components": [8]},
+        {"model__n_components": [12]},
+        {"model__n_components": [20]},
+    ]
+    inner_splits = [
+        (np.arange(18), np.arange(18, 24)),
+        (np.arange(21), np.arange(21, 24)),
+        (np.arange(20), np.arange(20, 24)),
+    ]
+
+    constrained, cap = constrain_component_param_grid(
+        grid,
+        parameter="model__n_components",
+        inner_splits=inner_splits,
+        n_features=200,
+    )
+
+    assert cap == 18
+    assert [row["model__n_components"][0] for row in constrained] == [
+        2,
+        4,
+        8,
+        12,
+    ]
+
+
+def test_component_grid_also_respects_feature_dimension() -> None:
+    grid = [
+        {"model__n_components": [2]},
+        {"model__n_components": [4]},
+        {"model__n_components": [8]},
+    ]
+    inner_splits = [
+        (np.arange(20), np.arange(20, 25)),
+        (np.arange(19), np.arange(19, 25)),
+    ]
+
+    constrained, cap = constrain_component_param_grid(
+        grid,
+        parameter="model__n_components",
+        inner_splits=inner_splits,
+        n_features=4,
+    )
+
+    assert cap == 4
+    assert [row["model__n_components"][0] for row in constrained] == [2, 4]
 
 
 def test_convex_stack_weights_are_valid_and_predict() -> None:
