@@ -94,6 +94,15 @@ def _git_commit(root: Path) -> str | None:
 
 
 def _validate_contract(frame: pd.DataFrame, config: dict[str, Any]) -> None:
+    if str(config["scope"]["active_track"]) != "competition":
+        raise ValueError("Checkpoint 05 must run on the competition track only.")
+    base_table = Path(str(config["inputs"]["base_table"]))
+    if base_table.name != "parcel_features_competition.csv":
+        raise ValueError(
+            "Checkpoint 05 must use parcel_features_competition.csv as its "
+            "canonical base table."
+        )
+
     identity = config["identity"]
     required = {
         identity["id_column"],
