@@ -59,6 +59,7 @@ outputs:
   final_predictions: final_predictions.csv
   final_diagnostics: final_prediction_diagnostics.csv
   model_manifest: model_manifest.json
+  feature_schema: feature_schema.json
   report_json: checkpoint_05_report.json
   report_markdown: checkpoint_05_report.md
   model_bundle: models/final/checkpoint05_model.joblib
