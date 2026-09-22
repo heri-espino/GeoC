@@ -10,6 +10,10 @@ from geocebada.evaluation.checkpoint05 import (
     candidate_prediction_frame,
     support_descriptors,
 )
+from geocebada.models.checkpoint05 import (
+    fixed_target_predictions,
+    verify_fixed_target_bundle,
+)
 
 
 def test_convex_stack_weights_are_valid_and_predict() -> None:
@@ -117,3 +121,40 @@ def test_candidate_prediction_frame_is_long_and_aligned() -> None:
     assert len(result) == 4
     assert set(result["method"]) == {"M1", "M2"}
     assert set(result["ID_POLIGONO"]) == {"A", "B"}
+
+
+def test_fixed_target_bundle_helpers_reproduce_selected_candidate() -> None:
+    ids = [f"AGC_{index:03d}" for index in range(59)]
+    values = np.linspace(2.0, 5.0, 59)
+    final = pd.DataFrame(
+        {
+            "ID_POLIGONO": ids,
+            "RENDIMIENTO_T_HA": values,
+        }
+    )
+    candidates = pd.DataFrame(
+        {
+            "ID_POLIGONO": ids + ids,
+            "method": ["M1"] * 59 + ["M2"] * 59,
+            "predicted": np.concatenate([values, values + 0.2]),
+        }
+    )
+    diagnostics = pd.DataFrame({"ID_POLIGONO": ids})
+    bundle = {
+        "manifest": {
+            "checkpoint": "05",
+            "inference_scope": "fixed_59_competition_targets",
+        },
+        "final_method": "M1",
+        "final_predictions": final,
+        "actual_candidates": candidates,
+        "final_diagnostics": diagnostics,
+        "target_ids": ids,
+    }
+
+    recovered = fixed_target_predictions(bundle)
+    verification = verify_fixed_target_bundle(bundle)
+
+    assert len(recovered) == 59
+    assert verification["verified"] is True
+    assert verification["max_abs_difference"] == pytest.approx(0.0)
