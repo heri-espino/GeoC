@@ -167,12 +167,17 @@ target-aware discovery are fitted inside the corresponding cross-fit training
 subset. The outer pseudo-target y remains untouched until scoring.
 
 Do not replace 04F merely because one 05 method has the lowest full-development
-RMSE. Promotion is allowed only if the configured LOSO method-selection
-procedure improves both mean and pooled RMSE relative to Local04D.
+RMSE. Promotion requires: (1) the challenger improves development mean and
+pooled RMSE, (2) the configured LOSO method-selection procedure improves both
+metrics relative to Local04D, and (3) the preselected challenger then beats
+Local04D on both metrics in a fresh 16-split target-matched confirmation bank
+generated X-only with an unused seed. The confirmation bank is not used to
+search for a second challenger.
 
 The local serialized output is
 `models/final/checkpoint05_model.joblib`; it is ignored by Git and intended for
-the later Python/Streamlit application.
+the later Python/Streamlit application. The runner reloads and verifies the
+joblib bundle before declaring success.
 
 ## Checkpoint 05 implementation status
 
@@ -224,14 +229,6 @@ The nominal 0.0000035 mean-RMSE advantage of the 10% CatBoost blend is
 numerically negligible, reverses on pooled RMSE, and does not survive the
 split-excluded gate. CatBoost is therefore diagnostic only and is not a
 required 04F component.
-
-## Checkpoint 04F implementation status
-
-04F is implemented and run-pending. The configured final rule is
-`Baseline_Local04D`. Before writing the final file, the runner verifies that
-its 59 predictions exactly reproduce the frozen 04D.1 source method in 04E.1.
-It also performs a constrained Local/Graph blend-weight LOSO check but does not
-automatically replace the frozen rule based on that development table.
 
 ## Checkpoint 04E.1 completed findings
 
