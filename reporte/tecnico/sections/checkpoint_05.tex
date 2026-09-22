@@ -190,6 +190,45 @@ y
 Además, $m^\star$ debe mejorar Local04D tanto en mean como pooled RMSE sobre la tabla de
 desarrollo. Sólo entonces se promueve $m^\star$ al fit completo de las 138 etiquetas.
 
+\subsection{Banco target-matched de confirmación fresca}
+
+Existe una consideración adicional: los 16 splits target-matched originales ya participaron
+en el refinamiento de Local04D durante 04D.1. Por ello, aunque el LOSO de Checkpoint~05
+controla la selección de método dentro de ese banco, no constituye evidencia completamente
+nueva respecto al incumbent.
+
+Se predeclara entonces un segundo banco de 16 máscaras. Las máscaras se generan únicamente
+con $X$ y metadata usando el mismo algoritmo de matching de 04B, pero con una seed no utilizada
+durante el desarrollo. Si $\mathcal S_D$ denota el banco de desarrollo y $\mathcal S_C$ el
+banco de confirmación, se impone al menos
+\[
+S_C\neq S_D
+\qquad
+\forall S_C\in\mathcal S_C,\ S_D\in\mathcal S_D,
+\]
+es decir, no se permiten máscaras exactamente duplicadas.
+
+El challenger $m^\star$ se congela \emph{antes} de revelar cualquier $y$ de
+$\mathcal S_C$. En confirmación sólo se compara
+\[
+\{m^\star,\mathrm{Local04D}\}.
+\]
+La promoción exige simultáneamente
+\[
+\overline{\RMSE}_{C,m^\star}
+<
+\overline{\RMSE}_{C,Local}
+\]
+y
+\[
+\RMSE_{\mathrm{pooled},C,m^\star}
+<
+\RMSE_{\mathrm{pooled},C,Local}.
+\]
+Si el gate de desarrollo falla, el banco de confirmación ni siquiera se utiliza para escoger
+otro método. Esto preserva su función como prueba confirmatoria y evita convertirlo en un
+segundo search space.
+
 \subsection{Exportación}
 
 El runner produce un archivo de predicciones final y un bundle serializado:
