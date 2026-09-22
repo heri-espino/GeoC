@@ -1066,3 +1066,26 @@ and verification helpers live under `geocebada.models.checkpoint05`.
 
 No Checkpoint 05 scientific fit was executed as part of these repository changes. The next
 workstation action is the preflight followed by the long GPU run.
+
+
+---
+
+## 2026-09-22 — Checkpoint 05 preflight and app export finalized
+
+Before the workstation run, the Checkpoint 05 fail-fast preflight was strengthened to construct
+the complete fresh target-matched confirmation bank rather than validating only its X-only
+profile. It now checks all 16 confirmation masks, enforces 41 pseudo-targets per mask, rejects
+exact duplicates of the original development masks when configured, verifies exact
+Local04D/Graph04D reproduction against frozen 04F, and checks CatBoost GPU visibility without
+fitting any global expert or meta-model.
+
+Checkpoint 05 now writes two ignored local joblib artifacts after the final 138-label fit.
+`checkpoint05_app_bundle.joblib` is deliberately lightweight and contains only the fixed-59
+prediction contract, candidate predictions, diagnostics, manifest, schema and target IDs; it
+contains no fitted estimator objects and is intended for the later Streamlit interface.
+`checkpoint05_model.joblib` additionally preserves fitted global experts and meta-models for
+full reproducibility. Both bundles are serialized, reloaded and checked against the selected
+59-row candidate before the runner can report PASS.
+
+No Checkpoint 05 scientific fit was executed during these repository changes. The immediate
+next action remains the workstation preflight followed by the single long GPU run.
