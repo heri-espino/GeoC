@@ -1021,8 +1021,47 @@ def _render_report(report: dict[str, Any], primary: pd.DataFrame) -> str:
             f"- incumbent pooled RMSE: **{report['incumbent']['pooled_rmse']:.6f}**",
             "",
             "The full target-matched table may identify the lowest development score,",
-            "but Checkpoint 05 promotes it only if leave-one-pseudo-split-out",
-            "selection improves both mean and pooled RMSE relative to Local04D.",
+            "but Checkpoint 05 first requires the leave-one-development-split-out",
+            "selector to improve both mean and pooled RMSE relative to Local04D.",
+            "",
+            "## Fresh target-matched confirmation",
+            "",
+        ]
+    )
+    confirmation = report["confirmation"]
+    if confirmation["executed"]:
+        lines.extend(
+            [
+                f"- candidate: **{confirmation['candidate']}**",
+                f"- confirmation passed: **{confirmation['passed']}**",
+                (
+                    "- candidate mean RMSE: "
+                    f"**{confirmation['candidate_metrics']['rmse_mean']:.6f}**"
+                ),
+                (
+                    "- incumbent mean RMSE: "
+                    f"**{confirmation['incumbent']['rmse_mean']:.6f}**"
+                ),
+                (
+                    "- candidate pooled RMSE: "
+                    f"**{confirmation['candidate_metrics']['pooled_rmse']:.6f}**"
+                ),
+                (
+                    "- incumbent pooled RMSE: "
+                    f"**{confirmation['incumbent']['pooled_rmse']:.6f}**"
+                ),
+            ]
+        )
+    else:
+        lines.append(
+            "Fresh confirmation was not executed because the development/LOSO "
+            "gate did not produce a justified challenger."
+        )
+    lines.extend(
+        [
+            "",
+            "A candidate replaces Local04D only if the preselected fixed method",
+            "also improves both mean and pooled RMSE on this fresh X-only split bank.",
             "",
             "## Export",
             "",
