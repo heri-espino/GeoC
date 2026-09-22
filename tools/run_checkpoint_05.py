@@ -1870,15 +1870,41 @@ def run_checkpoint_05(
         ),
     }
     model_bundle_path = root / str(outputs["model_bundle"])
+    app_bundle_path = root / str(outputs["app_bundle"])
     model_bundle_path.parent.mkdir(parents=True, exist_ok=True)
+    app_bundle_path.parent.mkdir(parents=True, exist_ok=True)
     bundle_verification: dict[str, Any] | None = None
+    app_bundle_verification: dict[str, Any] | None = None
     if bool(config["runtime"].get("persist_model_bundle", True)):
         joblib.dump(bundle, model_bundle_path, compress=3)
         reloaded_bundle = joblib.load(model_bundle_path)
         bundle_verification = verify_fixed_target_bundle(reloaded_bundle)
         model_manifest["bundle_roundtrip_verification"] = bundle_verification
+
+        app_bundle = {
+            "manifest": model_manifest,
+            "feature_schema": feature_schema,
+            "final_method": final_method,
+            "final_predictions": selected_actual,
+            "actual_candidates": actual_candidates,
+            "final_diagnostics": final_diagnostics,
+            "target_ids": (
+                joined.iloc[target_positions][ID_COLUMN].astype(str).tolist()
+            ),
+        }
+        joblib.dump(app_bundle, app_bundle_path, compress=3)
+        reloaded_app_bundle = joblib.load(app_bundle_path)
+        app_bundle_verification = verify_fixed_target_bundle(
+            reloaded_app_bundle
+        )
+        model_manifest["app_bundle_roundtrip_verification"] = (
+            app_bundle_verification
+        )
+
         bundle["manifest"] = model_manifest
+        app_bundle["manifest"] = model_manifest
         joblib.dump(bundle, model_bundle_path, compress=3)
+        joblib.dump(app_bundle, app_bundle_path, compress=3)
 
     print("[05 9/9] Writing final Checkpoint 05 artifacts...")
     base_oof.to_csv(
@@ -1995,6 +2021,7 @@ def run_checkpoint_05(
         ),
         "actual_meta_models": actual_meta_details,
         "bundle_roundtrip_verification": bundle_verification,
+        "app_bundle_roundtrip_verification": app_bundle_verification,
     }
     (output_dir / str(outputs["report_json"])).write_text(
         json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True)
@@ -2396,6 +2423,7 @@ def main() -> int:
     print(f"Promotion passed: {report['promotion_passed']}")
     print(f"Final method: {report['final_method']}")
     print("Final table: reports/checkpoint_05/final_predictions.csv")
+    print("App bundle: models/final/checkpoint05_app_bundle.joblib")
     print("Model bundle: models/final/checkpoint05_model.joblib")
     return 0
 
