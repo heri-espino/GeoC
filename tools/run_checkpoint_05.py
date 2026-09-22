@@ -56,6 +56,7 @@ from geocebada.evaluation.checkpoint05 import (
     FittedMetaCandidate,
     SupportMixtureOfExperts,
     candidate_prediction_frame,
+    constrain_component_param_grid,
     support_descriptors,
 )
 from geocebada.features import join_agronomic_features, join_empirical_features
@@ -397,6 +398,22 @@ def _fit_global_expert(
         catboost_task_type=str(task_type),
         catboost_devices=str(devices),
     )
+    param_grid = search_spec.param_grid
+    if search_spec.kind == "pls":
+        original_grid = param_grid
+        param_grid, component_cap = constrain_component_param_grid(
+            param_grid,
+            parameter="model__n_components",
+            inner_splits=inner_splits,
+            n_features=x_train.shape[1],
+        )
+        if param_grid != original_grid:
+            print(
+                "          PLS grid constrained by nested fold size: "
+                f"n_components <= {component_cap}",
+                flush=True,
+            )
+
     jobs = (
         1
         if search_spec.kind in {"catboost", "extra_trees"}
@@ -404,7 +421,7 @@ def _fit_global_expert(
     )
     search = GridSearchCV(
         estimator=search_spec.estimator,
-        param_grid=search_spec.param_grid,
+        param_grid=param_grid,
         scoring="neg_root_mean_squared_error",
         cv=inner_splits,
         refit=True,
