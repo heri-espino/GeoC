@@ -32,6 +32,7 @@ GitHub Actions y los entornos locales compilen exactamente la misma versión vis
     │   ├── checkpoint_01a.tex
     │   ├── ...
     │   ├── checkpoint_04f.tex
+    │   ├── checkpoint_05.tex
     │   └── sintesis_final.tex
     └── appendices/
         ├── notacion_metricas.tex
