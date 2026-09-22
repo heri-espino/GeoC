@@ -21,7 +21,6 @@ from geocebada.models.checkpoint05 import (
 )
 
 
-
 def test_checkpoint05_config_is_competition_only() -> None:
     root = Path(__file__).resolve().parents[1]
     config = yaml.safe_load(
@@ -33,7 +32,6 @@ def test_checkpoint05_config_is_competition_only() -> None:
         Path(config["inputs"]["base_table"]).name
         == "parcel_features_competition.csv"
     )
-
 
 
 def test_component_grid_is_clipped_to_smallest_inner_training_fold() -> None:
@@ -230,7 +228,6 @@ def test_fixed_target_bundle_helpers_reproduce_selected_candidate() -> None:
     assert len(recovered) == 59
     assert verification["verified"] is True
     assert verification["max_abs_difference"] == pytest.approx(0.0)
-
 
 
 def test_checkpoint05_bundle_roundtrip_loader(tmp_path) -> None:
