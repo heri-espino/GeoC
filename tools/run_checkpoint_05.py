@@ -956,8 +956,7 @@ def _promotion_candidates(config: dict[str, Any]) -> list[str]:
     return list(
         dict.fromkeys(
             [
-                "Local04D",
-                "Graph04D",
+                *map(str, config["meta_model"]["expert_columns"]),
                 *map(str, config["derived_global_ensembles"].keys()),
                 *map(str, config["fixed_blends"].keys()),
                 *map(str, config["meta_model"]["candidates"].keys()),
