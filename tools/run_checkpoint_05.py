@@ -1980,6 +1980,58 @@ def run_checkpoint_05(
     return report
 
 
+def _preflight(root: Path, config: dict[str, Any], task_type: str) -> None:
+    """Fail fast before a long workstation run if required inputs/GPU are missing."""
+
+    required_inputs = [
+        "base_table",
+        "base_manifest",
+        "agronomic_table",
+        "agronomic_manifest",
+        "empirical_table",
+        "empirical_manifest",
+        "empirical_config",
+        "checkpoint03c2_config",
+        "checkpoint04d1_config",
+        "checkpoint04b_config",
+        "transductive_embeddings",
+        "adversarial_scores",
+        "temporal_pairs",
+        "pseudo_membership",
+        "frozen_final_predictions",
+        "frozen_final_diagnostics",
+    ]
+    missing = [
+        str(root / str(config["inputs"][key]))
+        for key in required_inputs
+        if not (root / str(config["inputs"][key])).is_file()
+    ]
+    if missing:
+        raise FileNotFoundError(
+            "Checkpoint 05 preflight is missing required files:\n  - "
+            + "\n  - ".join(missing)
+        )
+
+    if str(task_type).upper() == "GPU":
+        try:
+            from catboost.utils import get_gpu_device_count
+        except ImportError as exc:
+            raise RuntimeError(
+                "CatBoost is not installed. Install the project model extras first."
+            ) from exc
+        gpu_count = int(get_gpu_device_count())
+        if gpu_count < 1:
+            raise RuntimeError(
+                "Checkpoint 05 is configured for GPU but CatBoost sees no GPU device."
+            )
+        print(f"Checkpoint 05 preflight: CatBoost sees {gpu_count} GPU device(s).")
+    else:
+        print("Checkpoint 05 preflight: intentional CPU mode selected.")
+
+    print("Checkpoint 05 preflight: PASS")
+    print("No scientific fit was executed.")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
@@ -2002,6 +2054,11 @@ def parse_args() -> argparse.Namespace:
         "--resume",
         action="store_true",
         help="Resume from split-level partial artifacts after interruption.",
+    )
+    parser.add_argument(
+        "--preflight",
+        action="store_true",
+        help="Validate required inputs and GPU availability without fitting models.",
     )
     return parser.parse_args()
 
@@ -2031,6 +2088,10 @@ def main() -> int:
             "CPU execution was requested but not confirmed. Rerun with "
             "--catboost-task-type CPU --confirm-cpu y."
         )
+
+    if args.preflight:
+        _preflight(root, config, task_type)
+        return 0
 
     report = run_checkpoint_05(
         root,
