@@ -101,6 +101,7 @@ from geocebada.evaluation.checkpoint05 import (
     FittedMetaCandidate,
     SupportMixtureOfExperts,
     candidate_prediction_frame,
+    constrain_component_param_grid,
     support_descriptors,
 )
 from geocebada.evaluation.checkpoint04f import (
@@ -134,6 +135,7 @@ __all__ = [
     "FittedMetaCandidate",
     "SupportMixtureOfExperts",
     "candidate_prediction_frame",
+    "constrain_component_param_grid",
     "support_descriptors",
     "blend_method_name",
     "build_final_prediction_diagnostics",
