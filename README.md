@@ -15,9 +15,11 @@ parcelas, clima, suelo, topografía, SIAP 2025 y demás fuentes públicas justif
 Las X de las 59 parcelas **sí forman parte del problema** y pueden utilizarse en aprendizaje
 transductivo X-only. Los 59 y ocultos no pueden utilizarse ni obtenerse directamente.
 
-Checkpoint 03 queda congelado como **First Modeling Delivery** y baseline convencional. La fase
-activa es `checkpoints/04_transductive_competition/`. Leer primero
-`docs/TRANSDUCTIVE_OBJECTIVE.md`.
+Checkpoint 03 queda congelado como **First Modeling Delivery** y Checkpoint 04 como la
+línea transductiva/local que produjo el incumbent. La fase activa es ahora
+`checkpoints/05_global_local_mixture/`, que combina ambas líneas con stacking cross-fitted y
+mixture-of-experts. Leer primero `docs/TRANSDUCTIVE_OBJECTIVE.md` y
+`docs/CHECKPOINT_05_PLAN.md`.
 
 
 **Predicción agroclimática y geoespacial del rendimiento de cebada** para el Reto AgroCebada FIRA 2026.
@@ -39,6 +41,41 @@ El identificador canónico es `ID_POLIGONO`. La documentación oficial confirma 
 Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conocemos \(X_L\), \(X_U\) y \(y_L\), y buscamos reconstruir \(y_U\). Una única función global \(f(X)\) es sólo una de varias estrategias posibles.
 
 
+
+## Checkpoint 05 — activo: global + local mixture
+
+Checkpoint 05 es el último experimento de modelado previsto. Combina los
+expertos globales validados en 03 (PLS, Ridge, CatBoost, ExtraTrees) con los
+expertos Local04D y Graph04D de 04 dentro de las mismas pseudo-competiciones
+target-matched.
+
+La novedad principal es un **mixture-of-experts condicionado en soporte**,
+entrenado únicamente sobre predicciones base cross-fitted. También se incluyen
+controles más simples: convex stacking, Ridge/ElasticNet/Huber stacking,
+ExtraTrees/HistGB shallow y blends Local+E13/E123.
+
+El incumbent sigue siendo Local04D con RMSE target-matched 0.487845 hasta que
+05 termine y pase el gate leave-one-pseudo-split-out.
+
+En la workstation:
+
+```powershell
+git pull
+conda activate geocebada
+python tools\run_checkpoint_05.py
+```
+
+Si el run se interrumpe después de completar splits:
+
+```powershell
+python tools\run_checkpoint_05.py --resume
+```
+
+GPU es el default y no existe fallback automático a CPU. El run final exporta
+la tabla de 59 predicciones, manifest y un bundle local
+`models/final/checkpoint05_model.joblib` para la futura app.
+
+Plan técnico: `docs/CHECKPOINT_05_PLAN.md`.
 
 ## Checkpoint 04F — completado
 
