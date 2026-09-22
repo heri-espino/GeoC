@@ -1073,6 +1073,15 @@ def run_checkpoint_05(
     checkpoint04d1_config = _load_yaml(
         root / str(inputs["checkpoint04d1_config"])
     )
+    checkpoint04b_config = _load_yaml(
+        root / str(inputs["checkpoint04b_config"])
+    )
+    adversarial_scores = pd.read_csv(
+        root / str(inputs["adversarial_scores"])
+    )
+    temporal_pairs = pd.read_csv(
+        root / str(inputs["temporal_pairs"])
+    )
     representations = build_competition_representation_specs(
         joined=joined,
         manifests=manifests,
@@ -1101,7 +1110,12 @@ def run_checkpoint_05(
     families = set(map(str, config["validation"]["families"]))
     splits = [split for split in splits if split.family in families]
     primary_family = str(config["validation"]["primary_family"])
-    primary_count = sum(split.family == primary_family for split in splits)
+    development_splits = [
+        split
+        for split in splits
+        if split.family == primary_family
+    ]
+    primary_count = len(development_splits)
     if primary_count != int(config["validation"]["expected_primary_splits"]):
         raise ValueError(
             "Checkpoint 05 primary split count does not match the frozen contract."
@@ -1116,6 +1130,7 @@ def run_checkpoint_05(
     partial_predictions = output_dir / "_partial_pseudo_predictions.csv"
     partial_base = output_dir / "_partial_base_oof_predictions.csv"
     partial_details = output_dir / "_partial_meta_selection_details.csv"
+    partial_confirmation = output_dir / "_partial_confirmation_predictions.csv"
     prediction_blocks: list[pd.DataFrame] = []
     base_blocks: list[pd.DataFrame] = []
     detail_rows: list[dict[str, Any]] = []
