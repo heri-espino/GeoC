@@ -97,6 +97,10 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `split_positions_from_membership` | function | `geocebada.evaluation.checkpoint04d1` | Resolve committed 04B split membership into row-position tuples. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `summarize_nested_predictions` | function | `geocebada.evaluation.checkpoint04d1` | Summarize nested selected/routed predictions with equal-weight split RMSE. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `summarize_predictions_by_method` | function | `geocebada.evaluation.checkpoint04d1` | Summarize equal-weight split RMSE and pooled row metrics by method. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `fixed_target_diagnostics` | function | `geocebada.models.checkpoint05` | Return app-facing diagnostics for the fixed competition targets. | `src/geocebada/models/checkpoint05.py` |
+| `fixed_target_predictions` | function | `geocebada.models.checkpoint05` | Return the canonical fixed-59 prediction table from a loaded bundle. | `src/geocebada/models/checkpoint05.py` |
+| `load_checkpoint05_bundle` | function | `geocebada.models.checkpoint05` | Load and validate a serialized Checkpoint 05 model bundle. | `src/geocebada/models/checkpoint05.py` |
+| `verify_fixed_target_bundle` | function | `geocebada.models.checkpoint05` | Verify stored final values against the selected actual-candidate column. | `src/geocebada/models/checkpoint05.py` |
 | `aggregate_siap_scope` | function | `geocebada.evaluation.checkpoint04e` | Aggregate one explicit SIAP crop/cycle/modality scope by municipality-year. | `src/geocebada/evaluation/checkpoint04e.py` |
 | `attach_siap_panel_to_parcels` | function | `geocebada.evaluation.checkpoint04e` | Attach one municipal SIAP panel row to every parcel. | `src/geocebada/evaluation/checkpoint04e.py` |
 | `blend_predictions` | function | `geocebada.evaluation.checkpoint04e` | Return a fixed convex blend of two prediction vectors. | `src/geocebada/evaluation/checkpoint04e.py` |
