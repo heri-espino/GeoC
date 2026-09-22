@@ -305,7 +305,7 @@ After substantive work:
 - update `.ai_handoff`;
 - update `data/.ai_handoff` for data discoveries;
 - update `docs/PROJECT_HISTORY.md`;
-- update `checkpoints/04_transductive_competition/README.md`;
+- update the active checkpoint README (`checkpoints/05_global_local_mixture/README.md` while 05 is active);
 - record material AI assistance in `docs/AI_USAGE.md`;
 - regenerate `docs/FUNCTION_INDEX.md` after public API changes;
 - follow `app/AGENTS.md` for Streamlit/deployment changes.
@@ -336,3 +336,16 @@ simpler stacking models retained as controls.
 
 The incumbent remains Checkpoint 04F until the predeclared 05 promotion rule
 passes. A lower all-split development score alone is insufficient.
+
+Promotion has two validation layers after development ranking. First, the
+leave-one-development-split-out method-selection procedure must improve both
+mean and pooled RMSE relative to fixed Local04D. Only then is a fresh bank of
+16 X-only target-matched masks generated with an unused seed. The challenger is
+frozen before those pseudo-target yields are scored, and the fresh bank compares
+only that challenger against Local04D. Promotion requires improvement in both
+mean and pooled RMSE on the fresh bank as well.
+
+The workstation runner supports `--preflight` and split-level `--resume`.
+The final local bundle is
+`models/final/checkpoint05_model.joblib`; the runner performs a serialization
+round-trip verification before completion.
