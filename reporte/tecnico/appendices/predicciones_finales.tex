@@ -1,18 +1,20 @@
 \section{Advertencia de uso}
 
-La tabla de este apéndice reproduce las 59 predicciones finales \emph{redondeadas a seis
-decimales únicamente para lectura humana}. El artefacto que debe utilizarse para cualquier
-entrega o procesamiento posterior es
+La tabla de este apéndice reproduce el vector \emph{incumbente} de 59 predicciones
+congelado por Checkpoint~04F, redondeado a seis decimales únicamente para lectura humana.
+Checkpoint~05 está implementado pero todavía pendiente de ejecución; por tanto, mientras su
+gate de promoción no termine, el artefacto canónico sigue siendo
 \[
-\artifact{reports/checkpoint_04f/final_predictions.csv},
+\artifact{reports/checkpoint_04f/final_predictions.csv}.
 \]
-que conserva la precisión numérica completa. No se deben copiar manualmente los valores de
-esta tabla para construir la entrega.
+Si Checkpoint~05 promueve un challenger, este apéndice debe regenerarse desde
+\artifact{reports/checkpoint_05/final_predictions.csv} antes de considerar cerrado el reporte.
+No se deben copiar manualmente los valores de esta tabla para construir la entrega.
 
-\section{Vector final}
+\section{Vector incumbente de Checkpoint 04F}
 
 \begin{longtable}{lr}
-\caption{Predicciones finales congeladas del rendimiento de cebada.}
+\caption{Predicciones incumbentes congeladas por Checkpoint 04F.}
 \label{tab:final-predictions}\\
 \toprule
 \artifact{ID_POLIGONO} & \artifact{RENDIMIENTO_T_HA} \\
