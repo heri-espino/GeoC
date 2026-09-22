@@ -68,9 +68,38 @@ the more complicated explanation.
 
 ## Final promotion
 
-The full target-matched table identifies the strongest development candidate, but it is not
-sufficient for promotion. The method-selection procedure is itself evaluated leave-one-
-pseudo-split-out. A Checkpoint 05 model replaces Local04D only if that split-excluded selector
-improves both mean and pooled RMSE relative to the frozen incumbent.
+Checkpoint 05 uses two distinct target-matched banks.
 
-This rule is predeclared before the workstation run.
+### Development bank
+
+The original 16 frozen Checkpoint 04B target-matched splits are reused for model comparison,
+meta-model tuning and the leave-one-development-split-out selector. They are deliberately not
+treated as fresh evidence because Local04D itself was refined on this bank during 04D.1.
+
+### Fresh confirmation bank
+
+If and only if a non-incumbent challenger passes the development + LOSO gate, the runner
+deterministically generates 16 new X-only target-matched masks using the same Checkpoint 04B
+matching machinery but an unused random seed. The candidate is fixed before any yield from
+this bank is scored.
+
+Only two methods are evaluated for the promotion decision on this bank:
+
+- fixed Local04D incumbent;
+- the single challenger preselected from development.
+
+The challenger is promoted only if it improves both mean and pooled RMSE on the fresh bank.
+Exact duplicate masks from the original development bank are rejected.
+
+This additional holdout layer is important because the original 16 target-matched masks have
+already influenced 04D model refinement. It provides new pseudo-competition evidence without
+using any hidden FIRA yield.
+
+## Final export
+
+After the promotion decision, the selected procedure is fitted using all 138 visible labels
+and predicts the fixed 59 target parcels. The runner writes the final CSV, detailed
+diagnostics, a JSON manifest and a local joblib bundle for the later Python/Streamlit app.
+
+The joblib bundle is scoped to exact reproduction of the fixed 59-target inference. It does
+not contain the cross-fitted meta-training label table, and it is ignored by Git.
