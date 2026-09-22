@@ -101,3 +101,12 @@ rows plus separate uncertainty/disagreement diagnostics.
 The finalization run is complete. The canonical submission-facing file is
 `reports/checkpoint_04f/final_predictions.csv`; interpretation is frozen in
 `docs/CHECKPOINT_04F_FINDINGS.md`.
+
+
+## Checkpoint 05
+
+`reports/checkpoint_05/` is the active final global/local ensemble namespace.
+It will contain cross-fitted base predictions, all pseudo-competition stack
+predictions, LOSO promotion evidence, actual 59 candidates, the final selected
+table and a model manifest. Until its promotion gate passes, Checkpoint 04F
+remains the canonical submission-facing prediction file.
