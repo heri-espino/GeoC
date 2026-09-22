@@ -1,0 +1,209 @@
+\subsection{Motivación: combinar evidencia global y local}
+
+Checkpoint~05 se define como una fase nueva porque combina explícitamente dos líneas
+metodológicas que habían sido evaluadas por separado. Checkpoint~03 identificó representaciones
+y modelos globales competitivos ---PLS, Ridge, CatBoost y ExtraTrees---. Checkpoint~04 mostró
+que la geografía, la localidad y los grafos transductivos contienen señal adicional que no es
+capturada completamente por esos modelos globales.
+
+La hipótesis de Checkpoint~05 es, por tanto, una hipótesis de complementariedad de errores:
+\[
+\mathrm{Cov}(e^{Global},e^{Local})<\mathrm{Var}(e^{Local})
+\]
+en una magnitud suficiente para que una combinación validada reduzca RMSE respecto al
+incumbente Local04D.
+
+El checkpoint no supone que mayor complejidad implica mayor calidad. El incumbent permanece
+\artifact{LocalRidge_C4_all_deterministic_Geo_k24_a30_p1}, con RMSE target-matched medio
+0.487845, hasta que un procedimiento de selección split-excluded justifique reemplazarlo.
+
+\subsection{Expertos base}
+
+El conjunto de expertos globales hereda únicamente familias ya justificadas por Checkpoint~03:
+\begin{align*}
+G_1 &= \mathrm{PLS}(C0),\\
+G_2 &= \mathrm{Ridge}(C3),\\
+G_3 &= \mathrm{CatBoost}(C1),\\
+G_4 &= \mathrm{ExtraTrees}(C1).
+\end{align*}
+
+PLS y Ridge representan modelos globales regularizados/latentes; CatBoost y ExtraTrees
+representan respuestas no lineales de árboles. CatBoost se promedia sobre tres seeds después
+de seleccionar hiperparámetros dentro del conjunto visible.
+
+Los expertos transductivos se congelan desde 04D.1:
+\[
+L=\mathrm{LocalRidge}(C4,\mathrm{Geo},k=24,\alpha=30,p=1)
+\]
+y
+\[
+H=\mathrm{GraphDirect}(\mathrm{GeoAgro25},k=6,\lambda=8).
+\]
+
+Se reconstruyen también los ensambles históricos:
+\[
+E13=\frac{1}{2}(G_1+G_3),
+\]
+\[
+E123=\frac{1}{3}(G_1+G_2+G_3),
+\]
+pero ahora dentro de las mismas pseudo-competiciones de Checkpoint~04. Esta diferencia es
+crítica: no se mezclan OOF de 03C.3 con pseudo-predicciones generadas bajo particiones
+distintas.
+
+\subsection{Cross-fitting del nivel base}
+
+Para una pseudo-competición outer con conjunto visible $\Train^\star$, el meta-modelo no puede
+entrenarse sobre predicciones in-sample de los expertos. Se construye, por tanto, una matriz
+OOF:
+\[
+Z_i=
+\left[
+\hat y_i^{G_1,-f(i)},
+\hat y_i^{G_2,-f(i)},
+\hat y_i^{G_3,-f(i)},
+\hat y_i^{G_4,-f(i)},
+\hat y_i^{L,-f(i)},
+\hat y_i^{H,-f(i)}
+\right].
+\]
+
+Cada columna es una predicción para $i$ obtenida sin utilizar $y_i$ en el fit correspondiente.
+Los expertos globales realizan además selección de hiperparámetros dentro del training fold de
+cada cross-fit. Para C3, cualquier expresión supervisada se vuelve a descubrir únicamente
+dentro de dicho training fold.
+
+La jerarquía es:
+\[
+\text{outer pseudo-test}
+\supset
+\text{meta cross-fit}
+\supset
+\text{inner tuning}.
+\]
+Aunque computacionalmente costosa, esta estructura evita que el meta-modelo aprenda del
+optimismo in-sample de sus propios expertos.
+
+\subsection{Descriptores de soporte para gating}
+
+Para cada query se construye un vector de soporte $s_i$ relativo a las etiquetas actualmente
+visibles:
+\[
+s_i=
+(
+\log(1+d_i^{geo}),
+\log(1+d_i^{agro}),
+q_i^{geo},
+q_i^{agro},
+r_i^{state},
+r_i^{mun},
+|\hat y_i^L-\hat y_i^H|
+).
+\]
+
+$d_i^{geo}$ y $d_i^{agro}$ son distancias al vecino visible más cercano.
+$q_i^{geo}$ y $q_i^{agro}$ expresan la posición de esas distancias respecto a la distribución
+leave-one-out de vecinos entre las propias etiquetas visibles. $r_i^{state}$ y $r_i^{mun}$
+son fracciones de etiquetas visibles del mismo estado/municipio. La discrepancia Local--Graph
+es una señal de sensibilidad a inductive bias disponible en el momento de inferencia.
+
+Estos descriptores no usan $y_i$ del query.
+
+\subsection{Mixture-of-experts condicionado en soporte}
+
+El meta-modelo principal es un gate softmax. Con $M$ expertos:
+\begin{equation}
+w_{im}
+=
+\frac{\exp(\eta_{im})}
+{\sum_{\ell=1}^{M}\exp(\eta_{i\ell})},
+\qquad
+\eta_{im}=\beta_{m0}+\beta_m^\top s_i.
+\label{eq:cp05-softmax-gate}
+\end{equation}
+La predicción es
+\begin{equation}
+\hat y_i
+=
+\sum_{m=1}^{M}w_{im}\hat y_{im},
+\qquad
+w_{im}\ge0,
+\qquad
+\sum_m w_{im}=1.
+\label{eq:cp05-moe}
+\end{equation}
+
+El último experto se fija como logit de referencia para resolver la invariancia aditiva del
+softmax. Los coeficientes del gate se regularizan:
+\[
+\mathcal L(\beta)
+=
+\frac{1}{n}\sum_i
+(y_i-\hat y_i)^2
++
+\lambda\|\beta\|_2^2.
+\]
+$\lambda$ se selecciona únicamente usando las filas meta-OOF.
+
+\subsection{Controles de complejidad}
+
+El mixture-of-experts se compara contra alternativas más simples:
+\begin{itemize}
+\item convex stacking con pesos globales no negativos que suman uno;
+\item Ridge stacking;
+\item Elastic Net stacking;
+\item Huber stacking;
+\item ExtraTrees shallow;
+\item HistGradientBoosting shallow;
+\item blends fijos Local+E13 y Local+E123.
+\end{itemize}
+
+Esto permite distinguir dos explicaciones. Si el mejor método es convex stacking, la ganancia
+proviene de diversidad global de errores. Si MoE gana de forma reproducible, existe evidencia
+adicional de que la calidad relativa de los expertos cambia con el soporte de la parcela.
+
+\subsection{Protocolo de promoción}
+
+Sea $m^\star$ el candidato con menor RMSE medio en la tabla completa de 16 pseudo-competiciones
+target-matched. Ese mínimo no basta para reemplazar Local04D.
+
+Para cada split $h$ se vuelve a seleccionar método usando los otros 15:
+\[
+\hat m_{-h}
+=
+\arg\min_{m\in\mathcal M}
+\frac{1}{15}\sum_{s\neq h}\RMSE_{s,m}.
+\]
+La predicción LOSO concatenada debe mejorar simultáneamente:
+\[
+\overline{\RMSE}_{LOSO}
+<
+\overline{\RMSE}_{Local04D}
+\]
+y
+\[
+\RMSE_{\mathrm{pooled,LOSO}}
+<
+\RMSE_{\mathrm{pooled,Local04D}}.
+\]
+
+Además, $m^\star$ debe mejorar Local04D tanto en mean como pooled RMSE sobre la tabla de
+desarrollo. Sólo entonces se promueve $m^\star$ al fit completo de las 138 etiquetas.
+
+\subsection{Exportación}
+
+El runner produce un archivo de predicciones final y un bundle serializado:
+\[
+\artifact{models/final/checkpoint05_model.joblib}.
+\]
+El bundle contiene los expertos globales ajustados, los meta-modelos, provenance, IDs de
+entrenamiento/objetivo y las predicciones de las 59 parcelas. En esta fase su scope de
+inferencia es explícitamente el conjunto fijo de 59 objetivos de competencia. La futura app
+podrá consumirlo directamente para reproducir la salida congelada; una API para parcelas
+arbitrariamente nuevas se implementará separadamente para no confundir ambos contratos.
+
+\subsection{Estado}
+
+Checkpoint~05 está implementado pero todavía no ejecutado. Hasta que finalice el run y se
+evalúe el gate de promoción, Checkpoint~04F continúa siendo la fuente canónica de las 59
+predicciones.
