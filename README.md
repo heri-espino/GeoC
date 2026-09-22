@@ -205,7 +205,7 @@ El diccionario completo y source-backed está en **`docs/VARIABLES.md`**. El inv
 
 El CRS de las geometrías de parcela fue verificado directamente como `EPSG:4326`.
 
-## Preguntas activas de Checkpoint 04
+## Preguntas que guiaron Checkpoint 04
 
 No asumir respuestas sin evidencia:
 
@@ -232,7 +232,8 @@ GeoCebada/
 ├── checkpoints/                  # hitos reproducibles del proyecto
 │   ├── 01_data/                  # adquisición, audit y fixtures de datos
 │   ├── 03_modeling/              # First Modeling Delivery, congelado
-│   └── 04_transductive_competition/ # fase activa
+│   ├── 04_transductive_competition/ # línea transductiva/local congelada
+│   └── 05_global_local_mixture/     # fase activa: combinación 03 + 04
 ├── app/                         # interfaces Streamlit
 ├── configs/
 ├── data/
@@ -416,16 +417,11 @@ final frozen pipeline
 
 ## Próximos pasos
 
-1. mantener cerrado el **Data Contract v2** reejecutando el audit cuando cambien fuentes/raw;
-2. mantener versionada la **Feature Table v1** canónica bajo `data/processed/features_v1/`;
-3. reutilizar siempre `reports/checkpoint_02/cv_folds.csv` para comparaciones de modelos;
-4. mantener cerrado **Checkpoint 03A** y no seleccionar sus 350 variables usando el target fuera de CV;
-5. mantener cerrado **Checkpoint 03B**; cualquier búsqueda target-aware de fórmulas debe permanecer dentro de folds;
-6. mantener cerrado **Checkpoint 03C.1** y usar `reports/checkpoint_03c/README.md` como interpretación canónica;
-7. ejecutar **03C.2** sobre un conjunto reducido de representaciones: base, agronomic-only, all+discovery y base+agronomic+discovery; comparar CatBoost, regularización lineal, ExtraTrees/boosting, kernels y PCA/PLS con tuning dentro de folds;
-8. tratar la gran brecha entre CV state-stratified y municipality-grouped como riesgo espacial explícito;
-9. probar reducción/selección de dimensionalidad sólo dentro de folds y sólo si mejora evidencia fuera de muestra;
-10. congelar preprocessing/modelo antes de generar las 59 predicciones finales.
+1. ejecutar **Checkpoint 05** una sola vez en la workstation GPU con `python tools\run_checkpoint_05.py`;
+2. si el proceso se interrumpe después de completar splits, continuar con `--resume` en lugar de reiniciar desde cero;
+3. revisar el gate de promoción LOSO antes de sustituir el incumbent 04F;
+4. versionar los reportes pequeños de `reports/checkpoint_05/`; el bundle `models/final/checkpoint05_model.joblib` permanece local/ignorado por Git;
+5. una vez congelado 05, pasar a la app/interfaz y hacer que consuma el manifest y la predicción final sin reabrir búsqueda de modelos.
 
 
 ## Calidad y trazabilidad
