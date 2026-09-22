@@ -486,6 +486,12 @@ def _fit_base_experts(
     for expert_name, expert_cfg in config["global_experts"].items():
         representation_name = str(expert_cfg["representation"])
         model_name = str(expert_cfg["model"])
+        if bool(config.get("runtime", {}).get("progress", True)):
+            print(
+                f"        base expert {expert_name}: {representation_name} / {model_name} "
+                f"(train={len(train_positions)}, query={len(query_positions)})",
+                flush=True,
+            )
         predicted, best_params, fitted = _fit_global_expert(
             joined=joined,
             y=y,
@@ -601,6 +607,12 @@ def _crossfit_base_experts(
         )
 
         for fold_index, (train_idx, valid_idx) in enumerate(folds, start=1):
+            if bool(config.get("runtime", {}).get("progress", True)):
+                print(
+                    f"      meta crossfit repeat {repeat + 1}/{repeats}, "
+                    f"fold {fold_index}/{len(folds)}",
+                    flush=True,
+                )
             train_positions = visible_positions[np.asarray(train_idx, dtype=int)]
             valid_positions = visible_positions[np.asarray(valid_idx, dtype=int)]
             block, fold_tuning, _ = _fit_base_experts(
