@@ -1755,8 +1755,57 @@ def run_checkpoint_05(
         ),
     }
 
+    feature_schema = {
+        "schema_version": 1,
+        "checkpoint": "05",
+        "id_column": str(identity["id_column"]),
+        "target_column": str(identity["target_column"]),
+        "split_column": str(identity["split_column"]),
+        "meta_expert_columns": list(
+            map(str, config["meta_model"]["expert_columns"])
+        ),
+        "support_columns": list(
+            map(str, config["meta_model"]["support_columns"])
+        ),
+        "global_experts": {
+            str(name): {
+                "representation": str(spec["representation"]),
+                "model": str(spec["model"]),
+                "n_input_features": int(
+                    len(
+                        representations[
+                            str(spec["representation"])
+                        ].features
+                    )
+                ),
+                "input_features": list(
+                    representations[
+                        str(spec["representation"])
+                    ].features
+                ),
+                "uses_fold_local_discovery": bool(
+                    representations[
+                        str(spec["representation"])
+                    ].discovery
+                ),
+                "discovery_primitive_columns": list(
+                    representations[
+                        str(spec["representation"])
+                    ].primitive_columns
+                ),
+            }
+            for name, spec in config["global_experts"].items()
+        },
+        "transductive_experts": config["transductive_experts"],
+        "derived_global_ensembles": config[
+            "derived_global_ensembles"
+        ],
+        "fixed_blends": config["fixed_blends"],
+    }
+
     bundle = {
         "manifest": model_manifest,
+        "feature_schema": feature_schema,
         "final_method": final_method,
         "final_predictions": selected_actual,
         "actual_candidates": actual_candidates,
@@ -1841,6 +1890,16 @@ def run_checkpoint_05(
     (output_dir / str(outputs["model_manifest"])).write_text(
         json.dumps(
             model_manifest,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\\n",
+        encoding="utf-8",
+    )
+    (output_dir / str(outputs["feature_schema"])).write_text(
+        json.dumps(
+            feature_schema,
             ensure_ascii=False,
             indent=2,
             sort_keys=True,
