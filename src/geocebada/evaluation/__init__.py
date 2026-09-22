@@ -96,6 +96,13 @@ from geocebada.evaluation.checkpoint04e import (
     predict_graph_external_residual,
     predict_local_external_residual,
 )
+from geocebada.evaluation.checkpoint05 import (
+    ConvexStackRegressor,
+    FittedMetaCandidate,
+    SupportMixtureOfExperts,
+    candidate_prediction_frame,
+    support_descriptors,
+)
 from geocebada.evaluation.checkpoint04f import (
     blend_method_name,
     build_final_prediction_diagnostics,
@@ -123,6 +130,11 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "ConvexStackRegressor",
+    "FittedMetaCandidate",
+    "SupportMixtureOfExperts",
+    "candidate_prediction_frame",
+    "support_descriptors",
     "blend_method_name",
     "build_final_prediction_diagnostics",
     "build_final_prediction_table",
