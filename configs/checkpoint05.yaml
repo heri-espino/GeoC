@@ -1,5 +1,5 @@
 schema_version: 1
-updated: 2026-09-21
+updated: 2026-09-22
 
 stage:
   name: final_global_local_mixture
@@ -24,7 +24,7 @@ scope:
     error structure that can be combined by fully cross-fitted meta-models.
 
 inputs:
-  base_table: data/processed/features_v1/parcel_features_all.csv
+  base_table: data/processed/features_v1/parcel_features_competition.csv
   base_manifest: data/processed/features_v1/feature_manifest.json
   agronomic_table: data/processed/agronomic_features_v1/parcel_agronomic_features.csv
   agronomic_manifest: data/processed/agronomic_features_v1/feature_manifest.json
