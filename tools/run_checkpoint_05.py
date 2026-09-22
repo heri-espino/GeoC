@@ -33,13 +33,18 @@ from geocebada.evaluation.checkpoint04a import (
 )
 from geocebada.evaluation.checkpoint04b import (
     build_knn_graph,
+    build_static_x_profile,
+    generate_target_matched_splits,
     mixed_distance_matrix,
     normalized_distance_matrix,
     predict_graph_laplacian,
     regression_metrics,
+    standardized_profile_coordinates,
+    temporal_similarity_matrix,
 )
 from geocebada.evaluation.checkpoint04c import residual_correlation_table
 from geocebada.evaluation.checkpoint04d1 import (
+    SplitPositions,
     leave_one_split_out_method_selection,
     predict_weighted_local_ridge,
     split_positions_from_membership,
@@ -199,6 +204,121 @@ def _distance_system(
         "graph": graph,
         "train_positions": train_positions,
     }
+
+
+def _fresh_confirmation_splits(
+    *,
+    frame: pd.DataFrame,
+    matrices: dict[str, Any],
+    temporal_pairs: pd.DataFrame,
+    adversarial_scores: pd.DataFrame,
+    checkpoint04b_config: dict[str, Any],
+    config: dict[str, Any],
+    development_splits: list[SplitPositions],
+) -> tuple[list[SplitPositions], pd.DataFrame]:
+    """Generate a fresh X-only target-matched confirmation bank."""
+
+    confirmation = config["validation"]["confirmation"]
+    if not bool(confirmation.get("enabled", True)):
+        return [], pd.DataFrame()
+
+    temporal = temporal_similarity_matrix(
+        frame,
+        temporal_pairs,
+        value_column=str(
+            checkpoint04b_config["distance"]["temporal_component"]
+        ),
+    )
+    profile = build_static_x_profile(
+        frame,
+        geographic_distances=matrices["geographic"],
+        agronomic_distances=matrices["agronomic"],
+        temporal_similarities=temporal,
+        adversarial_scores=adversarial_scores,
+    )
+    coordinates = standardized_profile_coordinates(
+        profile,
+        columns=checkpoint04b_config["profile_matching"]["columns"],
+    )
+
+    desired = int(confirmation["repeats"])
+    generated = generate_target_matched_splits(
+        frame,
+        profile_coordinates=coordinates,
+        n_pseudo_targets=int(confirmation["n_pseudo_targets"]),
+        repeats=max(desired * 2, desired + 8),
+        candidates_per_repeat=int(confirmation["candidates_per_repeat"]),
+        temperature=float(confirmation["temperature"]),
+        municipality_smoothing=float(
+            confirmation["municipality_smoothing"]
+        ),
+        diversity_penalty=float(confirmation["diversity_penalty"]),
+        random_state=int(confirmation["random_state"]),
+        verbose=False,
+    )
+
+    development_sets = [
+        set(map(int, split.query_positions))
+        for split in development_splits
+    ]
+    chosen: list[Any] = []
+    for split in generated:
+        candidate = set(map(int, split.pseudo_target_positions))
+        if any(candidate == previous for previous in development_sets):
+            continue
+        chosen.append(split)
+        if len(chosen) == desired:
+            break
+    if len(chosen) != desired:
+        raise RuntimeError(
+            "Could not construct the requested number of fresh confirmation splits."
+        )
+
+    train_positions = set(map(int, matrices["train_positions"]))
+    resolved: list[SplitPositions] = []
+    membership_rows: list[dict[str, Any]] = []
+    ids = frame[ID_COLUMN].astype(str).to_numpy()
+    for repeat, split in enumerate(chosen, start=1):
+        query = tuple(sorted(map(int, split.pseudo_target_positions)))
+        observed = tuple(sorted(train_positions.difference(query)))
+        split_id = f"target_matched_confirm_{repeat:02d}"
+        resolved.append(
+            SplitPositions(
+                split_id=split_id,
+                family="target_matched_confirm",
+                repeat=repeat,
+                observed_positions=observed,
+                query_positions=query,
+            )
+        )
+        max_dev_jaccard = 0.0
+        query_set = set(query)
+        for previous in development_sets:
+            union = query_set | previous
+            score = len(query_set & previous) / len(union) if union else 0.0
+            max_dev_jaccard = max(max_dev_jaccard, float(score))
+        for position in sorted(train_positions):
+            membership_rows.append(
+                {
+                    "split_id": split_id,
+                    "family": "target_matched_confirm",
+                    "repeat": repeat,
+                    ID_COLUMN: ids[position],
+                    "role": (
+                        "pseudo_target"
+                        if position in query_set
+                        else "pseudo_train"
+                    ),
+                    "match_objective": float(split.match_objective),
+                    "municipality_tv": float(split.municipality_tv),
+                    "profile_mean_distance": float(
+                        split.profile_mean_distance
+                    ),
+                    "max_jaccard_vs_development": max_dev_jaccard,
+                }
+            )
+
+    return resolved, pd.DataFrame(membership_rows)
 
 
 def _inner_protocol(family: str) -> str:
