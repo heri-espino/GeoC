@@ -36,8 +36,11 @@ bajo los gates split-excluded de Checkpoint~04.
 
 Checkpoint~05 reabre una única hipótesis final: combinar los expertos globales de
 Checkpoint~03 con Local04D/Graph04D mediante stacking completamente cross-fitted y un
-mixture-of-experts condicionado en soporte. Hasta que dicho experimento termine y supere el
-gate de promoción predeclarado, la tabla canónica continúa siendo la de Checkpoint~04F.
+mixture-of-experts condicionado en soporte. La promoción de un challenger exige tres niveles
+de evidencia: mejora development, un selector leave-one-split-out favorable y, sólo entonces,
+victoria simultánea en RMSE medio y pooled sobre un segundo banco target-matched fresco,
+generado únicamente con $X$ y una seed no utilizada durante el desarrollo. Hasta que dicho
+experimento termine, la tabla canónica continúa siendo la de Checkpoint~04F.
 
 El reporte está escrito como documento interno de ciencia de datos: prioriza formulación
 matemática, fronteras de información, prevención de leakage, definición exacta de artefactos,
