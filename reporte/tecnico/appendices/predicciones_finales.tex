@@ -4,11 +4,13 @@ La tabla de este apéndice reproduce el vector \emph{incumbente} de 59 prediccio
 congelado por Checkpoint~04F, redondeado a seis decimales únicamente para lectura humana.
 Checkpoint~05 está implementado pero todavía pendiente de ejecución; por tanto, mientras su
 gate de promoción no termine, el artefacto canónico sigue siendo
-\[
-\artifact{reports/checkpoint_04f/final_predictions.csv}.
-\]
-Si Checkpoint~05 promueve un challenger, este apéndice debe regenerarse desde
-\artifact{reports/checkpoint_05/final_predictions.csv} antes de considerar cerrado el reporte.
+\begin{center}
+\artifact{reports/checkpoint_04f/final_predictions.csv}
+\end{center}
+Cuando Checkpoint~05 termine, este apéndice debe regenerarse desde
+\artifact{reports/checkpoint_05/final_predictions.csv} antes de considerar cerrado el reporte,
+incluso si el gate retiene Local04D. De ese modo la tabla documentada y el manifest final
+pertenecen al mismo checkpoint de cierre.
 No se deben copiar manualmente los valores de esta tabla para construir la entrega.
 
 \section{Vector incumbente de Checkpoint 04F}
@@ -86,7 +88,7 @@ AGC\_192 & 4.628534 \\
 \bottomrule
 \end{longtable}
 
-\section{Resumen descriptivo del vector entregable}
+\section{Resumen descriptivo del vector incumbente}
 
 Estas estadísticas describen las predicciones; no son una evaluación porque los 59 targets
 reales permanecen ocultos:
