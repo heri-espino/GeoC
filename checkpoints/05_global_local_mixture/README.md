@@ -1,0 +1,131 @@
+# Checkpoint 05 — Final Global–Local Mixture
+
+**Status:** IMPLEMENTED / WORKSTATION RUN PENDING
+
+Checkpoint 05 is the only modeling stage reopened after Checkpoint 04F. It exists because
+Checkpoint 03 learned strong global experts and Checkpoint 04 learned strong local/transductive
+experts, but the project had not yet tested a leakage-safe stack that combines both families
+inside the exact pseudo-competition protocol.
+
+The incumbent remains:
+
+    LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
+
+with target-matched mean RMSE 0.487845.
+
+Checkpoint 05 evaluates whether global and local errors are sufficiently complementary to
+justify replacing that incumbent.
+
+## Base experts
+
+Global experts are refit and tuned strictly inside the visible labels of each pseudo-split:
+
+- PLS on C0 base;
+- Ridge on C3 base + agronomic + fold-local discovery;
+- CatBoost on C1 agronomic, averaged across three seeds after inner tuning;
+- ExtraTrees on C1 agronomic.
+
+Transductive experts are frozen from Checkpoint 04D.1:
+
+- Local04D: C4 / geographic / k=24 / alpha=30 / inverse-distance power=1;
+- Graph04D: GeoAgro25 / k=6 / lambda=8.
+
+The historical global ensembles E13 and E123 are reconstructed inside the same outer
+pseudo-splits rather than borrowing the old Checkpoint 03 OOF predictions.
+
+## Cross-fitting contract
+
+For each outer pseudo-competition:
+
+1. hide only y for the pseudo-target rows;
+2. generate repeated OOF predictions for every base expert on the visible labels;
+3. tune global experts inside each cross-fit training fold;
+4. train the meta-model only on those OOF base predictions;
+5. refit each base expert on all visible labels;
+6. predict the outer pseudo-targets;
+7. apply the already-trained meta-model.
+
+No outer pseudo-target y enters tuning, cross-fitting, gating, or stacking.
+
+## Meta-models
+
+Checkpoint 05 compares:
+
+- fixed E13/E123 global ensembles;
+- fixed small Local + E13/E123 blends;
+- convex non-negative stacking;
+- Ridge stacking;
+- Elastic Net stacking;
+- Huber stacking;
+- shallow ExtraTrees stacking;
+- shallow histogram gradient boosting stacking;
+- a support-conditioned softmax mixture-of-experts.
+
+The mixture-of-experts learns parcel-specific convex weights:
+
+    w_im = softmax(beta_m^T s_i)
+
+where s_i contains leakage-safe support descriptors such as nearest geographic/agronomic
+distance, relative support, visible same-state/same-municipality fractions, and Local–Graph
+disagreement.
+
+## Promotion rule
+
+A lower full-development RMSE is not sufficient.
+
+The best non-incumbent candidate is promoted only if leave-one-pseudo-split-out method
+selection improves both:
+
+- mean target-matched RMSE;
+- pooled target-matched RMSE;
+
+relative to fixed Local04D.
+
+Otherwise Checkpoint 05 retains Local04D.
+
+## Run
+
+GPU is the default and automatic CPU fallback is disabled.
+
+    git pull
+    conda activate geocebada
+    python tools\run_checkpoint_05.py
+
+If interrupted after one or more completed outer splits:
+
+    python tools\run_checkpoint_05.py --resume
+
+Intentional CPU execution requires:
+
+    python tools\run_checkpoint_05.py --catboost-task-type CPU --confirm-cpu y
+
+## Final artifacts
+
+The runner writes:
+
+    reports/checkpoint_05/
+      base_oof_predictions.csv
+      pseudo_predictions.csv
+      split_metrics.csv
+      protocol_summary.csv
+      residual_correlation.csv
+      meta_selection_details.csv
+      loso_selection.csv
+      loso_predictions.csv
+      loso_summary.csv
+      actual_candidates.csv
+      final_predictions.csv
+      final_prediction_diagnostics.csv
+      model_manifest.json
+      checkpoint_05_report.json
+      checkpoint_05_report.md
+
+It also writes the local serialized bundle:
+
+    models/final/checkpoint05_model.joblib
+
+The model bundle is intentionally ignored by Git. It is intended for exact local
+reproducibility and the later Python/Streamlit application.
+
+Until Checkpoint 05 finishes and the promotion gate is evaluated, the canonical competition
+prediction file remains Checkpoint 04F.
