@@ -8,11 +8,11 @@ import pytest
 import yaml
 
 from geocebada.evaluation.checkpoint05 import (
-    ConvexStackRegressor,
-    SupportMixtureOfExperts,
     candidate_prediction_frame,
     constrain_component_param_grid,
+    ConvexStackRegressor,
     support_descriptors,
+    SupportMixtureOfExperts,
 )
 from geocebada.models.checkpoint05 import (
     fixed_target_predictions,
