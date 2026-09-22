@@ -96,14 +96,6 @@ from geocebada.evaluation.checkpoint04e import (
     predict_graph_external_residual,
     predict_local_external_residual,
 )
-from geocebada.evaluation.checkpoint05 import (
-    ConvexStackRegressor,
-    FittedMetaCandidate,
-    SupportMixtureOfExperts,
-    candidate_prediction_frame,
-    constrain_component_param_grid,
-    support_descriptors,
-)
 from geocebada.evaluation.checkpoint04f import (
     blend_method_name,
     build_final_prediction_diagnostics,
@@ -111,6 +103,14 @@ from geocebada.evaluation.checkpoint04f import (
     build_local_graph_blends,
     leave_one_split_out_blend_selection,
     summarize_blend_predictions,
+)
+from geocebada.evaluation.checkpoint05 import (
+    candidate_prediction_frame,
+    constrain_component_param_grid,
+    ConvexStackRegressor,
+    FittedMetaCandidate,
+    support_descriptors,
+    SupportMixtureOfExperts,
 )
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
