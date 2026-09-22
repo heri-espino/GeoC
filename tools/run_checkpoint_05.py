@@ -890,6 +890,7 @@ def _predict_all_candidates(
     base_query: pd.DataFrame,
     family: str,
     config: dict[str, Any],
+    requested_methods: set[str] | None = None,
 ) -> tuple[
     dict[str, np.ndarray],
     dict[str, FittedMetaCandidate],
@@ -915,6 +916,11 @@ def _predict_all_candidates(
     fitted: dict[str, FittedMetaCandidate] = {}
     details: list[dict[str, Any]] = []
     for name, spec in config["meta_model"]["candidates"].items():
+        if (
+            requested_methods is not None
+            and str(name) not in requested_methods
+        ):
+            continue
         predicted, fitted_model, detail = _fit_meta_candidate(
             name=str(name),
             spec=spec,
