@@ -79,8 +79,5 @@ htmlcov/
 
 reports/checkpoint_04d1/primary_predictions.csv
 
-# Checkpoint 05 long-run resume state (local only)
-reports/checkpoint_05/_partial_*.csv
-
-# Checkpoint 05 resumable workstation intermediates
+# Checkpoint 05 resumable workstation intermediates (local only)
 /reports/checkpoint_05/_partial_*.csv
