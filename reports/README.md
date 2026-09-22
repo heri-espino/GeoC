@@ -1,9 +1,9 @@
 # Reportes y entregables
 
-> **Checkpoint 04:** new development reports should evaluate fixed-target transductive
-> reconstruction. The primary new evidence is repeated pseudo-competition RMSE with
-> pseudo-target X visible and pseudo-target y hidden. Historical Checkpoint 02/03 reports remain
-> frozen reference evidence.
+> **Checkpoint 05 is active.** Checkpoint 04F is the frozen incumbent, while 05 combines the
+> surviving Checkpoint 03 global experts with Checkpoint 04 local/transductive experts under
+> cross-fitted pseudo-competition validation and a fresh confirmation gate. Historical
+> Checkpoint 02/03/04 reports remain frozen reference evidence.
 
 This directory stores reproducible analysis/model outputs and final-deliverable material. It is
 not a source-data directory.
@@ -29,7 +29,8 @@ reports/
 
 `reports/checkpoint_02/cv_folds.csv` remains a frozen historical artifact. Checkpoint 04 adds a new documented transductive pseudo-competition protocol; legacy state/municipality folds remain stress tests.
 
-Do not overwrite Checkpoint 02/03 artifacts. New outputs belong under a Checkpoint 04 report namespace.
+Do not overwrite Checkpoint 02/03/04 artifacts. New modeling outputs belong under
+`reports/checkpoint_05/` while Checkpoint 05 is active.
 
 Suggested final-deliverable areas remain:
 
@@ -50,7 +51,7 @@ See `docs/AGENT_GUIDE.md` for current project state and reporting rules.
 
 ## Checkpoint 04B
 
-`reports/checkpoint_04b/` is the active pseudo-competition namespace. Its runner hides
+`reports/checkpoint_04b/` is the frozen pseudo-competition namespace. Its runner hides
 pseudo-target y while keeping pseudo-target X visible and compares global/local/spatial/graph
 methods with repeated RMSE.
 
@@ -59,8 +60,7 @@ Checkpoint 04B is complete and its generated artifacts are frozen reference evid
 
 ## Checkpoint 04D.1
 
-`reports/checkpoint_04d1/` is the active local/graph refinement namespace. Until the
-workstation run finishes, its README is the only expected artifact.
+`reports/checkpoint_04d1/` is the frozen local/graph refinement namespace.
 
 Generated numerical results must come from:
 
