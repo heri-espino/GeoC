@@ -2232,6 +2232,64 @@ def _preflight(root: Path, config: dict[str, Any], task_type: str) -> None:
                 "Confirmation profile does not cover all 197 parcels."
             )
 
+        development_splits = [
+            split
+            for split in splits
+            if split.family == primary_family
+        ]
+        confirmation_splits, confirmation_membership = (
+            _fresh_confirmation_splits(
+                frame=joined,
+                matrices=matrices,
+                temporal_pairs=temporal_pairs,
+                adversarial_scores=adversarial_scores,
+                checkpoint04b_config=checkpoint04b_config,
+                config=config,
+                development_splits=development_splits,
+            )
+        )
+        expected_confirmation = int(confirmation["repeats"])
+        if len(confirmation_splits) != expected_confirmation:
+            raise RuntimeError(
+                "Checkpoint 05 preflight could not reproduce the requested "
+                "fresh confirmation bank."
+            )
+        if confirmation_membership["split_id"].nunique() != expected_confirmation:
+            raise RuntimeError(
+                "Fresh confirmation membership does not contain the expected "
+                "number of unique split IDs."
+            )
+        pseudo_counts = (
+            confirmation_membership.loc[
+                confirmation_membership["role"].eq("pseudo_target")
+            ]
+            .groupby("split_id")
+            .size()
+        )
+        if not (
+            len(pseudo_counts) == expected_confirmation
+            and pseudo_counts.eq(
+                int(confirmation["n_pseudo_targets"])
+            ).all()
+        ):
+            raise RuntimeError(
+                "Fresh confirmation masks violate the configured pseudo-target "
+                "size."
+            )
+        if bool(confirmation.get("reject_exact_duplicates", True)):
+            if confirmation_membership[
+                "max_jaccard_vs_development"
+            ].ge(1.0 - 1.0e-12).any():
+                raise RuntimeError(
+                    "Fresh confirmation contains an exact duplicate of a "
+                    "development pseudo-target mask."
+                )
+        print(
+            "Checkpoint 05 preflight: fresh confirmation bank PASS "
+            f"({expected_confirmation} unique masks, "
+            f"{int(confirmation['n_pseudo_targets'])} pseudo-targets each)."
+        )
+
     if str(task_type).upper() == "GPU":
         try:
             from catboost.utils import get_gpu_device_count
