@@ -262,11 +262,15 @@ def _fresh_confirmation_splits(
         for split in development_splits
     ]
     chosen: list[Any] = []
+    chosen_sets: list[set[int]] = []
     for split in generated:
         candidate = set(map(int, split.pseudo_target_positions))
         if any(candidate == previous for previous in development_sets):
             continue
+        if any(candidate == previous for previous in chosen_sets):
+            continue
         chosen.append(split)
+        chosen_sets.append(candidate)
         if len(chosen) == desired:
             break
     if len(chosen) != desired:
