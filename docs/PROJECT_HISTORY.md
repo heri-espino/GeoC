@@ -1041,3 +1041,28 @@ target-matched RMSE relative to the fixed 04F rule.
 The runner also exports a local joblib bundle under models/final/ for the later Python/Streamlit
 application. Until the workstation run finishes and the promotion gate passes, Checkpoint 04F
 remains the canonical 59-value prediction source.
+
+---
+
+## 2026-09-21 — Checkpoint 05 confirmation gate and model export hardened
+
+Before sending the final high-compute run to the workstation, the Checkpoint 05 promotion
+contract was made more conservative. The original 16 target-matched masks remain the
+development bank because they already influenced the 04D.1 Local04D refinement. A challenger
+must first beat Local04D in development mean and pooled RMSE, while the
+leave-one-development-split-out selection procedure must also improve both metrics.
+
+Only after that preliminary gate passes does the runner generate a second 16-split
+target-matched confirmation bank using the same 04B X-only matching machinery and an unused
+seed. Exact duplicate masks from the development bank are rejected. The challenger is frozen
+before any confirmation pseudo-target yield is scored, and the confirmation bank compares only
+that preselected challenger with Local04D. Promotion requires lower mean and pooled RMSE again;
+otherwise the 04F incumbent is retained.
+
+The final export path remains `models/final/checkpoint05_model.joblib`. The bundle is local
+and Git-ignored, is scoped to exact reproduction of the fixed 59 competition targets, and now
+undergoes a serialization round-trip check before the runner reports success. Public loading
+and verification helpers live under `geocebada.models.checkpoint05`.
+
+No Checkpoint 05 scientific fit was executed as part of these repository changes. The next
+workstation action is the preflight followed by the long GPU run.
