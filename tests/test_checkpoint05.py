@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 
 from geocebada.evaluation.checkpoint05 import (
     ConvexStackRegressor,
@@ -15,6 +18,20 @@ from geocebada.models.checkpoint05 import (
     load_checkpoint05_bundle,
     verify_fixed_target_bundle,
 )
+
+
+
+def test_checkpoint05_config_is_competition_only() -> None:
+    root = Path(__file__).resolve().parents[1]
+    config = yaml.safe_load(
+        (root / "configs" / "checkpoint05.yaml").read_text(encoding="utf-8")
+    )
+
+    assert config["scope"]["active_track"] == "competition"
+    assert (
+        Path(config["inputs"]["base_table"]).name
+        == "parcel_features_competition.csv"
+    )
 
 
 def test_convex_stack_weights_are_valid_and_predict() -> None:
