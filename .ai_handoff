@@ -175,7 +175,7 @@ generated X-only with an unused seed. The confirmation bank is not used to
 search for a second challenger.
 
 The local serialized output is
-`models/final/checkpoint05_model.joblib`; it is ignored by Git and intended for
+`models/final/checkpoint05_app_bundle.joblib` for the lightweight fixed-target app contract and `models/final/checkpoint05_model.joblib` for full fitted-model reproducibility; both are ignored by Git and intended for
 the later Python/Streamlit application. The runner reloads and verifies the
 joblib bundle before declaring success.
 
