@@ -1809,6 +1809,7 @@ def run_checkpoint_05(
         "final_method": final_method,
         "final_predictions": selected_actual,
         "actual_candidates": actual_candidates,
+        "final_diagnostics": final_diagnostics,
         "actual_base_query": actual_base_query,
         "fitted_global_experts": fitted_global_experts,
         "selected_meta_model": selected_meta_model,
