@@ -99,7 +99,13 @@ using any hidden FIRA yield.
 
 After the promotion decision, the selected procedure is fitted using all 138 visible labels
 and predicts the fixed 59 target parcels. The runner writes the final CSV, detailed
-diagnostics, a JSON manifest and a local joblib bundle for the later Python/Streamlit app.
+diagnostics, a JSON manifest and two local joblib bundles.
 
-The joblib bundle is scoped to exact reproduction of the fixed 59-target inference. It does
-not contain the cross-fitted meta-training label table, and it is ignored by Git.
+The lightweight `checkpoint05_app_bundle.joblib` contains only the fixed-target prediction
+contract, candidate values, diagnostics and metadata; it intentionally contains no fitted
+CatBoost/scikit-learn objects and is the preferred artifact for the later Streamlit app.
+
+The full `checkpoint05_model.joblib` additionally preserves fitted global experts and
+meta-models for exact modeling provenance. Both bundles are scoped to the fixed 59 targets,
+exclude the cross-fitted meta-training label table, are ignored by Git, and are round-trip
+verified before the runner reports PASS.
