@@ -9,12 +9,21 @@ predeclared development, LOSO and fresh-confirmation gates pass.
 
 ## Final Checkpoint 05 bundle
 
-The long workstation runner writes:
+The long workstation runner writes two local bundles:
 
+    models/final/checkpoint05_app_bundle.joblib
     models/final/checkpoint05_model.joblib
 
-This file is intentionally ignored by Git. It is a serialized reproducibility
-bundle for the later Python/Streamlit application, not a source-data artifact.
+Both are intentionally ignored by Git. The **app bundle** is the preferred
+fixed-target artifact for the later Python/Streamlit interface: it contains no
+fitted CatBoost/scikit-learn estimator objects, only the frozen 59 predictions,
+candidate predictions, diagnostics, manifest, feature schema and target IDs.
+That keeps fixed-target display independent of the training stack's optional
+model dependencies.
+
+The **model bundle** is the full reproducibility artifact. It additionally
+contains fitted global experts and fitted meta-models and therefore requires
+the corresponding modeling dependencies when deserialized.
 
 The bundle contains:
 
@@ -49,7 +58,7 @@ Use the public helpers:
     )
 
     bundle = load_checkpoint05_bundle(
-        "models/final/checkpoint05_model.joblib"
+        "models/final/checkpoint05_app_bundle.joblib"
     )
     predictions = fixed_target_predictions(bundle)
     diagnostics = fixed_target_diagnostics(bundle)
