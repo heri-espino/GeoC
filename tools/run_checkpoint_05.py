@@ -1096,7 +1096,7 @@ def _render_report(report: dict[str, Any], primary: pd.DataFrame) -> str:
             "",
         ]
     )
-    return "\\n".join(lines)
+    return "\n".join(lines)
 
 
 def run_checkpoint_05(
@@ -1924,7 +1924,7 @@ def run_checkpoint_05(
             indent=2,
             sort_keys=True,
         )
-        + "\\n",
+        + "\n",
         encoding="utf-8",
     )
     (output_dir / str(outputs["feature_schema"])).write_text(
@@ -1934,7 +1934,7 @@ def run_checkpoint_05(
             indent=2,
             sort_keys=True,
         )
-        + "\\n",
+        + "\n",
         encoding="utf-8",
     )
 
@@ -1974,7 +1974,7 @@ def run_checkpoint_05(
     }
     (output_dir / str(outputs["report_json"])).write_text(
         json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True)
-        + "\\n",
+        + "\n",
         encoding="utf-8",
     )
     (output_dir / str(outputs["report_markdown"])).write_text(
