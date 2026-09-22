@@ -59,6 +59,7 @@ from geocebada.evaluation.checkpoint05 import (
     support_descriptors,
 )
 from geocebada.features import join_agronomic_features, join_empirical_features
+from geocebada.models.checkpoint05 import verify_fixed_target_bundle
 from geocebada.paths import find_project_root
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1840,7 +1841,13 @@ def run_checkpoint_05(
     }
     model_bundle_path = root / str(outputs["model_bundle"])
     model_bundle_path.parent.mkdir(parents=True, exist_ok=True)
+    bundle_verification: dict[str, Any] | None = None
     if bool(config["runtime"].get("persist_model_bundle", True)):
+        joblib.dump(bundle, model_bundle_path, compress=3)
+        reloaded_bundle = joblib.load(model_bundle_path)
+        bundle_verification = verify_fixed_target_bundle(reloaded_bundle)
+        model_manifest["bundle_roundtrip_verification"] = bundle_verification
+        bundle["manifest"] = model_manifest
         joblib.dump(bundle, model_bundle_path, compress=3)
 
     print("[05 9/9] Writing final Checkpoint 05 artifacts...")
@@ -1957,6 +1964,7 @@ def run_checkpoint_05(
             len(actual_base_tuning) + len(actual_outer_tuning)
         ),
         "actual_meta_models": actual_meta_details,
+        "bundle_roundtrip_verification": bundle_verification,
     }
     (output_dir / str(outputs["report_json"])).write_text(
         json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True)
