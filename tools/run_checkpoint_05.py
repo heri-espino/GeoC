@@ -262,11 +262,17 @@ def _fresh_confirmation_splits(
         set(map(int, split.query_positions))
         for split in development_splits
     ]
+    reject_exact_duplicates = bool(
+        confirmation.get("reject_exact_duplicates", True)
+    )
     chosen: list[Any] = []
     chosen_sets: list[set[int]] = []
     for split in generated:
         candidate = set(map(int, split.pseudo_target_positions))
-        if any(candidate == previous for previous in development_sets):
+        if (
+            reject_exact_duplicates
+            and any(candidate == previous for previous in development_sets)
+        ):
             continue
         if any(candidate == previous for previous in chosen_sets):
             continue
