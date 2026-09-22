@@ -11,3 +11,9 @@ exist only to make long workstation runs resumable and are deleted after a succe
 
 The canonical 05 output will be final_predictions.csv only if the configured split-excluded
 promotion gate is evaluated. Until then, Checkpoint 04F remains the frozen incumbent.
+
+
+If the development/LOSO gate produces a challenger, the runner also writes a fresh
+target-matched confirmation bank and its two-method comparison. These confirmation masks are
+generated X-only with an unused seed and are not allowed to duplicate the original 04B
+development masks.
