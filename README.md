@@ -82,7 +82,7 @@ python tools\run_checkpoint_05.py --resume
 
 GPU es el default y no existe fallback automático a CPU. El run final exporta
 la tabla de 59 predicciones, manifest y un bundle local
-`models/final/checkpoint05_model.joblib` para la futura app.
+`models/final/checkpoint05_app_bundle.joblib` para la futura app y `models/final/checkpoint05_model.joblib` como bundle completo de reproducibilidad.
 
 Plan técnico: `docs/CHECKPOINT_05_PLAN.md`.
 
@@ -429,7 +429,7 @@ final frozen pipeline
 1. ejecutar **Checkpoint 05** una sola vez en la workstation GPU con `python tools\run_checkpoint_05.py`;
 2. si el proceso se interrumpe después de completar splits, continuar con `--resume` en lugar de reiniciar desde cero;
 3. revisar el gate de promoción LOSO antes de sustituir el incumbent 04F;
-4. versionar los reportes pequeños de `reports/checkpoint_05/`; el bundle `models/final/checkpoint05_model.joblib` permanece local/ignorado por Git;
+4. versionar los reportes pequeños de `reports/checkpoint_05/`; los bundles `checkpoint05_app_bundle.joblib` y `checkpoint05_model.joblib` permanecen locales/ignorados por Git;
 5. una vez congelado 05, pasar a la app/interfaz y hacer que consuma el manifest y la predicción final sin reabrir búsqueda de modelos.
 
 
