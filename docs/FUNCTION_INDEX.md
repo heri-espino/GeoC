@@ -112,6 +112,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `build_local_graph_blends` | function | `geocebada.evaluation.checkpoint04f` | Build fixed Local04D/Graph04D blends for one validation family. | `src/geocebada/evaluation/checkpoint04f.py` |
 | `leave_one_split_out_blend_selection` | function | `geocebada.evaluation.checkpoint04f` | Select a fixed blend weight on all other splits and score the holdout. | `src/geocebada/evaluation/checkpoint04f.py` |
 | `summarize_blend_predictions` | function | `geocebada.evaluation.checkpoint04f` | Summarize fixed blend candidates using equal-weight split RMSE. | `src/geocebada/evaluation/checkpoint04f.py` |
+| `ConvexStackRegressor` | class | `geocebada.evaluation.checkpoint05` | Squared-error convex stack with optional L2 weight shrinkage. | `src/geocebada/evaluation/checkpoint05.py` |
+| `FittedMetaCandidate` | class | `geocebada.evaluation.checkpoint05` | Serializable meta-model plus selected hyperparameters. | `src/geocebada/evaluation/checkpoint05.py` |
+| `SupportMixtureOfExperts` | class | `geocebada.evaluation.checkpoint05` | Softmax-gated mixture whose weights depend on support descriptors. | `src/geocebada/evaluation/checkpoint05.py` |
+| `candidate_prediction_frame` | function | `geocebada.evaluation.checkpoint05` | Convert candidate prediction arrays into the canonical long format. | `src/geocebada/evaluation/checkpoint05.py` |
+| `support_descriptors` | function | `geocebada.evaluation.checkpoint05` | Compute leakage-safe support features relative to currently visible labels. | `src/geocebada/evaluation/checkpoint05.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
