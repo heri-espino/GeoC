@@ -195,3 +195,13 @@ La predicción final se congela a Local04D puro. A partir de este checkpoint, un
 búsqueda sólo tendría sentido si aparece una fuente o hipótesis nueva y explícita; no se
 reabre tuning para perseguir diferencias de milésimas sobre los mismos pseudo-splits.
 \end{decision}
+
+
+\subsection{Nota posterior: apertura controlada de Checkpoint 05}
+
+Checkpoint~04F permanece congelado como incumbent. Posteriormente se abrió una única hipótesis
+nueva, documentada como Checkpoint~05: combinar la evidencia global de Checkpoint~03 con los
+expertos local/grafo de Checkpoint~04 usando meta-predicciones completamente cross-fitted.
+Esta apertura no invalida el cierre 04F; define un procedimiento explícito para intentar
+superarlo. Si el gate LOSO de 05 no mejora simultáneamente mean y pooled RMSE, el vector 04F
+permanece como salida final.
