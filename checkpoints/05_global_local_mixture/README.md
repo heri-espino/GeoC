@@ -73,15 +73,19 @@ disagreement.
 
 A lower full-development RMSE is not sufficient.
 
-The best non-incumbent candidate is promoted only if leave-one-pseudo-split-out method
-selection improves both:
+Promotion uses two gates.
 
-- mean target-matched RMSE;
-- pooled target-matched RMSE;
+First, on the original 16 target-matched development splits, the challenger must improve mean
+and pooled RMSE and the leave-one-development-split-out selector must also improve both metrics
+relative to Local04D.
 
-relative to fixed Local04D.
+Second, only after that gate passes, the runner generates a **fresh 16-split X-only
+target-matched confirmation bank** with a predeclared unused seed. The challenger is frozen
+before these labels are scored. It replaces Local04D only if it improves both mean and pooled
+RMSE on the fresh bank as well.
 
-Otherwise Checkpoint 05 retains Local04D.
+Exact duplicate masks from the original development bank are rejected. Otherwise Checkpoint
+05 retains Local04D.
 
 ## Run
 
@@ -113,6 +117,9 @@ The runner writes:
       loso_selection.csv
       loso_predictions.csv
       loso_summary.csv
+      confirmation_split_membership.csv
+      confirmation_predictions.csv
+      confirmation_summary.csv
       actual_candidates.csv
       final_predictions.csv
       final_prediction_diagnostics.csv
