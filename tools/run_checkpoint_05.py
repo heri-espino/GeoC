@@ -1196,17 +1196,41 @@ def run_checkpoint_05(
     base_blocks: list[pd.DataFrame] = []
     detail_rows: list[dict[str, Any]] = []
     completed: set[str] = set()
-    if resume and partial_predictions.is_file():
-        existing = pd.read_csv(partial_predictions)
-        prediction_blocks.append(existing)
-        completed = set(existing["split_id"].astype(str).unique())
-        if partial_base.is_file():
-            base_blocks.append(pd.read_csv(partial_base))
-        if partial_details.is_file():
-            detail_rows.extend(
-                pd.read_csv(partial_details).to_dict("records")
+    if resume:
+        partial_state = {
+            "predictions": partial_predictions.is_file(),
+            "base_oof": partial_base.is_file(),
+            "details": partial_details.is_file(),
+        }
+        if any(partial_state.values()) and not all(partial_state.values()):
+            raise RuntimeError(
+                "Checkpoint 05 resume artifacts are incomplete. Expected the "
+                "prediction, base-OOF and detail partial files together; found "
+                f"{partial_state}. Preserve them for inspection and restart "
+                "without --resume only after intentionally removing the stale "
+                "partial set."
             )
-        print(f"  resume: {len(completed)} outer splits already complete")
+        if all(partial_state.values()):
+            existing = pd.read_csv(partial_predictions)
+            existing_base = pd.read_csv(partial_base)
+            existing_details = pd.read_csv(partial_details)
+            completed = set(existing["split_id"].astype(str).unique())
+            base_completed = set(existing_base["split_id"].astype(str).unique())
+            detail_completed = set(
+                existing_details["split_id"].astype(str).unique()
+            )
+            if completed != base_completed or not completed.issubset(detail_completed):
+                raise RuntimeError(
+                    "Checkpoint 05 resume artifacts disagree on completed split IDs. "
+                    "Do not continue a long run from a partially written checkpoint."
+                )
+            prediction_blocks.append(existing)
+            base_blocks.append(existing_base)
+            detail_rows.extend(existing_details.to_dict("records"))
+            print(
+                f"  resume: {len(completed)} outer splits already complete "
+                "with consistent partial artifacts"
+            )
 
     print(
         f"[05 2/9] Running nested cross-fitted experts on "
