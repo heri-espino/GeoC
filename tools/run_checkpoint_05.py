@@ -1728,6 +1728,16 @@ def run_checkpoint_05(
         "confirmation_gate_passed": confirmation_passed,
         "best_development_method": best_method,
         "confirmation": confirmation_payload,
+        "selected_meta_model": (
+            None
+            if selected_meta_model is None
+            else {
+                "name": selected_meta_model.name,
+                "kind": selected_meta_model.kind,
+                "parameters": selected_meta_model.parameters,
+                "uses_support": selected_meta_model.uses_support,
+            }
+        ),
         "expert_columns": list(
             map(str, config["meta_model"]["expert_columns"])
         ),
@@ -1752,7 +1762,6 @@ def run_checkpoint_05(
         "final_predictions": selected_actual,
         "actual_candidates": actual_candidates,
         "actual_base_query": actual_base_query,
-        "actual_meta_train": actual_meta_train,
         "fitted_global_experts": fitted_global_experts,
         "selected_meta_model": selected_meta_model,
         "all_meta_models": actual_meta_models,
