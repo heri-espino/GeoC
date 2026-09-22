@@ -116,6 +116,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `FittedMetaCandidate` | class | `geocebada.evaluation.checkpoint05` | Serializable meta-model plus selected hyperparameters. | `src/geocebada/evaluation/checkpoint05.py` |
 | `SupportMixtureOfExperts` | class | `geocebada.evaluation.checkpoint05` | Softmax-gated mixture whose weights depend on support descriptors. | `src/geocebada/evaluation/checkpoint05.py` |
 | `candidate_prediction_frame` | function | `geocebada.evaluation.checkpoint05` | Convert candidate prediction arrays into the canonical long format. | `src/geocebada/evaluation/checkpoint05.py` |
+| `constrain_component_param_grid` | function | `geocebada.evaluation.checkpoint05` | Restrict component-count candidates to values feasible in every inner fold. | `src/geocebada/evaluation/checkpoint05.py` |
 | `support_descriptors` | function | `geocebada.evaluation.checkpoint05` | Compute leakage-safe support features relative to currently visible labels. | `src/geocebada/evaluation/checkpoint05.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
