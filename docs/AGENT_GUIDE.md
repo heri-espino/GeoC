@@ -346,6 +346,6 @@ only that challenger against Local04D. Promotion requires improvement in both
 mean and pooled RMSE on the fresh bank as well.
 
 The workstation runner supports `--preflight` and split-level `--resume`.
-The final local bundle is
-`models/final/checkpoint05_model.joblib`; the runner performs a serialization
+The preferred fixed-target app bundle is
+`models/final/checkpoint05_app_bundle.joblib`; the full fitted-model reproducibility bundle is `models/final/checkpoint05_model.joblib`. The runner performs serialization
 round-trip verification before completion.
