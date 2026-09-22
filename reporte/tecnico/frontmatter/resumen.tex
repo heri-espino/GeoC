@@ -26,16 +26,18 @@ La señal dominante resultó ser espacial: el rendimiento observado mostró Mora
 $I=0.6797$ con $p=0.001$, y la distancia geográfica presentó correlación de Spearman
 $\rho=0.4882$ con la diferencia absoluta de rendimiento entre pares etiquetados.
 
-El modelo finalmente congelado es
+El incumbent congelado por Checkpoint~04F es
 \artifact{LocalRidge_C4_all_deterministic_Geo_k24_a30_p1}: para cada consulta ajusta una
 regresión Ridge local usando los 24 vecinos etiquetados geográficamente más próximos,
 ponderados por distancia inversa, sobre la representación determinista C4. En las 16
 pseudo-competiciones target-matched obtuvo RMSE medio $0.487845$ y RMSE agrupado
-$0.495741$. La tabla final contiene exactamente 59 pares
-\artifact{ID_POLIGONO, RENDIMIENTO_T_HA}. SIAP 2025, CatBoost y mezclas Local/Graph fueron
-retenidos como evidencia de sensibilidad o robustez cuando correspondía, pero no alteran el
-vector final porque sus aparentes ganancias no sobrevivieron controles de selección
-split-excluded suficientemente conservadores.
+$0.495741$. SIAP 2025, CatBoost aislado y mezclas Local/Graph no justificaron reemplazarlo
+bajo los gates split-excluded de Checkpoint~04.
+
+Checkpoint~05 reabre una única hipótesis final: combinar los expertos globales de
+Checkpoint~03 con Local04D/Graph04D mediante stacking completamente cross-fitted y un
+mixture-of-experts condicionado en soporte. Hasta que dicho experimento termine y supere el
+gate de promoción predeclarado, la tabla canónica continúa siendo la de Checkpoint~04F.
 
 El reporte está escrito como documento interno de ciencia de datos: prioriza formulación
 matemática, fronteras de información, prevención de leakage, definición exacta de artefactos,
