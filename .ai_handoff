@@ -156,6 +156,13 @@ If interrupted after completed outer splits:
 python tools\run_checkpoint_05.py --resume
 ```
 
+A 2026-09-22 workstation run completed 29/34 outer splits before an inherited
+PLS candidate (`n_components=20`) became infeasible inside a nested 18-row
+inner-training fold. The runner now constrains component grids to the smallest
+inner training fold (and feature dimension) before GridSearchCV. Resume partials
+are split-atomic, so those 29 completed outer splits should be reused after
+pulling the fix.
+
 Checkpoint 05 combines the frozen global line from 03 and the local/transductive
 line from 04. Base experts are PLS C0, Ridge C3 with fold-local discovery,
 CatBoost C1, ExtraTrees C1, Local04D and Graph04D. Meta candidates include
