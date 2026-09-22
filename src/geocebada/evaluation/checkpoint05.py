@@ -12,7 +12,6 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.preprocessing import StandardScaler
 
 
-
 def constrain_component_param_grid(
     param_grid: list[dict[str, list[Any]]],
     *,
