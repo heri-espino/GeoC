@@ -91,8 +91,15 @@ Exact duplicate masks from the original development bank are rejected. Otherwise
 
 GPU is the default and automatic CPU fallback is disabled.
 
+Before committing the workstation to the long run, use the fail-fast preflight:
+
     git pull
     conda activate geocebada
+    python tools\run_checkpoint_05.py --preflight
+
+This checks required inputs, CatBoost installation and GPU visibility without fitting any
+scientific model. Then start the final run:
+
     python tools\run_checkpoint_05.py
 
 If interrupted after one or more completed outer splits:
