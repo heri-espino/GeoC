@@ -33,7 +33,10 @@ inputs:
   empirical_config: configs/empirical_features_v1.yaml
   checkpoint03c2_config: configs/checkpoint03c2.yaml
   checkpoint04d1_config: configs/checkpoint04d1.yaml
+  checkpoint04b_config: configs/checkpoint04b.yaml
   transductive_embeddings: reports/checkpoint_04a/transductive_embeddings.csv
+  adversarial_scores: reports/checkpoint_04a/adversarial_scores.csv
+  temporal_pairs: reports/checkpoint_04a/temporal_pairs.csv
   pseudo_membership: reports/checkpoint_04b/pseudo_competition_splits.csv
   frozen_final_predictions: reports/checkpoint_04f/final_predictions.csv
   frozen_final_diagnostics: reports/checkpoint_04f/final_prediction_diagnostics.csv
@@ -49,6 +52,9 @@ outputs:
   loso_selection: loso_selection.csv
   loso_predictions: loso_predictions.csv
   loso_summary: loso_summary.csv
+  confirmation_split_membership: confirmation_split_membership.csv
+  confirmation_predictions: confirmation_predictions.csv
+  confirmation_summary: confirmation_summary.csv
   actual_candidates: actual_candidates.csv
   final_predictions: final_predictions.csv
   final_diagnostics: final_prediction_diagnostics.csv
@@ -85,10 +91,24 @@ validation:
   meta_tuning_folds: 5
   random_state: 20260921
   promotion_rule: >
-    Let the full-development target-matched table identify the best non-incumbent
-    candidate, but promote it only if leave-one-pseudo-split-out method selection
-    improves both mean and pooled RMSE relative to fixed Local04D. Otherwise
-    retain Local04D.
+    Let the frozen 16 target-matched development splits identify the best
+    non-incumbent candidate. Require the leave-one-development-split-out selector
+    to improve both mean and pooled RMSE relative to fixed Local04D. If that gate
+    passes, evaluate only the preselected candidate and Local04D on a fresh X-only
+    target-matched confirmation bank generated with an unused seed. Promote only
+    if the preselected candidate also improves both mean and pooled RMSE on that
+    fresh bank. Otherwise retain Local04D.
+
+  confirmation:
+    enabled: true
+    repeats: 16
+    n_pseudo_targets: 41
+    candidates_per_repeat: 120
+    temperature: 0.85
+    municipality_smoothing: 0.02
+    diversity_penalty: 0.08
+    random_state: 20260925
+    max_exact_overlap_with_development: 0
 
 global_experts:
   PLS_C0:
