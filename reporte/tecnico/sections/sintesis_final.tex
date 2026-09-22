@@ -158,29 +158,31 @@ El repositorio conserva explícitamente:
 La entrega no debe construirse copiando valores desde una gráfica ni desde este PDF. El
 artefacto canónico es el CSV de 04F con precisión completa.
 
-\section{Resultado final}
+\section{Incumbent al entrar a Checkpoint 05}
 
-La cadena de evidencia lleva a una conclusión simple, aunque el camino sea técnicamente
-extenso:
+La cadena de evidencia de Checkpoints~01--04 produjo el incumbent:
 \[
 \boxed{
-\widehat{\bm y}_{\Target}
+\widehat{\bm y}_{\Target}^{(04F)}
 =
 \operatorname{LocalRidge}_{C4,\ Geo,\ k=24,\ \alpha=30,\ p=1}
 (X_{\Train},y_{\Train},X_{\Target})
 }.
 \]
 
-La complejidad de los checkpoints tiene precisamente la función de justificar por qué una
-regla final relativamente simple es preferible a una mezcla más elaborada. Se probaron
+La complejidad de los checkpoints justifica por qué esta regla relativamente simple sobrevivió
 representaciones de alta dimensión, árboles, CatBoost, PLS, kernels, grafos, priors externos,
-routing y blends. LocalRidge C4 no se eligió por simplicidad estética: fue la regla que
-combinó mejor RMSE target-matched, estabilidad local del hiperparámetro, reproducibilidad y
-resistencia a controles de selección.
+routing y blends. No obstante, Checkpoint~05 plantea una hipótesis diferente a las ya cerradas:
+no buscar un mejor experto aislado, sino estimar si expertos globales y locales tienen errores
+complementarios explotables mediante stacking cross-fitted.
+
+Por tanto, LocalRidge C4 sigue siendo la salida canónica mientras 05 está pendiente. El
+resultado final del proyecto sólo cambia si el gate de promoción predeclarado de Checkpoint~05
+supera al incumbent tanto en RMSE medio como pooled bajo selección split-excluded.
 
 \section{Siguiente etapa operativa}
 
-Con el modelado congelado, el siguiente bloque del proyecto no debería ser otro search. Debe
+Después de resolver el único experimento final de Checkpoint~05, el siguiente bloque del proyecto debe
 centrarse en:
 \begin{enumerate}
 \item empaquetado del archivo de entrega;
