@@ -1524,6 +1524,26 @@ def run_checkpoint_05(
     )
     final_method = best_method if promotion_passed else incumbent_method
 
+    confirmation_payload: dict[str, Any] = {
+        "executed": bool(preliminary_passed),
+        "passed": bool(confirmation_passed),
+        "candidate": best_method,
+        "repeats": int(
+            config["validation"]["confirmation"]["repeats"]
+        ),
+    }
+    if preliminary_passed:
+        confirmation_payload["incumbent"] = {
+            "rmse_mean": float(confirm_local["rmse_mean"]),
+            "pooled_rmse": float(confirm_local["pooled_rmse"]),
+            "pooled_mae": float(confirm_local["pooled_mae"]),
+        }
+        confirmation_payload["candidate_metrics"] = {
+            "rmse_mean": float(confirm_best["rmse_mean"]),
+            "pooled_rmse": float(confirm_best["pooled_rmse"]),
+            "pooled_mae": float(confirm_best["pooled_mae"]),
+        }
+
     print("[05 6/9] Fitting full-label experts and meta-models for the actual 59...")
     train_positions = np.flatnonzero(
         joined[identity["split_column"]].eq(identity["train_value"]).to_numpy()
@@ -1665,7 +1685,10 @@ def run_checkpoint_05(
         "final_method": final_method,
         "incumbent_method": incumbent_method,
         "promotion_passed": promotion_passed,
+        "development_gate_passed": preliminary_passed,
+        "confirmation_gate_passed": confirmation_passed,
         "best_development_method": best_method,
+        "confirmation": confirmation_payload,
         "expert_columns": list(
             map(str, config["meta_model"]["expert_columns"])
         ),
@@ -1744,6 +1767,18 @@ def run_checkpoint_05(
         output_dir / str(outputs["loso_summary"]),
         index=False,
     )
+    confirmation_membership.to_csv(
+        output_dir / str(outputs["confirmation_split_membership"]),
+        index=False,
+    )
+    confirmation_predictions.to_csv(
+        output_dir / str(outputs["confirmation_predictions"]),
+        index=False,
+    )
+    confirmation_summary.to_csv(
+        output_dir / str(outputs["confirmation_summary"]),
+        index=False,
+    )
     actual_candidates.to_csv(
         output_dir / str(outputs["actual_candidates"]),
         index=False,
@@ -1814,6 +1849,7 @@ def run_checkpoint_05(
         partial_predictions,
         partial_base,
         partial_details,
+        partial_confirmation,
     ]:
         if path.is_file():
             path.unlink()
