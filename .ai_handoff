@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
-**Updated:** 2026-09-20  
-**Active phase:** Checkpoint 04F final transductive reconstruction is complete. The canonical 59-row prediction table is frozen.
+**Updated:** 2026-09-21  
+**Active phase:** Checkpoint 05 global-local mixture is implemented and workstation-run pending. Checkpoint 04F remains the incumbent until the 05 promotion gate passes.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,13 +144,45 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Do not reopen model selection without a new, explicit hypothesis. The canonical
-competition prediction file is
-`reports/checkpoint_04f/final_predictions.csv`.
+Run the single final high-compute experiment:
 
-Next work should focus on final submission packaging, technical justification,
-application/interface alignment and provenance—not additional unconstrained
-model search.
+```powershell
+python tools\run_checkpoint_05.py
+```
+
+If interrupted after completed outer splits:
+
+```powershell
+python tools\run_checkpoint_05.py --resume
+```
+
+Checkpoint 05 combines the frozen global line from 03 and the local/transductive
+line from 04. Base experts are PLS C0, Ridge C3 with fold-local discovery,
+CatBoost C1, ExtraTrees C1, Local04D and Graph04D. Meta candidates include
+convex/Ridge/ElasticNet/Huber stacks, shallow tree stacks and a support-conditioned
+softmax mixture-of-experts.
+
+Every meta-training row is generated cross-fitted. Global hyperparameters and
+target-aware discovery are fitted inside the corresponding cross-fit training
+subset. The outer pseudo-target y remains untouched until scoring.
+
+Do not replace 04F merely because one 05 method has the lowest full-development
+RMSE. Promotion is allowed only if the configured LOSO method-selection
+procedure improves both mean and pooled RMSE relative to Local04D.
+
+The local serialized output is
+`models/final/checkpoint05_model.joblib`; it is ignored by Git and intended for
+the later Python/Streamlit application.
+
+## Checkpoint 05 implementation status
+
+Canonical plan: `docs/CHECKPOINT_05_PLAN.md`.
+Runner: `tools/run_checkpoint_05.py`.
+Config: `configs/checkpoint05.yaml`.
+
+04F remains the canonical 59-row prediction file until 05 completes and the
+promotion rule is evaluated.
+
 
 ## Checkpoint 04F completed findings
 
