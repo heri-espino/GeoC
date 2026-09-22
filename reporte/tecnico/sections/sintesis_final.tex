@@ -22,6 +22,10 @@ Esta secuencia puede resumirse como:
 \rightarrow
 \text{transducción}
 \rightarrow
+\text{combinación global--local}
+\rightarrow
+\text{confirmación}
+\rightarrow
 \text{congelamiento}.
 \]
 
@@ -41,9 +45,11 @@ representativos;
 \item GraphDirect conserva mucho mejor performance cuando se retienen municipios completos.
 \end{enumerate}
 
-El predictor final es, por tanto, local no porque local models sean universalmente mejores,
-sino porque la topología observada del reto hace valiosa la transferencia desde vecinos
-geográficos.
+El incumbent al cierre de Checkpoint~04 es, por tanto, local no porque los modelos locales
+sean universalmente mejores, sino porque la topología observada del reto hace valiosa la
+transferencia desde vecinos geográficos. Checkpoint~05 prueba de manera explícita si esa
+ventaja local puede complementarse con expertos globales sin perder la disciplina de
+validación.
 
 \section{Qué información no fue decisiva}
 
@@ -74,9 +80,9 @@ resuelve $n=138$. Una vez que los errores CatBoost permanecen altamente correlac
 Local/Graph y su RMSE standalone es mayor, un grid más grande sobre los mismos folds tendría
 rendimientos estadísticos decrecientes y mayor riesgo de selección optimista.
 
-\section{Lectura de las métricas finales}
+\section{Lectura de las métricas del incumbent}
 
-El RMSE target-matched de 0.487845 debe interpretarse como una estimación interna bajo el
+El RMSE target-matched de 0.487845 de Local04D debe interpretarse como una estimación interna bajo el
 protocolo diseñado para parecerse al conjunto objetivo, no como una garantía del RMSE oculto
 de FIRA. Las 16 máscaras comparten parcelas y no constituyen 16 realizaciones independientes
 del proceso generador.
@@ -155,8 +161,11 @@ El repositorio conserva explícitamente:
 \item un archivo final de predicciones separado de diagnósticos.
 \end{itemize}
 
-La entrega no debe construirse copiando valores desde una gráfica ni desde este PDF. El
-artefacto canónico es el CSV de 04F con precisión completa.
+La entrega no debe construirse copiando valores desde una gráfica ni desde este PDF. Mientras
+Checkpoint~05 permanezca pendiente, el artefacto canónico es el CSV de 04F con precisión
+completa. Después de ejecutar 05, la fuente canónica será
+\artifact{reports/checkpoint_05/final_predictions.csv}; ese archivo contendrá Local04D si
+ningún challenger supera todos los gates, o el challenger confirmado si la promoción pasa.
 
 \section{Incumbent al entrar a Checkpoint 05}
 
@@ -176,9 +185,11 @@ routing y blends. No obstante, Checkpoint~05 plantea una hipótesis diferente a 
 no buscar un mejor experto aislado, sino estimar si expertos globales y locales tienen errores
 complementarios explotables mediante stacking cross-fitted.
 
-Por tanto, LocalRidge C4 sigue siendo la salida canónica mientras 05 está pendiente. El
-resultado final del proyecto sólo cambia si el gate de promoción predeclarado de Checkpoint~05
-supera al incumbent tanto en RMSE medio como pooled bajo selección split-excluded.
+Por tanto, LocalRidge C4 sigue siendo la salida canónica mientras 05 está pendiente. Un
+challenger sólo puede reemplazarlo si mejora mean y pooled RMSE en el banco de desarrollo, si
+el selector leave-one-development-split-out también mejora ambos criterios y si, después de
+quedar fijado, vuelve a superar Local04D en mean y pooled RMSE sobre un banco target-matched
+fresco generado $X$-only. El segundo banco no se utiliza para buscar otro challenger.
 
 \section{Siguiente etapa operativa}
 
@@ -193,6 +204,9 @@ probabilístico calibrado;
 \item validaciones finales de esquema, IDs y reproducibilidad.
 \end{enumerate}
 
-La aplicación puede mostrar Local04D, Graph04D y soporte como contexto, pero el valor
-submission-facing debe permanecer igual al CSV congelado salvo que exista una nueva hipótesis
-documentada y se reabra formalmente el checkpoint.
+La aplicación podrá mostrar las predicciones de expertos, pesos del mixture-of-experts,
+soporte y discrepancia como contexto, pero el valor submission-facing debe leerse del CSV
+canónico producido por Checkpoint~05. El bundle
+\artifact{models/final/checkpoint05_model.joblib} se reserva para reproducción exacta y para
+la futura aplicación Python; una API para parcelas arbitrariamente nuevas constituye un
+contrato distinto.
