@@ -1,0 +1,202 @@
+schema_version: 1
+updated: 2026-09-21
+
+stage:
+  name: final_global_local_mixture
+  checkpoint: "05"
+  status: implemented_run_pending
+  purpose: >
+    Combine the strongest global model families from Checkpoint 03 with the
+    local/transductive experts from Checkpoint 04 under the exact frozen
+    pseudo-competition protocol. Train leakage-safe stacked ensembles and a
+    support-conditioned mixture-of-experts, then promote a new final rule only
+    if split-excluded selection improves on the frozen Local04D incumbent.
+  no_hidden_target_scoring: true
+
+scope:
+  active_track: competition
+  source_checkpoints: ["03C.2", "03C.3", "04B", "04D.1", "04F"]
+  incumbent_method: Local04D
+  policy: >
+    Checkpoint 05 is the only reopened modeling hypothesis after 04F. It does
+    not launch an unconstrained feature/model search. It evaluates whether
+    global experts from 03 and local/graph experts from 04 contain complementary
+    error structure that can be combined by fully cross-fitted meta-models.
+
+inputs:
+  base_table: data/processed/features_v1/parcel_features_all.csv
+  base_manifest: data/processed/features_v1/feature_manifest.json
+  agronomic_table: data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+  agronomic_manifest: data/processed/agronomic_features_v1/feature_manifest.json
+  empirical_table: data/processed/empirical_features_v1/parcel_empirical_features.csv
+  empirical_manifest: data/processed/empirical_features_v1/feature_manifest.json
+  empirical_config: configs/empirical_features_v1.yaml
+  checkpoint03c2_config: configs/checkpoint03c2.yaml
+  checkpoint04d1_config: configs/checkpoint04d1.yaml
+  transductive_embeddings: reports/checkpoint_04a/transductive_embeddings.csv
+  pseudo_membership: reports/checkpoint_04b/pseudo_competition_splits.csv
+  frozen_final_predictions: reports/checkpoint_04f/final_predictions.csv
+  frozen_final_diagnostics: reports/checkpoint_04f/final_prediction_diagnostics.csv
+
+outputs:
+  directory: reports/checkpoint_05
+  base_oof_predictions: base_oof_predictions.csv
+  pseudo_predictions: pseudo_predictions.csv
+  split_metrics: split_metrics.csv
+  protocol_summary: protocol_summary.csv
+  residual_correlation: residual_correlation.csv
+  meta_selection_details: meta_selection_details.csv
+  loso_selection: loso_selection.csv
+  loso_predictions: loso_predictions.csv
+  loso_summary: loso_summary.csv
+  actual_candidates: actual_candidates.csv
+  final_predictions: final_predictions.csv
+  final_diagnostics: final_prediction_diagnostics.csv
+  model_manifest: model_manifest.json
+  report_json: checkpoint_05_report.json
+  report_markdown: checkpoint_05_report.md
+  model_bundle: models/final/checkpoint05_model.joblib
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  state_column: meta_estado
+  municipality_column: meta_municipio
+  latitude_column: base_centroid_lat
+  longitude_column: base_centroid_lon
+
+validation:
+  primary_family: target_matched
+  families:
+    - target_matched
+    - state_random
+    - fold_state_stratified
+    - fold_municipality_grouped
+  expected_total_rows: 197
+  expected_training_rows: 138
+  expected_prediction_rows: 59
+  expected_primary_splits: 16
+  meta_crossfit_folds: 5
+  meta_crossfit_repeats: 2
+  tuning_inner_folds: 3
+  meta_tuning_folds: 5
+  random_state: 20260921
+  promotion_rule: >
+    Let the full-development target-matched table identify the best non-incumbent
+    candidate, but promote it only if leave-one-pseudo-split-out method selection
+    improves both mean and pooled RMSE relative to fixed Local04D. Otherwise
+    retain Local04D.
+
+global_experts:
+  PLS_C0:
+    representation: C0_base
+    model: PLS
+  Ridge_C3:
+    representation: C3_base_agro_plus_discovery
+    model: Ridge
+  CatBoost_C1:
+    representation: C1_agronomic
+    model: CatBoost
+  ExtraTrees_C1:
+    representation: C1_agronomic
+    model: ExtraTrees
+
+derived_global_ensembles:
+  E13_PLS_CatBoost:
+    members: [PLS_C0, CatBoost_C1]
+    weights: [0.5, 0.5]
+  E123_PLS_Ridge_CatBoost:
+    members: [PLS_C0, Ridge_C3, CatBoost_C1]
+    weights: [0.3333333333333333, 0.3333333333333333, 0.3333333333333333]
+
+transductive_experts:
+  Local04D:
+    representation: C4_all_deterministic
+    distance: Geo
+    k: 24
+    alpha: 30.0
+    distance_power: 1.0
+  Graph04D:
+    distance: GeoAgro25
+    k: 6
+    regularization: 8.0
+
+fixed_blends:
+  LocalE13_w0p10: {local_weight: 0.90, global_method: E13_PLS_CatBoost, global_weight: 0.10}
+  LocalE13_w0p20: {local_weight: 0.80, global_method: E13_PLS_CatBoost, global_weight: 0.20}
+  LocalE13_w0p30: {local_weight: 0.70, global_method: E13_PLS_CatBoost, global_weight: 0.30}
+  LocalE123_w0p10: {local_weight: 0.90, global_method: E123_PLS_Ridge_CatBoost, global_weight: 0.10}
+  LocalE123_w0p20: {local_weight: 0.80, global_method: E123_PLS_Ridge_CatBoost, global_weight: 0.20}
+  LocalE123_w0p30: {local_weight: 0.70, global_method: E123_PLS_Ridge_CatBoost, global_weight: 0.30}
+
+meta_model:
+  expert_columns:
+    - PLS_C0
+    - Ridge_C3
+    - CatBoost_C1
+    - ExtraTrees_C1
+    - Local04D
+    - Graph04D
+  support_columns:
+    - log_nearest_geo_km
+    - log_nearest_agro_distance
+    - geo_support
+    - agro_support
+    - same_state_fraction
+    - same_municipality_fraction
+    - local_graph_abs_disagreement
+  candidates:
+    ConvexStack:
+      kind: convex
+      l2_values: [0.0, 0.01, 0.1, 1.0]
+    RidgeStack:
+      kind: ridge
+      alpha_values: [0.01, 0.1, 1.0, 10.0, 100.0]
+    ElasticNetStack:
+      kind: elastic_net
+      candidates:
+        - {alpha: 0.001, l1_ratio: 0.10}
+        - {alpha: 0.01, l1_ratio: 0.10}
+        - {alpha: 0.01, l1_ratio: 0.50}
+        - {alpha: 0.10, l1_ratio: 0.50}
+        - {alpha: 0.10, l1_ratio: 0.90}
+    HuberStack:
+      kind: huber
+      candidates:
+        - {epsilon: 1.20, alpha: 0.0001}
+        - {epsilon: 1.35, alpha: 0.0001}
+        - {epsilon: 1.50, alpha: 0.001}
+    ExtraTreesStack:
+      kind: extra_trees
+      candidates:
+        - {max_depth: 2, min_samples_leaf: 6, max_features: 0.75}
+        - {max_depth: 3, min_samples_leaf: 8, max_features: 1.0}
+        - {max_depth: 4, min_samples_leaf: 10, max_features: 1.0}
+      n_estimators: 1000
+    HistGBStack:
+      kind: hist_gradient_boosting
+      candidates:
+        - {max_leaf_nodes: 5, l2_regularization: 1.0, learning_rate: 0.03}
+        - {max_leaf_nodes: 7, l2_regularization: 5.0, learning_rate: 0.03}
+        - {max_leaf_nodes: 9, l2_regularization: 10.0, learning_rate: 0.05}
+      max_iter: 300
+    MoE_Support:
+      kind: mixture_of_experts
+      l2_values: [0.1, 1.0, 10.0, 100.0]
+      max_iter: 1500
+
+catboost:
+  task_type: GPU
+  devices: "0"
+  seed_ensemble: [42, 314, 2718]
+  automatic_cpu_fallback: false
+  cpu_requires_explicit_override: true
+
+runtime:
+  search_n_jobs: -1
+  progress: true
+  persist_model_bundle: true
+  checkpoint_every_outer_split: true
