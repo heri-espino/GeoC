@@ -109,7 +109,7 @@ validation:
     municipality_smoothing: 0.02
     diversity_penalty: 0.08
     random_state: 20260925
-    max_exact_overlap_with_development: 0
+    reject_exact_duplicates: true
 
 global_experts:
   PLS_C0:
