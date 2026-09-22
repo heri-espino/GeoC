@@ -62,6 +62,7 @@ outputs:
   feature_schema: feature_schema.json
   report_json: checkpoint_05_report.json
   report_markdown: checkpoint_05_report.md
+  app_bundle: models/final/checkpoint05_app_bundle.joblib
   model_bundle: models/final/checkpoint05_model.joblib
 
 identity:
