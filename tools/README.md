@@ -71,4 +71,4 @@ default for CatBoost and there is no automatic CPU fallback.
 The runner writes partial split checkpoints so an interrupted long run can be
 continued with `--resume`. On completion it evaluates a predeclared LOSO
 promotion gate, writes the final 59-row candidate table and serializes
-`models/final/checkpoint05_model.joblib` for the later app.
+`models/final/checkpoint05_app_bundle.joblib` for the lightweight fixed-target app contract and `models/final/checkpoint05_model.joblib` for full fitted-model reproducibility.
