@@ -149,7 +149,7 @@ class ConvexStackRegressor(BaseEstimator, RegressorMixin):
     def __init__(self, l2: float = 0.0):
         self.l2 = float(l2)
 
-    def fit(self, x: np.ndarray, y: np.ndarray) -> "ConvexStackRegressor":
+    def fit(self, x: np.ndarray, y: np.ndarray) -> ConvexStackRegressor:
         matrix = np.asarray(x, dtype=float)
         target = np.asarray(y, dtype=float).reshape(-1)
         if matrix.ndim != 2 or len(matrix) != len(target):
@@ -205,7 +205,7 @@ class SupportMixtureOfExperts(BaseEstimator, RegressorMixin):
         expert_predictions: np.ndarray,
         support: np.ndarray,
         y: np.ndarray,
-    ) -> "SupportMixtureOfExperts":
+    ) -> SupportMixtureOfExperts:
         predictions = np.asarray(expert_predictions, dtype=float)
         support_matrix = np.asarray(support, dtype=float)
         target = np.asarray(y, dtype=float).reshape(-1)
