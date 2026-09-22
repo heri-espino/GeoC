@@ -55,7 +55,10 @@ controles más simples: convex stacking, Ridge/ElasticNet/Huber stacking,
 ExtraTrees/HistGB shallow y blends Local+E13/E123.
 
 El incumbent sigue siendo Local04D con RMSE target-matched 0.487845 hasta que
-05 termine y pase el gate leave-one-pseudo-split-out.
+05 termine. Un challenger sólo puede reemplazarlo si supera tres controles:
+mejora en development target-matched, mejora del selector leave-one-split-out
+y confirmación en un segundo banco target-matched fresco generado X-only con
+una seed no usada durante el desarrollo.
 
 En la workstation, primero conviene ejecutar el preflight rápido:
 
