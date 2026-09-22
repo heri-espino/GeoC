@@ -139,7 +139,10 @@ It also writes the local serialized bundle:
     models/final/checkpoint05_model.joblib
 
 The model bundle is intentionally ignored by Git. It is intended for exact local
-reproducibility and the later Python/Streamlit application.
+reproducibility and the later Python/Streamlit application. Before the runner
+reports PASS, it serializes the bundle, reloads it, and verifies that the stored
+59-row final table reproduces the selected actual candidate to numerical
+tolerance.
 
 Until Checkpoint 05 finishes and the promotion gate is evaluated, the canonical competition
 prediction file remains Checkpoint 04F.
