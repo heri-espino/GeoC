@@ -228,3 +228,6 @@ deployment:
     The ONNX graph consumes the median-imputed numeric feature matrix. The
     adjacent JSON manifest stores the exact raw feature order and fitted median
     values so web/backend code can reproduce preprocessing before inference.
+    Scientific ranking is independent of converter support: if the top
+    scientific finalist cannot pass ONNX schema and numerical verification,
+    export the highest-ranked finalist that can.
