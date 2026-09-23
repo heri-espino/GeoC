@@ -22,17 +22,18 @@ notebook cells.
 | `run_checkpoint_03c.py` | Fixed-fold clean/competition representation benchmark with Ridge10 and ExtraTrees | Checkpoint 03C.1 closed |
 | `run_checkpoint_03c2.py` | Competition-only nested model-family benchmark with fold-safe tuning/discovery | Checkpoint 03C.2 closed |
 | `run_checkpoint_03c3.py` | Deterministic OOF review of three finalists and fixed equal-weight ensembles | Checkpoint 03C.3 closed/frozen |
+| `run_checkpoint_03d.py` | Large-compute competition-only global benchmark, resumable outer fits and verified ONNX export | **Checkpoint 03D active; workstation run pending** |
 | `run_checkpoint_04a.py` | Build 59-target geographic/feature/temporal topology, shift, autocorrelation, support tables and figures | Checkpoint 04A complete |
 | `run_checkpoint_04b.py` | Repeated transductive pseudo-competition RMSE for global, local, spatial, graph and blended methods | Checkpoint 04B complete |
 | `run_checkpoint_04c1.py` | Focused C1 agronomic CatBoost anchor, low-weight blends, residual diversity and controlled LOSO gate | Checkpoint 04C.1 complete |
 | `run_checkpoint_04f.py` | Verify frozen finalist provenance, audit Local/Graph blending and write exactly 59 final yields | Checkpoint 04F complete/frozen |
-| `run_checkpoint_05.py` | Nested cross-fitted global/local experts, stacking, support-conditioned mixture-of-experts, promotion gate and model export | **Checkpoint 05 implemented; workstation run next** |
+| `run_checkpoint_05.py` | Nested cross-fitted global/local experts, stacking, support-conditioned mixture-of-experts, promotion gate and model export | Checkpoint 05 complete/frozen; no promotion |
 | `run_checkpoint_04d1.py` | Refine local Ridge and graph models, test residual graph correction, LOSO selection/routing and fixed-target candidate predictions | Checkpoint 04D.1 complete |
 | `generate_function_index.py` | Regenerate `docs/FUNCTION_INDEX.md` from public package API | run after public API changes |
 | `inspect_reference_docx.py` | Inspect reference DOCX content | utility |
 | `_netcdf_catalog_worker.py` | Internal NetCDF catalog worker | internal; not a direct user workflow |
 
-Checkpoint 03 is closed as the First Modeling Delivery and Checkpoint 04 supplies the frozen transductive incumbent. Checkpoint 05 is the active final combination stage.
+Checkpoint 03C remains the frozen First Modeling Delivery. Checkpoint 03D is the active large-compute global closure experiment. Local04D remains the frozen competition incumbent; Checkpoint 05B is blocked until 03D results exist.
 
 See `docs/AGENT_GUIDE.md` before adding scripts.
 
@@ -72,3 +73,15 @@ The runner writes partial split checkpoints so an interrupted long run can be
 continued with `--resume`. On completion it evaluates a predeclared LOSO
 promotion gate, writes the final 59-row candidate table and serializes
 `models/final/checkpoint05_app_bundle.joblib` for the lightweight fixed-target app contract and `models/final/checkpoint05_model.joblib` for full fitted-model reproducibility.
+
+### `run_checkpoint_03d.py`
+
+Runs the final serious global benchmark. It compares large CatBoost/XGBoost/
+LightGBM/ExtraTrees/HistGB models plus Ridge/PLS controls under the frozen
+Checkpoint 03 nested-CV protocols. GPU is required by default for CatBoost
+and XGBoost. The runner checkpoints each completed outer fit for `--resume`.
+
+Before the long run, `--preflight` checks the 197/138/59 competition-only
+contract, GPU visibility and actual ONNX round trips for all configured model
+families. On completion it writes three global finalists and a verified
+`models/final/checkpoint03d_global.onnx` deployment artifact plus JSON schema.
