@@ -15,11 +15,7 @@ parcelas, clima, suelo, topografía, SIAP 2025 y demás fuentes públicas justif
 Las X de las 59 parcelas **sí forman parte del problema** y pueden utilizarse en aprendizaje
 transductivo X-only. Los 59 y ocultos no pueden utilizarse ni obtenerse directamente.
 
-Checkpoint 03 queda congelado como **First Modeling Delivery** y Checkpoint 04 como la
-línea transductiva/local que produjo el incumbent. La fase activa es ahora
-`checkpoints/05_global_local_mixture/`, que combina ambas líneas con stacking cross-fitted y
-mixture-of-experts. Leer primero `docs/TRANSDUCTIVE_OBJECTIVE.md` y
-`docs/CHECKPOINT_05_PLAN.md`.
+Checkpoint 03 queda congelado como **First Modeling Delivery**, Checkpoint 04 como la línea transductiva/local que produjo el incumbent y Checkpoint 05 como la prueba final de combinación global-local. Checkpoint 05 no superó su gate de promoción, por lo que `Local04D` queda congelado como método final. Leer `docs/TRANSDUCTIVE_OBJECTIVE.md` y `docs/CHECKPOINT_05_FINDINGS.md`.
 
 
 **Predicción agroclimática y geoespacial del rendimiento de cebada** para el Reto AgroCebada FIRA 2026.
@@ -42,49 +38,46 @@ Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conoce
 
 
 
-## Checkpoint 05 — activo: global + local mixture
+## Checkpoint 05 — completado: global + local mixture
 
-Checkpoint 05 es el último experimento de modelado previsto. Combina los
-expertos globales validados en 03 (PLS, Ridge, CatBoost, ExtraTrees) con los
-expertos Local04D y Graph04D de 04 dentro de las mismas pseudo-competiciones
-target-matched.
+Checkpoint 05 fue el último experimento de modelado previsto. Combinó PLS,
+Ridge, CatBoost y ExtraTrees de la línea global de 03 con Local04D y Graph04D
+mediante stacking completamente cross-fitted y un mixture-of-experts condicionado
+en soporte.
 
-La novedad principal es un **mixture-of-experts condicionado en soporte**,
-entrenado únicamente sobre predicciones base cross-fitted. También se incluyen
-controles más simples: convex stacking, Ridge/ElasticNet/Huber stacking,
-ExtraTrees/HistGB shallow y blends Local+E13/E123.
+El mejor resultado de desarrollo fue un blend simple:
 
-El incumbent sigue siendo Local04D con RMSE target-matched 0.487845 hasta que
-05 termine. Un challenger sólo puede reemplazarlo si supera tres controles:
-mejora en development target-matched, mejora del selector leave-one-split-out
-y confirmación en un segundo banco target-matched fresco generado X-only con
-una seed no usada durante el desarrollo.
-
-En la workstation, primero conviene ejecutar el preflight rápido:
-
-```powershell
-git pull
-conda activate geocebada
-python tools\run_checkpoint_05.py --preflight
+```text
+LocalE13_w0p10 = 90% Local04D + 10% E13
+mean RMSE      = 0.487243
+pooled RMSE    = 0.495261
 ```
 
-Si pasa, iniciar el run largo:
+frente a Local04D:
 
-```powershell
-python tools\run_checkpoint_05.py
+```text
+mean RMSE      = 0.487845
+pooled RMSE    = 0.495741
 ```
 
-Si el run se interrumpe después de completar splits:
+La mejora nominal no sobrevivió el gate leave-one-split-out. El selector LOSO
+obtuvo 0.487934 de mean RMSE y 0.495933 pooled, ligeramente peor que Local04D
+en ambas métricas. Por ello no se ejecutó la confirmación fresca y no hubo
+promoción.
 
-```powershell
-python tools\run_checkpoint_05.py --resume
+El método final permanece:
+
+```text
+Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
 ```
 
-GPU es el default y no existe fallback automático a CPU. El run final exporta
-la tabla de 59 predicciones, manifest y un bundle local
-`models/final/checkpoint05_app_bundle.joblib` para la futura app y `models/final/checkpoint05_model.joblib` como bundle completo de reproducibilidad.
+La salida canónica post-05 es:
 
-Plan técnico: `docs/CHECKPOINT_05_PLAN.md`.
+```text
+reports/checkpoint_05/final_predictions.csv
+```
+
+Interpretación canónica: `docs/CHECKPOINT_05_FINDINGS.md`.
 
 ## Checkpoint 04F — completado
 
@@ -271,7 +264,7 @@ GeoCebada/
 
 ## Checkpoints
 
-El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 350 variables agronómicas/no lineales target-free (123 clean, 227 competition) para las 197 parcelas. **Checkpoint 03B** está cerrado: `data/processed/empirical_features_v1/` contiene 335 variables empíricas X-only (91 clean, 244 competition), y el audit fold-local encontró 88 expresiones únicas, con 7 expresiones recurrentes que se reducen a cuatro motivos conceptuales. **Checkpoint 03C.1** está cerrado. El benchmark mostró que las variables agronómicas conservan señal con mucha menor dimensionalidad, `empirical-only` es débil como representación aislada y el discovery fold-local puede mejorar ExtraTrees, especialmente en el track clean. Checkpoints 03C.2/03C.3 y 04A--04F están cerrados como evidencia reproducible. La fase activa es **Checkpoint 05 — global/local mixture**, que combina los finalistas globales de 03 con Local04D/Graph04D mediante stacking completamente cross-fitted y un mixture-of-experts condicionado en soporte. El siguiente paso es correr `python tools\run_checkpoint_05.py` en la workstation.
+El cierre de la fase de datos está documentado en **`checkpoints/01_data/README.md`**. La tabla maestra determinista ya fue construida y validada en la workstation: 197 parcelas = 138 `ENTRENAMIENTO` + 59 `PREDICCION`, con 694 features `clean` y 1,403 features totales en el track `competition`. **`checkpoints/02_features/README.md`** está cerrado y registra el inventario, covariate shift, folds fijos, ablations y baselines ya ejecutados. **Checkpoint 03A** también está cerrado: `data/processed/agronomic_features_v1/` contiene 350 variables agronómicas/no lineales target-free (123 clean, 227 competition) para las 197 parcelas. **Checkpoint 03B** está cerrado: `data/processed/empirical_features_v1/` contiene 335 variables empíricas X-only (91 clean, 244 competition), y el audit fold-local encontró 88 expresiones únicas, con 7 expresiones recurrentes que se reducen a cuatro motivos conceptuales. **Checkpoint 03C.1** está cerrado. El benchmark mostró que las variables agronómicas conservan señal con mucha menor dimensionalidad, `empirical-only` es débil como representación aislada y el discovery fold-local puede mejorar ExtraTrees, especialmente en el track clean. Checkpoints 03C.2/03C.3 y 04A--04F están cerrados como evidencia reproducible. Checkpoint 05 también está cerrado. No hubo promoción y `Local04D` permanece como método final. La salida canónica de competencia es `reports/checkpoint_05/final_predictions.csv`; el siguiente trabajo es integración de submission/app/export, no otra búsqueda amplia de modelos.
 
 ## Agronomic Features v1
 
