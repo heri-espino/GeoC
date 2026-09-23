@@ -1,6 +1,6 @@
 # Checkpoint 05 — Final Global–Local Mixture
 
-**Status:** IMPLEMENTED / WORKSTATION RUN PENDING
+**Status:** CLOSED / COMPLETED — NO PROMOTION
 
 Checkpoint 05 is the only modeling stage reopened after Checkpoint 04F. It exists because
 Checkpoint 03 learned strong global experts and Checkpoint 04 learned strong local/transductive
@@ -15,6 +15,21 @@ with target-matched mean RMSE 0.487845.
 
 Checkpoint 05 evaluates whether global and local errors are sufficiently complementary to
 justify replacing that incumbent.
+
+## Completed result
+
+The run completed on 2026-09-23. The best development challenger was
+`LocalE13_w0p10` (90% Local04D + 10% E13), with mean RMSE 0.487243 and
+pooled RMSE 0.495261 versus Local04D at 0.487845 and 0.495741.
+
+The predeclared LOSO method-selection gate scored 0.487934 mean RMSE and
+0.495933 pooled RMSE, slightly worse than Local04D on both metrics. The gate
+therefore failed, the fresh confirmation bank was intentionally not scored,
+and Local04D remains the final method.
+
+Canonical interpretation: `docs/CHECKPOINT_05_FINDINGS.md`.  
+Canonical post-05 prediction file: `reports/checkpoint_05/final_predictions.csv`.
+
 
 ## Competition-only data contract
 
