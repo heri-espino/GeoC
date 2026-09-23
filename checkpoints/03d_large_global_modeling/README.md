@@ -76,10 +76,12 @@ models/final/checkpoint03d_global.onnx
 models/final/checkpoint03d_global.onnx.json
 ```
 
-The ONNX graph receives the median-imputed float32 numeric matrix. The adjacent
-JSON manifest stores the exact raw feature order and fitted median for every
-feature. The runner loads the ONNX graph with ONNX Runtime and refuses to PASS
-unless its predictions match the Python estimator within the configured
+The ONNX graph receives the median-imputed float32 numeric matrix. For model
+families that require learned scaling, that scaler is embedded inside the ONNX
+graph. The adjacent JSON manifest stores the exact raw feature order and fitted
+median for every feature. The runner first verifies that the post-imputation deployment object reproduces
+the complete fitted Python pipeline, then loads the ONNX graph with ONNX Runtime
+and refuses to PASS unless both equivalence checks satisfy the configured
 tolerance.
 
 This global ONNX model is a deployment artifact. It does **not** silently replace
