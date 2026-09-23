@@ -1,0 +1,135 @@
+{
+  "actual_base_tuning_records": 44,
+  "actual_hidden_y_scored": false,
+  "actual_meta_models": [
+    {
+      "kind": "convex",
+      "meta_cv_rmse": 0.47476622694767523,
+      "method": "ConvexStack",
+      "selected_params": "{\"l2\": 0.1}"
+    },
+    {
+      "kind": "ridge",
+      "meta_cv_rmse": 0.482171853094866,
+      "method": "RidgeStack",
+      "selected_params": "{\"alpha\": 10.0}"
+    },
+    {
+      "kind": "elastic_net",
+      "meta_cv_rmse": 0.4866490284285203,
+      "method": "ElasticNetStack",
+      "selected_params": "{\"alpha\": 0.01, \"l1_ratio\": 0.1}"
+    },
+    {
+      "kind": "huber",
+      "meta_cv_rmse": 0.4917523182299849,
+      "method": "HuberStack",
+      "selected_params": "{\"alpha\": 0.0001, \"epsilon\": 1.2}"
+    },
+    {
+      "kind": "extra_trees",
+      "meta_cv_rmse": 0.46437033182456977,
+      "method": "ExtraTreesStack",
+      "selected_params": "{\"max_depth\": 2, \"max_features\": 0.75, \"min_samples_leaf\": 6}"
+    },
+    {
+      "kind": "hist_gradient_boosting",
+      "meta_cv_rmse": 0.5267273824228013,
+      "method": "HistGBStack",
+      "selected_params": "{\"l2_regularization\": 5.0, \"learning_rate\": 0.03, \"max_leaf_nodes\": 7}"
+    },
+    {
+      "kind": "mixture_of_experts",
+      "meta_cv_rmse": 0.47601261661737615,
+      "method": "MoE_Support",
+      "selected_params": "{\"l2\": 1.0}"
+    }
+  ],
+  "app_bundle_roundtrip_verification": {
+    "checkpoint": "05",
+    "final_method": "Local04D",
+    "max_abs_difference": 0.0,
+    "prediction_rows": 59,
+    "verified": true
+  },
+  "best_development": {
+    "method": "LocalE13_w0p10",
+    "pooled_mae": 0.3403526938339328,
+    "pooled_rmse": 0.4952605960242607,
+    "rmse_mean": 0.4872434914851409
+  },
+  "best_development_method": "LocalE13_w0p10",
+  "bundle_note": "The joblib bundle reproduces the fixed 59-target competition inference. A generic arbitrary-new-parcel API will be implemented with the web app.",
+  "bundle_roundtrip_verification": {
+    "checkpoint": "05",
+    "final_method": "Local04D",
+    "max_abs_difference": 0.0,
+    "prediction_rows": 59,
+    "verified": true
+  },
+  "catboost_task_type": "GPU",
+  "checkpoint": "05",
+  "confirmation": {
+    "candidate": "LocalE13_w0p10",
+    "executed": false,
+    "passed": false,
+    "repeats": 16
+  },
+  "confirmation_gate_passed": false,
+  "development_gate_passed": false,
+  "expert_columns": [
+    "PLS_C0",
+    "Ridge_C3",
+    "CatBoost_C1",
+    "ExtraTrees_C1",
+    "Local04D",
+    "Graph04D"
+  ],
+  "families": [
+    "fold_municipality_grouped",
+    "fold_state_stratified",
+    "state_random",
+    "target_matched"
+  ],
+  "final_method": "Local04D",
+  "generated_at": "2026-09-23T08:29:26.547987+00:00",
+  "git_commit": "d0638f589228ad93f8724a9ec89462ac478f4724",
+  "graph04d_reproduction_max_abs_diff": 8.881784197001252e-16,
+  "hidden_prediction_targets_used": false,
+  "incumbent": {
+    "pooled_mae": 0.34250114448799523,
+    "pooled_rmse": 0.49574142871073495,
+    "rmse_mean": 0.48784531674343823
+  },
+  "incumbent_method": "Local04D",
+  "inference_scope": "fixed_59_competition_targets",
+  "local04d_reproduction_max_abs_diff": 8.881784197001252e-16,
+  "loso_selection": {
+    "n_predictions": 656,
+    "n_splits": 16,
+    "pooled_mae": 0.34094996908505026,
+    "pooled_r2": 0.6540736693353515,
+    "pooled_rmse": 0.4959326241372826,
+    "rmse_mean": 0.4879339892938598,
+    "rmse_median": 0.4739802886719978,
+    "rmse_worst": 0.6928246595738705
+  },
+  "n_candidate_methods": 21,
+  "n_outer_splits": 34,
+  "prediction_rows": 59,
+  "promotion_passed": false,
+  "schema_version": 1,
+  "selected_meta_model": null,
+  "stage": "final_global_local_mixture",
+  "support_columns": [
+    "log_nearest_geo_km",
+    "log_nearest_agro_distance",
+    "geo_support",
+    "agro_support",
+    "same_state_fraction",
+    "same_municipality_fraction",
+    "local_graph_abs_disagreement"
+  ],
+  "target": "RENDIMIENTO_T_HA",
+  "training_rows": 138
+}

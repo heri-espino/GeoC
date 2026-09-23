@@ -1,0 +1,16 @@
+family,method_a,method_b,n_pairs,residual_correlation
+target_matched,Local04D,Graph04D,656,0.9707247059948044
+target_matched,Local04D,E13_PLS_CatBoost,656,0.9284994254292448
+target_matched,Local04D,E123_PLS_Ridge_CatBoost,656,0.9285454386294457
+target_matched,Local04D,ConvexStack,656,0.9831878081054197
+target_matched,Local04D,MoE_Support,656,0.9782864816752809
+target_matched,Graph04D,E13_PLS_CatBoost,656,0.908488922721377
+target_matched,Graph04D,E123_PLS_Ridge_CatBoost,656,0.9060916964289761
+target_matched,Graph04D,ConvexStack,656,0.986068751122805
+target_matched,Graph04D,MoE_Support,656,0.9622824552539432
+target_matched,E13_PLS_CatBoost,E123_PLS_Ridge_CatBoost,656,0.9962017722848628
+target_matched,E13_PLS_CatBoost,ConvexStack,656,0.948902001572377
+target_matched,E13_PLS_CatBoost,MoE_Support,656,0.97628466027995
+target_matched,E123_PLS_Ridge_CatBoost,ConvexStack,656,0.9486011669694389
+target_matched,E123_PLS_Ridge_CatBoost,MoE_Support,656,0.976871080476175
+target_matched,ConvexStack,MoE_Support,656,0.9861876388339429
