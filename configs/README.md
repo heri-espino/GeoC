@@ -17,15 +17,15 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint04a.yaml` | Target topology, temporal similarity, shift, autocorrelation and support diagnostics | 04A complete |
 | `checkpoint04b.yaml` | Repeated transductive pseudo-competition validation with global/local/graph methods and X-only routing | 04B complete |
 | `checkpoint04d1.yaml` | Exhaustive local/graph refinement, residual-graph correction and LOSO routing validation | 04D.1 complete |
-| `checkpoint04c1.yaml` | Focused C1 agronomic CatBoost anchor and low-weight blend validation | **04C.1 implemented; workstation run next** |
+| `checkpoint04c1.yaml` | Focused C1 agronomic CatBoost anchor and low-weight blend validation | 04C.1 complete/frozen |
 | `checkpoint04e1.yaml` | Exact SIAP 2025 localization and external-prior validation | 04E.1 complete |
 | `checkpoint04f.yaml` | Final Local04D freeze, Local/Graph sensitivity and 59-row output contract | 04F complete/frozen |
-| `checkpoint05.yaml` | Cross-fitted global/local stacking, support-conditioned mixture-of-experts and conservative promotion gate | **05 implemented; workstation preflight/run next** |
+| `checkpoint05.yaml` | Cross-fitted global/local stacking, support-conditioned mixture-of-experts and conservative promotion gate | 05 complete/frozen; no promotion |
 
 Do not silently edit frozen Checkpoint 01–03 configs to improve historical results. Checkpoint
 03 is preserved as the First Modeling Delivery.
 
-Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`. Checkpoint 05 is the active final-combination implementation; historical Checkpoint 01–04 configs remain frozen evidence.
+Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`. Checkpoints 01–05 are now frozen modeling evidence. Checkpoint 05 closed without promotion, so Local04D remains the final method.
 
 See `docs/AGENT_GUIDE.md` and `docs/PROJECT_HISTORY.md`.
 
