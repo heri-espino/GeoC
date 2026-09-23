@@ -5,7 +5,7 @@ validated, and what remains open so future collaborators and AI agents do not re
 silently overwrite earlier decisions.
 
 **Last updated:** 2026-09-23  
-**Current phase:** Checkpoint 05 is closed. Its promotion gate failed, so Local04D remains the frozen final method. Current work should focus on submission/app/export integration unless materially new evidence justifies reopening modeling.
+**Current phase:** Checkpoint 03D large-compute global benchmark is active by explicit human decision. Local04D remains the frozen competition incumbent; 05B is conditional on 03D producing materially stronger global signal.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
@@ -1121,4 +1121,34 @@ was intentionally not scored, and Local04D remained the promoted final method.
 The final post-05 59-row output is
 `reports/checkpoint_05/final_predictions.csv`. Canonical interpretation is in
 `docs/CHECKPOINT_05_FINDINGS.md`.
+
+---
+
+## 2026-09-23 — Checkpoint 03D opened: large-compute global closure
+
+After Checkpoint 05 closed without promotion, the user explicitly chose to
+answer one remaining question before final submission/deployment: whether the
+global experts inherited from 03C were artificially weak because their search
+budgets were deliberately small.
+
+Checkpoint 03D was added without altering frozen 03C results. It compares
+large regularized CatBoost and XGBoost searches on GPU, plus LightGBM,
+ExtraTrees, HistGradientBoosting and Ridge/PLS controls, across four
+deterministic competition-only representations. Validation remains nested
+inside the frozen state-stratified and municipality-grouped outer protocols.
+
+The runner checkpoints every completed outer fit and supports `--resume`.
+Before the long run, `--preflight` validates the 197/138/59 contract, GPU
+visibility and actual ONNX conversions for every configured model family.
+
+The top three model-family-diverse global finalists are refit on all 138
+labels. The strongest deployable global estimator must be exported to
+`models/final/checkpoint03d_global.onnx` and round-trip verified with ONNX
+Runtime. Exact raw feature order and median-imputation statistics are stored
+in the adjacent JSON manifest.
+
+03D does not itself replace Local04D. If it produces meaningfully better
+global experts, a deliberately narrow Checkpoint 05B will test low-weight
+Local04D + Global03D blends using the same development/LOSO/fresh-confirmation
+promotion discipline as Checkpoint 05.
 
