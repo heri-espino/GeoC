@@ -56,6 +56,16 @@ The 03D runner refuses to PASS unless the post-imputation deployment object
 reproduces the complete Python pipeline and ONNX Runtime reproduces that
 deployment object within the configured tolerance.
 
+The stable deployment environment currently pins `skl2onnx==1.20.0` with
+`onnx<1.22`. The converter release predates a July 2026 upstream fix required
+for ONNX 1.22 tree attributes. `--preflight` prints the exact installed
+versions and audits every model family before the expensive benchmark.
+
+Scientific model selection and deployment compatibility are separate. If the
+top scientific finalist cannot pass ONNX schema/equivalence validation, the
+runner retains it in the scientific outputs but exports the highest-ranked
+finalist that does pass deployment validation.
+
 This artifact must not be confused with the fixed-target competition rule.
 `Local04D` remains the current 59-parcel competition method unless a later
 Checkpoint 05B promotion gate succeeds. If 05B retains Local04D, the 03D ONNX
