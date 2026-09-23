@@ -9,6 +9,7 @@ import json
 import subprocess
 import tempfile
 from datetime import UTC, datetime
+from importlib.metadata import PackageNotFoundError, version as package_version
 from pathlib import Path
 from time import perf_counter
 from typing import Any
@@ -168,9 +169,18 @@ def _load_inputs(root: Path, config: dict[str, Any]) -> tuple[
     return joined, folds, manifests, empirical_config, paths
 
 
-def _check_deployment_stack() -> None:
+def _version_pair(value: str) -> tuple[int, int]:
+    parts = value.split(".")
+    try:
+        return int(parts[0]), int(parts[1])
+    except (IndexError, ValueError) as exc:
+        raise RuntimeError(f"Unable to parse package version {value!r}.") from exc
+
+
+def _check_deployment_stack() -> dict[str, str]:
+    modules = ["onnx", "onnxruntime", "onnxmltools", "skl2onnx"]
     missing: list[str] = []
-    for module in ["onnx", "onnxruntime", "onnxmltools", "skl2onnx"]:
+    for module in modules:
         try:
             __import__(module)
         except ImportError:
@@ -182,9 +192,33 @@ def _check_deployment_stack() -> None:
             "'[dev,models,deployment]'."
         )
 
+    versions: dict[str, str] = {}
+    for distribution in modules:
+        try:
+            versions[distribution] = package_version(distribution)
+        except PackageNotFoundError:
+            versions[distribution] = "unknown"
 
-def _onnx_converter_smoke_test(config: dict[str, Any]) -> None:
-    """Fail before the long run if any configured model family cannot round-trip to ONNX."""
+    onnx_version = versions.get("onnx", "unknown")
+    skl2onnx_version = versions.get("skl2onnx", "unknown")
+    if onnx_version != "unknown" and skl2onnx_version != "unknown":
+        if (
+            _version_pair(onnx_version) >= (1, 22)
+            and _version_pair(skl2onnx_version) <= (1, 20)
+        ):
+            raise RuntimeError(
+                "Incompatible stable ONNX converter stack detected: "
+                f"onnx={onnx_version}, skl2onnx={skl2onnx_version}. "
+                "skl2onnx 1.20.0 predates the ONNX 1.22 tree-attribute fix. "
+                "Run: python -m pip install -e \".[dev,models,deployment]\""
+            )
+    return versions
+
+
+def _onnx_converter_smoke_test(
+    config: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Audit converter support without letting one optional family block 03D."""
 
     from catboost import CatBoostRegressor
     from lightgbm import LGBMRegressor
@@ -287,11 +321,13 @@ def _onnx_converter_smoke_test(config: dict[str, Any]) -> None:
     atol = float(config["deployment"]["verification_atol"])
     rtol = float(config["deployment"]["verification_rtol"])
 
+    results: dict[str, dict[str, Any]] = {}
     with tempfile.TemporaryDirectory(prefix="geocebada_03d_onnx_") as tmp:
         directory = Path(tmp)
         for kind, model in models:
             model.fit(x, y)
             destination = directory / f"{kind}.onnx"
+            print(f"ONNX converter smoke: {kind}...", flush=True)
             try:
                 export_regressor_to_onnx(
                     model,
@@ -300,7 +336,7 @@ def _onnx_converter_smoke_test(config: dict[str, Any]) -> None:
                     path=destination,
                     target_opset=target_opset,
                 )
-                verify_onnx_regressor(
+                verification = verify_onnx_regressor(
                     model,
                     x,
                     path=destination,
@@ -308,9 +344,23 @@ def _onnx_converter_smoke_test(config: dict[str, Any]) -> None:
                     rtol=rtol,
                 )
             except Exception as exc:
-                raise RuntimeError(
-                    f"ONNX converter preflight failed for {kind}: {exc}"
-                ) from exc
+                results[kind] = {
+                    "verified": False,
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+                print(f"    unavailable: {type(exc).__name__}: {exc}", flush=True)
+            else:
+                results[kind] = {
+                    "verified": True,
+                    "verification": verification,
+                }
+                print("    PASS", flush=True)
+
+    if not any(bool(item["verified"]) for item in results.values()):
+        raise RuntimeError(
+            "No Checkpoint 03D model family has a verified ONNX conversion path."
+        )
+    return results
 
 
 def _partial_paths(output_dir: Path) -> dict[str, Path]:
@@ -465,13 +515,13 @@ def run_checkpoint_03d(
     if not pairs:
         raise RuntimeError("No eligible Checkpoint 03D model/representation pairs.")
 
-    _check_deployment_stack()
+    deployment_versions = _check_deployment_stack()
     if compute == "GPU":
         _gpu_smoke_test(
             catboost_devices=str(config["compute"]["catboost_devices"]),
             xgboost_device=str(config["compute"]["xgboost_device"]),
         )
-    _onnx_converter_smoke_test(config)
+    onnx_converter_status = _onnx_converter_smoke_test(config)
 
     if preflight:
         return {
@@ -480,6 +530,8 @@ def run_checkpoint_03d(
             "pairs": len(pairs),
             "compute": compute,
             "onnx_stack": "available",
+            "deployment_versions": deployment_versions,
+            "onnx_converter_status": onnx_converter_status,
         }
 
     protocols = list(map(str, validation["outer_protocols"]))
@@ -769,6 +821,7 @@ def run_checkpoint_03d(
     finalist_tuning: list[dict[str, Any]] = []
     onnx_verification: dict[str, Any] | None = None
     onnx_manifest_payload: dict[str, Any] | None = None
+    onnx_export_errors: list[dict[str, Any]] = []
 
     for row in finalists.itertuples(index=False):
         representation_name = str(row.representation)
@@ -821,7 +874,11 @@ def run_checkpoint_03d(
             }
         )
 
-        if int(row.finalist_rank) == 1:
+        converter_status = onnx_converter_status.get(
+            spec.kind,
+            {"verified": False, "error": "converter not preflighted"},
+        )
+        if onnx_verification is None and bool(converter_status["verified"]):
             best_pipeline = search.best_estimator_
             imputer = best_pipeline.named_steps["imputer"]
             x_imputed = np.asarray(imputer.transform(x_full), dtype=np.float32)
@@ -835,71 +892,91 @@ def run_checkpoint_03d(
             else:
                 deployment_model = best_pipeline.named_steps["model"]
 
-            python_pipeline_predictions = np.asarray(
-                best_pipeline.predict(x_full),
-                dtype=float,
-            ).reshape(-1)
-            deployment_predictions = np.asarray(
-                deployment_model.predict(x_imputed),
-                dtype=float,
-            ).reshape(-1)
-            if not np.allclose(
-                python_pipeline_predictions,
-                deployment_predictions,
-                atol=float(config["deployment"]["verification_atol"]),
-                rtol=float(config["deployment"]["verification_rtol"]),
-            ):
-                raise RuntimeError(
-                    "Post-imputation deployment model does not reproduce the "
-                    "fitted Python pipeline."
-                )
+            try:
+                python_pipeline_predictions = np.asarray(
+                    best_pipeline.predict(x_full),
+                    dtype=float,
+                ).reshape(-1)
+                deployment_predictions = np.asarray(
+                    deployment_model.predict(x_imputed),
+                    dtype=float,
+                ).reshape(-1)
+                if not np.allclose(
+                    python_pipeline_predictions,
+                    deployment_predictions,
+                    atol=float(config["deployment"]["verification_atol"]),
+                    rtol=float(config["deployment"]["verification_rtol"]),
+                ):
+                    raise RuntimeError(
+                        "Post-imputation deployment model does not reproduce the "
+                        "fitted Python pipeline."
+                    )
 
-            onnx_path = root / str(outputs["onnx_model"])
-            export_regressor_to_onnx(
-                deployment_model,
-                kind=spec.kind,
-                n_features=x_imputed.shape[1],
-                path=onnx_path,
-                target_opset=int(config["deployment"]["target_opset"]),
-            )
-            onnx_verification = verify_onnx_regressor(
-                deployment_model,
-                x_imputed,
-                path=onnx_path,
-                atol=float(config["deployment"]["verification_atol"]),
-                rtol=float(config["deployment"]["verification_rtol"]),
-            )
-            onnx_verification["python_pipeline_max_abs_difference"] = float(
-                np.max(
-                    np.abs(
-                        python_pipeline_predictions - deployment_predictions
+                onnx_path = root / str(outputs["onnx_model"])
+                export_regressor_to_onnx(
+                    deployment_model,
+                    kind=spec.kind,
+                    n_features=x_imputed.shape[1],
+                    path=onnx_path,
+                    target_opset=int(config["deployment"]["target_opset"]),
+                )
+                candidate_verification = verify_onnx_regressor(
+                    deployment_model,
+                    x_imputed,
+                    path=onnx_path,
+                    atol=float(config["deployment"]["verification_atol"]),
+                    rtol=float(config["deployment"]["verification_rtol"]),
+                )
+                candidate_verification["python_pipeline_max_abs_difference"] = float(
+                    np.max(
+                        np.abs(
+                            python_pipeline_predictions - deployment_predictions
+                        )
                     )
                 )
-            )
-            statistics = np.asarray(imputer.statistics_, dtype=float)
-            statistics = np.nan_to_num(
-                statistics,
-                nan=0.0,
-                posinf=0.0,
-                neginf=0.0,
-            )
-            onnx_manifest_payload = {
-                "schema_version": 1,
-                "checkpoint": "03D",
-                "model": model_name,
-                "kind": spec.kind,
-                "representation": representation_name,
-                "input_name": "features",
-                "input_dtype": str(config["deployment"]["input_dtype"]),
-                "raw_feature_order": list(representation.features),
-                "preprocessing": {
-                    "strategy": "median",
-                    "statistics": statistics.tolist(),
-                    "output_feature_count": int(x_imputed.shape[1]),
-                },
-                "onnx_path": str(outputs["onnx_model"]),
-                "verification": onnx_verification,
-            }
+            except Exception as exc:
+                onnx_export_errors.append(
+                    {
+                        "finalist_rank": int(row.finalist_rank),
+                        "model": model_name,
+                        "kind": spec.kind,
+                        "representation": representation_name,
+                        "error": f"{type(exc).__name__}: {exc}",
+                    }
+                )
+                onnx_path = root / str(outputs["onnx_model"])
+                if onnx_path.exists():
+                    onnx_path.unlink()
+            else:
+                onnx_verification = candidate_verification
+                statistics = np.asarray(imputer.statistics_, dtype=float)
+                statistics = np.nan_to_num(
+                    statistics,
+                    nan=0.0,
+                    posinf=0.0,
+                    neginf=0.0,
+                )
+                onnx_manifest_payload = {
+                    "schema_version": 1,
+                    "checkpoint": "03D",
+                    "scientific_finalist_rank": int(row.finalist_rank),
+                    "scientific_top_finalist": int(row.finalist_rank) == 1,
+                    "model": model_name,
+                    "kind": spec.kind,
+                    "representation": representation_name,
+                    "input_name": "features",
+                    "input_dtype": str(config["deployment"]["input_dtype"]),
+                    "raw_feature_order": list(representation.features),
+                    "preprocessing": {
+                        "strategy": "median",
+                        "statistics": statistics.tolist(),
+                        "output_feature_count": int(x_imputed.shape[1]),
+                    },
+                    "onnx_path": str(outputs["onnx_model"]),
+                    "deployment_versions": deployment_versions,
+                    "converter_preflight": converter_status,
+                    "verification": onnx_verification,
+                }
 
     actual = pd.concat(actual_blocks, ignore_index=True)
     actual.to_csv(
@@ -907,7 +984,10 @@ def run_checkpoint_03d(
         index=False,
     )
     if onnx_verification is None or onnx_manifest_payload is None:
-        raise RuntimeError("Checkpoint 03D did not produce a verified ONNX finalist.")
+        raise RuntimeError(
+            "Checkpoint 03D did not produce a verified ONNX finalist. "
+            f"Export errors: {onnx_export_errors}"
+        )
 
     onnx_manifest_path = root / str(outputs["onnx_manifest"])
     onnx_manifest_path.parent.mkdir(parents=True, exist_ok=True)
@@ -944,6 +1024,9 @@ def run_checkpoint_03d(
         "outer_fits": int(len(outer)),
         "oof_prediction_rows": int(len(oof)),
         "finalists": finalist_tuning,
+        "deployment_versions": deployment_versions,
+        "onnx_converter_preflight": onnx_converter_status,
+        "onnx_export_errors": onnx_export_errors,
         "onnx_verification": onnx_verification,
         "elapsed_minutes": float((perf_counter() - started_all) / 60.0),
         "source_sha256": {
@@ -1017,6 +1100,11 @@ def main() -> int:
         print(f"Eligible representation/model pairs: {report['pairs']}")
         print(f"Compute: {report['compute']}")
         print("ONNX stack: available")
+        for package, version in report["deployment_versions"].items():
+            print(f"  {package}={version}")
+        for kind, status in report["onnx_converter_status"].items():
+            label = "PASS" if bool(status["verified"]) else "UNAVAILABLE"
+            print(f"  converter {kind}: {label}")
         return 0
 
     print("Checkpoint 03D large-compute global benchmark: PASS")
