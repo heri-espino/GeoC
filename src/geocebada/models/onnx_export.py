@@ -91,7 +91,7 @@ def verify_onnx_regressor(
     path: str | Path,
     atol: float = 5.0e-4,
     rtol: float = 5.0e-4,
-) -> dict[str, float | int | bool]:
+) -> dict[str, Any]:
     """Compare Python and ONNX Runtime predictions on the same numeric matrix."""
 
     try:
@@ -108,6 +108,21 @@ def verify_onnx_regressor(
         providers=["CPUExecutionProvider"],
     )
     input_name = session.get_inputs()[0].name
+    output_meta = session.get_outputs()[0]
+    output_shape = list(output_meta.shape)
+    single_target_schema = (
+        len(output_shape) == 1
+        or (
+            len(output_shape) == 2
+            and output_shape[1] == 1
+        )
+    )
+    if not single_target_schema:
+        raise RuntimeError(
+            "ONNX output schema is not single-target regression: "
+            f"{output_shape}."
+        )
+
     outputs = session.run(None, {input_name: matrix})
     if not outputs:
         raise RuntimeError("ONNX Runtime produced no outputs.")
@@ -135,4 +150,5 @@ def verify_onnx_regressor(
         "verified": True,
         "rows": int(len(actual)),
         "max_abs_difference": max_abs,
+        "output_shape": output_shape,
     }
