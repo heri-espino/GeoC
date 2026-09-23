@@ -13,6 +13,7 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint03c.yaml` | Representation benchmark | Checkpoint 03C.1 closed/frozen |
 | `checkpoint03c2.yaml` | Competition-only nested model-family benchmark | Checkpoint 03C.2 closed/frozen |
 | `checkpoint03c3.yaml` | Fixed finalist/equal-weight OOF ensemble review | Checkpoint 03C.3 closed/frozen |
+| `checkpoint03d.yaml` | Large-compute deterministic global benchmark and ONNX deployment contract | **03D active; workstation run pending** |
 | `checkpoint04.yaml` | Fixed-target transductive objective and Checkpoint 04 validation contract | Checkpoint 04 closed/frozen |
 | `checkpoint04a.yaml` | Target topology, temporal similarity, shift, autocorrelation and support diagnostics | 04A complete |
 | `checkpoint04b.yaml` | Repeated transductive pseudo-competition validation with global/local/graph methods and X-only routing | 04B complete |
@@ -22,10 +23,10 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint04f.yaml` | Final Local04D freeze, Local/Graph sensitivity and 59-row output contract | 04F complete/frozen |
 | `checkpoint05.yaml` | Cross-fitted global/local stacking, support-conditioned mixture-of-experts and conservative promotion gate | 05 complete/frozen; no promotion |
 
-Do not silently edit frozen Checkpoint 01–03 configs to improve historical results. Checkpoint
-03 is preserved as the First Modeling Delivery.
+Do not silently edit frozen Checkpoint 01–03C configs to improve historical results. Checkpoint
+03C is preserved as the First Modeling Delivery; 03D is a separate additive benchmark.
 
-Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`. Checkpoints 01–05 are now frozen modeling evidence. Checkpoint 05 closed without promotion, so Local04D remains the final method.
+Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`. Checkpoint 03D is the only active model experiment. Checkpoint 05 closed without promotion, so Local04D remains the competition incumbent until a conditional 05B gate says otherwise.
 
 See `docs/AGENT_GUIDE.md` and `docs/PROJECT_HISTORY.md`.
 
@@ -59,3 +60,10 @@ Checkpoint 05 combines the surviving Checkpoint 03 global experts with the
 Checkpoint 04 Local04D/Graph04D experts. It freezes the nested cross-fitting
 contract, support descriptors, meta-model candidate family, GPU CatBoost seeds,
 LOSO promotion rule and final model-bundle path.
+
+### `checkpoint03d.yaml`
+
+Checkpoint 03D freezes the large-model candidate grids, deterministic
+competition-only representations, GPU/CPU assignment, per-outer-fit resume
+contract, finalist selection and mandatory verified ONNX export. It does not
+change historical 03C scores or directly promote a competition predictor.
