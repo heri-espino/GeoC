@@ -189,6 +189,36 @@ exactly ONNX-representable final predictor, export that exact final model too.
 If Local04D remains the competition winner, do not mislabel the global ONNX
 artifact as Local04D.
 
+## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
+
+The first workstation `python tools\\run_checkpoint_03d.py --preflight`
+stopped before expensive training while converting the tiny ExtraTrees smoke
+model. Stable `skl2onnx 1.20.0` passed boolean
+`nodes_missing_value_tracks_true` values into ONNX 1.22+, which now requires
+integer 0/1 attributes. Upstream fixed this after the 1.20.0 release.
+
+Repository recovery:
+
+- deployment extra pins `skl2onnx==1.20.0` and `onnx<1.22`;
+- preflight prints exact deployment package versions;
+- converter smoke tests are reported per model family;
+- PLS may remain scientifically valid but be deployment-ineligible when its
+  converter declares a non-single-target output schema;
+- converter support no longer changes scientific finalist ranking;
+- final ONNX export uses the highest-ranked finalist that passes schema and
+  numerical equivalence checks.
+
+Workstation recovery command:
+
+```powershell
+git pull
+conda activate geocebada
+python -m pip install -e ".[dev,models,deployment]"
+python tools\\run_checkpoint_03d.py --preflight
+```
+
+Do not start the long 03D run until this preflight passes.
+
 ## Checkpoint 05 implementation status
 
 Canonical plan: `docs/CHECKPOINT_05_PLAN.md`.
