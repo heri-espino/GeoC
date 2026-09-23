@@ -1,11 +1,12 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-09-23  
-**Active phase:** Checkpoint 05 is complete and closed. The promotion gate failed, so `Local04D` remains the final frozen method. The canonical post-05 competition output is `reports/checkpoint_05/final_predictions.csv`.
+**Active phase:** Checkpoint 03D large-compute global benchmark is implemented and workstation-run pending. `Local04D` remains the frozen competition incumbent/final method unless a later Checkpoint 05B promotion gate succeeds.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
-`docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
-conventional baseline; it is not the current modeling doctrine.
+`docs/CHECKPOINT_03D_PLAN.md`, `docs/CHECKPOINT_05B_PLAN.md` and
+`docs/PROJECT_HISTORY.md`. Checkpoint 03C remains frozen as the **First Modeling Delivery**;
+03D is an additive, explicitly human-requested large-compute closure experiment.
 
 ## Current mission
 
@@ -144,36 +145,49 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Model search is closed unless new external evidence or a materially new validation
-hypothesis is introduced. Do not reopen broad model search merely to chase the
-0.0006 development-RMSE gap.
+Run Checkpoint 03D on the GPU workstation. This is the one intentionally reopened
+global-model experiment after Checkpoint 05 closed.
 
-Checkpoint 05 completed on 2026-09-23. The best full-development challenger was
-`LocalE13_w0p10`:
-
-```text
-LocalE13_w0p10 mean RMSE      0.487243
-LocalE13_w0p10 pooled RMSE    0.495261
-Local04D mean RMSE            0.487845
-Local04D pooled RMSE          0.495741
+```powershell
+git pull
+conda activate geocebada
+python -m pip install -e ".[dev,models,deployment]"
+python tools\run_checkpoint_03d.py --preflight
 ```
 
-However, the leave-one-development-split-out selector scored:
+The preflight validates the competition-only 197/138/59 contract, checks
+CatBoost/XGBoost GPU visibility, verifies the ONNX dependency stack and performs
+tiny round-trip conversions for every configured model family before the long
+run starts.
 
-```text
-LOSO selector mean RMSE       0.487934
-LOSO selector pooled RMSE     0.495933
+If preflight passes:
+
+```powershell
+python tools\run_checkpoint_03d.py
 ```
 
-which is slightly worse than Local04D on both required metrics. Therefore the
-development gate failed, fresh confirmation was intentionally not scored, and
-`Local04D` remains final.
+If interrupted after completed outer fits:
 
-Canonical interpretation: `docs/CHECKPOINT_05_FINDINGS.md`.
-Canonical final prediction table: `reports/checkpoint_05/final_predictions.csv`.
+```powershell
+python tools\run_checkpoint_03d.py --resume
+```
 
-The next engineering work is submission/app/export wiring around the frozen
-59 predictions and diagnostics, not another automatic model-search checkpoint.
+03D compares serious CatBoost/XGBoost/LightGBM/ExtraTrees/HistGB models plus
+Ridge/PLS controls on deterministic competition-only representations. It keeps
+the historical state-stratified and municipality-grouped nested-CV contract and
+never scores the 59 hidden FIRA yields.
+
+The three best model-family-diverse global finalists become inputs to a narrow
+Checkpoint 05B. 05B must not be opened until 03D results exist. It will test
+only low-weight Local04D + Global03D blends and the same conservative
+development + LOSO + fresh-confirmation promotion logic.
+
+Deployment contract: 03D writes a verified
+`models/final/checkpoint03d_global.onnx` plus a JSON manifest containing exact
+feature order and fitted median-imputation values. If 05B later promotes an
+exactly ONNX-representable final predictor, export that exact final model too.
+If Local04D remains the competition winner, do not mislabel the global ONNX
+artifact as Local04D.
 
 ## Checkpoint 05 implementation status
 
