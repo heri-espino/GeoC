@@ -19,6 +19,7 @@ import pandas as pd
 import yaml
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 from geocebada.evaluation.checkpoint03c2 import (
     build_competition_representation_specs,
@@ -206,7 +207,7 @@ def _onnx_converter_smoke_test(config: dict[str, Any]) -> None:
             "ridge",
             Pipeline(
                 [
-                    ("scaler", __import__("sklearn.preprocessing", fromlist=["StandardScaler"]).StandardScaler()),
+                    ("scaler", StandardScaler()),
                     ("model", Ridge(alpha=1.0)),
                 ]
             ),
