@@ -105,12 +105,12 @@ from geocebada.evaluation.checkpoint04f import (
     summarize_blend_predictions,
 )
 from geocebada.evaluation.checkpoint05 import (
-    candidate_prediction_frame,
-    constrain_component_param_grid,
     ConvexStackRegressor,
     FittedMetaCandidate,
-    support_descriptors,
     SupportMixtureOfExperts,
+    candidate_prediction_frame,
+    constrain_component_param_grid,
+    support_descriptors,
 )
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
