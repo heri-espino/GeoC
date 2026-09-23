@@ -216,7 +216,7 @@ def _onnx_converter_smoke_test(config: dict[str, Any]) -> None:
             "pls",
             Pipeline(
                 [
-                    ("scaler", __import__("sklearn.preprocessing", fromlist=["StandardScaler"]).StandardScaler()),
+                    ("scaler", StandardScaler()),
                     ("model", PLSRegression(n_components=2, scale=False)),
                 ]
             ),
