@@ -4,8 +4,8 @@
 validated, and what remains open so future collaborators and AI agents do not repeat work or
 silently overwrite earlier decisions.
 
-**Last updated:** 2026-09-19  
-**Current phase:** Checkpoint 05 — final global/local cross-fitted mixture. Checkpoint 03 is closed as the First Modeling Delivery; Checkpoint 04 is closed as the incumbent transductive/local line and remains canonical until Checkpoint 05 passes its promotion gate.
+**Last updated:** 2026-09-23  
+**Current phase:** Checkpoint 05 is closed. Its promotion gate failed, so Local04D remains the frozen final method. Current work should focus on submission/app/export integration unless materially new evidence justifies reopening modeling.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
@@ -1089,3 +1089,36 @@ full reproducibility. Both bundles are serialized, reloaded and checked against 
 
 No Checkpoint 05 scientific fit was executed during these repository changes. The immediate
 next action remains the workstation preflight followed by the single long GPU run.
+---
+
+## 2026-09-23 — Checkpoint 05 completed; Local04D retained
+
+The final global/local experiment completed after resuming a 2026-09-22 run that
+had stopped at 29/34 outer splits because an inherited PLS candidate requested
+20 components inside an 18-row nested training fold. The runner was corrected
+to clip component grids to the smallest inner-training fold without using target
+information, and the completed split-level partials were reused safely.
+
+Checkpoint 05 then evaluated 21 candidate methods over 34 outer pseudo-splits,
+including global PLS/Ridge/CatBoost/ExtraTrees experts, Local04D, Graph04D,
+fixed Local+global blends, convex/linear/tree stacks and a support-conditioned
+mixture-of-experts.
+
+The best full target-matched development result was:
+
+```text
+LocalE13_w0p10 mean RMSE      0.487243
+LocalE13_w0p10 pooled RMSE    0.495261
+Local04D mean RMSE            0.487845
+Local04D pooled RMSE          0.495741
+```
+
+However, the predeclared leave-one-development-split-out method-selection gate
+scored 0.487934 mean RMSE and 0.495933 pooled RMSE, both slightly worse than
+Local04D. The development gate therefore failed. The fresh confirmation bank
+was intentionally not scored, and Local04D remained the promoted final method.
+
+The final post-05 59-row output is
+`reports/checkpoint_05/final_predictions.csv`. Canonical interpretation is in
+`docs/CHECKPOINT_05_FINDINGS.md`.
+
