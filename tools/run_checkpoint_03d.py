@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 from time import perf_counter
@@ -179,6 +180,120 @@ def _check_deployment_stack() -> None:
         )
 
 
+def _onnx_converter_smoke_test(config: dict[str, Any]) -> None:
+    """Fail before the long run if any configured model family cannot round-trip to ONNX."""
+
+    from catboost import CatBoostRegressor
+    from lightgbm import LGBMRegressor
+    from sklearn.cross_decomposition import PLSRegression
+    from sklearn.ensemble import ExtraTreesRegressor, HistGradientBoostingRegressor
+    from sklearn.linear_model import Ridge
+    from xgboost import XGBRegressor
+
+    rng = np.random.default_rng(20260923)
+    x = rng.normal(size=(24, 5)).astype(np.float32)
+    y = (
+        2.5
+        + 0.7 * x[:, 0]
+        - 0.3 * x[:, 1]
+        + 0.15 * x[:, 2] * x[:, 3]
+    ).astype(np.float32)
+
+    models: list[tuple[str, Any]] = [
+        ("ridge", Ridge(alpha=1.0)),
+        ("pls", PLSRegression(n_components=2, scale=True)),
+        (
+            "extra_trees",
+            ExtraTreesRegressor(
+                n_estimators=8,
+                min_samples_leaf=2,
+                random_state=20260923,
+                n_jobs=1,
+            ),
+        ),
+        (
+            "hist_gradient_boosting",
+            HistGradientBoostingRegressor(
+                max_iter=8,
+                max_leaf_nodes=5,
+                min_samples_leaf=4,
+                random_state=20260923,
+                early_stopping=False,
+            ),
+        ),
+        (
+            "catboost",
+            CatBoostRegressor(
+                iterations=8,
+                depth=3,
+                learning_rate=0.1,
+                loss_function="RMSE",
+                task_type="CPU",
+                verbose=False,
+                allow_writing_files=False,
+                random_seed=20260923,
+            ),
+        ),
+        (
+            "xgboost",
+            XGBRegressor(
+                n_estimators=8,
+                max_depth=2,
+                learning_rate=0.1,
+                objective="reg:squarederror",
+                tree_method="hist",
+                device="cpu",
+                verbosity=0,
+                random_state=20260923,
+                n_jobs=1,
+            ),
+        ),
+        (
+            "lightgbm",
+            LGBMRegressor(
+                n_estimators=8,
+                num_leaves=5,
+                max_depth=3,
+                learning_rate=0.1,
+                min_child_samples=4,
+                objective="regression",
+                verbosity=-1,
+                random_state=20260923,
+                n_jobs=1,
+            ),
+        ),
+    ]
+
+    target_opset = int(config["deployment"]["target_opset"])
+    atol = float(config["deployment"]["verification_atol"])
+    rtol = float(config["deployment"]["verification_rtol"])
+
+    with tempfile.TemporaryDirectory(prefix="geocebada_03d_onnx_") as tmp:
+        directory = Path(tmp)
+        for kind, model in models:
+            model.fit(x, y)
+            destination = directory / f"{kind}.onnx"
+            try:
+                export_regressor_to_onnx(
+                    model,
+                    kind=kind,
+                    n_features=x.shape[1],
+                    path=destination,
+                    target_opset=target_opset,
+                )
+                verify_onnx_regressor(
+                    model,
+                    x,
+                    path=destination,
+                    atol=atol,
+                    rtol=rtol,
+                )
+            except Exception as exc:
+                raise RuntimeError(
+                    f"ONNX converter preflight failed for {kind}: {exc}"
+                ) from exc
+
+
 def _partial_paths(output_dir: Path) -> dict[str, Path]:
     return {
         "outer": output_dir / "_partial_outer_fold_metrics.csv",
@@ -337,6 +452,7 @@ def run_checkpoint_03d(
             catboost_devices=str(config["compute"]["catboost_devices"]),
             xgboost_device=str(config["compute"]["xgboost_device"]),
         )
+    _onnx_converter_smoke_test(config)
 
     if preflight:
         return {
