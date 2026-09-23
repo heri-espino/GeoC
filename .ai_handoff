@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
-**Updated:** 2026-09-22  
-**Active phase:** Checkpoint 05 global-local mixture is implemented and workstation-run pending. Checkpoint 04F remains the incumbent until the 05 promotion gate passes.
+**Updated:** 2026-09-23  
+**Active phase:** Checkpoint 05 is complete and closed. The promotion gate failed, so `Local04D` remains the final frozen method. The canonical post-05 competition output is `reports/checkpoint_05/final_predictions.csv`.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/PROJECT_HISTORY.md`. Checkpoint 03 is frozen as the **First Modeling Delivery** and
@@ -144,47 +144,36 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run the single final high-compute experiment:
+Model search is closed unless new external evidence or a materially new validation
+hypothesis is introduced. Do not reopen broad model search merely to chase the
+0.0006 development-RMSE gap.
 
-```powershell
-python tools\run_checkpoint_05.py
+Checkpoint 05 completed on 2026-09-23. The best full-development challenger was
+`LocalE13_w0p10`:
+
+```text
+LocalE13_w0p10 mean RMSE      0.487243
+LocalE13_w0p10 pooled RMSE    0.495261
+Local04D mean RMSE            0.487845
+Local04D pooled RMSE          0.495741
 ```
 
-If interrupted after completed outer splits:
+However, the leave-one-development-split-out selector scored:
 
-```powershell
-python tools\run_checkpoint_05.py --resume
+```text
+LOSO selector mean RMSE       0.487934
+LOSO selector pooled RMSE     0.495933
 ```
 
-A 2026-09-22 workstation run completed 29/34 outer splits before an inherited
-PLS candidate (`n_components=20`) became infeasible inside a nested 18-row
-inner-training fold. The runner now constrains component grids to the smallest
-inner training fold (and feature dimension) before GridSearchCV. Resume partials
-are split-atomic, so those 29 completed outer splits should be reused after
-pulling the fix.
+which is slightly worse than Local04D on both required metrics. Therefore the
+development gate failed, fresh confirmation was intentionally not scored, and
+`Local04D` remains final.
 
-Checkpoint 05 combines the frozen global line from 03 and the local/transductive
-line from 04. Base experts are PLS C0, Ridge C3 with fold-local discovery,
-CatBoost C1, ExtraTrees C1, Local04D and Graph04D. Meta candidates include
-convex/Ridge/ElasticNet/Huber stacks, shallow tree stacks and a support-conditioned
-softmax mixture-of-experts.
+Canonical interpretation: `docs/CHECKPOINT_05_FINDINGS.md`.
+Canonical final prediction table: `reports/checkpoint_05/final_predictions.csv`.
 
-Every meta-training row is generated cross-fitted. Global hyperparameters and
-target-aware discovery are fitted inside the corresponding cross-fit training
-subset. The outer pseudo-target y remains untouched until scoring.
-
-Do not replace 04F merely because one 05 method has the lowest full-development
-RMSE. Promotion requires: (1) the challenger improves development mean and
-pooled RMSE, (2) the configured LOSO method-selection procedure improves both
-metrics relative to Local04D, and (3) the preselected challenger then beats
-Local04D on both metrics in a fresh 16-split target-matched confirmation bank
-generated X-only with an unused seed. The confirmation bank is not used to
-search for a second challenger.
-
-The local serialized output is
-`models/final/checkpoint05_app_bundle.joblib` for the lightweight fixed-target app contract and `models/final/checkpoint05_model.joblib` for full fitted-model reproducibility; both are ignored by Git and intended for
-the later Python/Streamlit application. The runner reloads and verifies the
-joblib bundle before declaring success.
+The next engineering work is submission/app/export wiring around the frozen
+59 predictions and diagnostics, not another automatic model-search checkpoint.
 
 ## Checkpoint 05 implementation status
 
@@ -196,8 +185,7 @@ Competition-only input is now explicitly pinned to
 Checkpoint 05 config that points back to `parcel_features_all.csv`.
 Preflight: `python tools/run_checkpoint_05.py --preflight` validates required inputs, the 197/138/59 contract, representations, frozen split bank, constructs and validates the full 16×41 fresh X-only confirmation bank with no exact development-mask duplicates, reproduces 04F Local/Graph exactly and checks GPU visibility without fitting global/meta models.
 
-04F remains the canonical 59-row prediction file until 05 completes and the
-promotion rule is evaluated.
+Checkpoint 05 is complete. `reports/checkpoint_05/final_predictions.csv` is now the canonical 59-row competition prediction file; it retains Local04D because the promotion gate failed.
 
 
 ## Checkpoint 04F completed findings
