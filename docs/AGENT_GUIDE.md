@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 05 — global/local cross-fitted mixture implemented; workstation run pending  
+**Current phase:** Checkpoint 05 closed; `Local04D` frozen as final method; submission/app/export wiring next  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -12,7 +12,7 @@ Before changing modeling or data logic, read:
 1. `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 2. `.ai_handoff`.
 3. this file.
-4. `docs/CHECKPOINT_05_PLAN.md` and `checkpoints/05_global_local_mixture/README.md`.
+4. `docs/CHECKPOINT_05_FINDINGS.md`, then `docs/CHECKPOINT_05_PLAN.md` and `checkpoints/05_global_local_mixture/README.md`.
 5. `checkpoints/04_transductive_competition/README.md`.
 6. `docs/PROJECT_HISTORY.md`.
 7. `data/.ai_handoff` and `docs/DATA_SOURCES.md`.
@@ -305,7 +305,7 @@ After substantive work:
 - update `.ai_handoff`;
 - update `data/.ai_handoff` for data discoveries;
 - update `docs/PROJECT_HISTORY.md`;
-- update the active checkpoint README (`checkpoints/05_global_local_mixture/README.md` while 05 is active);
+- update the relevant checkpoint README when changing frozen doctrine; Checkpoint 05 is closed;
 - record material AI assistance in `docs/AI_USAGE.md`;
 - regenerate `docs/FUNCTION_INDEX.md` after public API changes;
 - follow `app/AGENTS.md` for Streamlit/deployment changes.
