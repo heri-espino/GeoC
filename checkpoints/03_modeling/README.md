@@ -1,14 +1,14 @@
 # Checkpoint 03 — Feature Discovery and Modeling
 
-> **Historical checkpoint notice (2026-09-19):** Checkpoint 03 is frozen as the First
-> Modeling Delivery. Its fold-local rules describe the conventional inductive baseline that
-> produced the documented scores. Active modeling has moved to Checkpoint 04 and
-> `docs/TRANSDUCTIVE_OBJECTIVE.md`, where pseudo-target X remains visible to X-only
-> transductive operations.
+> **Historical checkpoint notice (2026-09-23):** Checkpoint 03C remains frozen as the First
+> Modeling Delivery. Its original scores and configs are historical evidence. Checkpoint 03D
+> is a separate additive large-compute benchmark explicitly opened after Checkpoint 05; it
+> does not rewrite 03C.
 
 
-**Status:** CLOSED — First Modeling Delivery  
-**Historical scope:** 03A/03B/03C.1/03C.2/03C.3  
+**Status:** 03A–03C CLOSED / 03D ACTIVE  
+**Historical frozen scope:** 03A/03B/03C.1/03C.2/03C.3  
+**Additive active scope:** 03D large-compute global modeling  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -324,3 +324,32 @@ python tools\run_checkpoint_03c3.py
 ```
 
 This was the end of the First Modeling Delivery. E13/E123 are retained as historical baseline candidates. Active work continues in Checkpoint 04 under transductive pseudo-competition validation rather than proceeding directly to a frozen E13/E123 final fit.
+
+---
+
+## 03D — Large-compute global modeling — ACTIVE
+
+03D was opened on 2026-09-23 after Checkpoint 05 showed a tiny but unstable
+benefit from mixing Local04D with the old E13 global ensemble. The remaining
+question is whether the global experts were limited by the deliberately small
+03C.2 compute budget.
+
+03D therefore runs serious CatBoost/XGBoost/LightGBM/ExtraTrees/HistGB models
+plus Ridge/PLS controls on deterministic competition-only representations.
+It reuses the frozen state-stratified and municipality-grouped nested-CV
+protocols and never scores the 59 hidden FIRA targets.
+
+Implementation:
+
+```text
+configs/checkpoint03d.yaml
+src/geocebada/evaluation/checkpoint03d.py
+tools/run_checkpoint_03d.py
+checkpoints/03d_large_global_modeling/README.md
+docs/CHECKPOINT_03D_PLAN.md
+```
+
+The run is resumable per completed outer fit. The strongest global finalist
+must also export to a numerically verified ONNX artifact with an adjacent
+feature/imputation manifest. 03D itself does not replace Local04D; its
+finalists feed the conditional narrow Checkpoint 05B.
