@@ -36,6 +36,37 @@ If Cloud shows `ModuleNotFoundError` for `plotly`, `geocebada`, or another third
 
 A change to `requirements.txt` should trigger a dependency reinstall automatically on Community Cloud.
 
+## ONNX model artifact
+
+Checkpoint 03D introduces the canonical generic model-deployment format.
+After a successful large-model run the workstation writes:
+
+```text
+models/final/checkpoint03d_global.onnx
+models/final/checkpoint03d_global.onnx.json
+models/final/checkpoint03d_global.joblib
+```
+
+The ONNX graph consumes a median-imputed float32 feature matrix. Any learned
+post-imputation scaling required by the selected estimator is embedded in the
+graph. The JSON manifest stores the exact raw feature order and fitted median
+statistics required to construct that matrix.
+
+The 03D runner refuses to PASS unless the post-imputation deployment object
+reproduces the complete Python pipeline and ONNX Runtime reproduces that
+deployment object within the configured tolerance.
+
+This artifact must not be confused with the fixed-target competition rule.
+`Local04D` remains the current 59-parcel competition method unless a later
+Checkpoint 05B promotion gate succeeds. If 05B retains Local04D, the 03D ONNX
+file is the generic deployable global estimator, while the canonical fixed-59
+competition predictions remain a separate artifact.
+
+The binary model directory remains gitignored by default. Before production
+deployment, inspect the final ONNX file size and choose an explicit delivery
+mechanism (for example release artifact, object storage, or Git LFS) rather
+than silently committing a large binary to ordinary Git history.
+
 ## Maintenance contract for future agents
 
 When an AI agent changes the Streamlit app, it must keep deployment, library code and documentation synchronized.
