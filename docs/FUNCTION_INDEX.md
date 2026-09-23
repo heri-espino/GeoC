@@ -172,6 +172,8 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `fixed_target_predictions` | function | `geocebada.models.checkpoint05` | Return the canonical fixed-59 prediction table from a loaded bundle. | `src/geocebada/models/checkpoint05.py` |
 | `load_checkpoint05_bundle` | function | `geocebada.models.checkpoint05` | Load and validate a serialized Checkpoint 05 model bundle. | `src/geocebada/models/checkpoint05.py` |
 | `verify_fixed_target_bundle` | function | `geocebada.models.checkpoint05` | Verify stored final values against the selected actual-candidate column. | `src/geocebada/models/checkpoint05.py` |
+| `export_regressor_to_onnx` | function | `geocebada.models.onnx_export` | Export one fitted regressor to ONNX using the appropriate converter. | `src/geocebada/models/onnx_export.py` |
+| `verify_onnx_regressor` | function | `geocebada.models.onnx_export` | Compare Python and ONNX Runtime predictions on the same numeric matrix. | `src/geocebada/models/onnx_export.py` |
 | `data_path` | function | `geocebada.paths` | Build a path below ``data/``. | `src/geocebada/paths.py` |
 | `find_project_root` | function | `geocebada.paths` | Return the GeoCebada repository root. | `src/geocebada/paths.py` |
 | `project_path` | function | `geocebada.paths` | Build a path relative to the repository root. | `src/geocebada/paths.py` |

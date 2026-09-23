@@ -8,8 +8,10 @@ from geocebada.models.checkpoint05 import (
 )
 
 __all__ = [
+    "export_regressor_to_onnx",
     "fixed_target_diagnostics",
     "fixed_target_predictions",
     "load_checkpoint05_bundle",
     "verify_fixed_target_bundle",
+    "verify_onnx_regressor",
 ]

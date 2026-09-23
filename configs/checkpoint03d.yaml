@@ -1,0 +1,230 @@
+schema_version: 1
+updated: 2026-09-23
+
+stage:
+  name: large_compute_global_benchmark
+  checkpoint: "03D"
+  status: implemented_run_pending
+  purpose: >
+    Close the historical global-modeling line with a serious compute budget.
+    Re-evaluate deterministic competition-only representations using large,
+    regularized tree/boosting models under the frozen Checkpoint 03 nested-CV
+    protocols. Produce a small global finalist set for a conditional 05B remix
+    and export the strongest deployable global estimator to verified ONNX.
+  no_hidden_target_scoring: true
+
+scope:
+  active_track: competition
+  clean_track_enabled: false
+  historical_checkpoints_frozen: ["03C.1", "03C.2", "03C.3"]
+  policy: >
+    03D is an additive final benchmark. It does not rewrite or retune the
+    historical 03C outputs. It uses deterministic X-only representations so the
+    selected estimator has a clean deployment/export contract.
+
+inputs:
+  base_table: data/processed/features_v1/parcel_features_competition.csv
+  base_manifest: data/processed/features_v1/feature_manifest.json
+  agronomic_table: data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+  agronomic_manifest: data/processed/agronomic_features_v1/feature_manifest.json
+  empirical_table: data/processed/empirical_features_v1/parcel_empirical_features.csv
+  empirical_manifest: data/processed/empirical_features_v1/feature_manifest.json
+  empirical_config: configs/empirical_features_v1.yaml
+  frozen_folds: reports/checkpoint_02/cv_folds.csv
+
+outputs:
+  directory: reports/checkpoint_03d
+  outer_fold_metrics: outer_fold_metrics.csv
+  oof_predictions: oof_predictions.csv
+  inner_search_results: inner_search_results.csv
+  protocol_summary: protocol_summary.csv
+  robustness_summary: robustness_summary.csv
+  finalists: finalists.csv
+  actual_global_predictions: actual_global_predictions.csv
+  representation_manifest: representation_manifest.json
+  report_json: checkpoint_03d_report.json
+  report_markdown: checkpoint_03d_report.md
+  model_bundle: models/final/checkpoint03d_global.joblib
+  onnx_model: models/final/checkpoint03d_global.onnx
+  onnx_manifest: models/final/checkpoint03d_global.onnx.json
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  state_column: meta_estado
+  municipality_column: meta_municipio
+
+validation:
+  expected_total_rows: 197
+  expected_training_rows: 138
+  expected_prediction_rows: 59
+  outer_protocols:
+    - fold_state_stratified
+    - fold_municipality_grouped
+  inner_folds: 3
+  random_state: 20260923
+  finalist_count: 3
+  selection_rule: >
+    Rank representation/model pairs by worst-protocol OOF RMSE, then mean OOF
+    RMSE. Retain at most one representation per model family in the finalist set.
+    Final full-data hyperparameters are selected over the union of fresh
+    state-stratified and municipality-grouped inner folds.
+
+feature_policy:
+  numeric_only: true
+  competition_includes_clean: true
+  exclude_sources:
+    - external_chirps_daily
+  exclude_columns: []
+
+representations:
+  G0_base:
+    layers: [base]
+    discovery: false
+    description: Competition Feature Table v1 control.
+  G1_agronomic:
+    layers: [agronomic]
+    discovery: false
+    description: Compact agronomic nonlinear layer.
+  G2_base_agro:
+    layers: [base, agronomic]
+    discovery: false
+    description: Competition base plus agronomic nonlinear features.
+  G3_all_deterministic:
+    layers: [base, agronomic, empirical]
+    discovery: false
+    description: Full deterministic competition stack without target-aware discovery.
+
+models:
+  CatBoostLarge:
+    kind: catboost
+    representations: [G0_base, G1_agronomic, G2_base_agro, G3_all_deterministic]
+    fixed:
+      loss_function: RMSE
+      verbose: false
+      allow_writing_files: false
+    candidates:
+      - {iterations: 1500, depth: 4, learning_rate: 0.020, l2_leaf_reg: 3.0, random_strength: 0.2}
+      - {iterations: 2500, depth: 4, learning_rate: 0.015, l2_leaf_reg: 8.0, random_strength: 0.5}
+      - {iterations: 4000, depth: 4, learning_rate: 0.010, l2_leaf_reg: 15.0, random_strength: 1.0}
+      - {iterations: 1500, depth: 5, learning_rate: 0.020, l2_leaf_reg: 6.0, random_strength: 0.5}
+      - {iterations: 2500, depth: 5, learning_rate: 0.015, l2_leaf_reg: 12.0, random_strength: 1.0}
+      - {iterations: 4000, depth: 5, learning_rate: 0.010, l2_leaf_reg: 20.0, random_strength: 1.5}
+      - {iterations: 1500, depth: 6, learning_rate: 0.015, l2_leaf_reg: 10.0, random_strength: 0.5}
+      - {iterations: 2500, depth: 6, learning_rate: 0.010, l2_leaf_reg: 20.0, random_strength: 1.0}
+      - {iterations: 2500, depth: 7, learning_rate: 0.010, l2_leaf_reg: 30.0, random_strength: 1.5}
+
+  XGBoostLarge:
+    kind: xgboost
+    representations: [G0_base, G1_agronomic, G2_base_agro, G3_all_deterministic]
+    fixed:
+      objective: reg:squarederror
+      tree_method: hist
+      verbosity: 0
+    candidates:
+      - {n_estimators: 1500, max_depth: 2, learning_rate: 0.020, min_child_weight: 3.0, subsample: 0.85, colsample_bytree: 0.50, reg_alpha: 0.0, reg_lambda: 10.0}
+      - {n_estimators: 2500, max_depth: 2, learning_rate: 0.012, min_child_weight: 5.0, subsample: 0.90, colsample_bytree: 0.70, reg_alpha: 0.1, reg_lambda: 20.0}
+      - {n_estimators: 4000, max_depth: 2, learning_rate: 0.008, min_child_weight: 8.0, subsample: 0.90, colsample_bytree: 0.80, reg_alpha: 0.3, reg_lambda: 30.0}
+      - {n_estimators: 1500, max_depth: 3, learning_rate: 0.020, min_child_weight: 3.0, subsample: 0.80, colsample_bytree: 0.50, reg_alpha: 0.0, reg_lambda: 10.0}
+      - {n_estimators: 2500, max_depth: 3, learning_rate: 0.012, min_child_weight: 5.0, subsample: 0.85, colsample_bytree: 0.65, reg_alpha: 0.1, reg_lambda: 20.0}
+      - {n_estimators: 4000, max_depth: 3, learning_rate: 0.008, min_child_weight: 8.0, subsample: 0.90, colsample_bytree: 0.80, reg_alpha: 0.3, reg_lambda: 30.0}
+      - {n_estimators: 1500, max_depth: 4, learning_rate: 0.015, min_child_weight: 5.0, subsample: 0.80, colsample_bytree: 0.45, reg_alpha: 0.1, reg_lambda: 20.0}
+      - {n_estimators: 2500, max_depth: 4, learning_rate: 0.010, min_child_weight: 8.0, subsample: 0.85, colsample_bytree: 0.60, reg_alpha: 0.3, reg_lambda: 30.0}
+      - {n_estimators: 2500, max_depth: 5, learning_rate: 0.010, min_child_weight: 10.0, subsample: 0.85, colsample_bytree: 0.50, reg_alpha: 0.5, reg_lambda: 40.0}
+
+  LightGBMLarge:
+    kind: lightgbm
+    representations: [G0_base, G1_agronomic, G2_base_agro, G3_all_deterministic]
+    fixed:
+      objective: regression
+      verbosity: -1
+    candidates:
+      - {n_estimators: 1500, num_leaves: 5, max_depth: 3, learning_rate: 0.020, min_child_samples: 8, subsample: 0.85, colsample_bytree: 0.50, reg_alpha: 0.0, reg_lambda: 10.0}
+      - {n_estimators: 2500, num_leaves: 5, max_depth: 3, learning_rate: 0.012, min_child_samples: 12, subsample: 0.90, colsample_bytree: 0.70, reg_alpha: 0.1, reg_lambda: 20.0}
+      - {n_estimators: 4000, num_leaves: 5, max_depth: 3, learning_rate: 0.008, min_child_samples: 16, subsample: 0.90, colsample_bytree: 0.80, reg_alpha: 0.3, reg_lambda: 30.0}
+      - {n_estimators: 1500, num_leaves: 7, max_depth: 4, learning_rate: 0.020, min_child_samples: 8, subsample: 0.80, colsample_bytree: 0.50, reg_alpha: 0.0, reg_lambda: 10.0}
+      - {n_estimators: 2500, num_leaves: 7, max_depth: 4, learning_rate: 0.012, min_child_samples: 12, subsample: 0.85, colsample_bytree: 0.65, reg_alpha: 0.1, reg_lambda: 20.0}
+      - {n_estimators: 4000, num_leaves: 7, max_depth: 4, learning_rate: 0.008, min_child_samples: 16, subsample: 0.90, colsample_bytree: 0.80, reg_alpha: 0.3, reg_lambda: 30.0}
+      - {n_estimators: 2000, num_leaves: 11, max_depth: 5, learning_rate: 0.012, min_child_samples: 12, subsample: 0.85, colsample_bytree: 0.55, reg_alpha: 0.2, reg_lambda: 25.0}
+      - {n_estimators: 3000, num_leaves: 15, max_depth: 5, learning_rate: 0.008, min_child_samples: 16, subsample: 0.90, colsample_bytree: 0.70, reg_alpha: 0.5, reg_lambda: 40.0}
+
+  ExtraTreesLarge:
+    kind: extra_trees
+    representations: [G0_base, G1_agronomic, G2_base_agro, G3_all_deterministic]
+    fixed:
+      n_estimators: 3000
+      n_jobs: -1
+    candidates:
+      - {min_samples_leaf: 1, max_features: sqrt, max_depth: null}
+      - {min_samples_leaf: 2, max_features: sqrt, max_depth: null}
+      - {min_samples_leaf: 3, max_features: sqrt, max_depth: null}
+      - {min_samples_leaf: 5, max_features: sqrt, max_depth: null}
+      - {min_samples_leaf: 2, max_features: 0.15, max_depth: null}
+      - {min_samples_leaf: 3, max_features: 0.30, max_depth: null}
+      - {min_samples_leaf: 5, max_features: 0.50, max_depth: null}
+      - {min_samples_leaf: 2, max_features: 0.50, max_depth: 12}
+      - {min_samples_leaf: 3, max_features: 0.75, max_depth: 8}
+
+  HistGBLarge:
+    kind: hist_gradient_boosting
+    representations: [G1_agronomic, G2_base_agro, G3_all_deterministic]
+    fixed:
+      early_stopping: false
+    candidates:
+      - {max_iter: 600, max_leaf_nodes: 5, learning_rate: 0.030, min_samples_leaf: 8, l2_regularization: 1.0}
+      - {max_iter: 1000, max_leaf_nodes: 5, learning_rate: 0.020, min_samples_leaf: 12, l2_regularization: 3.0}
+      - {max_iter: 1400, max_leaf_nodes: 7, learning_rate: 0.015, min_samples_leaf: 12, l2_regularization: 5.0}
+      - {max_iter: 1000, max_leaf_nodes: 9, learning_rate: 0.020, min_samples_leaf: 16, l2_regularization: 8.0}
+      - {max_iter: 1400, max_leaf_nodes: 11, learning_rate: 0.015, min_samples_leaf: 16, l2_regularization: 12.0}
+      - {max_iter: 1800, max_leaf_nodes: 15, learning_rate: 0.010, min_samples_leaf: 20, l2_regularization: 20.0}
+
+  RidgeControl:
+    kind: ridge
+    representations: [G0_base, G2_base_agro]
+    candidates:
+      - {alpha: 1.0}
+      - {alpha: 10.0}
+      - {alpha: 100.0}
+      - {alpha: 1000.0}
+      - {alpha: 10000.0}
+
+  PLSControl:
+    kind: pls
+    representations: [G0_base, G1_agronomic]
+    candidates:
+      - {n_components: 2}
+      - {n_components: 4}
+      - {n_components: 8}
+      - {n_components: 12}
+      - {n_components: 20}
+
+compute:
+  default: GPU
+  gpu_required_models: [CatBoostLarge, XGBoostLarge]
+  catboost_devices: "0"
+  xgboost_device: "cuda:0"
+  cpu_requires_explicit_confirmation: true
+  note: >
+    CatBoost and XGBoost use the RTX GPU. LightGBM, ExtraTrees, HistGB and
+    linear controls use CPU because the standard Windows/PyPI path is more
+    reproducible than requiring a custom LightGBM GPU build.
+
+runtime:
+  search_n_jobs: 1
+  progress: true
+  checkpoint_every_outer_fit: true
+
+deployment:
+  required: true
+  target_opset: 17
+  verification_atol: 0.0005
+  verification_rtol: 0.0005
+  input_dtype: float32
+  preprocessing: median_imputation_outside_onnx
+  note: >
+    The ONNX graph consumes the median-imputed numeric feature matrix. The
+    adjacent JSON manifest stores the exact raw feature order and fitted median
+    values so web/backend code can reproduce preprocessing before inference.
