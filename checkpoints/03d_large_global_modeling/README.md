@@ -65,8 +65,11 @@ Partial files are gitignored and are removed after a successful complete run.
 
 ## ONNX deployment contract
 
-The strongest global finalist is refit on all 138 labeled parcels after tuning
+The scientific finalists are refit on all 138 labeled parcels after tuning
 over the union of fresh state-stratified and municipality-grouped inner folds.
+The highest-ranked finalist that also passes ONNX converter, output-schema and
+numerical-equivalence checks becomes the deployment artifact. Converter support
+never changes the scientific ranking.
 
 The runner writes:
 
@@ -86,6 +89,28 @@ tolerance.
 
 This global ONNX model is a deployment artifact. It does **not** silently replace
 the fixed-target competition winner Local04D.
+
+
+### Stable converter stack
+
+The stable PyPI release `skl2onnx==1.20.0` predates an upstream July 2026
+fix for ONNX 1.22 tree attributes. Therefore the deployment extra pins
+`onnx<1.22` while retaining the released converter. This is preferred over
+silently installing unreleased `skl2onnx` main.
+
+PLS is kept as a scientific control even if its converter declares an
+incorrect single-target output shape under the installed scikit-learn
+version. Such a model may remain a finalist but is not eligible for the
+deployment artifact unless schema verification passes.
+
+### 2026-09-23 preflight incident
+
+The first workstation preflight correctly stopped before training when
+`ExtraTreesRegressor` conversion under ONNX 1.22+ passed a boolean
+`nodes_missing_value_tracks_true` attribute where ONNX requires integer
+0/1 values. The repository now pins the stable compatible ONNX range and
+reports per-family converter availability instead of allowing one external
+converter failure to invalidate the scientific benchmark.
 
 ## Run
 
