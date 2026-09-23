@@ -15,7 +15,7 @@ parcelas, clima, suelo, topografía, SIAP 2025 y demás fuentes públicas justif
 Las X de las 59 parcelas **sí forman parte del problema** y pueden utilizarse en aprendizaje
 transductivo X-only. Los 59 y ocultos no pueden utilizarse ni obtenerse directamente.
 
-Checkpoint 03 queda congelado como **First Modeling Delivery**, Checkpoint 04 como la línea transductiva/local que produjo el incumbent y Checkpoint 05 como la prueba final de combinación global-local. Checkpoint 05 no superó su gate de promoción, por lo que `Local04D` queda congelado como método final. Leer `docs/TRANSDUCTIVE_OBJECTIVE.md` y `docs/CHECKPOINT_05_FINDINGS.md`.
+Checkpoint 03C queda congelado como **First Modeling Delivery**, Checkpoint 04 produjo el incumbent local/transductivo y Checkpoint 05 no logró promover un ensamble sobre `Local04D`. Por decisión explícita final, la fase activa es **Checkpoint 03D**, un benchmark global de cómputo grande; sólo si produce señal global nueva se abrirá un 05B restringido. Leer `docs/TRANSDUCTIVE_OBJECTIVE.md`, `docs/CHECKPOINT_03D_PLAN.md` y `docs/CHECKPOINT_05B_PLAN.md`.
 
 
 **Predicción agroclimática y geoespacial del rendimiento de cebada** para el Reto AgroCebada FIRA 2026.
@@ -37,6 +37,49 @@ El identificador canónico es `ID_POLIGONO`. La documentación oficial confirma 
 Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conocemos \(X_L\), \(X_U\) y \(y_L\), y buscamos reconstruir \(y_U\). Una única función global \(f(X)\) es sólo una de varias estrategias posibles.
 
 
+
+## Checkpoint 03D — activo: large-compute global benchmark
+
+03D cierra una pregunta que los experimentos anteriores dejaron deliberadamente
+abierta: los modelos globales de 03C usaron grids pequeños y conservadores. El
+nuevo benchmark usa un presupuesto serio con CatBoost y XGBoost en GPU,
+LightGBM, ExtraTrees, HistGradientBoosting y controles Ridge/PLS sobre cuatro
+representaciones deterministas competition-only.
+
+La validación sigue siendo nested y reutiliza los folds congelados de 03:
+state-stratified y municipality-grouped. Los 59 targets FIRA nunca se puntúan.
+
+El runner es resumible por outer fit y, al terminar, refitea los tres finalistas
+globales sobre los 138 labels. El mejor global se guarda para deployment como:
+
+```text
+models/final/checkpoint03d_global.onnx
+models/final/checkpoint03d_global.onnx.json
+models/final/checkpoint03d_global.joblib
+```
+
+El `.onnx` se valida con ONNX Runtime contra las predicciones Python antes de
+declarar PASS. El JSON conserva el orden exacto de features y las medianas de
+imputación.
+
+Ejecutar primero:
+
+```powershell
+git pull
+conda activate geocebada
+python -m pip install -e ".[dev,models,deployment]"
+python tools\run_checkpoint_03d.py --preflight
+```
+
+y sólo si pasa:
+
+```powershell
+python tools\run_checkpoint_03d.py
+```
+
+Si 03D encuentra globales realmente más fuertes, `docs/CHECKPOINT_05B_PLAN.md`
+define una remezcla final muy restringida con Local04D. Hasta entonces,
+Local04D sigue siendo el método final de competencia.
 
 ## Checkpoint 05 — completado: global + local mixture
 
