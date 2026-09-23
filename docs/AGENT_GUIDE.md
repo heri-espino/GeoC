@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 05 closed; `Local04D` frozen as final method; submission/app/export wiring next  
+**Current phase:** Checkpoint 03D large-compute global benchmark active; Local04D remains frozen competition incumbent  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -12,13 +12,14 @@ Before changing modeling or data logic, read:
 1. `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 2. `.ai_handoff`.
 3. this file.
-4. `docs/CHECKPOINT_05_FINDINGS.md`, then `docs/CHECKPOINT_05_PLAN.md` and `checkpoints/05_global_local_mixture/README.md`.
-5. `checkpoints/04_transductive_competition/README.md`.
-6. `docs/PROJECT_HISTORY.md`.
-7. `data/.ai_handoff` and `docs/DATA_SOURCES.md`.
-8. `reports/checkpoint_03c2/checkpoint_03c2_report.md` and `checkpoints/03c3_finalist_ensembles/README.md` only as frozen First Modeling Delivery evidence.
-9. `docs/FUNCTION_INDEX.md` before adding reusable functions.
-10. `app/AGENTS.md` before app/deployment work.
+4. `docs/CHECKPOINT_03D_PLAN.md` and `checkpoints/03d_large_global_modeling/README.md`.
+5. `docs/CHECKPOINT_05B_PLAN.md`, then `docs/CHECKPOINT_05_FINDINGS.md` for the frozen incumbent evidence.
+6. `checkpoints/04_transductive_competition/README.md`.
+7. `docs/PROJECT_HISTORY.md`.
+8. `data/.ai_handoff` and `docs/DATA_SOURCES.md`.
+9. `reports/checkpoint_03c2/checkpoint_03c2_report.md` and `checkpoints/03c3_finalist_ensembles/README.md` only as frozen First Modeling Delivery evidence.
+10. `docs/FUNCTION_INDEX.md` before adding reusable functions.
+11. `app/AGENTS.md` before app/deployment work.
 
 Do not infer the active objective from old Checkpoint 03 text. Checkpoint 03 is historical.
 
@@ -92,7 +93,7 @@ methods.
 
 ## 5. What Checkpoint 03 accomplished
 
-Checkpoint 03 is closed as the **First Modeling Delivery**.
+Checkpoint 03C is closed as the **First Modeling Delivery**. Checkpoint 03D is an additive large-compute closure benchmark requested after Checkpoint 05.
 
 It built/validated agronomic and empirical feature layers, compared representations, ran
 competition-only nested model-family benchmarking and evaluated conservative equal-weight
