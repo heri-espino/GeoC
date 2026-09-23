@@ -18,11 +18,13 @@ import numpy as np
 import pandas as pd
 import yaml
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.pipeline import Pipeline
 
 from geocebada.evaluation.checkpoint03c2 import (
     build_competition_representation_specs,
     make_inner_cv_splits,
     summarize_nested_results,
+    validate_nested_oof_coverage,
 )
 from geocebada.evaluation.checkpoint03d import (
     _eligible_pairs,
@@ -200,8 +202,24 @@ def _onnx_converter_smoke_test(config: dict[str, Any]) -> None:
     ).astype(np.float32)
 
     models: list[tuple[str, Any]] = [
-        ("ridge", Ridge(alpha=1.0)),
-        ("pls", PLSRegression(n_components=2, scale=True)),
+        (
+            "ridge",
+            Pipeline(
+                [
+                    ("scaler", __import__("sklearn.preprocessing", fromlist=["StandardScaler"]).StandardScaler()),
+                    ("model", Ridge(alpha=1.0)),
+                ]
+            ),
+        ),
+        (
+            "pls",
+            Pipeline(
+                [
+                    ("scaler", __import__("sklearn.preprocessing", fromlist=["StandardScaler"]).StandardScaler()),
+                    ("model", PLSRegression(n_components=2, scale=False)),
+                ]
+            ),
+        ),
         (
             "extra_trees",
             ExtraTreesRegressor(
@@ -684,6 +702,11 @@ def run_checkpoint_03d(
                         flush=True,
                     )
 
+    validate_nested_oof_coverage(
+        oof,
+        expected_ids=training[str(identity["id_column"])],
+        id_column=str(identity["id_column"]),
+    )
     protocol_summary, robustness = summarize_nested_results(outer, oof)
     finalists = _select_finalists(
         robustness,
@@ -800,22 +823,57 @@ def run_checkpoint_03d(
         if int(row.finalist_rank) == 1:
             best_pipeline = search.best_estimator_
             imputer = best_pipeline.named_steps["imputer"]
-            fitted_model = best_pipeline.named_steps["model"]
             x_imputed = np.asarray(imputer.transform(x_full), dtype=np.float32)
+            if spec.kind in {
+                "ridge",
+                "pls",
+                "extra_trees",
+                "hist_gradient_boosting",
+            }:
+                deployment_model = Pipeline(best_pipeline.steps[1:])
+            else:
+                deployment_model = best_pipeline.named_steps["model"]
+
+            python_pipeline_predictions = np.asarray(
+                best_pipeline.predict(x_full),
+                dtype=float,
+            ).reshape(-1)
+            deployment_predictions = np.asarray(
+                deployment_model.predict(x_imputed),
+                dtype=float,
+            ).reshape(-1)
+            if not np.allclose(
+                python_pipeline_predictions,
+                deployment_predictions,
+                atol=float(config["deployment"]["verification_atol"]),
+                rtol=float(config["deployment"]["verification_rtol"]),
+            ):
+                raise RuntimeError(
+                    "Post-imputation deployment model does not reproduce the "
+                    "fitted Python pipeline."
+                )
+
             onnx_path = root / str(outputs["onnx_model"])
             export_regressor_to_onnx(
-                fitted_model,
+                deployment_model,
                 kind=spec.kind,
                 n_features=x_imputed.shape[1],
                 path=onnx_path,
                 target_opset=int(config["deployment"]["target_opset"]),
             )
             onnx_verification = verify_onnx_regressor(
-                fitted_model,
+                deployment_model,
                 x_imputed,
                 path=onnx_path,
                 atol=float(config["deployment"]["verification_atol"]),
                 rtol=float(config["deployment"]["verification_rtol"]),
+            )
+            onnx_verification["python_pipeline_max_abs_difference"] = float(
+                np.max(
+                    np.abs(
+                        python_pipeline_predictions - deployment_predictions
+                    )
+                )
             )
             statistics = np.asarray(imputer.statistics_, dtype=float)
             statistics = np.nan_to_num(
