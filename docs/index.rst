@@ -37,6 +37,7 @@ than duplicated across notebooks.
    api/index
    VISUAL_EXPLORER
    DEPLOYMENT
+   GITHUB_ACTIONS
    AI_USAGE
 
 Indices
