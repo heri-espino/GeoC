@@ -89,3 +89,21 @@ def test_checkpoint03d_ridge_search_smoke() -> None:
     )
     assert np.isfinite(search.best_score_)
     assert search.best_estimator_.predict(x.iloc[:2]).shape == (2,)
+
+
+
+def test_balanced_03d_budget() -> None:
+    root = find_project_root(Path(__file__).resolve())
+    config = yaml.safe_load((root / "configs/checkpoint03d.yaml").read_text(encoding="utf-8"))
+
+    assert config["validation"]["inner_folds"] == 3
+    assert config["runtime"]["budget_profile"] == "balanced"
+    for name in [
+        "CatBoostLarge",
+        "XGBoostLarge",
+        "LightGBMLarge",
+        "ExtraTreesLarge",
+        "HistGBLarge",
+    ]:
+        assert len(config["models"][name]["candidates"]) == 3
+    assert config["models"]["ExtraTreesLarge"]["fixed"]["n_estimators"] == 1500
