@@ -247,8 +247,57 @@ reproducibilidad del procedimiento. En esta fase ambos tienen scope de inferenci
 explícitamente restringido a los 59 objetivos fijos. Una API para parcelas arbitrariamente
 nuevas se implementará separadamente para no confundir ambos contratos.
 
-\subsection{Estado}
+\subsection{Resultado ejecutado y decisión}
 
-Checkpoint~05 está implementado pero todavía no ejecutado. Hasta que finalice el run y se
-evalúe el gate de promoción, Checkpoint~04F continúa siendo la fuente canónica de las 59
-predicciones.
+El run final completó el 23 de septiembre de 2026. El mejor challenger de la tabla completa
+de desarrollo fue:
+\[
+\mathrm{LocalE13}_{0.10}
+=
+0.90\,\mathrm{Local04D}
++
+0.10\,E13.
+\]
+Sus métricas fueron
+\[
+\overline{\RMSE}=0.487243,
+\qquad
+\RMSE_{\mathrm{pooled}}=0.495261,
+\]
+frente a Local04D:
+\[
+\overline{\RMSE}=0.487845,
+\qquad
+\RMSE_{\mathrm{pooled}}=0.495741.
+\]
+La ventaja nominal fue menor a una milésima.
+
+El gate LOSO no confirmó la mejora:
+\[
+\overline{\RMSE}_{LOSO}=0.487934,
+\qquad
+\RMSE_{\mathrm{pooled,LOSO}}=0.495933,
+\]
+ligeramente peor que Local04D en ambas métricas requeridas. Por contrato, el banco fresco de
+confirmación no se puntuó para buscar una alternativa distinta.
+
+Una ejecución previa se detuvo en 29/34 outer splits porque un fold nested de 18 observaciones
+hacía inviable PLS con 20 componentes. Se corrigió únicamente la factibilidad:
+\[
+K_{\max}
+=
+\min\left(p,\min_f n_{\mathrm{train},f}\right),
+\]
+eliminando candidatos con $n_{\mathrm{components}}>K_{\max}$ dentro de cada fit. La regla no
+usa $y$ para seleccionar complejidad y permitió reutilizar de forma segura los splits
+completados.
+
+No hubo promoción. La fuente canónica posterior a Checkpoint~05 es
+\begin{center}
+\artifact{reports/checkpoint_05/final_predictions.csv},
+\end{center}
+que conserva exactamente Local04D para las 59 parcelas.
+
+Checkpoint~03D se ejecutó posteriormente como cierre de capacidad global. Sus scores
+state/grouped no retroactivan una promoción en 05 porque pertenecen a protocolos distintos.
+Cualquier nueva mezcla con esos globales requiere un 05B explícito.

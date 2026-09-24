@@ -39,6 +39,10 @@ python tools/run_checkpoint_04d1.py
 python tools/run_checkpoint_04e1.py
 python tools/run_checkpoint_04c1.py
 python tools/run_checkpoint_04f.py
+python tools/run_checkpoint_05.py
+
+# Additive global-capacity closure, executed after Checkpoint 05:
+python tools/run_checkpoint_03d.py
 \end{lstlisting}
 
 El orden 04E/04C anterior refleja el orden real de implementación de las hipótesis finales;
@@ -72,6 +76,8 @@ evidencia externa y 04F como congelamiento.
 \item \artifact{reports/checkpoint_03c/checkpoint_03c_report.md}
 \item \artifact{reports/checkpoint_03c2/checkpoint_03c2_report.md}
 \item \artifact{reports/checkpoint_03c3/}
+\item \artifact{reports/checkpoint_03d/}
+\item \artifact{docs/CHECKPOINT_03D_FINDINGS.md}
 \end{itemize}
 
 \subsection*{Checkpoint 04}
@@ -83,6 +89,24 @@ evidencia externa y 04F como congelamiento.
 \item \artifact{reports/checkpoint_04c1/}
 \item \artifact{reports/checkpoint_04f/final_predictions.csv}
 \item \artifact{reports/checkpoint_04f/final_prediction_diagnostics.csv}
+\end{itemize}
+
+\subsection*{Checkpoint 05}
+\begin{itemize}
+\item \artifact{reports/checkpoint_05/final_predictions.csv}
+\item \artifact{reports/checkpoint_05/final_prediction_diagnostics.csv}
+\item \artifact{reports/checkpoint_05/checkpoint_05_report.json}
+\item \artifact{docs/CHECKPOINT_05_FINDINGS.md}
+\end{itemize}
+
+\subsection*{Checkpoint 03D deployment}
+\begin{itemize}
+\item \artifact{reports/checkpoint_03d/finalists.csv}
+\item \artifact{reports/checkpoint_03d/robustness_summary.csv}
+\item \artifact{reports/checkpoint_03d/checkpoint_03d_report.json}
+\item local, gitignored: \artifact{models/final/checkpoint03d_global.onnx}
+\item local, gitignored: \artifact{models/final/checkpoint03d_global.onnx.json}
+\item local, gitignored: \artifact{models/final/checkpoint03d_global.joblib}
 \end{itemize}
 
 \section{Invariantes que deben comprobarse antes de una entrega}
@@ -134,7 +158,11 @@ provenance final es:
 \rightarrow
 \text{04D LocalRidge}
 \rightarrow
-\text{04F frozen CSV}.
+\text{04F frozen rule}
+\rightarrow
+\text{05 promotion gate}
+\rightarrow
+\text{05 canonical CSV}.
 \]
 
 Los Checkpoints~04E y 04C son ramas de validación de hipótesis: pueden generar predicciones
@@ -167,3 +195,21 @@ pdflatex main.tex
 Las figuras usan rutas relativas a \artifact{../../reports/}. La macro
 \artifact{\\safefigure} deja un placeholder si una figura no está disponible, permitiendo que
 el texto siga compilando en checkouts parciales.
+
+
+\section{Incidentes reproducibles de los runs finales}
+
+En Checkpoint~05, un nested fold de 18 observaciones hizo inválido
+\artifact{PLS(n_components=20)}. La corrección limita componentes al mínimo entre número de
+features y tamaño del menor training fold interno. Es una restricción de factibilidad, no
+selección basada en target.
+
+En Checkpoint~03D, la primera configuración wide proyectó varios días de cómputo. El run
+balanced preservó outer e inner CV y redujo sólo el número de candidatos pesados. Para impedir
+mezclar partials incompatibles, \artifact{--resume} verifica un fingerprint del contrato.
+
+El preflight ONNX detectó incompatibilidades reales de conversores. Se fijó
+\artifact{onnx<1.22} con \artifact{skl2onnx==1.20.0}; CatBoost usa exportador nativo y
+XGBoost/LightGBM negocian el opset máximo soportado. HistGB permanece científicamente válido
+aunque no sea deployable con ese stack. El finalista XGBoost exportado pasó el round trip con
+diferencia absoluta máxima $3.814697\times10^{-6}$.

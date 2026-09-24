@@ -8,7 +8,9 @@ cada raster, qué identificador puede usarse para unir fuentes y qué informaci�
 disponible. Checkpoint~02 reduce incertidumbre \emph{representacional}: qué resumen parcelario
 se puede construir sin destruir provenance y qué familias muestran shift o sensibilidad.
 Checkpoint~03 reduce incertidumbre \emph{de modelo global}: qué representaciones compactas y
-qué inductive biases sobreviven nested CV. Checkpoint~04 reduce incertidumbre
+qué inductive biases sobreviven nested CV. Checkpoint~03D vuelve después sobre esa misma
+pregunta con mayor capacidad y demuestra que el tamaño del grid no era la única limitación.
+Checkpoint~04 reduce incertidumbre
 \emph{específica del conjunto objetivo}: qué significa la geometría de los 59 $X$ conocidos y
 qué métodos transfieren mejor rendimiento hacia esos puntos.
 
@@ -75,10 +77,18 @@ espacial es compatible o si existe una corrección local suficientemente informa
 
 \subsection{Compute no fue la restricción final}
 
-CatBoost GPU permitió evaluar configuraciones eficientemente, pero aumentar compute no
-resuelve $n=138$. Una vez que los errores CatBoost permanecen altamente correlacionados con
-Local/Graph y su RMSE standalone es mayor, un grid más grande sobre los mismos folds tendría
-rendimientos estadísticos decrecientes y mayor riesgo de selección optimista.
+Checkpoint~03D prueba esta afirmación directamente. El benchmark balanced ejecutó 230 outer
+fits en 248.085 minutos y comparó CatBoost, XGBoost, LightGBM, ExtraTrees,
+HistGradientBoosting y controles sobre cuatro representaciones deterministas.
+
+El mejor grouped global pasó de aproximadamente 0.748 en E123/E13 a 0.715339 con HistGB G1.
+Sin embargo, ese mismo modelo obtuvo state RMSE 0.549924. XGBoost G1 produjo
+0.525847/0.733080. Variantes G2/G3 de CatBoost y ExtraTrees llegaron a state RMSE cercano o
+inferior a 0.51, pero se degradaron hasta aproximadamente 0.86--0.93 bajo grouped.
+
+El cómputo adicional mueve una parte de la frontera, pero no elimina el gap entre protocolos
+ni crea observaciones independientes nuevas. Con $n=138$, más capacidad no sustituye una
+representación defendible y una validación que refleje la estructura espacial.
 
 \section{Lectura de las métricas del incumbent}
 
@@ -210,3 +220,22 @@ canónico producido por Checkpoint~05. El bundle
 \artifact{models/final/checkpoint05_model.joblib} se reserva para reproducción exacta y para
 la futura aplicación Python; una API para parcelas arbitrariamente nuevas constituye un
 contrato distinto.
+
+
+\section{Estado final del modelado}
+
+Checkpoint~05 cerró sin promoción y Checkpoint~03D cerró posteriormente la única duda amplia
+de capacidad global. La salida competition-facing permanece Local04D en
+\artifact{reports/checkpoint_05/final_predictions.csv}.
+
+Existe un plan 05B, pero es deliberadamente estrecho: sólo puede responder si un peso pequeño
+de los nuevos globales 03D añade señal bajo las mismas pseudo-competiciones target-matched.
+No es autorización para continuar buscando indefinidamente modelos o hiperparámetros.
+
+El proyecto conserva dos contratos distintos:
+\begin{itemize}
+\item \textbf{competencia fija-59}: Local04D y el CSV congelado;
+\item \textbf{deployment global}: el finalista 03D XGBoost exportado y verificado en ONNX.
+\end{itemize}
+Confundir ambos contratos produciría una afirmación incorrecta sobre qué modelo generó la
+entrega del reto.

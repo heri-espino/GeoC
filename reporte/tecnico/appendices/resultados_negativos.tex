@@ -130,6 +130,32 @@ certificar un artefacto completo. No se mezclan archivos parciales con fuentes c
 fuente no disponible de manera reproducible se trata como hipótesis futura, no como input
 oculto del modelo final.
 
+\section{Stacking y mixture-of-experts de Checkpoint 05}
+
+El mejor mínimo de desarrollo fue 90\% Local04D + 10\% E13, con RMSE medio 0.487243 frente
+a 0.487845 del incumbent. La mejora fue menor a una milésima y no sobrevivió selección
+split-excluded: el LOSO produjo 0.487934 de RMSE medio y 0.495933 pooled, ambos ligeramente
+peores que Local04D.
+
+El resultado cierra la hipótesis de que mayor sofisticación del meta-modelo ---convex
+stacking, regresores robustos, árboles shallow o un gate softmax condicionado en soporte---
+basta para extraer complementariedad estable de los expertos disponibles.
+
+\section{Barrido global 03D de mayor capacidad}
+
+03D no es puramente negativo: HistGB G1 mejoró la frontera municipality-grouped global hasta
+0.715339. Sin embargo, obtuvo state RMSE 0.549924 y ningún finalista dominó ambos protocolos.
+XGBoost G1 obtuvo 0.525847/0.733080.
+
+Las representaciones más grandes muestran aún más claramente el problema. CatBoost G2/G3
+alcanza state 0.5074/0.5146 pero grouped alrededor de 0.931; ExtraTrees G2/G3 alcanza state
+cercano a 0.50 y grouped 0.858--0.881. Se cierra así la hipótesis de que el grid conservador
+de 03C fuera la causa principal de la limitación global.
+
+También se cierra la idea de que concatenar todas las variables deterministas fortalece
+necesariamente la robustez: los tres finalistas por peor protocolo terminaron usando sólo G1
+agronomic.
+
 \section{Conclusión de los resultados negativos}
 
 La estrategia no fue probar métodos hasta que alguno mejorara unas milésimas. El proyecto

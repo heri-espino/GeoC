@@ -1,22 +1,22 @@
 \section{Advertencia de uso}
 
-La tabla de este apéndice reproduce el vector \emph{incumbente} de 59 predicciones
-congelado por Checkpoint~04F, redondeado a seis decimales únicamente para lectura humana.
-Checkpoint~05 está implementado pero todavía pendiente de ejecución; por tanto, mientras su
-gate de promoción no termine, el artefacto canónico sigue siendo
+La tabla de este apéndice reproduce el vector \emph{final post-05} de 59 predicciones,
+redondeado a seis decimales únicamente para lectura humana. Checkpoint~05 terminó sin
+promoción, por lo que el método sigue siendo Local04D y los valores coinciden con 04F.
+La fuente canónica de cierre ahora es
 \begin{center}
-\artifact{reports/checkpoint_04f/final_predictions.csv}
+\artifact{reports/checkpoint_05/final_predictions.csv}.
 \end{center}
-Cuando Checkpoint~05 termine, este apéndice debe regenerarse desde
-\artifact{reports/checkpoint_05/final_predictions.csv} antes de considerar cerrado el reporte,
-incluso si el gate retiene Local04D. De ese modo la tabla documentada y el manifest final
-pertenecen al mismo checkpoint de cierre.
-No se deben copiar manualmente los valores de esta tabla para construir la entrega.
 
-\section{Vector incumbente de Checkpoint 04F}
+Checkpoint~03D se ejecutó posteriormente como benchmark global y genera candidatos separados;
+no sustituye este vector porque sus state/grouped RMSE no pertenecen al mismo protocolo
+target-matched. No se deben copiar manualmente los valores de esta tabla para construir la
+entrega.
+
+\section{Vector final retenido por Checkpoint 05}
 
 \begin{longtable}{lr}
-\caption{Predicciones incumbentes congeladas por Checkpoint 04F.}
+\caption{Predicciones finales post-05; Checkpoint 05 retuvo exactamente Local04D.}
 \label{tab:final-predictions}\\
 \toprule
 \artifact{ID_POLIGONO} & \artifact{RENDIMIENTO_T_HA} \\
@@ -88,7 +88,7 @@ AGC\_192 & 4.628534 \\
 \bottomrule
 \end{longtable}
 
-\section{Resumen descriptivo del vector incumbente}
+\section{Resumen descriptivo del vector final}
 
 Estas estadísticas describen las predicciones; no son una evaluación porque los 59 targets
 reales permanecen ocultos:
