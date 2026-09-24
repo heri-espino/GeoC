@@ -8,15 +8,15 @@ These instructions apply repository-wide unless a more specific handoff adds con
 2. `.ai_handoff` — compact current-state handoff.
 3. `docs/AGENT_GUIDE.md` — operational entry point.
 4. `docs/PROJECT_HISTORY.md` — chronology and frozen historical decisions.
-5. `checkpoints/04_transductive_competition/README.md` — active checkpoint.
+5. `checkpoints/04_transductive_competition/README.md` and `checkpoints/05_global_local_mixture/README.md` — frozen competition-method evidence.
 6. `checkpoints/03c3_finalist_ensembles/README.md` and `reports/checkpoint_03c2/checkpoint_03c2_report.md` — First Modeling Delivery baseline only.
 7. `data/.ai_handoff`, `docs/DATA_SOURCES.md`, `docs/FEATURE_TABLE_V1.md` — data semantics.
 8. `docs/FUNCTION_INDEX.md` before adding reusable helpers.
 9. `app/AGENTS.md` before Streamlit/deployment changes.
 
-## Active objective
+## Current objective and frozen competition method
 
-Checkpoint 04 is **Transductive Competition Modeling**. There are 59 fixed target parcels whose
+The project remains a **Transductive Competition Modeling** problem. Broad model search is now closed. There are 59 fixed target parcels whose
 reference yields are hidden by FIRA. The current purpose is to reconstruct those 59 values as
 accurately as possible, not to optimize a generic model intended to generalize to arbitrary
 future parcels.
@@ -56,11 +56,11 @@ Target-aware feature search, supervised feature selection and any operation usin
 be restricted to the labeled portion of each pseudo-competition split.
 
 Legacy state-stratified and municipality-grouped folds are retained as stress-test evidence;
-they are not the only selection criterion in Checkpoint 04.
+they are not interchangeable with the target-matched pseudo-competition protocol.
 
 ## Similarity and dependence are first-class signals
 
-Checkpoint 04 should explicitly test:
+Checkpoint 04 tested:
 
 - spatial autocorrelation of observed yields;
 - spatial autocorrelation of baseline residuals;
@@ -100,8 +100,7 @@ E123:           state 0.5121, municipality 0.7481
 E13:            state 0.5082, municipality 0.7488
 ```
 
-Do not mutate Checkpoint 03 configs/reports to improve these historical scores. Checkpoint 04
-may reuse, retune, supersede or ensemble these models under the new validation doctrine.
+Do not mutate frozen Checkpoint 03C configs/reports to improve these historical scores. Checkpoint 03D is also closed and additive; its new state/grouped scores do not directly replace target-matched Local04D evidence.
 
 ## Data and implementation rules
 
@@ -123,7 +122,7 @@ After substantive work:
 - update `.ai_handoff` if current state changed;
 - update `data/.ai_handoff` for data-specific discoveries;
 - update `docs/PROJECT_HISTORY.md` for milestones;
-- update the active Checkpoint 04 README;
+- update the relevant checkpoint README and canonical findings document;
 - record material AI contribution in `docs/AI_USAGE.md`;
 - regenerate `docs/FUNCTION_INDEX.md` after public API changes;
 - follow `app/AGENTS.md` for app work.
@@ -131,3 +130,19 @@ After substantive work:
 Historical documentation may describe older leakage-safe inductive rules. Those remain valid
 for interpreting Checkpoint 03 but are superseded for active Checkpoint 04 by
 `docs/TRANSDUCTIVE_OBJECTIVE.md`.
+
+
+## Frozen final-state summary
+
+As of 2026-09-24:
+
+- Checkpoint 05 completed without promotion;
+- Local04D remains the competition-facing method;
+- canonical fixed-59 CSV: `reports/checkpoint_05/final_predictions.csv`;
+- Checkpoint 03D completed the balanced global-capacity closure;
+- 03D scientific rank 1: HistGB G1;
+- 03D highest-ranked deployable finalist: XGBoost G1, verified ONNX;
+- Checkpoint 05B is optional/narrow only; do not reopen another broad search.
+
+Do not compare 03D state/grouped RMSE directly with Local04D target-matched RMSE
+as if they estimated the same validation distribution.

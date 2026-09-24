@@ -31,6 +31,7 @@ GitHub Actions y los entornos locales compilen exactamente la misma versión vis
     ├── sections/
     │   ├── checkpoint_01a.tex
     │   ├── ...
+    │   ├── checkpoint_03d.tex
     │   ├── checkpoint_04f.tex
     │   ├── checkpoint_05.tex
     │   └── sintesis_final.tex
@@ -42,7 +43,7 @@ GitHub Actions y los entornos locales compilen exactamente la misma versión vis
         ├── resultados_negativos.tex
         └── predicciones_finales.tex
 
-main.tex define cuatro capítulos principales, uno por Checkpoint 01–04. Cada subfase se
+main.tex organiza los Checkpoints 01–05 más la síntesis técnica; 03D aparece dentro del capítulo 03 aunque se ejecutó cronológicamente después de 05. Cada subfase se
 materializa mediante \input{...} para que el documento se pueda revisar y mantener sin
 convertir el archivo principal en un bloque monolítico.
 
@@ -100,9 +101,9 @@ Este texto resume artefactos ya congelados del repositorio. Si alguna cifra del 
 contradice un CSV/JSON generado por el runner correspondiente, el artefacto generado y su
 configuración son la fuente de verdad.
 
-La tabla canónica de predicciones finales permanece en:
+La tabla canónica de predicciones finales post-05 está en:
 
-    reports/checkpoint_04f/final_predictions.csv
+    reports/checkpoint_05/final_predictions.csv
 
 El apéndice del reporte muestra valores redondeados sólo para lectura. No reemplaza el CSV de
 precisión completa.

@@ -22,7 +22,7 @@ notebook cells.
 | `run_checkpoint_03c.py` | Fixed-fold clean/competition representation benchmark with Ridge10 and ExtraTrees | Checkpoint 03C.1 closed |
 | `run_checkpoint_03c2.py` | Competition-only nested model-family benchmark with fold-safe tuning/discovery | Checkpoint 03C.2 closed |
 | `run_checkpoint_03c3.py` | Deterministic OOF review of three finalists and fixed equal-weight ensembles | Checkpoint 03C.3 closed/frozen |
-| `run_checkpoint_03d.py` | Large-compute competition-only global benchmark, resumable outer fits and verified ONNX export | **Checkpoint 03D active; workstation run pending** |
+| `run_checkpoint_03d.py` | Balanced-compute competition-only global benchmark, resumable outer fits and verified ONNX export | Checkpoint 03D complete/frozen |
 | `run_checkpoint_04a.py` | Build 59-target geographic/feature/temporal topology, shift, autocorrelation, support tables and figures | Checkpoint 04A complete |
 | `run_checkpoint_04b.py` | Repeated transductive pseudo-competition RMSE for global, local, spatial, graph and blended methods | Checkpoint 04B complete |
 | `run_checkpoint_04c1.py` | Focused C1 agronomic CatBoost anchor, low-weight blends, residual diversity and controlled LOSO gate | Checkpoint 04C.1 complete |

@@ -6,7 +6,7 @@
 > does not rewrite 03C.
 
 
-**Status:** 03A–03C CLOSED / 03D ACTIVE  
+**Status:** 03A–03D CLOSED  
 **Historical frozen scope:** 03A/03B/03C.1/03C.2/03C.3  
 **Additive closure:** 03D balanced-compute global modeling — completed 2026-09-24  
 **Opened:** 2026-09-18

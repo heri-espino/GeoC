@@ -1,83 +1,100 @@
 # Models
 
-Checkpoint 05 is the active final modeling phase.
+Broad modeling is closed. The competition-facing method remains
+`Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`, retained by the
+completed Checkpoint 05 promotion gate.
 
-The fixed-target transductive objective remains defined in
-`docs/TRANSDUCTIVE_OBJECTIVE.md`. Checkpoint 04F supplies the incumbent
-Local04D predictions; Checkpoint 05 is allowed to replace them only if the
-predeclared development, LOSO and fresh-confirmation gates pass.
+The project now has two deliberately separate model contracts:
 
-## Final Checkpoint 05 bundle
+1. **fixed-59 competition contract** — exact frozen predictions for the 59 FIRA
+   target parcels;
+2. **generic global deployment contract** — the verified Checkpoint 03D
+   XGBoost ONNX estimator.
 
-The long workstation runner writes two local bundles:
+These must not be described as the same model.
 
-    models/final/checkpoint05_app_bundle.joblib
-    models/final/checkpoint05_model.joblib
+## Fixed-59 Checkpoint 05 bundles
+
+The completed Checkpoint 05 runner writes two local bundles:
+
+```text
+models/final/checkpoint05_app_bundle.joblib
+models/final/checkpoint05_model.joblib
+```
 
 Both are intentionally ignored by Git. The **app bundle** is the preferred
-fixed-target artifact for the later Python/Streamlit interface: it contains no
-fitted CatBoost/scikit-learn estimator objects, only the frozen 59 predictions,
-candidate predictions, diagnostics, manifest, feature schema and target IDs.
-That keeps fixed-target display independent of the training stack's optional
-model dependencies.
+fixed-target artifact for Python/Streamlit display: it contains the frozen 59
+predictions, candidate predictions, diagnostics, manifest, feature schema and
+target IDs, without fitted CatBoost/scikit-learn objects.
 
-The **model bundle** is the full reproducibility artifact. It additionally
-contains fitted global experts and fitted meta-models and therefore requires
-the corresponding modeling dependencies when deserialized.
+The **model bundle** additionally preserves fitted global experts and
+meta-models for reproducibility.
 
-The bundle contains:
+The canonical versioned competition table is:
 
-- the selected final method and manifest;
-- the exact 59 final predictions;
-- the actual-target candidate prediction table;
-- app-facing diagnostics;
-- fitted global experts from the final 138-label fit;
-- fitted meta-models;
-- target/training IDs and feature schema metadata.
+```text
+reports/checkpoint_05/final_predictions.csv
+```
 
-The current export scope is deliberately:
+Checkpoint 05 completed without promotion, so this table retains Local04D.
 
-    fixed_59_competition_targets
+Public helpers:
 
-It guarantees exact reproduction of the competition result. It is not yet a
-generic arbitrary-new-parcel inference service.
+```python
+from geocebada.models import (
+    fixed_target_diagnostics,
+    fixed_target_predictions,
+    load_checkpoint05_bundle,
+    verify_fixed_target_bundle,
+)
+```
 
-The runner performs a joblib round-trip verification before declaring the
-checkpoint complete. The exported final values must reproduce the selected
-candidate to numerical tolerance.
+The fixed-target export scope is:
 
-## Loading from Python
+```text
+fixed_59_competition_targets
+```
 
-Use the public helpers:
+It is not an arbitrary-new-parcel inference service.
 
-    from geocebada.models import (
-        fixed_target_diagnostics,
-        fixed_target_predictions,
-        load_checkpoint05_bundle,
-        verify_fixed_target_bundle,
-    )
+## Checkpoint 03D global ONNX
 
-    bundle = load_checkpoint05_bundle(
-        "models/final/checkpoint05_app_bundle.joblib"
-    )
-    predictions = fixed_target_predictions(bundle)
-    diagnostics = fixed_target_diagnostics(bundle)
-    verification = verify_fixed_target_bundle(bundle)
+Checkpoint 03D completed on 2026-09-24. Scientific finalist rank 1 was HistGB
+on G1 agronomic, but that family was not ONNX-convertible with the pinned
+stable converter stack. XGBoost G1, scientific rank 2, became the
+highest-ranked deployable finalist.
 
-The later app should use these helpers rather than unpickling the bundle and
-depending on internal keys directly.
+Local artifacts:
+
+```text
+models/final/checkpoint03d_global.joblib
+models/final/checkpoint03d_global.onnx
+models/final/checkpoint03d_global.onnx.json
+```
+
+They remain gitignored. The versioned audit is:
+
+```text
+reports/checkpoint_03d/checkpoint_03d_report.json
+```
+
+The final ONNX round trip passed over 138 rows with maximum absolute difference
+`3.814697265625e-06`. The JSON manifest stores the exact raw feature order and
+median-imputation statistics.
+
+This ONNX model is a **global deployment estimator**. It does not reproduce the
+Local04D fixed-target competition rule.
 
 ## Provenance requirements
 
 Final production artifacts must record:
 
-- commit SHA;
-- config;
+- commit SHA and config;
 - exact feature inputs;
-- pseudo-competition validation evidence;
+- validation and promotion-gate evidence;
 - random seeds;
-- promotion/confirmation gate results;
-- target-support diagnostics;
-- exact 59-parcel prediction linkage.
+- target-support diagnostics where applicable;
+- exact 59-parcel linkage for fixed-target outputs;
+- preprocessing schema and numerical round-trip checks for deployment models.
 
 Do not store source data, credentials or private raw datasets here.

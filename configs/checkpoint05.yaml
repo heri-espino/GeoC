@@ -1,10 +1,10 @@
 schema_version: 1
-updated: 2026-09-22
+updated: 2026-09-24
 
 stage:
   name: final_global_local_mixture
   checkpoint: "05"
-  status: implemented_run_pending
+  status: completed_no_promotion
   purpose: >
     Combine the strongest global model families from Checkpoint 03 with the
     local/transductive experts from Checkpoint 04 under the exact frozen
