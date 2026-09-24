@@ -37,36 +37,50 @@ def export_regressor_to_onnx(
             target_opset=int(target_opset),
         )
 
-    elif normalized_kind in {"xgboost", "lightgbm", "catboost"}:
+    elif normalized_kind == "catboost":
+        if not hasattr(model, "save_model"):
+            raise TypeError("CatBoost ONNX export requires a fitted CatBoost model.")
+        model.save_model(
+            str(destination),
+            format="onnx",
+            export_parameters={
+                "onnx_domain": "ai.geocebada",
+                "onnx_model_version": 1,
+                "onnx_doc_string": "GeoC Checkpoint 03D regressor",
+                "onnx_graph_name": "GeoC_Checkpoint03D_CatBoostRegressor",
+            },
+        )
+        onnx_model = None
+
+    elif normalized_kind in {"xgboost", "lightgbm"}:
         try:
             import onnxmltools
             from onnxmltools.convert.common.data_types import FloatTensorType
+            from onnxmltools.convert.common.onnx_ex import (
+                get_maximum_opset_supported,
+            )
         except ImportError as exc:
             raise ImportError(
                 "onnxmltools is required for boosted-tree ONNX export. "
                 "Install .[deployment]."
             ) from exc
 
-        initial_types = [
-            ("features", FloatTensorType([None, int(n_features)]))
-        ]
+        initial_types = [("features", FloatTensorType([None, int(n_features)]))]
+        effective_opset = min(
+            int(target_opset),
+            int(get_maximum_opset_supported()),
+        )
         if normalized_kind == "xgboost":
             onnx_model = onnxmltools.convert_xgboost(
                 model,
                 initial_types=initial_types,
-                target_opset=int(target_opset),
+                target_opset=effective_opset,
             )
-        elif normalized_kind == "lightgbm":
+        else:
             onnx_model = onnxmltools.convert_lightgbm(
                 model,
                 initial_types=initial_types,
-                target_opset=int(target_opset),
-            )
-        else:
-            onnx_model = onnxmltools.convert_catboost(
-                model,
-                initial_types=initial_types,
-                target_opset=int(target_opset),
+                target_opset=effective_opset,
             )
 
     else:
@@ -79,8 +93,12 @@ def export_regressor_to_onnx(
             "onnx is required to validate exported models. Install .[deployment]."
         ) from exc
 
+    if onnx_model is None:
+        onnx_model = onnx.load(str(destination))
+    else:
+        destination.write_bytes(onnx_model.SerializeToString())
+
     onnx.checker.check_model(onnx_model)
-    destination.write_bytes(onnx_model.SerializeToString())
     return destination
 
 
@@ -103,8 +121,9 @@ def verify_onnx_regressor(
 
     matrix = np.asarray(x, dtype=np.float32)
     expected = np.asarray(model.predict(matrix), dtype=float).reshape(-1)
+    model_path = Path(path)
     session = ort.InferenceSession(
-        str(Path(path)),
+        str(model_path),
         providers=["CPUExecutionProvider"],
     )
     input_name = session.get_inputs()[0].name
@@ -146,9 +165,21 @@ def verify_onnx_regressor(
             "ONNX round-trip verification failed; "
             f"max_abs_difference={max_abs:.8g}."
         )
+    try:
+        import onnx
+
+        proto = onnx.load(str(model_path))
+        opset_imports = {
+            str(item.domain or "ai.onnx"): int(item.version)
+            for item in proto.opset_import
+        }
+    except Exception:
+        opset_imports = {}
+
     return {
         "verified": True,
         "rows": int(len(actual)),
         "max_abs_difference": max_abs,
         "output_shape": output_shape,
+        "opset_imports": opset_imports,
     }
