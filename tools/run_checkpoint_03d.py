@@ -492,13 +492,15 @@ def _report_markdown(
     lines.extend(
         [
             "",
-            "The top finalist is refit on all 138 labeled parcels after hyperparameter",
-            "selection across the union of state-stratified and municipality-grouped",
-            "inner folds. Its model-only ONNX graph consumes the median-imputed",
+            "All scientific finalists are refit on all 138 labeled parcels after",
+            "hyperparameter selection across the union of state-stratified and",
+            "municipality-grouped inner folds. The ONNX artifact is exported from",
+            "the highest-ranked finalist with a verified converter path; it need",
+            "not be scientific rank 1. The graph consumes the median-imputed",
             "float32 feature matrix described by the adjacent JSON manifest.",
             "",
-            "03D does not replace Local04D. These finalists are inputs to the",
-            "conditional Checkpoint 05B target-matched remix.",
+            "03D does not replace Local04D. Any competition use of these globals",
+            "requires the separate Checkpoint 05B target-matched gate.",
             "",
         ]
     )
@@ -1179,7 +1181,7 @@ def main() -> int:
                 print(f"  converter {kind}: {label}")
         return 0
 
-    print("Checkpoint 03D large-compute global benchmark: PASS")
+    print("Checkpoint 03D balanced-compute global benchmark: PASS")
     print(f"Training rows: {report['training_rows']}")
     print(f"Outer fits: {report['outer_fits']}")
     print(f"OOF rows: {report['oof_prediction_rows']}")
