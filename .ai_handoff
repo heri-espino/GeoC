@@ -514,3 +514,28 @@ fixed blends with the 04D.1 local/graph survivors
 The primary SIAP scope is exactly `Cebada grano + Primavera-Verano + Temporal +
 CVEGEO + 2025`. Broader grain-barley scopes are explicit named fallbacks only.
 No hidden parcel yield is accessed.
+
+
+## 2026-09-23 — Checkpoint 03D runtime reduction
+
+The initial 03D full grid was too expensive for 138 labeled parcels: CatBoost outer
+fits were taking about 15 minutes each because every outer fold contained a
+9-candidate x 3-inner-fold search plus refit. The default 03D config is now a
+balanced-compute benchmark:
+
+- preserve both frozen 5-fold outer protocols;
+- preserve 3-fold inner CV;
+- use 3 representative candidates for CatBoost, XGBoost, LightGBM, ExtraTrees,
+  and HistGB instead of the wider 6-9 candidate grids;
+- cap boosted models at 2500 estimators/iterations;
+- reduce ExtraTrees from 3000 to 1500 trees.
+
+This reduces inner/refit count from roughly 5570 fits to roughly 2300 before
+accounting for shorter individual fits. The statistical evaluation structure is
+unchanged; the reduction is in redundant hyperparameter tuning.
+
+Important: partial results from the former wide grid must NOT be resumed into the
+balanced grid. The runner now fingerprints the config/model/representation/compute
+selection in _partial_state.json. A mismatch aborts --resume. Starting once
+without --resume clears stale partials; subsequent interruptions can safely use
+--resume.
