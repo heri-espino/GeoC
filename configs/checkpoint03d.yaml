@@ -2,11 +2,11 @@ schema_version: 1
 updated: 2026-09-23
 
 stage:
-  name: large_compute_global_benchmark
+  name: balanced_compute_global_benchmark
   checkpoint: "03D"
   status: implemented_run_pending
   purpose: >
-    Close the historical global-modeling line with a serious compute budget.
+    Close the historical global-modeling line with a balanced compute budget.
     Re-evaluate deterministic competition-only representations using large,
     regularized tree/boosting models under the frozen Checkpoint 03 nested-CV
     protocols. Produce a small global finalist set for a conditional 05B remix
@@ -108,14 +108,8 @@ models:
       allow_writing_files: false
     candidates:
       - {iterations: 1500, depth: 4, learning_rate: 0.020, l2_leaf_reg: 3.0, random_strength: 0.2}
-      - {iterations: 2500, depth: 4, learning_rate: 0.015, l2_leaf_reg: 8.0, random_strength: 0.5}
-      - {iterations: 4000, depth: 4, learning_rate: 0.010, l2_leaf_reg: 15.0, random_strength: 1.0}
-      - {iterations: 1500, depth: 5, learning_rate: 0.020, l2_leaf_reg: 6.0, random_strength: 0.5}
       - {iterations: 2500, depth: 5, learning_rate: 0.015, l2_leaf_reg: 12.0, random_strength: 1.0}
-      - {iterations: 4000, depth: 5, learning_rate: 0.010, l2_leaf_reg: 20.0, random_strength: 1.5}
-      - {iterations: 1500, depth: 6, learning_rate: 0.015, l2_leaf_reg: 10.0, random_strength: 0.5}
       - {iterations: 2500, depth: 6, learning_rate: 0.010, l2_leaf_reg: 20.0, random_strength: 1.0}
-      - {iterations: 2500, depth: 7, learning_rate: 0.010, l2_leaf_reg: 30.0, random_strength: 1.5}
 
   XGBoostLarge:
     kind: xgboost
@@ -126,14 +120,8 @@ models:
       verbosity: 0
     candidates:
       - {n_estimators: 1500, max_depth: 2, learning_rate: 0.020, min_child_weight: 3.0, subsample: 0.85, colsample_bytree: 0.50, reg_alpha: 0.0, reg_lambda: 10.0}
-      - {n_estimators: 2500, max_depth: 2, learning_rate: 0.012, min_child_weight: 5.0, subsample: 0.90, colsample_bytree: 0.70, reg_alpha: 0.1, reg_lambda: 20.0}
-      - {n_estimators: 4000, max_depth: 2, learning_rate: 0.008, min_child_weight: 8.0, subsample: 0.90, colsample_bytree: 0.80, reg_alpha: 0.3, reg_lambda: 30.0}
-      - {n_estimators: 1500, max_depth: 3, learning_rate: 0.020, min_child_weight: 3.0, subsample: 0.80, colsample_bytree: 0.50, reg_alpha: 0.0, reg_lambda: 10.0}
       - {n_estimators: 2500, max_depth: 3, learning_rate: 0.012, min_child_weight: 5.0, subsample: 0.85, colsample_bytree: 0.65, reg_alpha: 0.1, reg_lambda: 20.0}
-      - {n_estimators: 4000, max_depth: 3, learning_rate: 0.008, min_child_weight: 8.0, subsample: 0.90, colsample_bytree: 0.80, reg_alpha: 0.3, reg_lambda: 30.0}
-      - {n_estimators: 1500, max_depth: 4, learning_rate: 0.015, min_child_weight: 5.0, subsample: 0.80, colsample_bytree: 0.45, reg_alpha: 0.1, reg_lambda: 20.0}
       - {n_estimators: 2500, max_depth: 4, learning_rate: 0.010, min_child_weight: 8.0, subsample: 0.85, colsample_bytree: 0.60, reg_alpha: 0.3, reg_lambda: 30.0}
-      - {n_estimators: 2500, max_depth: 5, learning_rate: 0.010, min_child_weight: 10.0, subsample: 0.85, colsample_bytree: 0.50, reg_alpha: 0.5, reg_lambda: 40.0}
 
   LightGBMLarge:
     kind: lightgbm
@@ -143,29 +131,18 @@ models:
       verbosity: -1
     candidates:
       - {n_estimators: 1500, num_leaves: 5, max_depth: 3, learning_rate: 0.020, min_child_samples: 8, subsample: 0.85, colsample_bytree: 0.50, reg_alpha: 0.0, reg_lambda: 10.0}
-      - {n_estimators: 2500, num_leaves: 5, max_depth: 3, learning_rate: 0.012, min_child_samples: 12, subsample: 0.90, colsample_bytree: 0.70, reg_alpha: 0.1, reg_lambda: 20.0}
-      - {n_estimators: 4000, num_leaves: 5, max_depth: 3, learning_rate: 0.008, min_child_samples: 16, subsample: 0.90, colsample_bytree: 0.80, reg_alpha: 0.3, reg_lambda: 30.0}
-      - {n_estimators: 1500, num_leaves: 7, max_depth: 4, learning_rate: 0.020, min_child_samples: 8, subsample: 0.80, colsample_bytree: 0.50, reg_alpha: 0.0, reg_lambda: 10.0}
       - {n_estimators: 2500, num_leaves: 7, max_depth: 4, learning_rate: 0.012, min_child_samples: 12, subsample: 0.85, colsample_bytree: 0.65, reg_alpha: 0.1, reg_lambda: 20.0}
-      - {n_estimators: 4000, num_leaves: 7, max_depth: 4, learning_rate: 0.008, min_child_samples: 16, subsample: 0.90, colsample_bytree: 0.80, reg_alpha: 0.3, reg_lambda: 30.0}
-      - {n_estimators: 2000, num_leaves: 11, max_depth: 5, learning_rate: 0.012, min_child_samples: 12, subsample: 0.85, colsample_bytree: 0.55, reg_alpha: 0.2, reg_lambda: 25.0}
-      - {n_estimators: 3000, num_leaves: 15, max_depth: 5, learning_rate: 0.008, min_child_samples: 16, subsample: 0.90, colsample_bytree: 0.70, reg_alpha: 0.5, reg_lambda: 40.0}
+      - {n_estimators: 2500, num_leaves: 11, max_depth: 5, learning_rate: 0.010, min_child_samples: 16, subsample: 0.90, colsample_bytree: 0.70, reg_alpha: 0.3, reg_lambda: 30.0}
 
   ExtraTreesLarge:
     kind: extra_trees
     representations: [G0_base, G1_agronomic, G2_base_agro, G3_all_deterministic]
     fixed:
-      n_estimators: 3000
+      n_estimators: 1500
       n_jobs: -1
     candidates:
       - {min_samples_leaf: 1, max_features: sqrt, max_depth: null}
-      - {min_samples_leaf: 2, max_features: sqrt, max_depth: null}
-      - {min_samples_leaf: 3, max_features: sqrt, max_depth: null}
-      - {min_samples_leaf: 5, max_features: sqrt, max_depth: null}
-      - {min_samples_leaf: 2, max_features: 0.15, max_depth: null}
       - {min_samples_leaf: 3, max_features: 0.30, max_depth: null}
-      - {min_samples_leaf: 5, max_features: 0.50, max_depth: null}
-      - {min_samples_leaf: 2, max_features: 0.50, max_depth: 12}
       - {min_samples_leaf: 3, max_features: 0.75, max_depth: 8}
 
   HistGBLarge:
@@ -175,11 +152,8 @@ models:
       early_stopping: false
     candidates:
       - {max_iter: 600, max_leaf_nodes: 5, learning_rate: 0.030, min_samples_leaf: 8, l2_regularization: 1.0}
-      - {max_iter: 1000, max_leaf_nodes: 5, learning_rate: 0.020, min_samples_leaf: 12, l2_regularization: 3.0}
-      - {max_iter: 1400, max_leaf_nodes: 7, learning_rate: 0.015, min_samples_leaf: 12, l2_regularization: 5.0}
       - {max_iter: 1000, max_leaf_nodes: 9, learning_rate: 0.020, min_samples_leaf: 16, l2_regularization: 8.0}
       - {max_iter: 1400, max_leaf_nodes: 11, learning_rate: 0.015, min_samples_leaf: 16, l2_regularization: 12.0}
-      - {max_iter: 1800, max_leaf_nodes: 15, learning_rate: 0.010, min_samples_leaf: 20, l2_regularization: 20.0}
 
   RidgeControl:
     kind: ridge
@@ -213,9 +187,15 @@ compute:
     reproducible than requiring a custom LightGBM GPU build.
 
 runtime:
+  budget_profile: balanced
   search_n_jobs: 1
   progress: true
   checkpoint_every_outer_fit: true
+  note: >
+    Preserve both frozen five-fold outer protocols and three-fold inner CV.
+    Runtime is reduced by using three representative candidates for each heavy
+    nonlinear family and 1500 ExtraTrees estimators. This removes redundant
+    tuning rather than weakening the outer evaluation.
 
 deployment:
   required: true
