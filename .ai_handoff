@@ -206,7 +206,12 @@ Repository recovery:
   converter declares a non-single-target output schema;
 - converter support no longer changes scientific finalist ranking;
 - final ONNX export uses the highest-ranked finalist that passes schema and
-  numerical equivalence checks.
+  numerical equivalence checks;
+- CatBoost uses its native ONNX exporter;
+- XGBoost/LightGBM cap the requested opset to the maximum supported by
+  `onnxmltools` rather than failing when config requests a newer opset;
+- preflight now requires at least one verified nonlinear ONNX family, so a
+  Ridge-only deployment path is no longer enough to declare readiness.
 
 Workstation recovery command:
 
