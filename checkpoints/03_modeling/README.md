@@ -8,7 +8,7 @@
 
 **Status:** 03A–03C CLOSED / 03D ACTIVE  
 **Historical frozen scope:** 03A/03B/03C.1/03C.2/03C.3  
-**Additive active scope:** 03D large-compute global modeling  
+**Additive closure:** 03D balanced-compute global modeling — completed 2026-09-24  
 **Opened:** 2026-09-18
 
 Checkpoint 03 begins after the frozen Feature Table v1 and Checkpoint 02 validation contract.
@@ -327,7 +327,7 @@ This was the end of the First Modeling Delivery. E13/E123 are retained as histor
 
 ---
 
-## 03D — Large-compute global modeling — ACTIVE
+## 03D — Balanced-compute global modeling — CLOSED
 
 03D was opened on 2026-09-23 after Checkpoint 05 showed a tiny but unstable
 benefit from mixing Local04D with the old E13 global ensemble. The remaining
@@ -351,5 +351,6 @@ docs/CHECKPOINT_03D_PLAN.md
 
 The run is resumable per completed outer fit. The strongest global finalist
 must also export to a numerically verified ONNX artifact with an adjacent
-feature/imputation manifest. 03D itself does not replace Local04D; its
-finalists feed the conditional narrow Checkpoint 05B.
+feature/imputation manifest. 03D itself does not replace Local04D. The completed finalists are HistGB G1,
+XGBoost G1 and LightGBM G1; any competition use requires the separate
+target-matched Checkpoint 05B gate.

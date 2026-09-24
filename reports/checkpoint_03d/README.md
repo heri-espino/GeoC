@@ -1,23 +1,18 @@
 # Checkpoint 03D generated artifacts
 
-This directory is populated by:
+Checkpoint 03D completed on 2026-09-24 with the balanced-compute configuration.
+Canonical interpretation: `docs/CHECKPOINT_03D_FINDINGS.md`.
 
-```powershell
-python tools\run_checkpoint_03d.py
-```
+The run produced 230 outer fits and 6,348 OOF rows across 23 eligible pairs in
+248.085 minutes. The robust finalists were HistGBLarge, XGBoostLarge and
+LightGBMLarge, all on `G1_agronomic`.
 
-Expected versionable scientific outputs:
+Versioned outputs include `outer_fold_metrics.csv`, `oof_predictions.csv`,
+`inner_search_results.csv`, `protocol_summary.csv`,
+`robustness_summary.csv`, `finalists.csv`,
+`actual_global_predictions.csv`, `representation_manifest.json` and the
+JSON/Markdown reports.
 
-- `outer_fold_metrics.csv`
-- `oof_predictions.csv`
-- `inner_search_results.csv`
-- `protocol_summary.csv`
-- `robustness_summary.csv`
-- `finalists.csv`
-- `actual_global_predictions.csv`
-- `representation_manifest.json`
-- `checkpoint_03d_report.json`
-- `checkpoint_03d_report.md`
-
-Large fitted model artifacts and ONNX binaries are stored under
-`models/final/` and remain gitignored by default.
+Fitted bundles and ONNX binaries remain under `models/final/` and are
+gitignored. Their numerical verification is recorded in the versioned JSON
+report.

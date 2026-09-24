@@ -1,9 +1,15 @@
 # Checkpoint 05B plan — large-global remix
 
-**Status:** BLOCKED ON CHECKPOINT 03D RESULTS
+**Status:** READY / OPTIONAL — CHECKPOINT 03D COMPLETE, NOT RUN
 
-Checkpoint 05B is intentionally narrow. It exists only if Checkpoint 03D
-produces stronger global experts than the small 03C models used by Checkpoint 05.
+03D produced a stronger municipality-grouped global frontier but no model that
+dominates the historical state/grouped frontier simultaneously. Therefore 05B
+is a defensible final complementarity test, not a mandatory continuation and
+not permission to reopen broad tuning.
+
+Checkpoint 05B is intentionally narrow. The completed 03D globals have improved
+grouped robustness but mixed state performance. 05B exists only to test whether
+that new error structure adds target-matched value to Local04D.
 
 ## Inputs
 

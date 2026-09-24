@@ -1,5 +1,11 @@
 # Checkpoint 03D plan — serious global models
 
+**Status:** COMPLETED 2026-09-24  
+**Results:** `docs/CHECKPOINT_03D_FINDINGS.md`
+
+The final run used the balanced budget: outer/inner validation stayed intact
+while redundant heavy-model candidates were reduced.
+
 Checkpoint 03D answers one remaining methodological question: whether the weak
 global contribution seen in Checkpoint 05 was partly caused by the deliberately
 small model-search budget inherited from 03C.2.
