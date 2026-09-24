@@ -1,5 +1,12 @@
 # Checkpoint 05 — Global–Local Mixture Plan
 
+**Status:** COMPLETED 2026-09-23 — NO PROMOTION  
+**Results:** `docs/CHECKPOINT_05_FINDINGS.md`
+
+The implemented protocol below was executed. The best development blend did
+not survive the leave-one-development-split-out gate, so Local04D was retained
+and the fresh confirmation bank was intentionally not scored.
+
 ## Why this is Checkpoint 05
 
 Checkpoint 03 answered which global representations and model families are useful.
