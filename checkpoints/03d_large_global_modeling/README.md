@@ -112,6 +112,19 @@ The first workstation preflight correctly stopped before training when
 reports per-family converter availability instead of allowing one external
 converter failure to invalidate the scientific benchmark.
 
+## Converter compatibility policy
+
+Scientific ranking is independent of ONNX converter support. The deployment
+layer uses the following family-specific export routes:
+
+- scikit-learn estimators: `skl2onnx`;
+- XGBoost/LightGBM: `onnxmltools` with the requested opset automatically
+  capped at the maximum opset supported by the installed converter;
+- CatBoost: CatBoost's native `save_model(..., format="onnx")` exporter.
+
+The preflight requires at least one verified nonlinear model-family ONNX path.
+A control-family converter failure (for example PLS schema incompatibility)
+does not alter scientific model ranking and does not block the benchmark.
 ## Run
 
 Install once:
