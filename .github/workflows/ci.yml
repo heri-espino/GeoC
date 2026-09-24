@@ -35,5 +35,8 @@ jobs:
           python tools/generate_function_index.py
           git diff --exit-code -- docs/FUNCTION_INDEX.md
 
+      - name: Validate technical report inputs
+        run: python reporte/tecnico/build.py --check
+
       - name: Build Sphinx docs
         run: sphinx-build -W -b html docs docs/_build/html
