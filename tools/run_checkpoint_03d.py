@@ -357,9 +357,22 @@ def _onnx_converter_smoke_test(
                 }
                 print("    PASS", flush=True)
 
-    if not any(bool(item["verified"]) for item in results.values()):
+    serious_kinds = {
+        "catboost",
+        "xgboost",
+        "lightgbm",
+        "extra_trees",
+        "hist_gradient_boosting",
+    }
+    verified_serious = [
+        kind
+        for kind in serious_kinds
+        if bool(results.get(kind, {}).get("verified", False))
+    ]
+    if not verified_serious:
         raise RuntimeError(
-            "No Checkpoint 03D model family has a verified ONNX conversion path."
+            "No nonlinear Checkpoint 03D model family has a verified ONNX "
+            "conversion path."
         )
     return results
 
@@ -1105,7 +1118,12 @@ def main() -> int:
             print(f"  {package}={version}")
         for kind, status in report["onnx_converter_status"].items():
             label = "PASS" if bool(status["verified"]) else "UNAVAILABLE"
-            print(f"  converter {kind}: {label}")
+            if bool(status["verified"]):
+                verification = status.get("verification", {})
+                opsets = verification.get("opset_imports", {})
+                print(f"  converter {kind}: {label} opsets={opsets}")
+            else:
+                print(f"  converter {kind}: {label}")
         return 0
 
     print("Checkpoint 03D large-compute global benchmark: PASS")
