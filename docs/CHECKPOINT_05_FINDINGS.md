@@ -120,3 +120,16 @@ Generated evidence is in `reports/checkpoint_05/`, especially:
 
 The confirmation CSVs are intentionally empty because the development/LOSO gate
 failed before fresh confirmation scoring.
+
+
+## Post-05 global-capacity closure
+
+Checkpoint 03D was executed after this checkpoint to test whether the global
+experts inherited from 03C were limited mainly by small tuning grids. The
+balanced run completed 230 outer fits and found a stronger municipality-grouped
+global frontier, led by HistGB G1 at 0.715339 and XGBoost G1 at 0.733080.
+
+This does not alter the Checkpoint 05 decision because those scores belong to
+different validation protocols. Local04D remains the canonical competition
+method. Any attempt to use the new 03D globals in the fixed-59 solution must be
+a new target-matched experiment under the predeclared 05B gate.

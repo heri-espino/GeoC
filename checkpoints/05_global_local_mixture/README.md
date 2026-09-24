@@ -195,3 +195,23 @@ candidate to numerical tolerance.
 
 Until Checkpoint 05 finishes and the promotion gate is evaluated, the canonical competition
 prediction file remains Checkpoint 04F.
+
+
+## Postscript — Checkpoint 03D global closure
+
+After Checkpoint 05 closed without promotion, Checkpoint 03D was reopened only
+to test whether the small 03C global grids had limited the experts supplied to
+05. It completed on 2026-09-24.
+
+Robust 03D finalists:
+
+```text
+HistGBLarge G1     state 0.549924   grouped 0.715339
+XGBoostLarge G1    state 0.525847   grouped 0.733080
+LightGBMLarge G1   state 0.540812   grouped 0.748478
+```
+
+These are frozen Checkpoint 03 state/grouped protocols, not the target-matched
+Checkpoint 05 protocol. They do not retroactively invalidate Checkpoint 05 or
+replace Local04D. Any use of the new globals in the competition solution
+requires the separate narrow 05B protocol.

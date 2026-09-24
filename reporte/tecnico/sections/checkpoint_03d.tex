@@ -1,0 +1,89 @@
+\subsection{Motivación y posición cronológica}
+
+Checkpoint~03D extiende la línea global de Checkpoint~03, aunque se ejecutó
+cronológicamente después de Checkpoint~05. La numeración se conserva porque el experimento
+responde una pregunta pendiente de la primera entrega global: si los grids deliberadamente
+pequeños de 03C.2 eran la causa principal de la limitación de los expertos globales.
+
+Los 59 rendimientos FIRA permanecen completamente ocultos.
+
+\subsection{Representaciones, familias y presupuesto}
+
+Se evaluaron cuatro representaciones deterministas:
+\[
+G0=\text{base},\quad
+G1=\text{agronomic},\quad
+G2=\text{base+agronomic},\quad
+G3=\text{all deterministic}.
+\]
+No se reabrió descubrimiento target-aware. El universo incluyó CatBoost y XGBoost en GPU,
+LightGBM, ExtraTrees, HistGradientBoosting y controles Ridge/PLS, para 23 pares
+representación--familia.
+
+La primera configuración wide se detuvo después de siete outer fits de CatBoost completados,
+con el octavo iniciado. Cada outer fit tomaba aproximadamente 15 minutos porque contenía
+nueve candidatos, tres inner folds y un refit. Extrapolar ese costo a 230 outer fits implicaba
+varios días de cómputo para 138 etiquetas.
+
+La reducción afectó sólo tuning redundante. Se conservaron cinco folds outer state-stratified,
+cinco municipality-grouped y tres inner folds. Cada familia no lineal pesada quedó con tres
+candidatos representativos; boosting se limitó a 2,500 iteraciones/estimadores y ExtraTrees a
+1,500 árboles. Los partials wide no se reutilizaron y \artifact{--resume} ahora verifica un
+fingerprint del contrato del run.
+
+\subsection{Resultados}
+
+El run balanced terminó en 248.085 minutos, con 230 outer fits y 6,348 filas OOF.
+
+\begin{table}[htbp]
+\centering
+\caption{Finalistas globales de Checkpoint 03D, ordenados por peor RMSE OOF entre los dos
+protocolos históricos.}
+\label{tab:cp03d-finalists}
+\begin{tabular}{cllrr}
+\toprule
+Rank & Representación & Modelo & State RMSE & Grouped RMSE \\
+\midrule
+1 & G1 agronomic & HistGBLarge & 0.549924 & \textbf{0.715339} \\
+2 & G1 agronomic & XGBoostLarge & \textbf{0.525847} & 0.733080 \\
+3 & G1 agronomic & LightGBMLarge & 0.540812 & 0.748478 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los tres finalistas usan G1. Las concatenaciones más grandes no fueron más robustas: CatBoost
+G2/G3 alcanzó state RMSE 0.5074/0.5146 pero grouped 0.9307/0.9305; ExtraTrees G2/G3 obtuvo
+state 0.4988/0.5039 y grouped 0.8577/0.8812.
+
+Los ensambles históricos E123 y E13 estaban alrededor de
+$(0.5121,0.7481)$ y $(0.5082,0.7488)$ en (state, grouped). HistGB G1 mueve la frontera grouped
+hasta 0.7153, pero empeora state. XGBoost G1 ofrece 0.5258/0.7331. Por tanto, el cómputo
+adicional sí mueve parte de la frontera, pero no produce dominancia simultánea en ambos
+protocolos.
+
+\subsection{Deployment ONNX}
+
+El ranking científico se separó del soporte de conversión. HistGB G1 es rank 1, pero el stack
+estable no produjo un ONNX válido para esa familia. XGBoost G1, rank 2, es el finalista
+deployable de mayor rango.
+
+La verificación final sobre 138 filas obtuvo:
+\[
+\max_i |\hat y_i^{Python}-\hat y_i^{ONNX}|
+=
+3.814697\times10^{-6}.
+\]
+Los artefactos locales son:
+\begin{center}
+\artifact{models/final/checkpoint03d_global.joblib}\\
+\artifact{models/final/checkpoint03d_global.onnx}\\
+\artifact{models/final/checkpoint03d_global.onnx.json}.
+\end{center}
+
+\subsection{Consecuencia}
+
+Los RMSE state/grouped de 03D y el RMSE target-matched de Local04D pertenecen a protocolos
+distintos; no se comparan como si fueran una sola tabla. 03D cierra la búsqueda global amplia,
+pero no sustituye el predictor competition-facing. Local04D permanece como método final
+post-05. Cualquier mezcla con los nuevos globales debe evaluarse en un 05B explícito bajo las
+mismas pseudo-competiciones target-matched.

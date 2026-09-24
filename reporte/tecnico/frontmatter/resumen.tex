@@ -1,47 +1,44 @@
-Este documento consolida el desarrollo técnico completo de \textbf{GeoCebada} para el Reto
-AgroCebada FIRA 2026. El problema operativo consiste en reconstruir el rendimiento
-\artifact{RENDIMIENTO_T_HA} de un conjunto fijo de 59 parcelas de cebada, disponiendo de 138
-parcelas etiquetadas y de covariables observables para las 197 parcelas. La solución final no
-se plantea como un ejercicio genérico de pronóstico para parcelas futuras, sino como una
-\emph{regresión transductiva de objetivo fijo}: el vector de covariables de las 59 parcelas
-objetivo es conocido y puede participar en transformaciones estrictamente $X$-only, mientras
-que sus rendimientos permanecen completamente ocultos durante todo el desarrollo.
+Este documento consolida el desarrollo técnico de \textbf{GeoCebada} para el Reto
+AgroCebada FIRA 2026. El problema operativo consiste en reconstruir
+\artifact{RENDIMIENTO_T_HA} para un conjunto fijo de 59 parcelas, disponiendo de 138
+parcelas etiquetadas y covariables observables para las 197. La formulación es
+\emph{transductiva de objetivo fijo}: los $X$ de las 59 parcelas objetivo pueden intervenir
+en transformaciones estrictamente $X$-only, mientras sus rendimientos permanecen ocultos.
 
-La tubería se construyó por checkpoints reproducibles. El Checkpoint~01 fijó la semántica de
-las fuentes oficiales y externas, auditó identificadores, fechas, sistemas de referencia,
-unidades y reglas de unión, y cerró el contrato de datos sin hallazgos de fallo. El
-Checkpoint~02 comprimió las series satelitales y fuentes ambientales a una tabla parcelaria
-de 197 filas y 1,403 predictores, separando explícitamente señales \emph{clean} y
-\emph{competition}. El Checkpoint~03 añadió una capa agronómica de 350 variables, una capa
-empírica $X$-only de 335 variables, un mecanismo de descubrimiento de expresiones ajustado
-dentro de folds, un benchmark de representaciones y un benchmark anidado de familias de
-modelos. Esa fase cerró con una primera entrega convencional basada en PLS, Ridge, CatBoost
-y ensambles simples.
+Checkpoint~01 fijó la semántica y el contrato reproducible de las fuentes. Checkpoint~02
+comprimió series satelitales y fuentes ambientales a una tabla parcelaria de 197 filas y
+1,403 predictores. Checkpoint~03 añadió 350 variables agronómicas, 335 variables empíricas
+$X$-only, descubrimiento fold-local y benchmarks anidados de representaciones, familias y
+ensambles globales.
 
-El Checkpoint~04 reformuló el problema con la estructura real de la competencia. Se
-caracterizó la topología de las 59 parcelas, se midió autocorrelación espacial, se construyeron
-pseudo-competiciones que ocultan sólo $y$ y mantienen visibles los $X$ de los pseudo-objetivos,
-y se evaluaron modelos globales, vecinos, regresiones locales y regularización sobre grafos.
-La señal dominante resultó ser espacial: el rendimiento observado mostró Moran's
-$I=0.6797$ con $p=0.001$, y la distancia geográfica presentó correlación de Spearman
-$\rho=0.4882$ con la diferencia absoluta de rendimiento entre pares etiquetados.
+Checkpoint~04 reformuló la validación para reproducir la información real del reto. La señal
+dominante resultó espacial: Moran's $I=0.6797$ con $p=0.001$ y Spearman $\rho=0.4882$ entre
+distancia geográfica y diferencia absoluta de rendimiento. La búsqueda local/grafo produjo
+\artifact{LocalRidge_C4_all_deterministic_Geo_k24_a30_p1} (Local04D), con RMSE
+target-matched medio 0.487845 y pooled 0.495741.
 
-El incumbent congelado por Checkpoint~04F es
-\artifact{LocalRidge_C4_all_deterministic_Geo_k24_a30_p1}: para cada consulta ajusta una
-regresión Ridge local usando los 24 vecinos etiquetados geográficamente más próximos,
-ponderados por distancia inversa, sobre la representación determinista C4. En las 16
-pseudo-competiciones target-matched obtuvo RMSE medio $0.487845$ y RMSE agrupado
-$0.495741$. SIAP 2025, CatBoost aislado y mezclas Local/Graph no justificaron reemplazarlo
-bajo los gates split-excluded de Checkpoint~04.
+Checkpoint~05 combinó globales y transductivos mediante cross-fitting, stacking y un
+mixture-of-experts condicionado en soporte. El mejor mínimo de desarrollo, LocalE13 con
+10\% de peso global, alcanzó 0.487243 de RMSE medio y 0.495261 pooled, pero el selector
+leave-one-development-split-out obtuvo 0.487934 y 0.495933, ambos ligeramente peores que
+Local04D. El gate falló y la confirmación fresca no se puntuó. La fuente canónica posterior
+a 05 es \artifact{reports/checkpoint_05/final_predictions.csv} y conserva Local04D.
 
-Checkpoint~05 reabre una única hipótesis final: combinar los expertos globales de
-Checkpoint~03 con Local04D/Graph04D mediante stacking completamente cross-fitted y un
-mixture-of-experts condicionado en soporte. La promoción de un challenger exige tres niveles
-de evidencia: mejora development, un selector leave-one-split-out favorable y, sólo entonces,
-victoria simultánea en RMSE medio y pooled sobre un segundo banco target-matched fresco,
-generado únicamente con $X$ y una seed no utilizada durante el desarrollo. Hasta que dicho
-experimento termine, la tabla canónica continúa siendo la de Checkpoint~04F.
+Después de ese cierre se ejecutó Checkpoint~03D como experimento aditivo de capacidad global.
+La configuración final mantuvo los dos protocolos outer de cinco folds y tres folds inner,
+pero redujo tuning redundante para evitar un run proyectado de varios días. El benchmark
+balanced completó 230 outer fits en 248.085 minutos. Sus finalistas fueron HistGB, XGBoost y
+LightGBM, todos sobre G1 agronomic, con RMSE municipality-grouped 0.715339, 0.733080 y
+0.748478 respectivamente. El resultado mejora la frontera global grouped, pero no domina
+simultáneamente state y grouped ni autoriza comparar directamente esos scores con el RMSE
+target-matched de Local04D.
 
-El reporte está escrito como documento interno de ciencia de datos: prioriza formulación
-matemática, fronteras de información, prevención de leakage, definición exacta de artefactos,
-resultados por protocolo y justificación de cada transición metodológica.
+HistGB fue rank científico 1 pero no convertible con el stack ONNX estable. XGBoost rank 2
+fue el finalista deployable de mayor rango; el round trip ONNX tuvo diferencia absoluta máxima
+$3.814697\times10^{-6}$. Ese ONNX es un estimador global de deployment y no una codificación
+exacta del predictor competition-facing Local04D.
+
+La búsqueda global amplia queda cerrada. Cualquier último intento de combinar Local04D con
+los nuevos globales 03D debe pasar por un Checkpoint~05B estrecho bajo el mismo protocolo
+target-matched; de lo contrario, el trabajo siguiente es integración de submission, app y
+deployment.
