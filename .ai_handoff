@@ -530,7 +530,7 @@ balanced-compute benchmark:
 - cap boosted models at 2500 estimators/iterations;
 - reduce ExtraTrees from 3000 to 1500 trees.
 
-This reduces inner/refit count from roughly 5570 fits to roughly 2300 before
+This reduces inner/refit count from roughly 5570 fits to roughly 2540 before
 accounting for shorter individual fits. The statistical evaluation structure is
 unchanged; the reduction is in redundant hyperparameter tuning.
 
