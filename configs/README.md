@@ -13,7 +13,7 @@ Machine-readable project contracts and reproducibility settings.
 | `checkpoint03c.yaml` | Representation benchmark | Checkpoint 03C.1 closed/frozen |
 | `checkpoint03c2.yaml` | Competition-only nested model-family benchmark | Checkpoint 03C.2 closed/frozen |
 | `checkpoint03c3.yaml` | Fixed finalist/equal-weight OOF ensemble review | Checkpoint 03C.3 closed/frozen |
-| `checkpoint03d.yaml` | Large-compute deterministic global benchmark and ONNX deployment contract | **03D active; workstation run pending** |
+| `checkpoint03d.yaml` | Balanced-compute deterministic global benchmark and ONNX deployment contract | **03D closed/completed** |
 | `checkpoint04.yaml` | Fixed-target transductive objective and Checkpoint 04 validation contract | Checkpoint 04 closed/frozen |
 | `checkpoint04a.yaml` | Target topology, temporal similarity, shift, autocorrelation and support diagnostics | 04A complete |
 | `checkpoint04b.yaml` | Repeated transductive pseudo-competition validation with global/local/graph methods and X-only routing | 04B complete |
@@ -26,7 +26,7 @@ Machine-readable project contracts and reproducibility settings.
 Do not silently edit frozen Checkpoint 01–03C configs to improve historical results. Checkpoint
 03C is preserved as the First Modeling Delivery; 03D is a separate additive benchmark.
 
-Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`. Checkpoint 03D is the only active model experiment. Checkpoint 05 closed without promotion, so Local04D remains the competition incumbent until a conditional 05B gate says otherwise.
+Active doctrine is defined in `docs/TRANSDUCTIVE_OBJECTIVE.md`. Checkpoints 03D and 05 are complete. Local04D remains the competition method. Checkpoint 05B is an optional narrow target-matched remix, not an active broad-search phase.
 
 See `docs/AGENT_GUIDE.md` and `docs/PROJECT_HISTORY.md`.
 

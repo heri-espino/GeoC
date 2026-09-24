@@ -33,7 +33,7 @@ notebook cells.
 | `inspect_reference_docx.py` | Inspect reference DOCX content | utility |
 | `_netcdf_catalog_worker.py` | Internal NetCDF catalog worker | internal; not a direct user workflow |
 
-Checkpoint 03C remains the frozen First Modeling Delivery. Checkpoint 03D is the active large-compute global closure experiment. Local04D remains the frozen competition incumbent; Checkpoint 05B is blocked until 03D results exist.
+Checkpoint 03C remains the frozen First Modeling Delivery. Checkpoint 03D completed the balanced-compute global closure experiment. Local04D remains the frozen competition method; Checkpoint 05B is optional and narrowly target-matched now that 03D results exist.
 
 See `docs/AGENT_GUIDE.md` before adding scripts.
 

@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 03D large-compute global benchmark active; Local04D remains frozen competition incumbent  
+**Current phase:** Checkpoint 03D completed; broad modeling closed; Local04D remains frozen competition method; 05B is optional/narrow  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.

@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
-**Updated:** 2026-09-23  
-**Active phase:** Checkpoint 03D large-compute global benchmark is implemented and workstation-run pending. `Local04D` remains the frozen competition incumbent/final method unless a later Checkpoint 05B promotion gate succeeds.
+**Updated:** 2026-09-24  
+**Active phase:** broad modeling is closed. Checkpoint 03D completed on 2026-09-24; `Local04D` remains the frozen competition method. Checkpoint 05B is optional and narrowly scoped if one final target-matched complementarity test is explicitly requested.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/CHECKPOINT_03D_PLAN.md`, `docs/CHECKPOINT_05B_PLAN.md` and
@@ -145,49 +145,28 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run Checkpoint 03D on the GPU workstation. This is the one intentionally reopened
-global-model experiment after Checkpoint 05 closed.
+Do **not** rerun broad 03D or reopen another large model grid. Checkpoint 03D is
+complete; canonical findings are in `docs/CHECKPOINT_03D_FINDINGS.md`.
 
-```powershell
-git pull
-conda activate geocebada
-python -m pip install -e ".[dev,models,deployment]"
-python tools\run_checkpoint_03d.py --preflight
+Current competition source of truth:
+
+```text
+method: Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
+file:   reports/checkpoint_05/final_predictions.csv
+rows:   59
 ```
 
-The preflight validates the competition-only 197/138/59 contract, checks
-CatBoost/XGBoost GPU visibility, verifies the ONNX dependency stack and performs
-tiny round-trip conversions for every configured model family before the long
-run starts.
+Current global deployment evidence:
 
-If preflight passes:
-
-```powershell
-python tools\run_checkpoint_03d.py
+```text
+03D scientific rank 1: HistGBLarge G1
+03D deployable rank:   XGBoostLarge G1
+ONNX verification:     PASS
 ```
 
-If interrupted after completed outer fits:
-
-```powershell
-python tools\run_checkpoint_03d.py --resume
-```
-
-03D compares serious CatBoost/XGBoost/LightGBM/ExtraTrees/HistGB models plus
-Ridge/PLS controls on deterministic competition-only representations. It keeps
-the historical state-stratified and municipality-grouped nested-CV contract and
-never scores the 59 hidden FIRA yields.
-
-The three best model-family-diverse global finalists become inputs to a narrow
-Checkpoint 05B. 05B must not be opened until 03D results exist. It will test
-only low-weight Local04D + Global03D blends and the same conservative
-development + LOSO + fresh-confirmation promotion logic.
-
-Deployment contract: 03D writes a verified
-`models/final/checkpoint03d_global.onnx` plus a JSON manifest containing exact
-feature order and fitted median-imputation values. If 05B later promotes an
-exactly ONNX-representable final predictor, export that exact final model too.
-If Local04D remains the competition winner, do not mislabel the global ONNX
-artifact as Local04D.
+If the user explicitly wants one last modeling test, execute only the narrow
+Checkpoint 05B target-matched remix. Otherwise move to submission/app/report
+integration.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
 
@@ -539,3 +518,22 @@ balanced grid. The runner now fingerprints the config/model/representation/compu
 selection in _partial_state.json. A mismatch aborts --resume. Starting once
 without --resume clears stale partials; subsequent interruptions can safely use
 --resume.
+
+
+## 2026-09-24 — Checkpoint 03D completed
+
+Balanced 03D completed in 248.085 minutes with 230 outer fits and 6,348 OOF
+rows across 23 eligible pairs. The robust finalists were all G1 agronomic:
+HistGBLarge (state/grouped 0.549924/0.715339), XGBoostLarge
+(0.525847/0.733080) and LightGBMLarge (0.540812/0.748478).
+
+The result improves grouped global robustness relative to the frozen 03C
+frontier but does not dominate both protocols. Broad global tuning is closed.
+
+HistGB rank 1 was not ONNX-convertible under the stable stack. XGBoost rank 2
+was the highest-ranked deployable finalist and its ONNX round trip passed with
+maximum absolute difference 3.814697e-06. The global ONNX artifact is not
+Local04D.
+
+Do not compare state/grouped 03D RMSE directly with Local04D's target-matched
+0.487845 as though they came from the same validation protocol.

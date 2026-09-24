@@ -4,8 +4,8 @@
 validated, and what remains open so future collaborators and AI agents do not repeat work or
 silently overwrite earlier decisions.
 
-**Last updated:** 2026-09-23  
-**Current phase:** Checkpoint 03D large-compute global benchmark is active by explicit human decision. Local04D remains the frozen competition incumbent; 05B is conditional on 03D producing materially stronger global signal.
+**Last updated:** 2026-09-24  
+**Current phase:** broad modeling is closed. Checkpoint 03D completed; Local04D remains the frozen competition method. Checkpoint 05B is an optional narrow target-matched complementarity test, not an open-ended search.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
@@ -1152,3 +1152,39 @@ global experts, a deliberately narrow Checkpoint 05B will test low-weight
 Local04D + Global03D blends using the same development/LOSO/fresh-confirmation
 promotion discipline as Checkpoint 05.
 
+
+
+---
+
+## 2026-09-24 — Checkpoint 03D balanced global closure completed
+
+The first wide 03D attempt was intentionally stopped after seven completed
+CatBoost outer fits because each fit took roughly 15 minutes and the full
+230-fit run projected to multiple days. The wide partials were not reused.
+
+The budget was reduced without weakening validation: both frozen five-fold outer
+protocols and three-fold inner CV were retained, while heavy nonlinear families
+were reduced to three representative candidates, boosting was capped at 2,500
+iterations/estimators and ExtraTrees at 1,500 trees. A run fingerprint was added
+so `--resume` cannot mix incompatible configs.
+
+The balanced run completed in 248.085 minutes and its outputs were committed in
+`808a7369ba30c93f0cf380bba9d3b90d2d22d936` (`wow`). It produced 230 outer
+fits and 6,348 OOF rows across 23 eligible pairs; hidden FIRA y was never used.
+
+```text
+HistGBLarge      G1   state 0.549924   grouped 0.715339
+XGBoostLarge     G1   state 0.525847   grouped 0.733080
+LightGBMLarge    G1   state 0.540812   grouped 0.748478
+```
+
+This improves the historical grouped global frontier but does not uniformly
+dominate 03C state/grouped performance. HistGB rank 1 was not ONNX-convertible;
+XGBoost rank 2 became the highest-ranked deployable finalist and passed the
+ONNX round trip with max absolute difference 3.814697e-06.
+
+Canonical interpretation: `docs/CHECKPOINT_03D_FINDINGS.md`.
+
+The competition file remains `reports/checkpoint_05/final_predictions.csv`,
+which retains Local04D. A final Local04D + Global03D test, if desired, belongs
+only in the narrow 05B target-matched protocol.

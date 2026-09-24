@@ -38,48 +38,32 @@ Formalmente, el objeto activo es el vector de 59 valores ocultos \(y_U\): conoce
 
 
 
-## Checkpoint 03D — activo: large-compute global benchmark
+## Checkpoint 03D — completado: balanced global closure
 
-03D cierra una pregunta que los experimentos anteriores dejaron deliberadamente
-abierta: los modelos globales de 03C usaron grids pequeños y conservadores. El
-nuevo benchmark usa un presupuesto serio con CatBoost y XGBoost en GPU,
-LightGBM, ExtraTrees, HistGradientBoosting y controles Ridge/PLS sobre cuatro
-representaciones deterministas competition-only.
+03D cerró la última duda amplia de la línea global: si los grids pequeños de
+03C limitaban artificialmente el desempeño. Se conservaron los 5+5 outer folds
+y 3 inner folds; sólo se redujo tuning redundante tras detener un diseño wide
+que proyectaba varios días.
 
-La validación sigue siendo nested y reutiliza los folds congelados de 03:
-state-stratified y municipality-grouped. Los 59 targets FIRA nunca se puntúan.
-
-El runner es resumible por outer fit y, al terminar, refitea los tres finalistas
-globales sobre los 138 labels. El mejor global se guarda para deployment como:
+El run balanced terminó en **248.085 minutos (~4 h 08 min)** con 23 pares,
+230 outer fits y 6,348 filas OOF. Los tres finalistas robustos usaron
+`G1_agronomic`:
 
 ```text
-models/final/checkpoint03d_global.onnx
-models/final/checkpoint03d_global.onnx.json
-models/final/checkpoint03d_global.joblib
+HistGBLarge    state 0.549924   grouped 0.715339
+XGBoostLarge   state 0.525847   grouped 0.733080
+LightGBMLarge  state 0.540812   grouped 0.748478
 ```
 
-El `.onnx` se valida con ONNX Runtime contra las predicciones Python antes de
-declarar PASS. El JSON conserva el orden exacto de features y las medianas de
-imputación.
+03D mejoró la frontera global municipality-grouped, pero no produjo dominancia
+simultánea state/grouped. HistGB fue rank científico 1; XGBoost rank 2 fue el
+finalista deployable más alto y su ONNX pasó verificación con diferencia máxima
+`3.814697e-06`.
 
-Ejecutar primero:
+Estos RMSE **no son directamente comparables** con el 0.487845 target-matched de
+Local04D. 03D no reemplaza por sí solo el método de competencia.
 
-```powershell
-git pull
-conda activate geocebada
-python -m pip install -e ".[dev,models,deployment]"
-python tools\run_checkpoint_03d.py --preflight
-```
-
-y sólo si pasa:
-
-```powershell
-python tools\run_checkpoint_03d.py
-```
-
-Si 03D encuentra globales realmente más fuertes, `docs/CHECKPOINT_05B_PLAN.md`
-define una remezcla final muy restringida con Local04D. Hasta entonces,
-Local04D sigue siendo el método final de competencia.
+Interpretación: `docs/CHECKPOINT_03D_FINDINGS.md`.
 
 ## Checkpoint 05 — completado: global + local mixture
 
@@ -278,7 +262,7 @@ GeoCebada/
 │   ├── 01_data/                  # adquisición, audit y fixtures de datos
 │   ├── 03_modeling/              # First Modeling Delivery, congelado
 │   ├── 04_transductive_competition/ # línea transductiva/local congelada
-│   └── 05_global_local_mixture/     # fase activa: combinación 03 + 04
+│   └── 05_global_local_mixture/     # cerrado: combinación 03 + 04, sin promoción
 ├── app/                         # interfaces Streamlit
 ├── configs/
 ├── data/
@@ -462,12 +446,14 @@ final frozen pipeline
 
 ## Próximos pasos
 
-1. ejecutar **Checkpoint 05** una sola vez en la workstation GPU con `python tools\run_checkpoint_05.py`;
-2. si el proceso se interrumpe después de completar splits, continuar con `--resume` en lugar de reiniciar desde cero;
-3. revisar el gate de promoción LOSO antes de sustituir el incumbent 04F;
-4. versionar los reportes pequeños de `reports/checkpoint_05/`; los bundles `checkpoint05_app_bundle.joblib` y `checkpoint05_model.joblib` permanecen locales/ignorados por Git;
-5. una vez congelado 05, pasar a la app/interfaz y hacer que consuma el manifest y la predicción final sin reabrir búsqueda de modelos.
-
+1. conservar `reports/checkpoint_05/final_predictions.csv` como vector
+   canónico mientras no exista una nueva promoción;
+2. no reabrir otro sweep global amplio: 03D ya cerró esa hipótesis;
+3. si se desea una última prueba, ejecutar únicamente 05B: un remix estrecho
+   Local04D + globales 03D bajo el mismo protocolo target-matched y gates;
+4. en caso contrario, pasar a submission, app y deployment;
+5. mantener separado el contrato fijo-59 de competencia del estimador global
+   ONNX de 03D.
 
 ## Calidad y trazabilidad
 
