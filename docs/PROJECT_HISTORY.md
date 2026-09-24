@@ -1188,3 +1188,24 @@ Canonical interpretation: `docs/CHECKPOINT_03D_FINDINGS.md`.
 The competition file remains `reports/checkpoint_05/final_predictions.csv`,
 which retains Local04D. A final Local04D + Global03D test, if desired, belongs
 only in the narrow 05B target-matched protocol.
+
+
+---
+
+## 2026-09-24 — Historical branch consolidation before project closure
+
+Before deleting old development branches, the unique Checkpoint 03C.4 nested
+stacking experiment was preserved under
+`archive/checkpoint_03c4_nested_stacking/` and summarized in
+`docs/CHECKPOINT_03C4_FINDINGS.md`.
+
+03C.4 had shown that learned stackers could look attractive under
+state-stratified CV while failing dramatically under municipality-grouped CV.
+EqualTop3 remained the robust reference at grouped RMSE 0.7481, whereas learned
+stackers ranged roughly from 1.36 to 1.60 grouped RMSE. This evidence is
+historical and was later superseded methodologically by the target-matched
+Checkpoint 05 experiment.
+
+All remaining historical branch commit graphs were then attached to `main`
+using an ours-style ancestry merge: current `main` contents were preserved,
+while no historical commit became unreachable when branch refs were cleaned up.

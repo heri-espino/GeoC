@@ -12,6 +12,7 @@ documentation of a stable state, not a second source of truth.
 | [03c_representation_benchmark](03c_representation_benchmark/README.md) | Closed | Frozen representation benchmark. |
 | [03c2_competition_modeling](03c2_competition_modeling/README.md) | Closed | Competition-only nested family tuning. |
 | [03c3_finalist_ensembles](03c3_finalist_ensembles/README.md) | Closed | E13/E123 historical ensemble evidence. |
+| 03C.4 nested stacking | Historical / archived | Leakage-safe nested stacking; learned stackers degraded sharply under municipality-grouped CV. See `docs/CHECKPOINT_03C4_FINDINGS.md`. |
 | [03d_large_global_modeling](03d_large_global_modeling/README.md) | **Closed — completed** | Balanced high-compute global closure and verified ONNX deployment path. |
 | [04_transductive_competition](04_transductive_competition/README.md) | Closed / incumbent line | Target topology, pseudo-competition, local/graph/external modeling and Local04D. |
 | [05_global_local_mixture](05_global_local_mixture/README.md) | **Closed — no promotion** | Cross-fitted global-local stacking/MoE; Local04D retained. |
