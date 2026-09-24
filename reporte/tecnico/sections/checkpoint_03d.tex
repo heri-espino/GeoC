@@ -16,9 +16,11 @@ G1=\text{agronomic},\quad
 G2=\text{base+agronomic},\quad
 G3=\text{all deterministic}.
 \]
-No se reabrió descubrimiento target-aware. El universo incluyó CatBoost y XGBoost en GPU,
-LightGBM, ExtraTrees, HistGradientBoosting y controles Ridge/PLS, para 23 pares
-representación--familia.
+No se reabrió descubrimiento target-aware. El universo incluyó CatBoost
+\citep{CatBoost2018} y XGBoost \citep{XGBoost2016} en GPU, LightGBM
+\citep{LightGBM2017}, ExtraTrees \citep{Geurts2006}, HistGradientBoosting como
+implementación de la familia de gradient boosting \citep{Friedman2001}, y controles
+Ridge/PLS \citep{HoerlKennard1970,Wold2001}, para 23 pares representación--familia.
 
 La primera configuración wide se detuvo después de siete outer fits de CatBoost completados,
 con el octavo iniciado. Cada outer fit tomaba aproximadamente 15 minutos porque contenía

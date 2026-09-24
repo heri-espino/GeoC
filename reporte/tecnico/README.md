@@ -115,7 +115,7 @@ El reporte usa BibLaTeX/Biber y la bibliografía canónica es:
 
     reporte/tecnico/references.bib
 
-Incluye referencias metodológicas (Ridge, PLS, ExtraTrees, CatBoost, aprendizaje
+Incluye referencias metodológicas (Ridge, PLS, ExtraTrees, CatBoost, XGBoost, LightGBM, gradient boosting, aprendizaje
 semi-supervisado, Moran), literatura agronómica/de teledetección de cebada y referencias de
 fuentes de datos (FIRA, CHIRPS, SoilGrids, WaPOR, SIAP e INEGI). Las citas se insertan en el
 texto con `\citep{...}` / `\citet{...}`, y `build.py --check` falla si una clave citada
