@@ -184,10 +184,10 @@ Desde \artifact{reporte/tecnico/}:
 latexmk -pdf -interaction=nonstopmode main.tex
 \end{lstlisting}
 
-La bibliografía requiere BibTeX. Si no existe latexmk:
+La bibliografía usa BibLaTeX/Biber. Si no existe latexmk:
 \begin{lstlisting}[language=bash]
 pdflatex main.tex
-bibtex main
+biber main
 pdflatex main.tex
 pdflatex main.tex
 \end{lstlisting}
