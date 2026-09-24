@@ -1,0 +1,183 @@
+{
+  "checkpoint": "03D",
+  "compute": "GPU",
+  "deployment_versions": {
+    "onnx": "1.21.0",
+    "onnxmltools": "1.16.0",
+    "onnxruntime": "1.30.0",
+    "skl2onnx": "1.20.0"
+  },
+  "elapsed_minutes": 248.08512537333107,
+  "finalists": [
+    {
+      "best_params": {
+        "l2_regularization": 8.0,
+        "learning_rate": 0.02,
+        "max_iter": 1000,
+        "max_leaf_nodes": 9,
+        "min_samples_leaf": 16
+      },
+      "finalist_rank": 1,
+      "full_cv_rmse": 0.6105537835640888,
+      "kind": "hist_gradient_boosting",
+      "model": "HistGBLarge",
+      "representation": "G1_agronomic"
+    },
+    {
+      "best_params": {
+        "colsample_bytree": 0.65,
+        "learning_rate": 0.012,
+        "max_depth": 3,
+        "min_child_weight": 5.0,
+        "n_estimators": 2500,
+        "reg_alpha": 0.1,
+        "reg_lambda": 20.0,
+        "subsample": 0.85
+      },
+      "finalist_rank": 2,
+      "full_cv_rmse": 0.6674038896029764,
+      "kind": "xgboost",
+      "model": "XGBoostLarge",
+      "representation": "G1_agronomic"
+    },
+    {
+      "best_params": {
+        "colsample_bytree": 0.65,
+        "learning_rate": 0.012,
+        "max_depth": 4,
+        "min_child_samples": 12,
+        "n_estimators": 2500,
+        "num_leaves": 7,
+        "reg_alpha": 0.1,
+        "reg_lambda": 20.0,
+        "subsample": 0.85
+      },
+      "finalist_rank": 3,
+      "full_cv_rmse": 0.6239657954561475,
+      "kind": "lightgbm",
+      "model": "LightGBMLarge",
+      "representation": "G1_agronomic"
+    }
+  ],
+  "generated_at": "2026-09-24T06:54:23.935078+00:00",
+  "git_commit": "9213dc275cdc284951a9f812924e010d7c2be022",
+  "hidden_prediction_targets_used": false,
+  "onnx_converter_preflight": {
+    "catboost": {
+      "verification": {
+        "max_abs_difference": 1.2007066807484534e-07,
+        "opset_imports": {
+          "ai.onnx.ml": 2
+        },
+        "output_shape": [
+          "N"
+        ],
+        "rows": 24,
+        "verified": true
+      },
+      "verified": true
+    },
+    "extra_trees": {
+      "verification": {
+        "max_abs_difference": 2.68220901933347e-07,
+        "opset_imports": {
+          "ai.onnx": 17,
+          "ai.onnx.ml": 1
+        },
+        "output_shape": [
+          null,
+          1
+        ],
+        "rows": 24,
+        "verified": true
+      },
+      "verified": true
+    },
+    "hist_gradient_boosting": {
+      "error": "ValueError: Unable to create node 'TreeEnsembleRegressor' with name='TreeEnsembleRegressor' and attributes={'base_values': array([2.3966706], dtype=float32),\n 'n_targets': 1,\n 'nodes_falsenodeids': [np.uint32(2),\n                        0,\n                        np.uint32(6),\n                        np.uint32(5),\n                        0,\n                        0,\n                        0,\n                        np.uint32(2),\n                        0,\n                        np.uint32(6),\n                        np.uint32(5),\n                        0,\n                        0,\n                        0,\n                        np.uint32(2),\n                        0,\n                        np.uint32(6),\n                        np.uint32(5),\n                        0,\n                        0,\n                        0,\n                        np.uint32(2),\n                        0,\n                        np.uint32(6),\n                        np.uint32(5),\n                        0,\n                        0,\n                        0,\n                        np.uint32(2),\n                        0,\n                        np.uint32(6),\n                        np.uint32(5),\n                        0,\n                        0,\n                        0,\n                        np.uint32(2),\n                        0,\n                        np.uint32(8),\n                        np.uint32(7),\n                        np.uint32(6),\n                        0,\n                        0,\n                        0,\n                        0,\n                        np.uint32(2),\n                        0,\n                        np.uint32(8),\n                        np.uint32(7),\n                        np.uint32(6),\n                        0,\n                        0,\n                        0,\n                        0,\n                        np.uint32(2),\n                        0,\n                        np.uint32(6),\n                        np.uint32(5),\n                        0,\n                        0,\n                        0],\n 'nodes_featureids': [np.int64(0),\n                      0,\n                      np.int64(0),\n                      np.int64(0),\n                      0,\n                      0,\n                      0,\n                      np.int64(0),\n                      0,\n                      np.int64(0),\n                      np.int64(0),\n                      0,\n                      0,\n                      0,\n                      np.int64(0),\n                      0,\n                      np.int64(0),\n                      np.int64(0),\n                      0,\n                      0,\n                      0,\n                      np.int64(0),\n                      0,\n                      np.int64(0),\n                      np.int64(0),\n                      0,\n                      0,\n                      0,\n                      np.int64(0),\n                      0,\n                      np.int64(0),\n                      np.int64(0),\n                      0,\n                      0,\n                      0,\n                      np.int64(0),\n                      0,\n                      np.int64(0),\n                      np.int64(0),\n                      np.int64(4),\n                      0,\n                      0,\n                      0,\n                      0,\n                      np.int64(0),\n                      0,\n                      np.int64(0),\n                      np.int64(3),\n                      np.int64(3),\n                      0,\n                      0,\n                      0,\n                      0,\n                      np.int64(0),\n                      0,\n                      np.int64(0),\n                      np.int64(3),\n                      0,\n                      0,\n                      0],\n 'nodes_hitrates': array([1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,\n       1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,\n       1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,\n       1., 1., 1., 1., 1., 1., 1., 1., 1.], dtype=float32),\n 'nodes_missing_value_tracks_true': [np.uint8(0),\n                                     False,\n                                     np.uint8(1),\n                                     np.uint8(0),\n                                     False,\n                                     False,\n                                     False,\n                                     np.uint8(0),\n                                     False,\n                                     np.uint8(1),\n                                     np.uint8(0),\n                                     False,\n                                     False,\n                                     False,\n                                     np.uint8(0),\n                                     False,\n                                     np.uint8(1),\n                                     np.uint8(0),\n                                     False,\n                                     False,\n                                     False,\n                                     np.uint8(0),\n                                     False,\n                                     np.uint8(1),\n                                     np.uint8(0),\n                                     False,\n                                     False,\n                                     False,\n                                     np.uint8(0),\n                                     False,\n                                     np.uint8(1),\n                                     np.uint8(0),\n                                     False,\n                                     False,\n                                     False,\n                                     np.uint8(0),\n                                     False,\n                                     np.uint8(1),\n                                     np.uint8(1),\n                                     np.uint8(0),\n                                     False,\n                                     False,\n                                     False,\n                                     False,\n                                     np.uint8(0),\n                                     False,\n                                     np.uint8(1),\n                                     np.uint8(1),\n                                     np.uint8(0),\n                                     False,\n                                     False,\n                                     False,\n                                     False,\n                                     np.uint8(0),\n                                     False,\n                                     np.uint8(1),\n                                     np.uint8(0),\n                                     False,\n                                     False,\n                                     False],\n 'nodes_modes': ['BRANCH_LEQ',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'BRANCH_LEQ',\n                 'BRANCH_LEQ',\n                 'LEAF',\n                 'LEAF',\n                 'LEAF'],\n 'nodes_nodeids': [0,\n                   1,\n                   2,\n                   3,\n                   4,\n                   5,\n                   6,\n                   0,\n                   1,\n                   2,\n                   3,\n                   4,\n                   5,\n                   6,\n                   0,\n                   1,\n                   2,\n                   3,\n                   4,\n                   5,\n                   6,\n                   0,\n                   1,\n                   2,\n                   3,\n                   4,\n                   5,\n                   6,\n                   0,\n                   1,\n                   2,\n                   3,\n                   4,\n                   5,\n                   6,\n                   0,\n                   1,\n                   2,\n                   3,\n                   4,\n                   5,\n                   6,\n                   7,\n                   8,\n                   0,\n                   1,\n                   2,\n                   3,\n                   4,\n                   5,\n                   6,\n                   7,\n                   8,\n                   0,\n                   1,\n                   2,\n                   3,\n                   4,\n                   5,\n                   6],\n 'nodes_treeids': [0,\n                   0,\n                   0,\n                   0,\n                   0,\n                   0,\n                   0,\n                   1,\n                   1,\n                   1,\n                   1,\n                   1,\n                   1,\n                   1,\n                   2,\n                   2,\n                   2,\n                   2,\n                   2,\n                   2,\n                   2,\n                   3,\n                   3,\n                   3,\n                   3,\n                   3,\n                   3,\n                   3,\n                   4,\n                   4,\n                   4,\n                   4,\n                   4,\n                   4,\n                   4,\n                   5,\n                   5,\n                   5,\n                   5,\n                   5,\n                   5,\n                   5,\n                   5,\n                   5,\n                   6,\n                   6,\n                   6,\n                   6,\n                   6,\n                   6,\n                   6,\n                   6,\n                   6,\n                   7,\n                   7,\n                   7,\n                   7,\n                   7,\n                   7,\n                   7],\n 'nodes_truenodeids': [np.uint32(1),\n                       0,\n                       np.uint32(3),\n                       np.uint32(4),\n                       0,\n                       0,\n                       0,\n                       np.uint32(1),\n                       0,\n                       np.uint32(3),\n                       np.uint32(4),\n                       0,\n                       0,\n                       0,\n                       np.uint32(1),\n                       0,\n                       np.uint32(3),\n                       np.uint32(4),\n                       0,\n                       0,\n                       0,\n                       np.uint32(1),\n                       0,\n                       np.uint32(3),\n                       np.uint32(4),\n                       0,\n                       0,\n                       0,\n                       np.uint32(1),\n                       0,\n                       np.uint32(3),\n                       np.uint32(4),\n                       0,\n                       0,\n                       0,\n                       np.uint32(1),\n                       0,\n                       np.uint32(3),\n                       np.uint32(4),\n                       np.uint32(5),\n                       0,\n                       0,\n                       0,\n                       0,\n                       np.uint32(1),\n                       0,\n                       np.uint32(3),\n                       np.uint32(4),\n                       np.uint32(5),\n                       0,\n                       0,\n                       0,\n                       0,\n                       np.uint32(1),\n                       0,\n                       np.uint32(3),\n                       np.uint32(4),\n                       0,\n                       0,\n                       0],\n 'nodes_values': array([-0.7202118 ,  0.        ,  0.75210124, -0.1323087 ,  0.        ,\n        0.        ,  0.        , -0.7202118 ,  0.        ,  0.75210124,\n       -0.1323087 ,  0.        ,  0.        ,  0.        , -0.7202118 ,\n        0.        ,  0.75210124, -0.1323087 ,  0.        ,  0.        ,\n        0.        , -0.7202118 ,  0.        ,  0.75210124, -0.1323087 ,\n        0.        ,  0.        ,  0.        , -0.7202118 ,  0.        ,\n        0.75210124, -0.1323087 ,  0.        ,  0.        ,  0.        ,\n       -1.5494428 ,  0.        ,  0.75210124, -0.1323087 ,  0.06144595,\n        0.        ,  0.        ,  0.        ,  0.        , -1.2116735 ,\n        0.        ,  0.75210124, -0.3881505 , -0.93552846,  0.        ,\n        0.        ,  0.        ,  0.        , -1.5494428 ,  0.        ,\n        0.4200002 , -0.21519476,  0.        ,  0.        ,  0.        ],\n      dtype=float32),\n 'post_transform': 'NONE',\n 'target_ids': [0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0],\n 'target_nodeids': [1,\n                    4,\n                    5,\n                    6,\n                    1,\n                    4,\n                    5,\n                    6,\n                    1,\n                    4,\n                    5,\n                    6,\n                    1,\n                    4,\n                    5,\n                    6,\n                    1,\n                    4,\n                    5,\n                    6,\n                    1,\n                    5,\n                    6,\n                    7,\n                    8,\n                    1,\n                    5,\n                    6,\n                    7,\n                    8,\n                    1,\n                    4,\n                    5,\n                    6],\n 'target_treeids': [0,\n                    0,\n                    0,\n                    0,\n                    1,\n                    1,\n                    1,\n                    1,\n                    2,\n                    2,\n                    2,\n                    2,\n                    3,\n                    3,\n                    3,\n                    3,\n                    4,\n                    4,\n                    4,\n                    4,\n                    5,\n                    5,\n                    5,\n                    5,\n                    5,\n                    6,\n                    6,\n                    6,\n                    6,\n                    6,\n                    7,\n                    7,\n                    7,\n                    7],\n 'target_weights': array([-0.11330694, -0.00540881,  0.03270483,  0.12219238, -0.10197625,\n       -0.00486792,  0.02943434,  0.10997314, -0.09177862, -0.00438113,\n        0.02649091,  0.09897582, -0.08260076, -0.00394302,  0.02384182,\n        0.08907824, -0.07434069, -0.00354872,  0.02145763,  0.08017042,\n       -0.086993  , -0.0145609 , -0.0035162 ,  0.01931187,  0.07215337,\n       -0.06848389,  0.00247386,  0.03074541, -0.00717283,  0.06493804,\n       -0.07144531,  0.00922178, -0.0097459 ,  0.04824168], dtype=float32)}.",
+      "verified": false
+    },
+    "lightgbm": {
+      "verification": {
+        "max_abs_difference": 4.4022065903703833e-07,
+        "opset_imports": {
+          "ai.onnx": 8,
+          "ai.onnx.ml": 1
+        },
+        "output_shape": [
+          null,
+          1
+        ],
+        "rows": 24,
+        "verified": true
+      },
+      "verified": true
+    },
+    "pls": {
+      "error": "RuntimeError: ONNX output schema is not single-target regression: [None, 5].",
+      "verified": false
+    },
+    "ridge": {
+      "verification": {
+        "max_abs_difference": 2.384185791015625e-07,
+        "opset_imports": {
+          "ai.onnx": 17,
+          "ai.onnx.ml": 1
+        },
+        "output_shape": [
+          null,
+          1
+        ],
+        "rows": 24,
+        "verified": true
+      },
+      "verified": true
+    },
+    "xgboost": {
+      "verification": {
+        "max_abs_difference": 2.384185791015625e-07,
+        "opset_imports": {
+          "ai.onnx.ml": 1
+        },
+        "output_shape": [
+          null,
+          1
+        ],
+        "rows": 24,
+        "verified": true
+      },
+      "verified": true
+    }
+  },
+  "onnx_export_errors": [],
+  "onnx_verification": {
+    "max_abs_difference": 3.814697265625e-06,
+    "opset_imports": {
+      "ai.onnx.ml": 1
+    },
+    "output_shape": [
+      null,
+      1
+    ],
+    "python_pipeline_max_abs_difference": 0.0,
+    "rows": 138,
+    "verified": true
+  },
+  "oof_prediction_rows": 6348,
+  "outer_fits": 230,
+  "pairs": 23,
+  "prediction_rows": 59,
+  "schema_version": 1,
+  "source_sha256": {
+    "agronomic_manifest": "29f4e5cb6e661a0f1078da1dec03ece20336a96eea154e40929aed8db21dcaed",
+    "agronomic_table": "5a8fbf3daea5dd628ee12d68c35374e0595030dab14426e826a27fd0b2f6b1f6",
+    "base_manifest": "1eede316381c86d72a033cff2fa5e9772bac3d0c7dc11c830054610cdb5043f8",
+    "base_table": "47b02e4923a6fa76c7191e46e856582bf18b499b33cbbef62523a777ae8b087a",
+    "empirical_config": "a737133bec9811bbbc196d1f8e1e12fa195173286f7c11a87130248f168fc045",
+    "empirical_manifest": "f3bea38f80ddc47167d3e36ea6d7ac31d0df93e62d78ecd90a653e4a81d5a943",
+    "empirical_table": "f2c3ebd33bb42e19d58b5966936231141e1239cf347927bf74f4c3057d47fc03",
+    "frozen_folds": "0b332c65b036dbe09c9d67695d4b627e09043df6a939311161b4db40ac86cf1c"
+  },
+  "stage": "balanced_compute_global_benchmark",
+  "training_rows": 138
+}
