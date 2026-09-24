@@ -397,13 +397,17 @@ def _write_partial(
     oof: pd.DataFrame,
     inner: pd.DataFrame,
     completed: set[str],
+    run_fingerprint: str,
 ) -> None:
     outer.to_csv(paths["outer"], index=False)
     oof.to_csv(paths["oof"], index=False)
     inner.to_csv(paths["inner"], index=False)
     paths["state"].write_text(
         json.dumps(
-            {"completed": sorted(completed)},
+            {
+                "completed": sorted(completed),
+                "run_fingerprint": str(run_fingerprint),
+            },
             indent=2,
             sort_keys=True,
         )
@@ -414,6 +418,28 @@ def _write_partial(
 
 def _fit_key(protocol: str, representation: str, model: str, fold: int) -> str:
     return f"{protocol}|{representation}|{model}|{int(fold)}"
+
+
+def _run_fingerprint(
+    *,
+    config: dict[str, Any],
+    selected_models: list[str] | None,
+    selected_representations: list[str] | None,
+    compute: str,
+) -> str:
+    payload = {
+        "config": config,
+        "selected_models": selected_models,
+        "selected_representations": selected_representations,
+        "compute": str(compute),
+    }
+    encoded = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _select_finalists(robustness: pd.DataFrame, count: int) -> pd.DataFrame:
@@ -581,6 +607,32 @@ def run_checkpoint_03d(
     output_dir = root / str(outputs["directory"])
     output_dir.mkdir(parents=True, exist_ok=True)
     partial = _partial_paths(output_dir)
+    run_fingerprint = _run_fingerprint(
+        config=config,
+        selected_models=selected_models,
+        selected_representations=selected_representations,
+        compute=compute,
+    )
+
+    if not resume:
+        for path in partial.values():
+            if path.exists():
+                path.unlink()
+    elif any(path.exists() for path in partial.values()):
+        if not partial["state"].is_file():
+            raise RuntimeError(
+                "Checkpoint 03D partial files exist without a state fingerprint. "
+                "Start once without --resume to reset them safely."
+            )
+        payload = _load_json(partial["state"])
+        previous_fingerprint = str(payload.get("run_fingerprint", ""))
+        if previous_fingerprint != run_fingerprint:
+            raise RuntimeError(
+                "Checkpoint 03D resume fingerprint mismatch. The tuning config, "
+                "model/representation selection, or compute mode changed. Start "
+                "once without --resume to reset partials; later interruptions can "
+                "then use --resume safely."
+            )
 
     outer = _load_partial(partial["outer"]) if resume else pd.DataFrame()
     oof = _load_partial(partial["oof"]) if resume else pd.DataFrame()
@@ -760,6 +812,7 @@ def run_checkpoint_03d(
                     oof=oof,
                     inner=inner,
                     completed=completed,
+                    run_fingerprint=run_fingerprint,
                 )
 
                 if bool(runtime.get("progress", True)):
