@@ -21,67 +21,67 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data: preserve directories, ignore contents
-/data/raw/*
-!/data/raw/.gitkeep
-/data/interim/*
-!/data/interim/.gitkeep
-/data/processed/*
-!/data/processed/.gitkeep
+# # Data: preserve directories, ignore contents
+# /data/raw/*
+# !/data/raw/.gitkeep
+# /data/interim/*
+# !/data/interim/.gitkeep
+# /data/processed/*
+# !/data/processed/.gitkeep
 
-# Canonical model-ready Feature Table v1 is intentionally versioned so any
-# collaborator/agent can reproduce Checkpoint 02+ modeling without the large
-# local external raw downloads.
-!/data/processed/features_v1/
-!/data/processed/features_v1/parcel_features_clean.csv
-!/data/processed/features_v1/parcel_features_competition.csv
-!/data/processed/features_v1/parcel_features_all.csv
-!/data/processed/features_v1/feature_manifest.json
-!/data/processed/features_v1/build_report.json
-!/data/processed/features_v1/README.md
+# # Canonical model-ready Feature Table v1 is intentionally versioned so any
+# # collaborator/agent can reproduce Checkpoint 02+ modeling without the large
+# # local external raw downloads.
+# !/data/processed/features_v1/
+# !/data/processed/features_v1/parcel_features_clean.csv
+# !/data/processed/features_v1/parcel_features_competition.csv
+# !/data/processed/features_v1/parcel_features_all.csv
+# !/data/processed/features_v1/feature_manifest.json
+# !/data/processed/features_v1/build_report.json
+# !/data/processed/features_v1/README.md
 
-# Agronomic Features v1 is a compact, target-free derivative layer over the
-# canonical Feature Table v1 and is intentionally versioned for Checkpoint 03+.
-!/data/processed/agronomic_features_v1/
-!/data/processed/agronomic_features_v1/parcel_agronomic_features.csv
-!/data/processed/agronomic_features_v1/feature_manifest.json
-!/data/processed/agronomic_features_v1/build_report.json
-!/data/processed/agronomic_features_v1/README.md
+# # Agronomic Features v1 is a compact, target-free derivative layer over the
+# # canonical Feature Table v1 and is intentionally versioned for Checkpoint 03+.
+# !/data/processed/agronomic_features_v1/
+# !/data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+# !/data/processed/agronomic_features_v1/feature_manifest.json
+# !/data/processed/agronomic_features_v1/build_report.json
+# !/data/processed/agronomic_features_v1/README.md
 
-# Empirical Features v1 is the deterministic X-only portion of Checkpoint 03B.
-# Target-aware expression discovery is fold-local and is never committed as a
-# global processed table.
-!/data/processed/empirical_features_v1/
-!/data/processed/empirical_features_v1/parcel_empirical_features.csv
-!/data/processed/empirical_features_v1/feature_manifest.json
-!/data/processed/empirical_features_v1/build_report.json
-!/data/processed/empirical_features_v1/README.md
+# # Empirical Features v1 is the deterministic X-only portion of Checkpoint 03B.
+# # Target-aware expression discovery is fold-local and is never committed as a
+# # global processed table.
+# !/data/processed/empirical_features_v1/
+# !/data/processed/empirical_features_v1/parcel_empirical_features.csv
+# !/data/processed/empirical_features_v1/feature_manifest.json
+# !/data/processed/empirical_features_v1/build_report.json
+# !/data/processed/empirical_features_v1/README.md
 
-# Trained models / artifacts
-/models/*
-!/models/.gitkeep
+# # Trained models / artifacts
+# /models/*
+# !/models/.gitkeep
 
-# Experiment artifacts
-mlruns/
-wandb/
+# # Experiment artifacts
+# mlruns/
+# wandb/
 
-# App / framework caches
-.streamlit/secrets.toml
+# # App / framework caches
+# .streamlit/secrets.toml
 
-# Documentation build
-/docs/_build/
+# # Documentation build
+# /docs/_build/
 
-# Build / coverage
-build/
-dist/
-.coverage
-htmlcov/
+# # Build / coverage
+# build/
+# dist/
+# .coverage
+# htmlcov/
 
-reports/checkpoint_04d1/primary_predictions.csv
+# reports/checkpoint_04d1/primary_predictions.csv
 
-# Checkpoint 05 resumable workstation intermediates (local only)
-/reports/checkpoint_05/_partial_*.csv
+# # Checkpoint 05 resumable workstation intermediates (local only)
+# /reports/checkpoint_05/_partial_*.csv
 
 
-# Checkpoint 03D resumable workstation intermediates (local only)
-/reports/checkpoint_03d/_partial_*
+# # Checkpoint 03D resumable workstation intermediates (local only)
+# /reports/checkpoint_03d/_partial_*
