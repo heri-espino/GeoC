@@ -1,35 +1,3 @@
-{
-  "chirps_used_for_feature_construction": false,
-  "dropped_all_null": [],
-  "dropped_constant": [
-    "agro_thermal__historical__heat_excess_25c_proxy",
-    "agro_thermal__2025__heat_excess_25c_proxy",
-    "agro_interaction__heat_x_positive_water_gap_2025"
-  ],
-  "family_counts": {
-    "cross_domain": 19,
-    "nonlinear_basis": 7,
-    "phenology": 162,
-    "phenology_anomaly": 41,
-    "sensor_agreement": 9,
-    "soil_interaction": 8,
-    "soil_profile": 18,
-    "thermal": 36,
-    "water_productivity": 40,
-    "water_timing": 10
-  },
-  "features": 350,
-  "generated_at": "2026-09-18T18:17:34.234891+00:00",
-  "git_commit": "435aee7c7dd9b28fca331a007130f01aca610a2c",
-  "missing_fraction_max": 0.0,
-  "missing_fraction_mean": 0.0,
-  "mode_counts": {
-    "clean": 123,
-    "competition": 227
-  },
-  "rows": 197,
-  "schema_version": 1,
-  "source_feature_manifest_sha256": "4bce7954fdc1093f567b15f811cfe335e957e764fef273da0ff108d0b66c6901",
-  "source_feature_table_sha256": "0814ed035dd2a19fe77ca1306e9dd3b858cdc90dd25abd3d2baa59940caf4d0d",
-  "target_used_for_feature_construction": false
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:0dde10c170277093c211c37d7028581a0cd80e40bc3444d9359341bab61b4a9f
+size 1131
