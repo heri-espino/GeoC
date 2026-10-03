@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 03D completed; broad modeling closed; Local04D remains frozen competition method; 05B is optional/narrow  
+**Current phase:** Checkpoint 06 Tail-Aware Regime Refinement is PLANNED / NOT RUN. Broad search remains closed; Local04D remains frozen incumbent until 06 passes all gates.  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -12,12 +12,12 @@ Before changing modeling or data logic, read:
 1. `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 2. `.ai_handoff`.
 3. this file.
-4. `docs/CHECKPOINT_03D_PLAN.md` and `checkpoints/03d_large_global_modeling/README.md`.
-5. `docs/CHECKPOINT_05B_PLAN.md`, then `docs/CHECKPOINT_05_FINDINGS.md` for the frozen incumbent evidence.
-6. `checkpoints/04_transductive_competition/README.md`.
-7. `docs/PROJECT_HISTORY.md`.
-8. `data/.ai_handoff` and `docs/DATA_SOURCES.md`.
-9. `reports/checkpoint_03c2/checkpoint_03c2_report.md` and `checkpoints/03c3_finalist_ensembles/README.md` only as frozen First Modeling Delivery evidence.
+4. `docs/CHECKPOINT_06_PLAN.md` and `checkpoints/06_tail_regime_refinement/README.md`.
+5. `docs/CHECKPOINT_05_FINDINGS.md` and `docs/CHECKPOINT_04D1_FINDINGS.md` for incumbent evidence.
+6. `docs/CHECKPOINT_03D_FINDINGS.md` for the final global-model closure evidence.
+7. `docs/CHECKPOINT_05B_PLAN.md` only as an optional historical remix plan.
+8. `docs/PROJECT_HISTORY.md`.
+9. `data/.ai_handoff` and `docs/DATA_SOURCES.md`.
 10. `docs/FUNCTION_INDEX.md` before adding reusable functions.
 11. `app/AGENTS.md` before app/deployment work.
 
@@ -350,3 +350,25 @@ The workstation runner supports `--preflight` and split-level `--resume`.
 The preferred fixed-target app bundle is
 `models/final/checkpoint05_app_bundle.joblib`; the full fitted-model reproducibility bundle is `models/final/checkpoint05_model.joblib`. The runner performs serialization
 round-trip verification before completion.
+
+
+## 11. Checkpoint 06 operating rule
+
+Checkpoint 06 is the only active planned modeling hypothesis as of 2026-10-03.
+
+Its premise came from a teammate's residual inspection and is not yet a fact.
+The next agent must not begin by building clusters or tail specialists.
+
+Required order:
+
+1. reconstruct comparable honest target-matched Local04D/CatBoost residuals;
+2. quantify SSE concentration and low/center/high residual bias;
+3. test whether tails/errors are predictable from X and identify stable feature families/variables;
+4. try low-capacity calibration first;
+5. attempt X-only clustering/regime correction only if diagnostics support it;
+6. require development + LOSO + fresh-confirmation promotion gates.
+
+Never cluster on y for the 59-target routing rule. Never hard-code the IDs of
+the worst labeled parcels.
+
+Canonical specification: `docs/CHECKPOINT_06_PLAN.md`.
