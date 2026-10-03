@@ -1,9 +1,6 @@
 # `geocebada` Python library
 
-> **Modeling status:** Checkpoints 03–05 are frozen. Checkpoint 05 tested the final global/local
-> combination and did not promote a challenger, so `Local04D` remains the final fixed-target
-> method. Stable inference/app/export code should live under `src/geocebada/`; historical
-> evaluation modules remain reproducibility evidence.
+> **Modeling status:** Checkpoints 03–05 are frozen. Checkpoint 06 is planned but not implemented/run; it will first verify the tail-error hypothesis before any new model is allowed. `Local04D` remains the fixed-target incumbent. Stable inference/app/export code should live under `src/geocebada/`; historical evaluation modules remain reproducibility evidence.
 
 
 This directory is the reusable codebase for GeoCebada. Team notebooks and the web app should **import functionality from this package** instead of copying data-loading, feature-engineering, statistical inference, visualization or evaluation code into notebooks.
