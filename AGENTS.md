@@ -132,6 +132,24 @@ for interpreting Checkpoint 03 but are superseded for active Checkpoint 04 by
 `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 
 
+## Checkpoint 06 — active planned hypothesis
+
+As of 2026-10-03 the project has one narrow planned reopening:
+`docs/CHECKPOINT_06_PLAN.md`.
+
+The hypothesis is that remaining Local04D/CatBoost squared error may be
+concentrated in low/high-yield regimes that are recognizable from observable X.
+This is currently a teammate observation, not a validated fact.
+
+Future agents must verify the premise with honest target-matched residuals
+before implementing tail-specific models. Prefer calibration and partial pooling
+over independent complex models on tiny tails. X-only clustering may use all
+197 X under the transductive contract, but y may not define cluster membership
+for prediction.
+
+Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical
+until every Checkpoint 06 promotion gate passes.
+
 ## Frozen final-state summary
 
 As of 2026-09-24:
