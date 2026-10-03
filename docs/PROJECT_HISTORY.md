@@ -4,8 +4,8 @@
 validated, and what remains open so future collaborators and AI agents do not repeat work or
 silently overwrite earlier decisions.
 
-**Last updated:** 2026-09-24  
-**Current phase:** broad modeling is closed. Checkpoint 03D completed; Local04D remains the frozen competition method. Checkpoint 05B is an optional narrow target-matched complementarity test, not an open-ended search.
+**Last updated:** 2026-10-03  
+**Current phase:** Checkpoint 06 Tail-Aware Regime Refinement is planned but not implemented/run. Broad model search remains closed; Local04D remains the incumbent.
 
 This file is historical context. For current operating rules, read `AGENTS.md`,
 `.ai_handoff` and `docs/AGENT_GUIDE.md`. If this history conflicts with immutable official
@@ -1209,3 +1209,42 @@ Checkpoint 05 experiment.
 All remaining historical branch commit graphs were then attached to `main`
 using an ours-style ancestry merge: current `main` contents were preserved,
 while no historical commit became unreachable when branch refs were cleaned up.
+
+
+---
+
+## 2026-10-03 — Checkpoint 06 Tail-Aware Regime Refinement planned
+
+A new narrow modeling hypothesis was opened after a teammate inspected model
+residuals and suggested that most parcels were predicted accurately while a
+small set of very low- and high-yield parcels accounted for visibly larger
+errors.
+
+The observation is explicitly treated as unverified. Checkpoint 06 starts with
+falsification rather than a new model:
+
+- reconstruct honest target-matched Local04D/CatBoost residuals;
+- quantify top-k and tail contributions to SSE;
+- test signed regression-to-the-mean bias in low/high yield tails;
+- measure whether both experts miss the same parcels;
+- determine whether tail/error risk is predictable from X;
+- identify stable feature families and individual variables.
+
+Only if observable X carries reproducible information about the failure regime
+may the checkpoint proceed to identity-regularized calibration, tail stretch,
+X-only KMeans/GMM regimes, cluster-specific partial pooling or a soft tail-risk
+gate.
+
+The plan explicitly rejects clustering directly on y, hard-coding outlier IDs,
+training independent complex models on two/five extreme examples, or selecting
+a post-hoc correction from the full development table.
+
+Promotion remains difficult: overall mean and pooled target-matched RMSE must
+improve, intended tail error must improve, center performance must remain
+non-inferior, LOSO must improve, and one preselected challenger must beat
+Local04D on a new fresh target-matched confirmation bank.
+
+Canonical plan: `docs/CHECKPOINT_06_PLAN.md`.
+
+At planning time no Checkpoint 06 scientific result exists and
+`reports/checkpoint_05/final_predictions.csv` remains canonical.
