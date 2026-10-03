@@ -67,3 +67,12 @@ Checkpoint 03D freezes the large-model candidate grids, deterministic
 competition-only representations, GPU/CPU assignment, per-outer-fit resume
 contract, finalist selection and mandatory verified ONNX export. It does not
 change historical 03C scores or directly promote a competition predictor.
+
+
+## Checkpoint 06 status
+
+Checkpoint 06 is planned in `docs/CHECKPOINT_06_PLAN.md` but deliberately has
+no config yet. The next implementation agent should create
+`configs/checkpoint06.yaml` only after auditing existing honest residual
+artifacts and should encode the diagnostic-first / stop-condition contract from
+the plan rather than jumping directly to clustering or a specialist model.
