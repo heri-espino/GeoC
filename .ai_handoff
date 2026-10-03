@@ -1,12 +1,12 @@
 # AI Handoff — GeoCebada
 
-**Updated:** 2026-09-24  
-**Active phase:** broad modeling is closed. Checkpoint 03D completed on 2026-09-24; `Local04D` remains the frozen competition method. Checkpoint 05B is optional and narrowly scoped if one final target-matched complementarity test is explicitly requested.
+**Updated:** 2026-10-03  
+**Active phase:** Checkpoint 06 Tail-Aware Regime Refinement is PLANNED / NOT RUN. Broad search remains closed. `Local04D` remains the frozen competition method until 06 verifies its premise and passes development + LOSO + fresh-confirmation gates.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
-`docs/CHECKPOINT_03D_PLAN.md`, `docs/CHECKPOINT_05B_PLAN.md` and
-`docs/PROJECT_HISTORY.md`. Checkpoint 03C remains frozen as the **First Modeling Delivery**;
-03D is an additive, explicitly human-requested large-compute closure experiment.
+`docs/CHECKPOINT_06_PLAN.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
+`docs/PROJECT_HISTORY.md`. Checkpoint 03C/03D and 05 remain frozen historical evidence;
+06 is the only active planned modeling hypothesis.
 
 ## Current mission
 
@@ -145,28 +145,30 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Do **not** rerun broad 03D or reopen another large model grid. Checkpoint 03D is
-complete; canonical findings are in `docs/CHECKPOINT_03D_FINDINGS.md`.
+Read `docs/CHECKPOINT_06_PLAN.md`.
 
-Current competition source of truth:
+Do **not** start with clustering or a tail specialist. The motivating claim
+("most parcels are predicted well; a few very low/high-yield parcels dominate
+RMSE") came from a teammate's inspection and must first be verified.
+
+First implementation milestone:
+
+1. rebuild comparable honest target-matched Local04D and CatBoost residuals;
+2. aggregate by parcel so repeated pseudo-split appearances do not dominate;
+3. quantify top-k SSE concentration and low/center/high residual bias;
+4. test whether tail membership or large-error risk is predictable from X;
+5. report stable feature-family and variable evidence.
+
+Only after that evidence is reviewed may the runner add calibration, X-only
+clustering and partially pooled regime corrections.
+
+Current competition source of truth remains:
 
 ```text
 method: Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
 file:   reports/checkpoint_05/final_predictions.csv
 rows:   59
 ```
-
-Current global deployment evidence:
-
-```text
-03D scientific rank 1: HistGBLarge G1
-03D deployable rank:   XGBoostLarge G1
-ONNX verification:     PASS
-```
-
-If the user explicitly wants one last modeling test, execute only the narrow
-Checkpoint 05B target-matched remix. Otherwise move to submission/app/report
-integration.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
 
@@ -537,3 +539,24 @@ Local04D.
 
 Do not compare state/grouped 03D RMSE directly with Local04D's target-matched
 0.487845 as though they came from the same validation protocol.
+
+
+## 2026-10-03 — Checkpoint 06 tail/regime plan opened
+
+A teammate reported a possible residual pattern: Local04D and CatBoost appear to
+predict most parcels well but miss a small number of very low- and high-yield
+parcels. Because RMSE squares errors, a small extreme subset could dominate the
+remaining objective.
+
+This is not yet established. Checkpoint 06 was opened specifically to test the
+claim before modeling it.
+
+Canonical plan: `docs/CHECKPOINT_06_PLAN.md`.
+
+The plan requires tail/SSE diagnostics, fold-valid tail definitions,
+Local-vs-CatBoost error-overlap analysis, feature-family/variable importance,
+tail/error-risk prediction from X, low-capacity calibration, conditional X-only
+clustering and partially pooled regime correction. Promotion requires target-
+matched development, LOSO and a new fresh confirmation bank.
+
+No 06 model/result exists yet and no final prediction changed.
