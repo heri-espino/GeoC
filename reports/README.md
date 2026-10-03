@@ -29,8 +29,7 @@ reports/
 
 `reports/checkpoint_02/cv_folds.csv` remains a frozen historical artifact. Checkpoint 04 adds a new documented transductive pseudo-competition protocol; legacy state/municipality folds remain stress tests.
 
-Do not overwrite Checkpoint 02/03/04 artifacts. New modeling outputs belong under
-`reports/checkpoint_05/` while Checkpoint 05 is active.
+Do not overwrite frozen Checkpoint 02–05 artifacts. Checkpoint 06 is planned but not run; its reserved namespace is `reports/checkpoint_06/`. Scientific outputs should appear there only after the Checkpoint 06 diagnostics/runner are implemented.
 
 Suggested final-deliverable areas remain:
 
@@ -110,3 +109,12 @@ It will contain cross-fitted base predictions, all pseudo-competition stack
 predictions, LOSO promotion evidence, actual 59 candidates, the final selected
 table and a model manifest. Until its promotion gate passes, Checkpoint 04F
 remains the canonical submission-facing prediction file.
+
+
+## Planned Checkpoint 06 namespace
+
+`reports/checkpoint_06/` is currently only a reserved namespace. No result in
+it should be interpreted as scientific evidence until the runner exists and the
+tail hypothesis has been tested.
+
+Canonical plan: `docs/CHECKPOINT_06_PLAN.md`.
