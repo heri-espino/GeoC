@@ -563,13 +563,13 @@ Overall competition RMSE remains the primary objective.
 
 For every candidate report:
 
-### Overall
+## Overall
 - target-matched mean RMSE;
 - pooled RMSE;
 - pooled MAE;
 - worst split RMSE.
 
-### Tail-aware
+## Tail-aware
 - low-tail RMSE/MAE/bias;
 - center RMSE/MAE/bias;
 - high-tail RMSE/MAE/bias;
@@ -577,7 +577,7 @@ For every candidate report:
 - share of total SSE from tails;
 - calibration slope/intercept.
 
-### Robustness
+## Robustness
 - LOSO-selected mean and pooled RMSE;
 - state-stratified stress;
 - municipality-grouped stress;
