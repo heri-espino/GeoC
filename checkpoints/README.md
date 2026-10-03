@@ -16,11 +16,11 @@ documentation of a stable state, not a second source of truth.
 | [03d_large_global_modeling](03d_large_global_modeling/README.md) | **Closed — completed** | Balanced high-compute global closure and verified ONNX deployment path. |
 | [04_transductive_competition](04_transductive_competition/README.md) | Closed / incumbent line | Target topology, pseudo-competition, local/graph/external modeling and Local04D. |
 | [05_global_local_mixture](05_global_local_mixture/README.md) | **Closed — no promotion** | Cross-fitted global-local stacking/MoE; Local04D retained. |
+| [06_tail_regime_refinement](06_tail_regime_refinement/README.md) | **Planned — not run** | Verify whether remaining RMSE is concentrated in predictable low/high-yield regimes; conditionally test calibration, X-only clustering and tail-aware partial pooling. |
 
-Broad model search is closed. The canonical competition file is
+Broad model search remains closed. Checkpoint 06 is a narrow hypothesis-driven reopening focused only on tail/regime error. The canonical competition file is
 `reports/checkpoint_05/final_predictions.csv`.
 
 03D was executed after 05 as an additive closure of the global line. Its
 state/grouped metrics are not directly interchangeable with Local04D's
-target-matched metric. If one last modeling test is explicitly chosen,
-`docs/CHECKPOINT_05B_PLAN.md` defines the narrow target-matched remix.
+target-matched metric. Checkpoint 06 is now the active planned modeling hypothesis. Checkpoint 05B remains an optional historical remix plan and should not be run in parallel unless explicitly requested.
