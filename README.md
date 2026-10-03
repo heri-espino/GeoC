@@ -444,6 +444,23 @@ final frozen pipeline
 59 predictions
 ```
 
+## Checkpoint 06 — plan de refinamiento de colas/regímenes
+
+Se abrió una última hipótesis estrecha a partir de una observación del equipo:
+los errores restantes podrían estar concentrados en unas pocas parcelas de
+rendimiento muy bajo o muy alto. **Esto todavía no está verificado.**
+
+Checkpoint 06 primero reconstruirá residuos honestos Local04D/CatBoost,
+medirá qué fracción del SSE explican las colas, comprobará si existe sesgo hacia
+la media y determinará qué familias/variables X permiten anticipar esos casos.
+Sólo si hay señal reproducible se probarán calibración, clustering X-only y
+correcciones parcialmente pooled.
+
+Plan canónico: `docs/CHECKPOINT_06_PLAN.md`.
+
+Local04D y `reports/checkpoint_05/final_predictions.csv` siguen siendo la
+salida oficial mientras 06 no pase development, LOSO y confirmación fresca.
+
 ## Próximos pasos
 
 1. conservar `reports/checkpoint_05/final_predictions.csv` como vector
