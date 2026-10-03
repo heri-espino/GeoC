@@ -5,6 +5,7 @@ Esta carpeta concentra la documentación del proyecto, la referencia de la libre
 - `TRANSDUCTIVE_OBJECTIVE.md`: especificación canónica del objetivo transductivo de las 59 parcelas fijas y validación pseudo-competition.
 - `CHECKPOINT_03D_FINDINGS.md`: cierre del benchmark global balanced, finalistas state/grouped y deployment ONNX.
 - `CHECKPOINT_05_FINDINGS.md`: cierre del ensamble global/local; gate LOSO fallido y retención de Local04D.
+- `CHECKPOINT_06_PLAN.md`: plan activo para verificar si el RMSE restante se concentra en colas/regímenes predecibles desde X antes de probar calibración, clustering X-only o especialistas parcialmente pooled.
 - `CHECKPOINT_04A_FINDINGS.md`: interpretación canónica de topología, similitud y soporte.
 - `CHECKPOINT_04B_FINDINGS.md`: interpretación canónica de pseudo-competition y evidencia local/grafo.
 - `CHECKPOINT_04D1_FINDINGS.md`: interpretación canónica del refinamiento local/grafo, nested validation y robustez espacial.
