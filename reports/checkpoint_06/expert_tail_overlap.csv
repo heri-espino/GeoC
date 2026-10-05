@@ -1,0 +1,7 @@
+metric,value,k
+residual_pearson,0.9622138063430296,
+residual_spearman,0.9283440860215052,
+squared_error_spearman,0.8243932411674346,
+residual_sign_agreement,0.864,
+top_5_error_jaccard,0.6666666666666666,5.0
+top_10_error_jaccard,0.6666666666666666,10.0

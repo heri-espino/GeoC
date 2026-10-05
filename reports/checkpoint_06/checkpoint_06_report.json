@@ -1,0 +1,80 @@
+{
+  "checkpoint": "06A/06B",
+  "decision": {
+    "TAIL_HYPOTHESIS": "SUPPORTED",
+    "best_error_risk_model": {
+      "family": "soil_profile",
+      "risk_spearman": 0.2190783410138249
+    },
+    "best_tail_classifier": {
+      "family": "nonlinear_basis",
+      "mean_split_pr_lift": 1.5851493068879936,
+      "mean_split_roc_auc": 0.7100026372437961
+    },
+    "catboost_high_tail": {
+      "expected_sign_fraction": 1.0,
+      "mean_residual": 0.523902235862669
+    },
+    "catboost_low_tail": {
+      "expected_sign_fraction": 0.9032258064516129,
+      "mean_residual": -0.42709961738773156
+    },
+    "catboost_shrinkage_corroboration": true,
+    "concentration_supported": true,
+    "error_risk_supported": true,
+    "local04d_high_tail": {
+      "expected_sign_fraction": 1.0,
+      "mean_residual": 0.47257951770967727
+    },
+    "local04d_low_tail": {
+      "expected_sign_fraction": 0.8064516129032258,
+      "mean_residual": -0.3576638799361657
+    },
+    "local04d_top10pct_sse_share": 0.6217760775160602,
+    "shrinkage_supported_local04d": true,
+    "tail_classifier_supported": true,
+    "thresholds": {
+      "min_abs_tail_bias": 0.1,
+      "min_error_risk_spearman": 0.2,
+      "min_expected_sign_fraction": 0.6,
+      "min_pr_lift": 1.2,
+      "min_tail_auc": 0.65,
+      "min_top10pct_sse_share": 0.3
+    },
+    "x_predictability_supported": true
+  },
+  "generated_at": "2026-10-05T21:37:51.462688+00:00",
+  "git_commit": "ca5fcc4a202ee04c091389e6d3a69e32f524cd43",
+  "hidden_fira_y_used_or_scored": false,
+  "preflight": {
+    "agronomic_families": 10,
+    "agronomic_features": 350,
+    "compute": "CPU diagnostics only; no CatBoost refit in 06A/06B",
+    "hidden_target_y_present": false,
+    "honest_pseudo_target_rows": 656,
+    "local04d_pooled_rmse": 0.49574142871073495,
+    "prediction_rows": 59,
+    "pseudo_targets_per_split": 41,
+    "rows": 197,
+    "target_matched_splits": 16,
+    "training_rows": 138
+  },
+  "row_counts": {
+    "descriptive_tail_quantiles": 6,
+    "error_risk_oof": 2750,
+    "error_risk_summary": 22,
+    "expert_tail_overlap": 6,
+    "feature_associations_by_split": 11200,
+    "feature_family_error_risk": 22,
+    "feature_family_tail_importance": 33,
+    "feature_tail_associations": 700,
+    "parcel_oof_residuals": 2624,
+    "parcel_residual_summary": 500,
+    "tail_bias_summary": 12,
+    "tail_classifier_oof": 21648,
+    "tail_classifier_summary": 33,
+    "tail_definition_summary": 16,
+    "tail_sse_concentration": 20
+  },
+  "schema_version": 1
+}
