@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-10-03  
-**Active phase:** Checkpoint 06 Tail-Aware Regime Refinement is PLANNED / NOT RUN. Broad search remains closed. `Local04D` remains the frozen competition method until 06 verifies its premise and passes development + LOSO + fresh-confirmation gates.
+**Active phase:** Checkpoint 06A/06B Tail-Aware Regime diagnostics are IMPLEMENTED / WORKSTATION RUN PENDING. Broad search remains closed. `Local04D` remains frozen until later 06 gates pass.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/CHECKPOINT_06_PLAN.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
@@ -145,30 +145,34 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Read `docs/CHECKPOINT_06_PLAN.md`.
+Run the implemented Checkpoint 06A/06B diagnostic stage:
 
-Do **not** start with clustering or a tail specialist. The motivating claim
-("most parcels are predicted well; a few very low/high-yield parcels dominate
-RMSE") came from a teammate's inspection and must first be verified.
+```powershell
+git pull --ff-only
+git lfs pull
+conda activate geocebada
+python -m pip install -e ".[dev,geo]"
+python tools\run_checkpoint_06.py --preflight
+python tools\run_checkpoint_06.py
+```
 
-First implementation milestone:
+The runner reuses frozen honest Checkpoint 05 target-matched predictions. It
+does not refit CatBoost or Local04D. It computes fold-valid tails from each
+pseudo-train y only, equal-weight parcel SSE concentration, low/high shrinkage,
+expert overlap, G1 feature associations, tail classifiers and error-risk
+predictability.
 
-1. rebuild comparable honest target-matched Local04D and CatBoost residuals;
-2. aggregate by parcel so repeated pseudo-split appearances do not dominate;
-3. quantify top-k SSE concentration and low/center/high residual bias;
-4. test whether tail membership or large-error risk is predictable from X;
-5. report stable feature-family and variable evidence.
-
-Only after that evidence is reviewed may the runner add calibration, X-only
-clustering and partially pooled regime corrections.
-
-Current competition source of truth remains:
+Expected terminal decision:
 
 ```text
-method: Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
-file:   reports/checkpoint_05/final_predictions.csv
-rows:   59
+TAIL_HYPOTHESIS = SUPPORTED / NOT_SUPPORTED / AMBIGUOUS
 ```
+
+Do not implement clustering, calibration or specialists until
+`reports/checkpoint_06/checkpoint_06_report.md` is inspected.
+
+Current competition source of truth remains
+`reports/checkpoint_05/final_predictions.csv`.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
 
