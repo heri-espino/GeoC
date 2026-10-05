@@ -112,13 +112,6 @@ from geocebada.evaluation.checkpoint05 import (
     constrain_component_param_grid,
     support_descriptors,
 )
-from geocebada.evaluation.checkpoint06c import (
-    build_calibration_predictions,
-    candidate_names,
-    fit_predict_calibrators,
-    leave_one_split_out_calibration_selection,
-    summarize_calibration_predictions,
-)
 from geocebada.evaluation.checkpoint06 import (
     aggregate_residuals_by_parcel,
     assign_fold_valid_tails,
@@ -133,6 +126,13 @@ from geocebada.evaluation.checkpoint06 import (
     run_checkpoint06_diagnostics,
     summarize_sse_concentration,
     summarize_tail_bias,
+)
+from geocebada.evaluation.checkpoint06c import (
+    build_calibration_predictions,
+    candidate_names,
+    fit_predict_calibrators,
+    leave_one_split_out_calibration_selection,
+    summarize_calibration_predictions,
 )
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
