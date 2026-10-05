@@ -1126,7 +1126,7 @@ def checkpoint06_preflight(root: Path, config: Mapping[str, Any]) -> dict[str, A
     }
     missing = required_prediction_columns.difference(predictions.columns)
     if missing:
-        raise KeyError(f"Base OOF predictions missing columns: {sorted(missing)}")
+        raise KeyError(f"Honest pseudo-target predictions missing columns: {sorted(missing)}")
 
     target_predictions = predictions.loc[predictions["family"].eq("target_matched")]
     target_membership = membership.loc[membership["family"].eq("target_matched")]
@@ -1137,7 +1137,7 @@ def checkpoint06_preflight(root: Path, config: Mapping[str, Any]) -> dict[str, A
         )
     counts = target_predictions.groupby("split_id")[id_column].nunique()
     if not counts.eq(int(validation["expected_pseudo_targets"])).all():
-        raise ValueError("Unexpected pseudo-target count in base OOF predictions.")
+        raise ValueError("Unexpected pseudo-target count in honest pseudo-target predictions.")
 
     enriched, _ = assign_fold_valid_tails(
         target_predictions,
