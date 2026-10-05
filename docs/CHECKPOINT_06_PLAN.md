@@ -1,6 +1,6 @@
 # Checkpoint 06 plan — Tail-Aware Regime Refinement
 
-**Status:** 06A/06B IMPLEMENTED / WORKSTATION RUN PENDING  
+**Status:** 06A/06B SUPPORTED; 06C IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-10-03  
 **Track:** competition-only  
 **Incumbent:** Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1  
@@ -825,3 +825,30 @@ The 06A/06B evidence generator is implemented in:
 
 Run preflight first and then the diagnostic runner. Do not implement 06C/06D
 until the generated report is reviewed.
+
+
+## 06C implementation status
+
+06A/06B was executed on 2026-10-05 and returned
+`TAIL_HYPOTHESIS = SUPPORTED`.
+
+Observed evidence includes:
+
+- Local04D top 10% error parcels explain 62.18% of equal-weight parcel SSE;
+- Local04D low-tail mean residual = -0.358 t/ha;
+- Local04D high-tail mean residual = +0.473 t/ha;
+- CatBoost corroborates the same shrinkage direction;
+- tail membership is predictably encoded in X, with the strongest combined-tail
+  family classifier using nonlinear-basis features (mean split ROC-AUC 0.710);
+- low/high classifiers are stronger separately, especially thermal,
+  cross-domain, nonlinear-basis and water-productivity families.
+
+Checkpoint 06C is now implemented in:
+
+    configs/checkpoint06c.yaml
+    src/geocebada/evaluation/checkpoint06c.py
+    tools/run_checkpoint_06c.py
+    tests/test_checkpoint06c.py
+
+06C must be run before any clustering. It tests low-capacity calibration using
+honest cross-fitted pseudo-train predictions and LOSO selection.
