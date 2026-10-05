@@ -111,6 +111,81 @@ def _numeric_feature_families(
     return dict(sorted(families.items()))
 
 
+def normalize_honest_prediction_table(
+    frame: pd.DataFrame,
+    *,
+    required_methods: Sequence[str],
+) -> pd.DataFrame:
+    """Normalize honest pseudo-target predictions from long or wide format.
+
+    Checkpoint 05 stores the actual pseudo-target predictions in long format
+    (one row per split, parcel and method). Checkpoint 06 works with one row per
+    split/parcel and one prediction column per method. This helper performs that
+    pivot and rejects duplicated method predictions before any diagnostics run.
+    """
+
+    common = {"family", "split_id", ID_COLUMN, "observed"}
+    missing = common.difference(frame.columns)
+    if missing:
+        raise KeyError(f"Honest prediction table missing columns: {sorted(missing)}")
+
+    methods = list(required_methods)
+    if {"method", "predicted"}.issubset(frame.columns):
+        long = frame.copy()
+        duplicates = long.duplicated(
+            subset=["family", "split_id", ID_COLUMN, "method"],
+            keep=False,
+        )
+        if duplicates.any():
+            example = long.loc[
+                duplicates,
+                ["family", "split_id", ID_COLUMN, "method"],
+            ].head(5)
+            raise ValueError(
+                "Duplicate honest method predictions found before pivot: "
+                f"{example.to_dict(orient='records')}"
+            )
+
+        observed_counts = (
+            long.groupby(["family", "split_id", ID_COLUMN], sort=False)["observed"]
+            .nunique(dropna=False)
+        )
+        if observed_counts.gt(1).any():
+            raise ValueError("Observed y is inconsistent across methods for a pseudo-target.")
+
+        observed = (
+            long.groupby(["family", "split_id", ID_COLUMN], as_index=False, sort=False)[
+                "observed"
+            ]
+            .first()
+        )
+        wide = (
+            long.pivot(
+                index=["family", "split_id", ID_COLUMN],
+                columns="method",
+                values="predicted",
+            )
+            .reset_index()
+        )
+        wide.columns.name = None
+        result = observed.merge(
+            wide,
+            on=["family", "split_id", ID_COLUMN],
+            how="inner",
+            validate="one_to_one",
+        )
+    else:
+        result = frame.copy()
+
+    missing_methods = [method for method in methods if method not in result.columns]
+    if missing_methods:
+        raise KeyError(
+            "Honest prediction table missing required method columns: "
+            f"{missing_methods}"
+        )
+    return result
+
+
 def assign_fold_valid_tails(
     prediction_rows: pd.DataFrame,
     base_frame: pd.DataFrame,
@@ -1008,7 +1083,11 @@ def checkpoint06_preflight(root: Path, config: Mapping[str, Any]) -> dict[str, A
         )
 
     base = pd.read_csv(paths["base_table"])
-    predictions = pd.read_csv(paths["base_oof_predictions"])
+    raw_predictions = pd.read_csv(paths["honest_pseudo_predictions"])
+    predictions = normalize_honest_prediction_table(
+        raw_predictions,
+        required_methods=list(config["diagnostics"]["methods"]),
+    )
     membership = pd.read_csv(paths["split_membership"])
     agronomic = pd.read_csv(paths["agronomic_table"])
     manifest = json.loads(
@@ -1092,7 +1171,7 @@ def checkpoint06_preflight(root: Path, config: Mapping[str, Any]) -> dict[str, A
         "prediction_rows": int(target.sum()),
         "target_matched_splits": n_splits,
         "pseudo_targets_per_split": int(counts.iloc[0]),
-        "base_oof_rows": int(len(target_predictions)),
+        "honest_pseudo_target_rows": int(len(target_predictions)),
         "local04d_pooled_rmse": local_rmse,
         "agronomic_features": int(len(families["all_agronomic"])),
         "agronomic_families": int(len(families) - 1),
@@ -1112,7 +1191,11 @@ def run_checkpoint06_diagnostics(
     identity = config["identity"]
 
     base = pd.read_csv(root / str(inputs["base_table"]))
-    predictions = pd.read_csv(root / str(inputs["base_oof_predictions"]))
+    raw_predictions = pd.read_csv(root / str(inputs["honest_pseudo_predictions"]))
+    predictions = normalize_honest_prediction_table(
+        raw_predictions,
+        required_methods=list(config["diagnostics"]["methods"]),
+    )
     membership = pd.read_csv(root / str(inputs["split_membership"]))
     agronomic = pd.read_csv(root / str(inputs["agronomic_table"]))
     manifest = json.loads(
