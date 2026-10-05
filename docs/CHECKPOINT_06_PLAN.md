@@ -1,6 +1,6 @@
 # Checkpoint 06 plan — Tail-Aware Regime Refinement
 
-**Status:** PLANNED / NOT IMPLEMENTED / NOT RUN  
+**Status:** 06A/06B IMPLEMENTED / WORKSTATION RUN PENDING  
 **Opened:** 2026-10-03  
 **Track:** competition-only  
 **Incumbent:** Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1  
@@ -816,4 +816,12 @@ At 2026-10-03:
 - Local04D remains incumbent;
 - reports/checkpoint_05/final_predictions.csv remains canonical.
 
-The next agent's first task is evidence generation, not model invention.
+The 06A/06B evidence generator is implemented in:
+
+    configs/checkpoint06.yaml
+    src/geocebada/evaluation/checkpoint06.py
+    tools/run_checkpoint_06.py
+    tests/test_checkpoint06.py
+
+Run preflight first and then the diagnostic runner. Do not implement 06C/06D
+until the generated report is reviewed.
