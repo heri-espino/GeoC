@@ -11,12 +11,11 @@ No function in this module reads hidden FIRA target values.
 
 from __future__ import annotations
 
+import json
+import math
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
-
-import json
-import math
 
 import numpy as np
 import pandas as pd
