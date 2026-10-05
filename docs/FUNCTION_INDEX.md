@@ -127,6 +127,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `evaluate_tail_classifier_families` | function | `geocebada.evaluation.checkpoint06` | Cross-fit simple family-level tail classifiers on pseudo-train/pseudo-target rows. | `src/geocebada/evaluation/checkpoint06.py` |
 | `expert_tail_overlap` | function | `geocebada.evaluation.checkpoint06` | Compare the parcel-level error sets and residual direction of two honest experts. | `src/geocebada/evaluation/checkpoint06.py` |
 | `feature_association_tables` | function | `geocebada.evaluation.checkpoint06` | Measure fold-wise feature association with yield and honest residual behavior. | `src/geocebada/evaluation/checkpoint06.py` |
+| `normalize_honest_prediction_table` | function | `geocebada.evaluation.checkpoint06` | Normalize honest pseudo-target predictions from long or wide format. | `src/geocebada/evaluation/checkpoint06.py` |
 | `run_checkpoint06_diagnostics` | function | `geocebada.evaluation.checkpoint06` | Run the Checkpoint 06A/06B analysis from frozen honest base predictions. | `src/geocebada/evaluation/checkpoint06.py` |
 | `summarize_sse_concentration` | function | `geocebada.evaluation.checkpoint06` | Summarize how much equal-weight parcel SSE is concentrated in the largest errors. | `src/geocebada/evaluation/checkpoint06.py` |
 | `summarize_tail_bias` | function | `geocebada.evaluation.checkpoint06` | Summarize fold-valid low/center/high residual bias with parcel-level bootstrap CIs. | `src/geocebada/evaluation/checkpoint06.py` |
