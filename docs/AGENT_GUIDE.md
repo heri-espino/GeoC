@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 06 Tail-Aware Regime Refinement is PLANNED / NOT RUN. Broad search remains closed; Local04D remains frozen incumbent until 06 passes all gates.  
+**Current phase:** Checkpoint 06A/06B diagnostics are IMPLEMENTED / WORKSTATION RUN PENDING. Broad search remains closed; Local04D remains frozen incumbent.  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -354,7 +354,7 @@ round-trip verification before completion.
 
 ## 11. Checkpoint 06 operating rule
 
-Checkpoint 06 is the only active planned modeling hypothesis as of 2026-10-03.
+Checkpoint 06 is the only active modeling hypothesis. As of 2026-10-05 its diagnostic 06A/06B runner is implemented but has not yet produced workstation scientific results.
 
 Its premise came from a teammate's residual inspection and is not yet a fact.
 The next agent must not begin by building clusters or tail specialists.
