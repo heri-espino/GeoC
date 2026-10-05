@@ -36,6 +36,9 @@ jobs:
       - name: Tests
         run: pytest -q
 
+      - name: Checkpoint 06 preflight
+        run: python tools/run_checkpoint_06.py --preflight
+
       - name: Verify generated function index
         run: |
           python tools/generate_function_index.py
