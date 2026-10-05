@@ -13,6 +13,7 @@ from geocebada.evaluation.checkpoint06 import (
     assign_fold_valid_tails,
     build_residual_diagnostics,
     decide_tail_hypothesis,
+    normalize_honest_prediction_table,
     summarize_sse_concentration,
 )
 
@@ -191,3 +192,33 @@ def test_decision_requires_concentration_shrinkage_and_x_signal() -> None:
 
     assert decision["TAIL_HYPOTHESIS"] == "SUPPORTED"
     assert decision["catboost_shrinkage_corroboration"] is True
+
+
+def test_normalize_honest_long_predictions() -> None:
+    long = pd.DataFrame(
+        {
+            "family": ["target_matched"] * 6,
+            "split_id": ["s1"] * 6,
+            "ID_POLIGONO": ["A", "A", "A", "B", "B", "B"],
+            "observed": [2.0, 2.0, 2.0, 5.0, 5.0, 5.0],
+            "method": [
+                "Local04D",
+                "CatBoost_C1",
+                "Graph04D",
+                "Local04D",
+                "CatBoost_C1",
+                "Graph04D",
+            ],
+            "predicted": [2.1, 2.2, 2.0, 4.8, 4.9, 5.1],
+        }
+    )
+
+    wide = normalize_honest_prediction_table(
+        long,
+        required_methods=["Local04D", "CatBoost_C1", "Graph04D"],
+    )
+
+    assert len(wide) == 2
+    assert set(wide["ID_POLIGONO"]) == {"A", "B"}
+    assert wide.loc[wide["ID_POLIGONO"].eq("A"), "Local04D"].iloc[0] == pytest.approx(2.1)
+    assert wide.loc[wide["ID_POLIGONO"].eq("B"), "CatBoost_C1"].iloc[0] == pytest.approx(4.9)
