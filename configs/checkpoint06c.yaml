@@ -1,0 +1,55 @@
+schema_version: 1
+updated: 2026-10-05
+
+stage:
+  checkpoint: "06C"
+  name: low_capacity_tail_calibration
+  status: implemented_run_pending
+  prerequisite: reports/checkpoint_06/checkpoint_06_report.json
+  required_tail_hypothesis: SUPPORTED
+
+scope:
+  active_track: competition
+  hidden_fira_y_allowed: false
+  incumbent: Local04D
+  clustering_enabled: false
+  specialist_models_enabled: false
+  purpose: >
+    Test whether the verified low/high shrinkage can be corrected by small,
+    leakage-safe calibrators before attempting X-only clustering or a
+    mixture-of-experts.
+
+inputs:
+  base_oof_predictions: reports/checkpoint_05/base_oof_predictions.csv
+  honest_pseudo_predictions: reports/checkpoint_05/pseudo_predictions.csv
+  checkpoint06_report: reports/checkpoint_06/checkpoint_06_report.json
+
+tails:
+  primary_low_quantile: 0.15
+  primary_high_quantile: 0.85
+
+calibration:
+  stretch_values: [1.05, 1.10, 1.15, 1.20]
+  ridge_alphas: [1.0, 10.0, 100.0]
+  piecewise_low_prediction_quantile: 0.15
+  piecewise_high_prediction_quantile: 0.85
+
+selection:
+  center_tolerance_absolute: 0.005
+  center_tolerance_fraction: 0.01
+  require_development_mean_improvement: true
+  require_development_pooled_improvement: true
+  require_tail_improvement: true
+  require_loso_mean_improvement: true
+  require_loso_pooled_improvement: true
+
+outputs:
+  directory: reports/checkpoint_06c
+  predictions: calibration_predictions.csv
+  split_metrics: calibration_split_metrics.csv
+  summary: calibration_summary.csv
+  loso_selection: loso_selection.csv
+  loso_predictions: loso_predictions.csv
+  loso_summary: loso_summary.json
+  report_json: checkpoint_06c_report.json
+  report_markdown: checkpoint_06c_report.md
