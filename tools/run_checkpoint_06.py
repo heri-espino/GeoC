@@ -208,37 +208,37 @@ def _report_markdown(
         "",
         "## Local04D SSE concentration",
         "",
-        local_conc.to_markdown(index=False)
+        local_conc.to_string(index=False)
         if not local_conc.empty
         else "No rows.",
         "",
         "## Local04D tail bias",
         "",
-        local_bias.to_markdown(index=False)
+        local_bias.to_string(index=False)
         if not local_bias.empty
         else "No rows.",
         "",
         "## CatBoost tail bias",
         "",
-        cat_bias.to_markdown(index=False)
+        cat_bias.to_string(index=False)
         if not cat_bias.empty
         else "No rows.",
         "",
         "## Local04D vs CatBoost overlap",
         "",
-        overlap.to_markdown(index=False)
+        overlap.to_string(index=False)
         if not overlap.empty
         else "No rows.",
         "",
         "## Best agronomic-family tail classifiers",
         "",
-        tail_classifier.to_markdown(index=False)
+        tail_classifier.to_string(index=False)
         if not tail_classifier.empty
         else "No rows.",
         "",
         "## Best Local04D error-risk family models",
         "",
-        local_risk.to_markdown(index=False)
+        local_risk.to_string(index=False)
         if not local_risk.empty
         else "No rows.",
         "",
