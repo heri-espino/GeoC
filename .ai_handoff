@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-10-03  
-**Active phase:** Checkpoint 06A/06B Tail-Aware Regime diagnostics are IMPLEMENTED / WORKSTATION RUN PENDING. Broad search remains closed. `Local04D` remains frozen until later 06 gates pass.
+**Active phase:** Checkpoint 06A/06B completed with `TAIL_HYPOTHESIS = SUPPORTED`. Checkpoint 06C low-capacity calibration is IMPLEMENTED / RUN PENDING. `Local04D` remains frozen until later gates pass.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/CHECKPOINT_06_PLAN.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
@@ -145,33 +145,35 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run the implemented Checkpoint 06A/06B diagnostic stage:
+Run Checkpoint 06C:
 
 ```powershell
 git pull --ff-only
 git lfs pull
 conda activate geocebada
 python -m pip install -e ".[dev,geo]"
-python tools\run_checkpoint_06.py --preflight
-python tools\run_checkpoint_06.py
+python tools\run_checkpoint_06c.py --preflight
+python tools\run_checkpoint_06c.py
 ```
 
-The runner reuses frozen honest Checkpoint 05 target-matched predictions. It
-does not refit CatBoost or Local04D. It computes fold-valid tails from each
-pseudo-train y only, equal-weight parcel SSE concentration, low/high shrinkage,
-expert overlap, G1 feature associations, tail classifiers and error-risk
-predictability.
+06A/06B is complete and supported the tail hypothesis. The strongest practical
+finding is asymmetric shrinkage: Local04D overpredicts low-yield parcels and
+underpredicts high-yield parcels, while the top 10% error parcels explain about
+62% of parcel SSE.
 
-Expected terminal decision:
+06C must be evaluated before clustering. It uses 97 cross-fitted pseudo-train
+base predictions to learn low-capacity calibrations and scores the untouched 41
+pseudo-targets in each of the 16 target-matched splits. The key terminal output
+is:
 
 ```text
-TAIL_HYPOTHESIS = SUPPORTED / NOT_SUPPORTED / AMBIGUOUS
+06C_LOSO_GATE = PASS / FAIL
 ```
 
-Do not implement clustering, calibration or specialists until
-`reports/checkpoint_06/checkpoint_06_report.md` is inspected.
+PASS -> freeze one calibration challenger for fresh confirmation.
+FAIL -> proceed to 06D X-only regime discovery.
 
-Current competition source of truth remains
+Current canonical final competition predictions remain
 `reports/checkpoint_05/final_predictions.csv`.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
