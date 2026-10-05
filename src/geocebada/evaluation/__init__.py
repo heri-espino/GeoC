@@ -112,6 +112,20 @@ from geocebada.evaluation.checkpoint05 import (
     constrain_component_param_grid,
     support_descriptors,
 )
+from geocebada.evaluation.checkpoint06 import (
+    aggregate_residuals_by_parcel,
+    assign_fold_valid_tails,
+    build_residual_diagnostics,
+    checkpoint06_preflight,
+    decide_tail_hypothesis,
+    evaluate_error_risk_families,
+    evaluate_tail_classifier_families,
+    expert_tail_overlap,
+    feature_association_tables,
+    run_checkpoint06_diagnostics,
+    summarize_sse_concentration,
+    summarize_tail_bias,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -131,6 +145,18 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "aggregate_residuals_by_parcel",
+    "assign_fold_valid_tails",
+    "build_residual_diagnostics",
+    "checkpoint06_preflight",
+    "decide_tail_hypothesis",
+    "evaluate_error_risk_families",
+    "evaluate_tail_classifier_families",
+    "expert_tail_overlap",
+    "feature_association_tables",
+    "run_checkpoint06_diagnostics",
+    "summarize_sse_concentration",
+    "summarize_tail_bias",
     "ConvexStackRegressor",
     "FittedMetaCandidate",
     "SupportMixtureOfExperts",
