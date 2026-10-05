@@ -1,6 +1,6 @@
 # Checkpoint 06 — Tail-Aware Regime Refinement
 
-**Status:** PLANNED / NOT IMPLEMENTED / NOT RUN  
+**Status:** 06A/06B IMPLEMENTED / WORKSTATION RUN PENDING  
 **Opened:** 2026-10-03  
 **Canonical plan:** docs/CHECKPOINT_06_PLAN.md
 
@@ -26,4 +26,25 @@ Current incumbent:
     Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
     reports/checkpoint_05/final_predictions.csv
 
-No Checkpoint 06 scientific result exists yet.
+The first diagnostic runner is now implemented:
+
+```powershell
+git pull --ff-only
+git lfs pull
+conda activate geocebada
+python -m pip install -e ".[dev,geo]"
+python tools\run_checkpoint_06.py --preflight
+python tools\run_checkpoint_06.py
+```
+
+This first run executes only 06A/06B. It does **not** cluster parcels, calibrate
+the incumbent, train specialists or change the 59 final predictions.
+
+Its terminal decision is:
+
+```text
+TAIL_HYPOTHESIS = SUPPORTED / NOT_SUPPORTED / AMBIGUOUS
+```
+
+Review `reports/checkpoint_06/checkpoint_06_report.md` before 06C or any
+regime model is implemented.
