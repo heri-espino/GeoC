@@ -71,8 +71,4 @@ change historical 03C scores or directly promote a competition predictor.
 
 ## Checkpoint 06 status
 
-Checkpoint 06 is planned in `docs/CHECKPOINT_06_PLAN.md` but deliberately has
-no config yet. The next implementation agent should create
-`configs/checkpoint06.yaml` only after auditing existing honest residual
-artifacts and should encode the diagnostic-first / stop-condition contract from
-the plan rather than jumping directly to clustering or a specialist model.
+Checkpoint 06A/06B is now implemented in `configs/checkpoint06.yaml`. The config freezes the fold-valid q15/q85 tail rule, diagnostic continuation thresholds, G1 family analysis, and a future unused confirmation seed. Clustering, calibration and specialist models remain disabled until the diagnostic run is reviewed.
