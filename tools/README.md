@@ -86,3 +86,7 @@ Before the long run, `--preflight` checks the 197/138/59 competition-only
 contract, GPU visibility and actual ONNX round trips for all configured model
 families. On completion it writes three global finalists and a verified
 `models/final/checkpoint03d_global.onnx` deployment artifact plus JSON schema.
+
+- `run_checkpoint_06c.py`: low-capacity Local04D tail calibration using
+  cross-fitted pseudo-train predictions, with LOSO selection before any
+  clustering.
