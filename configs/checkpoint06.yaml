@@ -26,7 +26,7 @@ inputs:
   agronomic_table: data/processed/agronomic_features_v1/parcel_agronomic_features.csv
   agronomic_manifest: data/processed/agronomic_features_v1/feature_manifest.json
   split_membership: reports/checkpoint_04b/pseudo_competition_splits.csv
-  base_oof_predictions: reports/checkpoint_05/base_oof_predictions.csv
+  honest_pseudo_predictions: reports/checkpoint_05/pseudo_predictions.csv
 
 identity:
   id_column: ID_POLIGONO
