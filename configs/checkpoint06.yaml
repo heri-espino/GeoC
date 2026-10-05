@@ -1,0 +1,112 @@
+schema_version: 1
+updated: 2026-10-05
+
+stage:
+  name: tail_aware_regime_refinement_diagnostics
+  checkpoint: "06"
+  status: implemented_06a_06b_run_pending
+  purpose: >
+    Verify whether remaining target-matched Local04D/CatBoost squared error is
+    concentrated in low/high-yield regimes and whether those regimes or large
+    residual risk are predictably encoded in observable X before any clustering
+    or specialist model is allowed.
+
+scope:
+  active_track: competition
+  hidden_fira_y_allowed: false
+  incumbent: Local04D
+  canonical_predictions: reports/checkpoint_05/final_predictions.csv
+  implementation_scope: [06A, 06B]
+  clustering_enabled: false
+  specialist_models_enabled: false
+  calibration_enabled: false
+
+inputs:
+  base_table: data/processed/features_v1/parcel_features_competition.csv
+  agronomic_table: data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+  agronomic_manifest: data/processed/agronomic_features_v1/feature_manifest.json
+  split_membership: reports/checkpoint_04b/pseudo_competition_splits.csv
+  base_oof_predictions: reports/checkpoint_05/base_oof_predictions.csv
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+
+validation:
+  expected_total_rows: 197
+  expected_training_rows: 138
+  expected_prediction_rows: 59
+  expected_primary_splits: 16
+  expected_pseudo_targets: 41
+  expected_local04d_pooled_rmse: 0.4957414287
+  local04d_rmse_tolerance: 0.002
+
+tails:
+  primary_low_quantile: 0.15
+  primary_high_quantile: 0.85
+  sensitivity_quantiles:
+    - [0.10, 0.90]
+    - [0.20, 0.80]
+
+diagnostics:
+  methods:
+    - Local04D
+    - CatBoost_C1
+    - Graph04D
+  include_local_catboost_mean: true
+  top_counts: [5, 10]
+  top_fractions: [0.10, 0.15, 0.20]
+  bootstrap_repeats: 2000
+
+feature_analysis:
+  representation: G1_agronomic
+  tail_classifier: class_weighted_logistic
+  tail_classifier_c: 1.0
+  error_risk_model: ridge_on_log1p_mse
+  error_risk_folds: 5
+  error_risk_ridge_alpha: 10.0
+  use_shap_for_selection: false
+  family_level_before_individual_features: true
+
+continuation_thresholds:
+  min_top10pct_sse_share: 0.30
+  min_abs_tail_bias: 0.10
+  min_expected_sign_fraction: 0.60
+  min_tail_auc: 0.65
+  min_pr_lift: 1.20
+  min_error_risk_spearman: 0.20
+
+future_confirmation:
+  enabled_only_after_06c_06e_selection: true
+  random_state: 2026100601
+  reuse_development_masks: false
+  score_only_incumbent_and_one_frozen_challenger: true
+
+runtime:
+  random_state: 20261005
+  compute: cpu_diagnostics
+  progress: true
+
+outputs:
+  directory: reports/checkpoint_06
+  parcel_oof_residuals: parcel_oof_residuals.csv
+  parcel_residual_summary: parcel_residual_summary.csv
+  tail_definition_summary: tail_definition_summary.csv
+  descriptive_tail_quantiles: descriptive_tail_quantiles.csv
+  tail_sse_concentration: tail_sse_concentration.csv
+  tail_bias_summary: tail_bias_summary.csv
+  expert_tail_overlap: expert_tail_overlap.csv
+  feature_associations_by_split: feature_tail_associations_by_split.csv
+  feature_tail_associations: feature_tail_associations.csv
+  tail_classifier_oof: tail_classifier_oof.csv
+  tail_classifier_summary: tail_classifier_summary.csv
+  feature_family_tail_importance: feature_family_tail_importance.csv
+  error_risk_oof: error_risk_oof.csv
+  error_risk_summary: error_risk_summary.csv
+  feature_family_error_risk: feature_family_error_risk.csv
+  report_json: checkpoint_06_report.json
+  report_markdown: checkpoint_06_report.md
+  figures_directory: figures
