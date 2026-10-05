@@ -367,13 +367,25 @@ def leave_one_split_out_calibration_selection(
     itail = incumbent_rows["tail_regime"].ne("center").to_numpy()
     icenter = ~itail
 
-    selected_split_rmse = selected_predictions.groupby("split_id").apply(
-        lambda g: _rmse(g["observed"].to_numpy(float), g["predicted"].to_numpy(float)),
-        include_groups=False,
+    selected_split_rmse = pd.Series(
+        {
+            split_id: _rmse(
+                group["observed"].to_numpy(float),
+                group["predicted"].to_numpy(float),
+            )
+            for split_id, group in selected_predictions.groupby("split_id", sort=True)
+        },
+        dtype=float,
     )
-    incumbent_split_rmse = incumbent_rows.groupby("split_id").apply(
-        lambda g: _rmse(g["observed"].to_numpy(float), g["predicted"].to_numpy(float)),
-        include_groups=False,
+    incumbent_split_rmse = pd.Series(
+        {
+            split_id: _rmse(
+                group["observed"].to_numpy(float),
+                group["predicted"].to_numpy(float),
+            )
+            for split_id, group in incumbent_rows.groupby("split_id", sort=True)
+        },
+        dtype=float,
     )
 
     summary = {
