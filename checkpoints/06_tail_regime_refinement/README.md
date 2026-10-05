@@ -1,6 +1,6 @@
 # Checkpoint 06 — Tail-Aware Regime Refinement
 
-**Status:** 06A/06B IMPLEMENTED / WORKSTATION RUN PENDING  
+**Status:** 06A/06B SUPPORTED; 06C IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-10-03  
 **Canonical plan:** docs/CHECKPOINT_06_PLAN.md
 
@@ -48,3 +48,23 @@ TAIL_HYPOTHESIS = SUPPORTED / NOT_SUPPORTED / AMBIGUOUS
 
 Review `reports/checkpoint_06/checkpoint_06_report.md` before 06C or any
 regime model is implemented.
+
+
+## Checkpoint 06C — calibration before clustering
+
+06A/06B returned `TAIL_HYPOTHESIS = SUPPORTED`, including strong low/high
+shrinkage and X-predictable tail structure. Therefore the next implemented
+stage is deliberately low capacity:
+
+```powershell
+python tools\run_checkpoint_06c.py --preflight
+python tools\run_checkpoint_06c.py
+```
+
+06C fits calibrators only on the 97 pseudo-train rows whose base predictions
+were themselves cross-fitted, then scores the untouched 41 pseudo-target rows.
+Candidates are frozen stretch factors, Ridge residual corrections, piecewise
+Ridge tail corrections, and a three-variable Local04D/CatBoost residual
+correction. LOSO selection is mandatory.
+
+Do not start X-only clustering unless 06C fails its split-excluded gate.
