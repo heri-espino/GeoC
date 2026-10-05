@@ -72,3 +72,9 @@ change historical 03C scores or directly promote a competition predictor.
 ## Checkpoint 06 status
 
 Checkpoint 06A/06B is now implemented in `configs/checkpoint06.yaml`. The config freezes the fold-valid q15/q85 tail rule, diagnostic continuation thresholds, G1 family analysis, and a future unused confirmation seed. Clustering, calibration and specialist models remain disabled until the diagnostic run is reviewed.
+
+
+`checkpoint06c.yaml` freezes the post-diagnostic low-capacity calibration
+candidate universe and LOSO center-protection gate. It is entered only because
+06A/06B returned `TAIL_HYPOTHESIS = SUPPORTED`; it does not enable clustering
+or specialists.
