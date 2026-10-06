@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-10-03  
-**Active phase:** Checkpoint 06A/06B SUPPORTED; 06C LOSO FAILED; 06D REGIME_HYPOTHESIS NOT_SUPPORTED; 06E supervised center/tail mixture is IMPLEMENTED / WORKSTATION RUN PENDING.
+**Active phase:** Checkpoint 06 is CLOSED / NO PROMOTION. 06E failed LOSO. Local04D remains the frozen competition method and the canonical 59 predictions remain `reports/checkpoint_05/final_predictions.csv`.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/CHECKPOINT_06_PLAN.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
@@ -145,48 +145,31 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run Checkpoint 06E:
+Checkpoint 06 is closed. Do not continue tuning center/tail corrections on the
+same 16 development splits.
 
-```powershell
-git pull --ff-only
-git lfs pull
-conda activate geocebada
-python -m pip install -e ".[dev,geo]"
-python tools\run_checkpoint_06e.py --preflight
-python tools\run_checkpoint_06e.py
-```
-
-Why 06E:
-
-- 06A/06B verified strong tail shrinkage and X-predictable low/high regimes;
-- 06C global calibration improved the development table slightly but failed
-  LOSO, with Local04D selected 16/16;
-- 06D found stable X-only clusters, but they explain essentially none of the
-  Local04D residual structure, so cluster specialists are rejected.
-
-06E therefore uses supervised soft probabilities rather than clusters:
+Canonical result:
 
 ```text
-Local04D
-+ w_center(X) * center residual expert
-+ w_low(X)    * shrunken low-tail residual offset
-+ w_high(X)   * shrunken high-tail residual offset
+Local04D mean RMSE     0.487845
+Local04D pooled RMSE   0.495741
+Local04D center RMSE   0.360770
+Local04D tail RMSE     0.664049
+06E_LOSO_GATE          FAIL
 ```
 
-The center expert is the new focus: improve non-outlier parcels using only
-honest cross-fitted Local04D residuals from fold-valid center rows.
+06E did show an aggregate center signal: G1-PCA Ridge residual experts reached
+center RMSE about 0.351, but that gain did not survive split-excluded
+selection. LOSO chose Local04D on 13/16 holdouts and was slightly worse on mean,
+pooled, center and tail RMSE.
 
-Expected terminal output:
+Read `docs/CHECKPOINT_06_FINDINGS.md` before proposing any new modeling work.
 
-```text
-06E_LOSO_GATE = PASS / FAIL
-```
-
-PASS -> freeze exactly one challenger and run fresh confirmation.
-FAIL -> retain Local04D and close the current Checkpoint 06 modeling path.
-
-Current canonical competition file remains
+Current competition source of truth remains:
 `reports/checkpoint_05/final_predictions.csv`.
+
+The next work should be submission/app/report/deployment unless a genuinely new
+source of information or hypothesis is introduced.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
 

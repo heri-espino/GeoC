@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 06E supervised center/tail mixture is IMPLEMENTED / WORKSTATION RUN PENDING. 06A/06B supported tails; 06C failed LOSO; 06D rejected unsupervised regimes. Local04D remains incumbent.  
+**Current phase:** Checkpoint 06 is CLOSED / NO PROMOTION. Local04D remains the frozen competition method.  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -394,3 +394,23 @@ agent must preserve these boundaries:
 - no actual 59-target prediction may change before confirmation.
 
 Canonical design: `docs/CHECKPOINT_06E_PLAN.md`.
+
+
+### Checkpoint 06 closure
+
+Checkpoint 06 is closed. Canonical interpretation:
+`docs/CHECKPOINT_06_FINDINGS.md`.
+
+The tail hypothesis was real, but no correction survived the required
+selection gates:
+
+- 06C global calibration failed LOSO;
+- 06D stable X-only clusters did not explain residuals;
+- 06E center/tail mixture improved center RMSE on the aggregate development
+  table but failed LOSO.
+
+Do not reopen cluster specialists, tail-stretch calibration, the same low/high
+gates, or the same center Ridge residual family without genuinely new
+information.
+
+Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical.

@@ -1,6 +1,6 @@
 # Checkpoint 06 — Tail-Aware Regime Refinement
 
-**Status:** 06A/06B SUPPORTED; 06C LOSO FAILED; 06D NOT SUPPORTED; 06E IMPLEMENTED / RUN PENDING  
+**Status:** CLOSED / NO PROMOTION  
 **Opened:** 2026-10-03  
 **Canonical plan:** docs/CHECKPOINT_06_PLAN.md
 
@@ -126,3 +126,24 @@ Expected decision:
 ```text
 06E_LOSO_GATE = PASS / FAIL
 ```
+
+
+## Final Checkpoint 06 decision
+
+06E was run and failed its LOSO promotion gate.
+
+The aggregate development table showed a real center improvement for some
+G1-PCA Ridge residual experts (center RMSE roughly 0.351 vs 0.361 for
+Local04D), but split-excluded selection did not reproduce the gain. The LOSO
+selector retained Local04D on 13/16 holdouts and the aggregate LOSO mean,
+pooled, center and tail RMSE were all slightly worse than Local04D.
+
+```text
+06E_LOSO_GATE = FAIL
+```
+
+Checkpoint 06 is therefore closed without promotion. No fresh confirmation is
+run and the canonical 59 predictions remain
+`reports/checkpoint_05/final_predictions.csv`.
+
+Canonical interpretation: `docs/CHECKPOINT_06_FINDINGS.md`.

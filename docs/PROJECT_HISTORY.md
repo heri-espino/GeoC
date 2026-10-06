@@ -1282,3 +1282,31 @@ No 59-target prediction changed at implementation time. 06E must pass LOSO and
 then fresh confirmation before promotion.
 
 Canonical specification: `docs/CHECKPOINT_06E_PLAN.md`.
+
+
+---
+
+## 2026-10-06 — Checkpoint 06 closed
+
+Checkpoint 06E completed after the negative 06D clustering result.
+
+The supervised center/tail mixture used Local04D as the anchor, a
+water-productivity low-tail gate, a thermal high-tail gate, a center-only
+Ridge residual expert, and shrunken asymmetric tail offsets.
+
+A useful aggregate-development effect was found: G1-PCA center residual experts
+reduced center RMSE from 0.360770 to roughly 0.351. However, the effect did not
+survive leave-one-split-out selection.
+
+LOSO selected Local04D on 13/16 holdouts and
+`Center_Cross_a1000p0` on only 3/16. The aggregate selected rule was slightly
+worse than Local04D on mean, pooled, center and tail RMSE.
+
+```text
+06E_LOSO_GATE = FAIL
+```
+
+Checkpoint 06 was closed without fresh confirmation or model promotion.
+Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical.
+
+Canonical interpretation: `docs/CHECKPOINT_06_FINDINGS.md`.

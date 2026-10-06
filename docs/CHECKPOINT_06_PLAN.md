@@ -1,6 +1,6 @@
 # Checkpoint 06 plan — Tail-Aware Regime Refinement
 
-**Status:** 06A/06B SUPPORTED; 06C LOSO FAILED; 06D NOT SUPPORTED; 06E IMPLEMENTED / RUN PENDING  
+**Status:** CLOSED / NO PROMOTION  
 **Opened:** 2026-10-03  
 **Track:** competition-only  
 **Incumbent:** Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1  
@@ -914,3 +914,19 @@ The dedicated specification is `docs/CHECKPOINT_06E_PLAN.md`.
 
 06E must pass split-excluded selection before any fresh confirmation or change
 to the 59 target predictions.
+
+
+## Final Checkpoint 06 closure
+
+Checkpoint 06E completed and failed its LOSO gate.
+
+The strongest center-only G1-PCA residual experts reduced center RMSE by about
+0.01 t/ha on the aggregate development table, but this improvement was not
+stable under leave-one-split-out selection. The split-excluded selector chose
+Local04D on 13/16 holdouts, and aggregate LOSO mean, pooled, center and tail
+RMSE were all slightly worse than the incumbent.
+
+No fresh confirmation is run because the predeclared LOSO gate did not pass.
+
+Checkpoint 06 is closed with no model promotion. Canonical findings:
+`docs/CHECKPOINT_06_FINDINGS.md`.

@@ -444,11 +444,9 @@ final frozen pipeline
 59 predictions
 ```
 
-## Checkpoint 06 — plan de refinamiento de colas/regímenes
+## Checkpoint 06 — cerrado: refinamiento de colas/regímenes
 
-Se abrió una última hipótesis estrecha a partir de una observación del equipo:
-los errores restantes podrían estar concentrados en unas pocas parcelas de
-rendimiento muy bajo o muy alto. **Esto todavía no está verificado.**
+Checkpoint 06 verificó que los errores restantes sí están muy concentrados y que Local04D comprime las colas hacia la media. Sin embargo, ninguna corrección sobrevivió los gates de selección.
 
 Checkpoint 06 primero reconstruirá residuos honestos Local04D/CatBoost,
 medirá qué fracción del SSE explican las colas, comprobará si existe sesgo hacia
@@ -468,15 +466,11 @@ calibración global no sobrevive LOSO y que los clusters X-only no explican los
 residuos, el experimento activo es una mezcla supervisada con Local04D como
 ancla.
 
-06E intenta mejorar específicamente el centro mediante un modelo de residuo
-Ridge entrenado sólo sobre predicciones honestas de parcelas centrales, mientras
-probabilidades low/high derivadas de variables agronómicas activan correcciones
-conservadoras en las colas.
+06E mejoró el RMSE del centro en el agregado de desarrollo (aprox. 0.351 frente a 0.361 de Local04D), pero la mejora no sobrevivió LOSO. El selector retuvo Local04D en 13/16 holdouts y el resultado LOSO fue ligeramente peor en mean, pooled, center y tail RMSE.
 
-Plan: `docs/CHECKPOINT_06E_PLAN.md`.
+`06E_LOSO_GATE = FAIL`. Checkpoint 06 queda cerrado sin promoción ni fresh confirmation. Interpretación: `docs/CHECKPOINT_06_FINDINGS.md`.
 
-Local04D y `reports/checkpoint_05/final_predictions.csv` siguen siendo
-canónicos hasta que 06E pase LOSO y fresh confirmation.
+Local04D y `reports/checkpoint_05/final_predictions.csv` siguen siendo canónicos.
 
 ## Próximos pasos
 
