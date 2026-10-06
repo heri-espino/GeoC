@@ -1,12 +1,12 @@
 # AI Handoff — GeoCebada
 
-**Updated:** 2026-10-03  
+**Updated:** 2026-10-06  
 **Active phase:** Checkpoint 06 is CLOSED / NO PROMOTION. 06E failed LOSO. Local04D remains the frozen competition method and the canonical 59 predictions remain `reports/checkpoint_05/final_predictions.csv`.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
-`docs/CHECKPOINT_06_PLAN.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
-`docs/PROJECT_HISTORY.md`. Checkpoint 03C/03D and 05 remain frozen historical evidence;
-06 is the only active planned modeling hypothesis.
+`docs/CHECKPOINT_06_FINDINGS.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
+`docs/PROJECT_HISTORY.md`. Checkpoints 03C/03D, 05 and 06 are frozen historical evidence;
+no modeling checkpoint is currently active.
 
 ## Current mission
 
