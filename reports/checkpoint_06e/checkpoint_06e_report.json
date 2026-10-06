@@ -1,0 +1,54 @@
+{
+  "best_development": {
+    "center_bias": 0.01380575072716175,
+    "center_pooled_rmse": 0.36076982220030784,
+    "high_bias": 0.4731660694638132,
+    "high_pooled_rmse": 0.5342426720112896,
+    "low_bias": -0.4319682959094983,
+    "low_pooled_rmse": 0.7271208122197296,
+    "method": "Local04D",
+    "n_predictions": 656,
+    "n_splits": 16,
+    "pooled_rmse": 0.49574142871073495,
+    "rmse_mean": 0.48784531674343823,
+    "rmse_median": 0.46874164811294816,
+    "rmse_worst": 0.6946996263427138,
+    "tail_pooled_rmse": 0.6640489003338566
+  },
+  "checkpoint": "06E",
+  "generated_at": "2026-10-06T20:24:42.419200+00:00",
+  "git_commit": "30a6a2afbe56fa1544883bb662ee70fe5e80a2dc",
+  "hidden_fira_y_used_or_scored": false,
+  "loso": {
+    "center_rmse_improvement": -0.00011810712455573302,
+    "incumbent_center_rmse": 0.36076982220030784,
+    "incumbent_pooled_rmse": 0.49574142871073495,
+    "incumbent_rmse_mean": 0.48784531674343823,
+    "incumbent_tail_rmse": 0.6640489003338566,
+    "n_splits": 16,
+    "pooled_rmse_improvement": -0.0008261349331432633,
+    "rmse_mean_improvement": -0.0007863913110580656,
+    "selected_center_rmse": 0.3608879293248636,
+    "selected_pooled_rmse": 0.4965675636438782,
+    "selected_rmse_mean": 0.4886317080544963,
+    "selected_tail_rmse": 0.6655982465856533,
+    "selection_counts": {
+      "Center_Cross_a1000p0": 3,
+      "Local04D": 13
+    },
+    "tail_rmse_change": 0.0015493462517967016
+  },
+  "loso_gate_passed": false,
+  "preflight": {
+    "06c_loso_gate_passed": false,
+    "06d_regime_hypothesis": "NOT_SUPPORTED",
+    "hidden_fira_y_used_or_scored": false,
+    "high_gate_family": "thermal",
+    "low_gate_family": "water_productivity",
+    "pseudo_targets_per_split": 41,
+    "pseudo_train_oof_per_split": 97,
+    "tail_hypothesis": "SUPPORTED",
+    "target_matched_splits": 16
+  },
+  "schema_version": 1
+}
