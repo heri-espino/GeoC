@@ -141,6 +141,15 @@ from geocebada.evaluation.checkpoint06d import (
     select_x_only_regime,
     selected_regime_assignments,
 )
+from geocebada.evaluation.checkpoint06e import (
+    build_supervised_mixture_predictions,
+    candidate_names as checkpoint06e_candidate_names,
+    fit_center_residual_expert,
+    fit_tail_gates,
+    leave_one_split_out_mixture_selection,
+    normalize_gate_probabilities,
+    summarize_mixture_predictions,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -160,6 +169,13 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "build_supervised_mixture_predictions",
+    "checkpoint06e_candidate_names",
+    "fit_center_residual_expert",
+    "fit_tail_gates",
+    "leave_one_split_out_mixture_selection",
+    "normalize_gate_probabilities",
+    "summarize_mixture_predictions",
     "characterize_selected_regimes",
     "decide_regime_hypothesis",
     "discover_x_regimes",
