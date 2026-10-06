@@ -90,3 +90,6 @@ families. On completion it writes three global finalists and a verified
 - `run_checkpoint_06c.py`: low-capacity Local04D tail calibration using
   cross-fitted pseudo-train predictions, with LOSO selection before any
   clustering.
+
+- `run_checkpoint_06d.py`: X-only agronomic regime discovery after 06C LOSO
+  failure; selects clusters without y and only then characterizes residuals.
