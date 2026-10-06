@@ -1,6 +1,6 @@
 # Checkpoint 06 plan — Tail-Aware Regime Refinement
 
-**Status:** 06A/06B SUPPORTED; 06C IMPLEMENTED / RUN PENDING  
+**Status:** 06A/06B SUPPORTED; 06C LOSO FAILED; 06D IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-10-03  
 **Track:** competition-only  
 **Incumbent:** Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1  
@@ -852,3 +852,17 @@ Checkpoint 06C is now implemented in:
 
 06C must be run before any clustering. It tests low-capacity calibration using
 honest cross-fitted pseudo-train predictions and LOSO selection.
+
+
+## 06D implementation status
+
+06C failed the LOSO gate. Its best same-development candidate,
+`LocalPiecewiseRidge_a100p0`, improved mean RMSE to 0.485375 and pooled RMSE
+to 0.492747, but no candidate was eligible under leave-one-split-out selection;
+Local04D was selected on all 16 held-out splits.
+
+06D is therefore implemented to discover X-only agronomic regimes. Selection
+uses no yield/residual information: G1 -> robust scaling -> PCA 0.80/0.90 ->
+KMeans/GMM, K=2/3/4, with balance and seed/subsample stability gates. Only after
+one clustering is frozen are Local04D/CatBoost residual effects, expert
+advantage and geography confounding summarized.
