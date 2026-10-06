@@ -249,7 +249,8 @@ def main() -> int:
         lines.extend(
             [
                 "The center/tail supervised mixture did not survive split-excluded selection.",
-                "Retain Local04D and close the planned Checkpoint 06 modeling path unless a new, predeclared hypothesis is introduced.",
+                "Retain Local04D and close the planned Checkpoint 06 modeling "
+                "path unless a new, predeclared hypothesis is introduced.",
             ]
         )
     (out / str(config["outputs"]["report_markdown"])).write_text(
