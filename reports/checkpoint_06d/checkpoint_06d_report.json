@@ -1,0 +1,59 @@
+{
+  "checkpoint": "06D",
+  "decision": {
+    "REGIME_HYPOTHESIS": "NOT_SUPPORTED",
+    "expert_advantage_range": 0.03375613535527802,
+    "geography": {
+      "cluster_municipality_nmi": 0.44842987447265725,
+      "cluster_state_nmi": 0.2984425314623464
+    },
+    "local04d_residual_effect": {
+      "method": "Local04D",
+      "mse_eta2": 0.011872540839704893,
+      "mse_permutation_p": 0.7621189405297352,
+      "residual_eta2": 0.003997428513152935,
+      "residual_mean_range": 0.08773811960491257,
+      "residual_permutation_p": 0.9345327336331835
+    },
+    "local04d_residual_structure_supported": false,
+    "selected_x_regime": {
+      "algorithm": "kmeans",
+      "k": 4,
+      "min_cluster_fraction": 0.14720812182741116,
+      "min_cluster_size": 29,
+      "n_components": 11,
+      "pca_variance": 0.8,
+      "seed_ari_mean": 0.8808540126095037,
+      "selection_status": "X_CLUSTERING_SELECTED",
+      "silhouette": 0.19664443428580888,
+      "subsample_ari_mean": 0.8204019163473918,
+      "x_eligible": true
+    },
+    "x_clustering_supported": true
+  },
+  "generated_at": "2026-10-06T19:33:06.598286+00:00",
+  "git_commit": "a59ee24b6c8befcf2f0254ef5e60b54f9739b599",
+  "hidden_fira_y_used_or_scored": false,
+  "preflight": {
+    "06c_loso_gate_passed": false,
+    "all_197_x_allowed_transductively": true,
+    "cluster_selection_uses_y": false,
+    "labeled_rows": 138,
+    "rows": 197,
+    "target_rows": 59
+  },
+  "schema_version": 1,
+  "x_selection": {
+    "algorithm": "kmeans",
+    "k": 4,
+    "min_cluster_fraction": 0.14720812182741116,
+    "min_cluster_size": 29,
+    "n_components": 11,
+    "pca_variance": 0.8,
+    "seed_ari_mean": 0.8808540126095037,
+    "selection_status": "X_CLUSTERING_SELECTED",
+    "silhouette": 0.19664443428580888,
+    "subsample_ari_mean": 0.8204019163473918,
+    "x_eligible": true
+  }
+}
