@@ -1,6 +1,6 @@
 # Checkpoint 06 plan — Tail-Aware Regime Refinement
 
-**Status:** 06A/06B SUPPORTED; 06C LOSO FAILED; 06D IMPLEMENTED / RUN PENDING  
+**Status:** 06A/06B SUPPORTED; 06C LOSO FAILED; 06D NOT SUPPORTED; 06E IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-10-03  
 **Track:** competition-only  
 **Incumbent:** Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1  
@@ -866,3 +866,51 @@ uses no yield/residual information: G1 -> robust scaling -> PCA 0.80/0.90 ->
 KMeans/GMM, K=2/3/4, with balance and seed/subsample stability gates. Only after
 one clustering is frozen are Local04D/CatBoost residual effects, expert
 advantage and geography confounding summarized.
+
+
+## 06E implementation status
+
+06D was executed and returned `REGIME_HYPOTHESIS = NOT_SUPPORTED`.
+
+The selected X-only clustering itself was valid:
+
+```text
+KMeans
+K = 4
+G1 agronomic -> PCA 80%
+silhouette = 0.1966
+seed ARI mean = 0.8809
+subsample ARI mean = 0.8204
+```
+
+However, the clusters did not explain Local04D failure:
+
+```text
+Local04D residual eta^2          0.0040
+residual permutation p          0.9345
+Local04D MSE eta^2              0.0119
+MSE permutation p               0.7621
+cluster residual mean range     0.0877 t/ha
+```
+
+Therefore Checkpoint 06 explicitly rejects cluster-specific specialists.
+
+The remaining supported hypothesis is supervised low/high tail probability,
+because 06B showed strong held-out classification:
+
+```text
+low tail  / water_productivity  mean split ROC-AUC ~ 0.889
+high tail / thermal             mean split ROC-AUC ~ 0.805
+```
+
+Checkpoint 06E is implemented to combine:
+
+- Local04D as the universal anchor;
+- a center-only residual expert for non-outlier parcels;
+- soft low/high tail gates;
+- conservative low/high residual offsets.
+
+The dedicated specification is `docs/CHECKPOINT_06E_PLAN.md`.
+
+06E must pass split-excluded selection before any fresh confirmation or change
+to the 59 target predictions.
