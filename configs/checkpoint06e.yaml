@@ -1,0 +1,86 @@
+schema_version: 1
+updated: 2026-10-06
+
+stage:
+  checkpoint: "06E"
+  name: supervised_center_tail_mixture
+  status: implemented_run_pending
+  prerequisite_tail: reports/checkpoint_06/checkpoint_06_report.json
+  prerequisite_calibration: reports/checkpoint_06c/checkpoint_06c_report.json
+  prerequisite_regimes: reports/checkpoint_06d/checkpoint_06d_report.json
+
+scope:
+  active_track: competition
+  hidden_fira_y_allowed: false
+  incumbent: Local04D
+  purpose: >
+    Improve the already-well-predicted center while retaining explicit,
+    probabilistically gated low/high corrections. Replace failed unsupervised
+    clustering with supervised tail probabilities learned from X.
+  hard_cluster_routing: false
+  independent_high_capacity_tail_models: false
+
+inputs:
+  base_oof_predictions: reports/checkpoint_05/base_oof_predictions.csv
+  honest_pseudo_predictions: reports/checkpoint_05/pseudo_predictions.csv
+  agronomic_table: data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+  agronomic_manifest: data/processed/agronomic_features_v1/feature_manifest.json
+
+tails:
+  low_quantile: 0.15
+  high_quantile: 0.85
+
+gates:
+  low_family: water_productivity
+  high_family: thermal
+  logistic_c: 1.0
+  rationale:
+    low: "06B mean split ROC-AUC 0.889; strongest low-tail family"
+    high: "06B mean split ROC-AUC 0.805; strongest high-tail family"
+
+center:
+  representations:
+    - cross_domain
+    - all_agronomic_pca
+  ridge_alphas: [10.0, 100.0, 1000.0]
+  pca_variance: 0.80
+  target: honest_local04d_residual_on_fold_valid_center_only
+
+mixture:
+  tail_shrink_values: [0.25, 0.50, 0.75]
+  weight_rule: normalized_separate_low_high_logistic_with_center_complement
+  formula: >
+    Local04D + w_center*delta_center(X)
+    + w_low*shrink*mean_residual_low
+    + w_high*shrink*mean_residual_high
+
+selection:
+  min_center_improvement: 0.002
+  tail_tolerance_absolute: 0.005
+  tail_tolerance_fraction: 0.01
+  require_overall_mean_improvement: true
+  require_overall_pooled_improvement: true
+  require_center_improvement: true
+  require_loso_mean_improvement: true
+  require_loso_pooled_improvement: true
+  require_loso_center_improvement: true
+
+runtime:
+  random_state: 20261006
+
+future_confirmation:
+  enabled_only_after_loso_pass: true
+  random_state: 2026100601
+  score_only_incumbent_and_one_frozen_challenger: true
+
+outputs:
+  directory: reports/checkpoint_06e
+  gate_weights: gate_weights.csv
+  predictions: mixture_predictions.csv
+  split_metrics: mixture_split_metrics.csv
+  summary: mixture_summary.csv
+  loso_selection: loso_selection.csv
+  loso_predictions: loso_predictions.csv
+  loso_summary: loso_summary.json
+  report_json: checkpoint_06e_report.json
+  report_markdown: checkpoint_06e_report.md
