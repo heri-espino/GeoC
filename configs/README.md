@@ -78,3 +78,8 @@ Checkpoint 06A/06B is now implemented in `configs/checkpoint06.yaml`. The config
 candidate universe and LOSO center-protection gate. It is entered only because
 06A/06B returned `TAIL_HYPOTHESIS = SUPPORTED`; it does not enable clustering
 or specialists.
+
+
+`checkpoint06d.yaml` freezes the X-only regime search: G1 agronomic,
+RobustScaler, PCA variance 0.80/0.90, KMeans/GMM and K=2/3/4. Cluster selection
+is target-free and uses silhouette/balance/stability only.
