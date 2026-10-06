@@ -1,0 +1,68 @@
+schema_version: 1
+updated: 2026-10-05
+
+stage:
+  checkpoint: "06D"
+  name: x_only_regime_discovery
+  status: implemented_run_pending
+  prerequisite: reports/checkpoint_06c/checkpoint_06c_report.json
+  expected_06c_loso_gate: false
+
+scope:
+  active_track: competition
+  hidden_fira_y_allowed: false
+  cluster_selection_uses_y: false
+  clustering_uses_all_197_x: true
+  correction_models_enabled: false
+  incumbent: Local04D
+
+inputs:
+  base_table: data/processed/features_v1/parcel_features_competition.csv
+  agronomic_table: data/processed/agronomic_features_v1/parcel_agronomic_features.csv
+  agronomic_manifest: data/processed/agronomic_features_v1/feature_manifest.json
+  parcel_residual_summary: reports/checkpoint_06/parcel_residual_summary.csv
+  checkpoint06c_report: reports/checkpoint_06c/checkpoint_06c_report.json
+
+identity:
+  id_column: ID_POLIGONO
+  target_column: RENDIMIENTO_T_HA
+  split_column: CONJUNTO
+  train_value: ENTRENAMIENTO
+  prediction_value: PREDICCION
+  state_column: meta_estado
+  municipality_column: meta_municipio
+
+x_regimes:
+  representation: G1_agronomic
+  pca_variances: [0.80, 0.90]
+  algorithms: [kmeans, gmm]
+  k_values: [2, 3, 4]
+  seeds: [20261005, 20261006, 20261007, 20261008, 20261009]
+  subsample_repeats: 20
+  subsample_fraction: 0.80
+  min_cluster_fraction: 0.10
+  min_seed_ari: 0.80
+  min_subsample_ari: 0.70
+  selection_rule: highest_silhouette_among_x_eligible
+
+residual_gate:
+  permutation_repeats: 2000
+  min_residual_eta2: 0.05
+  max_residual_permutation_p: 0.10
+  min_residual_mean_range: 0.10
+
+runtime:
+  random_state: 20261005
+
+outputs:
+  directory: reports/checkpoint_06d
+  candidates: x_regime_candidates.csv
+  assignments: x_regime_assignments.csv
+  pca_coordinates: x_regime_pca_coordinates.csv
+  composition: x_regime_composition.csv
+  residual_by_cluster: x_regime_residual_summary.csv
+  residual_effects: x_regime_residual_effects.csv
+  expert_advantage: x_regime_expert_advantage.csv
+  report_json: checkpoint_06d_report.json
+  report_markdown: checkpoint_06d_report.md
+  figures_directory: figures
