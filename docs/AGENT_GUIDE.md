@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 06A/06B diagnostics are IMPLEMENTED / WORKSTATION RUN PENDING. Broad search remains closed; Local04D remains frozen incumbent.  
+**Current phase:** Checkpoint 06E supervised center/tail mixture is IMPLEMENTED / WORKSTATION RUN PENDING. 06A/06B supported tails; 06C failed LOSO; 06D rejected unsupervised regimes. Local04D remains incumbent.  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -372,3 +372,25 @@ Never cluster on y for the 59-target routing rule. Never hard-code the IDs of
 the worst labeled parcels.
 
 Canonical specification: `docs/CHECKPOINT_06_PLAN.md`.
+
+
+### 06E — supervised center/tail mixture
+
+Do not revive cluster specialists: 06D returned
+`REGIME_HYPOTHESIS = NOT_SUPPORTED`.
+
+06E is the remaining predeclared branch of the 06 plan. It uses supervised
+low/high probabilities learned from X and a center residual expert. The next
+agent must preserve these boundaries:
+
+- low gate uses `water_productivity`;
+- high gate uses `thermal`;
+- fold-valid q15/q85 labels come from pseudo-train y only;
+- center residual targets are honest Local04D OOF residuals;
+- center models see only fold-valid center rows;
+- tail models are shrunken offsets, not high-capacity regressors;
+- pseudo-target y is scoring-only;
+- LOSO must pass before fresh confirmation;
+- no actual 59-target prediction may change before confirmation.
+
+Canonical design: `docs/CHECKPOINT_06E_PLAN.md`.
