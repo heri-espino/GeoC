@@ -136,6 +136,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `fit_predict_calibrators` | function | `geocebada.evaluation.checkpoint06c` | Fit 06C calibrators on pseudo-train OOF predictions and predict pseudo-targets. | `src/geocebada/evaluation/checkpoint06c.py` |
 | `leave_one_split_out_calibration_selection` | function | `geocebada.evaluation.checkpoint06c` | Select a calibration on other splits, then score it on the held-out split. | `src/geocebada/evaluation/checkpoint06c.py` |
 | `summarize_calibration_predictions` | function | `geocebada.evaluation.checkpoint06c` | Return per-split and pooled/development summaries for 06C candidates. | `src/geocebada/evaluation/checkpoint06c.py` |
+| `characterize_selected_regimes` | function | `geocebada.evaluation.checkpoint06d` | Characterize frozen X-only clusters using labeled y/residuals only after selection. | `src/geocebada/evaluation/checkpoint06d.py` |
+| `decide_regime_hypothesis` | function | `geocebada.evaluation.checkpoint06d` | Decide whether X-only regimes warrant a partially pooled 06E correction. | `src/geocebada/evaluation/checkpoint06d.py` |
+| `discover_x_regimes` | function | `geocebada.evaluation.checkpoint06d` | Evaluate and select X-only regime candidates without reading y. | `src/geocebada/evaluation/checkpoint06d.py` |
+| `select_x_only_regime` | function | `geocebada.evaluation.checkpoint06d` | Freeze one clustering candidate using only X-derived diagnostics. | `src/geocebada/evaluation/checkpoint06d.py` |
+| `selected_regime_assignments` | function | `geocebada.evaluation.checkpoint06d` | Fit the frozen X-only clustering to all 197 X and return assignments/PCA coordinates. | `src/geocebada/evaluation/checkpoint06d.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
