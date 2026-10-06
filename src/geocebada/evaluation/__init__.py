@@ -143,12 +143,14 @@ from geocebada.evaluation.checkpoint06d import (
 )
 from geocebada.evaluation.checkpoint06e import (
     build_supervised_mixture_predictions,
-    candidate_names as checkpoint06e_candidate_names,
     fit_center_residual_expert,
     fit_tail_gates,
     leave_one_split_out_mixture_selection,
     normalize_gate_probabilities,
     summarize_mixture_predictions,
+)
+from geocebada.evaluation.checkpoint06e import (
+    candidate_names as checkpoint06e_candidate_names,
 )
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
