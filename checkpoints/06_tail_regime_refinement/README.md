@@ -1,6 +1,6 @@
 # Checkpoint 06 — Tail-Aware Regime Refinement
 
-**Status:** 06A/06B SUPPORTED; 06C IMPLEMENTED / RUN PENDING  
+**Status:** 06A/06B SUPPORTED; 06C LOSO FAILED; 06D IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-10-03  
 **Canonical plan:** docs/CHECKPOINT_06_PLAN.md
 
@@ -68,3 +68,23 @@ Ridge tail corrections, and a three-variable Local04D/CatBoost residual
 correction. LOSO selection is mandatory.
 
 Do not start X-only clustering unless 06C fails its split-excluded gate.
+
+
+## Checkpoint 06D — X-only regime discovery
+
+06C improved the same development splits slightly but failed LOSO: Local04D was
+selected on all 16 holdouts. The next stage therefore tests whether the verified
+tail bias depends on stable X-only regimes rather than one global calibration.
+
+Run:
+
+```powershell
+python tools\run_checkpoint_06d.py --preflight
+python tools\run_checkpoint_06d.py
+```
+
+Cluster selection uses **only X** from all 197 parcels. Candidate space is
+G1 agronomic -> RobustScaler -> PCA (80% or 90%) -> KMeans/GMM with K=2,3,4.
+Algorithm/K are chosen only from silhouette, cluster balance and stability
+across seeds/subsamples. Yield and residuals are inspected only after one
+clustering is frozen.
