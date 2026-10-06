@@ -1,6 +1,6 @@
 # Checkpoint 06 — Tail-Aware Regime Refinement
 
-**Status:** 06A/06B SUPPORTED; 06C LOSO FAILED; 06D IMPLEMENTED / RUN PENDING  
+**Status:** 06A/06B SUPPORTED; 06C LOSO FAILED; 06D NOT SUPPORTED; 06E IMPLEMENTED / RUN PENDING  
 **Opened:** 2026-10-03  
 **Canonical plan:** docs/CHECKPOINT_06_PLAN.md
 
@@ -88,3 +88,41 @@ G1 agronomic -> RobustScaler -> PCA (80% or 90%) -> KMeans/GMM with K=2,3,4.
 Algorithm/K are chosen only from silhouette, cluster balance and stability
 across seeds/subsamples. Yield and residuals are inspected only after one
 clustering is frozen.
+
+
+## Checkpoint 06E — supervised center/tail mixture
+
+06D found stable agronomic clusters, but they do not explain Local04D residual
+structure (`eta^2 ~= 0.004`, permutation `p ~= 0.935`). Therefore no
+cluster-specific models are allowed.
+
+The remaining supported mechanism is supervised tail probability. 06B showed
+that low and high tails are distinguishable from X, especially with
+`water_productivity` and `thermal` features.
+
+06E keeps Local04D as the anchor and adds three soft corrections:
+
+```text
+Local04D
++ w_center(X) * center residual expert
++ w_low(X)    * shrunken low-tail offset
++ w_high(X)   * shrunken high-tail offset
+```
+
+The center expert is explicitly designed to improve non-outlier parcels. It
+learns only honest Local04D residuals from fold-valid center rows.
+
+Canonical design: `docs/CHECKPOINT_06E_PLAN.md`.
+
+Run:
+
+```powershell
+python tools\run_checkpoint_06e.py --preflight
+python tools\run_checkpoint_06e.py
+```
+
+Expected decision:
+
+```text
+06E_LOSO_GATE = PASS / FAIL
+```
