@@ -56,7 +56,7 @@ def _fit_clusterer(
     elif algorithm == "gmm":
         model = GaussianMixture(
             n_components=int(k),
-            covariance_type="full",
+            covariance_type="diag",
             n_init=10,
             reg_covar=1.0e-6,
             random_state=int(random_state),
@@ -295,7 +295,13 @@ def characterize_selected_regimes(
     municipality_column: str | None,
     permutation_repeats: int,
     random_state: int,
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, Any]]:
+) -> tuple[
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+    dict[str, Any],
+]:
     """Characterize frozen X-only clusters using labeled y/residuals only after selection."""
 
     base = base_frame.copy()
