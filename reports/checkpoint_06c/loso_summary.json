@@ -1,0 +1,18 @@
+{
+  "center_rmse_change": 0.0,
+  "incumbent_center_rmse": 0.36076982220030784,
+  "incumbent_pooled_rmse": 0.49574142871073495,
+  "incumbent_rmse_mean": 0.48784531674343823,
+  "incumbent_tail_rmse": 0.6640489003338566,
+  "n_splits": 16,
+  "pooled_rmse_improvement": 0.0,
+  "rmse_mean_improvement": 0.0,
+  "selected_center_rmse": 0.36076982220030784,
+  "selected_pooled_rmse": 0.49574142871073495,
+  "selected_rmse_mean": 0.48784531674343823,
+  "selected_tail_rmse": 0.6640489003338566,
+  "selection_counts": {
+    "Local04D": 16
+  },
+  "tail_rmse_improvement": 0.0
+}

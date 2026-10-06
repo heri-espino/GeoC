@@ -1,0 +1,49 @@
+{
+  "best_development": {
+    "center_pooled_rmse": 0.34816059606440014,
+    "high_bias": 0.50030511708687,
+    "high_pooled_rmse": 0.5724126443152051,
+    "low_bias": -0.4365784104215861,
+    "low_pooled_rmse": 0.7183577615174492,
+    "method": "LocalPiecewiseRidge_a100p0",
+    "n_predictions": 656,
+    "n_splits": 16,
+    "pooled_rmse": 0.49274703915094653,
+    "rmse_mean": 0.48537481073683075,
+    "rmse_median": 0.47942606370922286,
+    "rmse_worst": 0.6825798061170116,
+    "tail_pooled_rmse": 0.6694004443168138
+  },
+  "checkpoint": "06C",
+  "generated_at": "2026-10-06T01:05:31.869929+00:00",
+  "git_commit": "2a8372e1b92262611afd621be4e3dd90a349b02e",
+  "hidden_fira_y_used_or_scored": false,
+  "loso": {
+    "center_rmse_change": 0.0,
+    "incumbent_center_rmse": 0.36076982220030784,
+    "incumbent_pooled_rmse": 0.49574142871073495,
+    "incumbent_rmse_mean": 0.48784531674343823,
+    "incumbent_tail_rmse": 0.6640489003338566,
+    "n_splits": 16,
+    "pooled_rmse_improvement": 0.0,
+    "rmse_mean_improvement": 0.0,
+    "selected_center_rmse": 0.36076982220030784,
+    "selected_pooled_rmse": 0.49574142871073495,
+    "selected_rmse_mean": 0.48784531674343823,
+    "selected_tail_rmse": 0.6640489003338566,
+    "selection_counts": {
+      "Local04D": 16
+    },
+    "tail_rmse_improvement": 0.0
+  },
+  "loso_gate_passed": false,
+  "preflight": {
+    "TAIL_HYPOTHESIS": "SUPPORTED",
+    "calibration_fit_uses_cross_fitted_predictions": true,
+    "hidden_fira_y_used_or_scored": false,
+    "pseudo_targets_per_split": 41,
+    "pseudo_train_oof_per_split": 97,
+    "target_matched_splits": 16
+  },
+  "schema_version": 1
+}
