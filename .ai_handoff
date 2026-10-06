@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-10-03  
-**Active phase:** Checkpoint 06A/06B SUPPORTED; Checkpoint 06C LOSO FAILED (Local04D selected 16/16); Checkpoint 06D X-only regime discovery is IMPLEMENTED / RUN PENDING.
+**Active phase:** Checkpoint 06A/06B SUPPORTED; 06C LOSO FAILED; 06D REGIME_HYPOTHESIS NOT_SUPPORTED; 06E supervised center/tail mixture is IMPLEMENTED / WORKSTATION RUN PENDING.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/CHECKPOINT_06_PLAN.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
@@ -145,32 +145,48 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run Checkpoint 06D:
+Run Checkpoint 06E:
 
 ```powershell
 git pull --ff-only
 git lfs pull
 conda activate geocebada
 python -m pip install -e ".[dev,geo]"
-python tools\run_checkpoint_06d.py --preflight
-python tools\run_checkpoint_06d.py
+python tools\run_checkpoint_06e.py --preflight
+python tools\run_checkpoint_06e.py
 ```
 
-06C did not survive LOSO: although `LocalPiecewiseRidge_a100p0` reached
-development mean RMSE 0.485375 and pooled RMSE 0.492747, no calibration passed
-the split-excluded eligibility gate; Local04D was selected 16/16 times.
+Why 06E:
 
-06D therefore asks whether stable agronomic X-only regimes explain different
-residual behavior. K/algorithm selection must not read y.
+- 06A/06B verified strong tail shrinkage and X-predictable low/high regimes;
+- 06C global calibration improved the development table slightly but failed
+  LOSO, with Local04D selected 16/16;
+- 06D found stable X-only clusters, but they explain essentially none of the
+  Local04D residual structure, so cluster specialists are rejected.
+
+06E therefore uses supervised soft probabilities rather than clusters:
+
+```text
+Local04D
++ w_center(X) * center residual expert
++ w_low(X)    * shrunken low-tail residual offset
++ w_high(X)   * shrunken high-tail residual offset
+```
+
+The center expert is the new focus: improve non-outlier parcels using only
+honest cross-fitted Local04D residuals from fold-valid center rows.
 
 Expected terminal output:
 
 ```text
-REGIME_HYPOTHESIS = SUPPORTED / AMBIGUOUS / NOT_SUPPORTED
+06E_LOSO_GATE = PASS / FAIL
 ```
 
-SUPPORTED -> implement 06E partially pooled cluster residual correction.
-NOT_SUPPORTED -> do not train cluster specialists.
+PASS -> freeze exactly one challenger and run fresh confirmation.
+FAIL -> retain Local04D and close the current Checkpoint 06 modeling path.
+
+Current canonical competition file remains
+`reports/checkpoint_05/final_predictions.csv`.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
 
