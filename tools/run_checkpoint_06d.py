@@ -65,9 +65,14 @@ def _preflight(root: Path, config: dict[str, Any]) -> dict[str, Any]:
     identity = config["identity"]
     if len(base) != 197 or len(agronomic) != 197:
         raise ValueError("06D expects exactly 197 parcel X rows.")
-    if base[identity["id_column"]].duplicated().any() or agronomic[identity["id_column"]].duplicated().any():
+    if (
+        base[identity["id_column"]].duplicated().any()
+        or agronomic[identity["id_column"]].duplicated().any()
+    ):
         raise ValueError("06D found duplicate parcel IDs.")
-    if set(base[identity["id_column"]].astype(str)) != set(agronomic[identity["id_column"]].astype(str)):
+    if set(base[identity["id_column"]].astype(str)) != set(
+        agronomic[identity["id_column"]].astype(str)
+    ):
         raise ValueError("06D base/agronomic ID universes differ.")
     target = base[identity["split_column"]].eq(identity["prediction_value"])
     if pd.to_numeric(base.loc[target, identity["target_column"]], errors="coerce").notna().any():
@@ -307,7 +312,8 @@ def main() -> int:
             [
                 "## Next step",
                 "",
-                "Do not implement cluster specialists; retain Local04D unless another predeclared mechanism is tested.",
+                "Do not implement cluster specialists; retain Local04D unless "
+                "another predeclared mechanism is tested.",
             ]
         )
 
