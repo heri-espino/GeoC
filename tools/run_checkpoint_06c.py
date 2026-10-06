@@ -132,7 +132,8 @@ def _markdown(
                 "**06C_LOSO_GATE = PASS**",
                 "",
                 "Calibration is promising enough to freeze one challenger for fresh confirmation.",
-                "Do not start clustering unless fresh confirmation fails or the calibration mechanism is rejected.",
+                "Do not start clustering unless fresh confirmation fails or "
+                "the calibration mechanism is rejected.",
             ]
         )
     else:
@@ -143,7 +144,8 @@ def _markdown(
                 "**06C_LOSO_GATE = FAIL**",
                 "",
                 "Simple calibration did not survive split-excluded selection.",
-                "Proceed to 06D X-only regime discovery rather than adding more calibration flexibility.",
+                "Proceed to 06D X-only regime discovery rather than adding "
+                "more calibration flexibility.",
             ]
         )
     return "\n".join(lines) + "\n"
