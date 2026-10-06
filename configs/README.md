@@ -83,3 +83,10 @@ or specialists.
 `checkpoint06d.yaml` freezes the X-only regime search: G1 agronomic,
 RobustScaler, PCA variance 0.80/0.90, KMeans/GMM and K=2/3/4. Cluster selection
 is target-free and uses silhouette/balance/stability only.
+
+
+`checkpoint06e.yaml` freezes the supervised center/tail mixture after 06D
+rejected unsupervised clusters as residual regimes. It fixes the low gate to
+`water_productivity`, the high gate to `thermal`, two center residual
+representations, Ridge regularization, conservative tail shrinkage, and the
+LOSO center/tail protection gate.
