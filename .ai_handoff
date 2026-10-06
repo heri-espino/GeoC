@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-10-03  
-**Active phase:** Checkpoint 06A/06B completed with `TAIL_HYPOTHESIS = SUPPORTED`. Checkpoint 06C low-capacity calibration is IMPLEMENTED / RUN PENDING. `Local04D` remains frozen until later gates pass.
+**Active phase:** Checkpoint 06A/06B SUPPORTED; Checkpoint 06C LOSO FAILED (Local04D selected 16/16); Checkpoint 06D X-only regime discovery is IMPLEMENTED / RUN PENDING.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/CHECKPOINT_06_PLAN.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
@@ -145,36 +145,32 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run Checkpoint 06C:
+Run Checkpoint 06D:
 
 ```powershell
 git pull --ff-only
 git lfs pull
 conda activate geocebada
 python -m pip install -e ".[dev,geo]"
-python tools\run_checkpoint_06c.py --preflight
-python tools\run_checkpoint_06c.py
+python tools\run_checkpoint_06d.py --preflight
+python tools\run_checkpoint_06d.py
 ```
 
-06A/06B is complete and supported the tail hypothesis. The strongest practical
-finding is asymmetric shrinkage: Local04D overpredicts low-yield parcels and
-underpredicts high-yield parcels, while the top 10% error parcels explain about
-62% of parcel SSE.
+06C did not survive LOSO: although `LocalPiecewiseRidge_a100p0` reached
+development mean RMSE 0.485375 and pooled RMSE 0.492747, no calibration passed
+the split-excluded eligibility gate; Local04D was selected 16/16 times.
 
-06C must be evaluated before clustering. It uses 97 cross-fitted pseudo-train
-base predictions to learn low-capacity calibrations and scores the untouched 41
-pseudo-targets in each of the 16 target-matched splits. The key terminal output
-is:
+06D therefore asks whether stable agronomic X-only regimes explain different
+residual behavior. K/algorithm selection must not read y.
+
+Expected terminal output:
 
 ```text
-06C_LOSO_GATE = PASS / FAIL
+REGIME_HYPOTHESIS = SUPPORTED / AMBIGUOUS / NOT_SUPPORTED
 ```
 
-PASS -> freeze one calibration challenger for fresh confirmation.
-FAIL -> proceed to 06D X-only regime discovery.
-
-Current canonical final competition predictions remain
-`reports/checkpoint_05/final_predictions.csv`.
+SUPPORTED -> implement 06E partially pooled cluster residual correction.
+NOT_SUPPORTED -> do not train cluster specialists.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
 
