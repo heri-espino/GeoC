@@ -141,6 +141,13 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `discover_x_regimes` | function | `geocebada.evaluation.checkpoint06d` | Evaluate and select X-only regime candidates without reading y. | `src/geocebada/evaluation/checkpoint06d.py` |
 | `select_x_only_regime` | function | `geocebada.evaluation.checkpoint06d` | Freeze one clustering candidate using only X-derived diagnostics. | `src/geocebada/evaluation/checkpoint06d.py` |
 | `selected_regime_assignments` | function | `geocebada.evaluation.checkpoint06d` | Fit the frozen X-only clustering to all 197 X and return assignments/PCA coordinates. | `src/geocebada/evaluation/checkpoint06d.py` |
+| `build_supervised_mixture_predictions` | function | `geocebada.evaluation.checkpoint06e` | Build honest target-matched 06E predictions and gate diagnostics. | `src/geocebada/evaluation/checkpoint06e.py` |
+| `candidate_names` | function | `geocebada.evaluation.checkpoint06e` | Return the frozen supervised mixture candidate universe. | `src/geocebada/evaluation/checkpoint06e.py` |
+| `fit_center_residual_expert` | function | `geocebada.evaluation.checkpoint06e` | Fit a center-only Ridge residual expert from honest Local04D pseudo-train residuals. | `src/geocebada/evaluation/checkpoint06e.py` |
+| `fit_tail_gates` | function | `geocebada.evaluation.checkpoint06e` | Fit fold-valid low/high classifiers and return soft regime weights. | `src/geocebada/evaluation/checkpoint06e.py` |
+| `leave_one_split_out_mixture_selection` | function | `geocebada.evaluation.checkpoint06e` | Select 06E candidates on 15 splits and score the selected rule on the 16th. | `src/geocebada/evaluation/checkpoint06e.py` |
+| `normalize_gate_probabilities` | function | `geocebada.evaluation.checkpoint06e` | Convert separate low/high probabilities into normalized low/center/high weights. | `src/geocebada/evaluation/checkpoint06e.py` |
+| `summarize_mixture_predictions` | function | `geocebada.evaluation.checkpoint06e` | Summarize split-level and pooled 06E performance. | `src/geocebada/evaluation/checkpoint06e.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
