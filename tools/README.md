@@ -93,3 +93,7 @@ families. On completion it writes three global finalists and a verified
 
 - `run_checkpoint_06d.py`: X-only agronomic regime discovery after 06C LOSO
   failure; selects clusters without y and only then characterizes residuals.
+
+- `run_checkpoint_06e.py`: supervised soft low/center/high residual mixture;
+  explicitly tests whether the non-outlier center can improve while preserving
+  tail performance.
