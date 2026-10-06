@@ -461,6 +461,23 @@ Plan canónico: `docs/CHECKPOINT_06_PLAN.md`.
 Local04D y `reports/checkpoint_05/final_predictions.csv` siguen siendo la
 salida oficial mientras 06 no pase development, LOSO y confirmación fresca.
 
+## Checkpoint 06E — centro + colas supervisadas
+
+Después de verificar que las colas concentran gran parte del SSE, que una
+calibración global no sobrevive LOSO y que los clusters X-only no explican los
+residuos, el experimento activo es una mezcla supervisada con Local04D como
+ancla.
+
+06E intenta mejorar específicamente el centro mediante un modelo de residuo
+Ridge entrenado sólo sobre predicciones honestas de parcelas centrales, mientras
+probabilidades low/high derivadas de variables agronómicas activan correcciones
+conservadoras en las colas.
+
+Plan: `docs/CHECKPOINT_06E_PLAN.md`.
+
+Local04D y `reports/checkpoint_05/final_predictions.csv` siguen siendo
+canónicos hasta que 06E pase LOSO y fresh confirmation.
+
 ## Próximos pasos
 
 1. conservar `reports/checkpoint_05/final_predictions.csv` como vector
