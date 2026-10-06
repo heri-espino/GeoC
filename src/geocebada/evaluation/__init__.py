@@ -134,6 +134,13 @@ from geocebada.evaluation.checkpoint06c import (
     leave_one_split_out_calibration_selection,
     summarize_calibration_predictions,
 )
+from geocebada.evaluation.checkpoint06d import (
+    characterize_selected_regimes,
+    decide_regime_hypothesis,
+    discover_x_regimes,
+    select_x_only_regime,
+    selected_regime_assignments,
+)
 from geocebada.evaluation.parcel_modeling import (
     build_feature_catalog,
     build_fixed_fold_assignments,
@@ -153,6 +160,11 @@ from geocebada.evaluation.regression import (
 )
 
 __all__ = [
+    "characterize_selected_regimes",
+    "decide_regime_hypothesis",
+    "discover_x_regimes",
+    "select_x_only_regime",
+    "selected_regime_assignments",
     "build_calibration_predictions",
     "candidate_names",
     "fit_predict_calibrators",
