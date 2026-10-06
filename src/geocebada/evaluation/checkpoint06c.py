@@ -7,7 +7,7 @@ set and scored only on that split's untouched pseudo-target predictions.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Any
 
 import numpy as np
@@ -201,7 +201,9 @@ def build_calibration_predictions(
     return pd.DataFrame(rows)
 
 
-def summarize_calibration_predictions(predictions: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def summarize_calibration_predictions(
+    predictions: pd.DataFrame,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Return per-split and pooled/development summaries for 06C candidates."""
 
     split_rows: list[dict[str, Any]] = []
