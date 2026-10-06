@@ -1248,3 +1248,37 @@ Canonical plan: `docs/CHECKPOINT_06_PLAN.md`.
 
 At planning time no Checkpoint 06 scientific result exists and
 `reports/checkpoint_05/final_predictions.csv` remains canonical.
+
+
+---
+
+## 2026-10-06 — Checkpoint 06E supervised center/tail mixture
+
+Checkpoint 06D was completed after 06C failed its LOSO calibration gate.
+
+06D found a stable X-only agronomic clustering (KMeans, K=4, PCA 80%), but the
+clusters did not explain Local04D residual structure: residual eta-squared was
+approximately 0.004 with permutation p approximately 0.935. The cluster route
+was therefore closed without training specialists.
+
+The project then returned to a separate Checkpoint 06 finding that *did*
+generalize: low/high yield tails were classifiable from observable X. The best
+family-level 06B classifiers reached mean split ROC-AUC approximately 0.889 for
+the low tail using water-productivity variables and 0.805 for the high tail
+using thermal variables.
+
+Checkpoint 06E was implemented as a supervised soft mixture:
+
+    Local04D
+    + w_center(X) * center residual expert
+    + w_low(X) * low residual offset
+    + w_high(X) * high residual offset
+
+Its main new purpose is to test whether the already-well-predicted center can
+be improved using honest Local04D residuals while soft tail gates protect
+extreme parcels.
+
+No 59-target prediction changed at implementation time. 06E must pass LOSO and
+then fresh confirmation before promotion.
+
+Canonical specification: `docs/CHECKPOINT_06E_PLAN.md`.
