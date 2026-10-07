@@ -1,6 +1,6 @@
 # Checkpoint 06 findings — Tail and center refinement
 
-**Status:** CLOSED / NO PROMOTION  
+**Status:** 06A–06E CLOSED / NO PROMOTION; 06F FOLLOW-UP RUN PENDING  
 **Date closed:** 2026-10-06  
 **Track:** competition-only  
 **Incumbent retained:** Local04D  
@@ -261,3 +261,30 @@ Do not reopen these without genuinely new information:
 A future modeling attempt should introduce a new source of information,
 measurement, or validation hypothesis rather than another small variation on
 these same mechanisms.
+
+
+## 2026-10-06 addendum — 06F selective center follow-up
+
+The 06A–06E conclusions above remain frozen. No result is being rewritten.
+
+After reviewing 06E, a narrower post-hoc hypothesis was proposed: the aggregate
+center gain may have been diluted by the **soft** center weight. 06F therefore
+tests hard abstention:
+
+```text
+if p_low_raw < tau and p_high_raw < tau:
+    prediction = Local04D + frozen G1-PCA Ridge center residual correction
+else:
+    prediction = Local04D
+```
+
+No low/high tail offsets are allowed. The center representation, PCA variance,
+Ridge alpha and tail feature families are frozen from 06E. Only
+`tau in {0.40, 0.50, 0.60, 0.70, 0.80}` is evaluated.
+
+This follow-up is explicitly post-hoc to 06E. Therefore a 06F LOSO PASS is
+screening evidence only and **cannot** change the 59 predictions. Promotion
+would require exactly one frozen cutoff to beat Local04D on a fresh confirmation
+bank.
+
+Canonical specification: `docs/CHECKPOINT_06F_PLAN.md`.
