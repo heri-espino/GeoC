@@ -44,7 +44,16 @@ Prithvi semantic band order:
 Sensor-specific HLS bands must be mapped to that common semantic order during
 chip construction.
 
-### 2. Sentinel-1 GRD
+### 2. SMAP Enhanced L3 9 km soil moisture
+
+Download `SPL3SMP_E` version 6 for the complete April–October 2025 season.
+
+This daily L-band microwave product is spatially coarse relative to a parcel,
+so it is not treated as a parcel-resolution measurement. It is used as a
+regional soil-moisture/drought-state signal and combined with finer Sentinel-1,
+optical and weather measurements.
+
+### 3. Sentinel-1 GRD
 
 Download every available dual-polarization IW acquisition over the challenge
 region in the target season.
@@ -63,7 +72,7 @@ at approximately 30 m output resolution.
 This is genuinely new measurement physics relative to the current optical
 BASIC/PRO tables.
 
-### 3. AgERA5 v2 daily weather
+### 4. AgERA5 v2 daily weather
 
 Use the official time-chunked ARCO Zarr and extract only the challenge region
 and April–October 2025.
@@ -84,7 +93,7 @@ Derived parcel features will include GDD, dry spells, water deficit,
 heat/cold events, stage-specific precipitation/ET0/VPD/radiation and
 interactions with satellite phenology.
 
-### 4. Prithvi-EO-2.0 weights
+### 5. Prithvi-EO-2.0 weights
 
 Prepare both:
 
@@ -115,6 +124,7 @@ The tracked acquisition logic and config are the provenance source of truth.
 
 - HLS catalogue/download inventory is recorded;
 - Sentinel-1 date/orbit inventory is recorded;
+- SMAP daily inventory is recorded;
 - AgERA5 has continuous daily coverage through the target period;
 - both Prithvi model snapshots are present;
 - raster/parcel overlap is verified;
@@ -140,6 +150,15 @@ Per orbit direction and jointly:
     within-parcel quantiles and IQR
     spatial heterogeneity
     valid/shadow fractions
+
+### SMAP
+
+    daily AM/PM surface soil moisture
+    seasonal mean/min/max
+    dry-down slopes
+    low-moisture duration
+    anomalies relative to the 2025 parcel-region season
+    interactions with Sentinel-1 and precipitation
 
 ### AgERA5
 
