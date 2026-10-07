@@ -16,11 +16,12 @@ documentation of a stable state, not a second source of truth.
 | [03d_large_global_modeling](03d_large_global_modeling/README.md) | **Closed — completed** | Balanced high-compute global closure and verified ONNX deployment path. |
 | [04_transductive_competition](04_transductive_competition/README.md) | Closed / incumbent line | Target topology, pseudo-competition, local/graph/external modeling and Local04D. |
 | [05_global_local_mixture](05_global_local_mixture/README.md) | **Closed — no promotion** | Cross-fitted global-local stacking/MoE; Local04D retained. |
-| [06_tail_regime_refinement](06_tail_regime_refinement/README.md) | **06F run pending** | 06A–06E closed without promotion; one constrained hard-abstention center follow-up is implemented. Local04D remains incumbent. |
+| [06_tail_regime_refinement](06_tail_regime_refinement/README.md) | **Closed — no promotion** | 06A–06F completed; hard-abstention center routing also failed LOSO. Local04D retained. |
+| [07_rmse_offensive](07_rmse_offensive/README.md) | **Active — data acquisition implemented** | New-information attack: HLS v2, Sentinel-1, AgERA5, Local07 and Prithvi-EO-2.0, followed by fresh confirmation. |
 
-Broad model search remains closed. Checkpoint 06A–06E are frozen; only the tightly constrained 06F hard-abstention follow-up is active. The canonical competition file remains
+Checkpoint 06A–06F is closed without promotion. Checkpoint 07 is the active modeling line and deliberately introduces new information rather than retuning the same center/tail mechanisms. The canonical competition file remains
 `reports/checkpoint_05/final_predictions.csv`.
 
 03D was executed after 05 as an additive closure of the global line. Its
 state/grouped metrics are not directly interchangeable with Local04D's
-target-matched metric. Checkpoint 06F is the only active modeling experiment. It may vary only the predeclared abstention cutoff around the frozen 06E center expert. Checkpoint 05B remains historical and should not be reopened unless explicitly requested.
+target-matched metric. Checkpoint 07 is the only active modeling experiment. It compares enriched local modeling and Prithvi-EO-2.0 using new data, then requires an untouched fresh confirmation bank before promotion. Checkpoint 05B remains historical.
