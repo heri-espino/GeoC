@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 06 is CLOSED / NO PROMOTION. Local04D remains the frozen competition method.  
+**Current phase:** Checkpoint 06F selective center/abstention follow-up is IMPLEMENTED / RUN PENDING. Local04D remains the frozen competition method.  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -12,7 +12,7 @@ Before changing modeling or data logic, read:
 1. `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 2. `.ai_handoff`.
 3. this file.
-4. `docs/CHECKPOINT_06_PLAN.md` and `checkpoints/06_tail_regime_refinement/README.md`.
+4. `docs/CHECKPOINT_06F_PLAN.md`, `docs/CHECKPOINT_06_FINDINGS.md` and `checkpoints/06_tail_regime_refinement/README.md`.
 5. `docs/CHECKPOINT_05_FINDINGS.md` and `docs/CHECKPOINT_04D1_FINDINGS.md` for incumbent evidence.
 6. `docs/CHECKPOINT_03D_FINDINGS.md` for the final global-model closure evidence.
 7. `docs/CHECKPOINT_05B_PLAN.md` only as an optional historical remix plan.
@@ -414,3 +414,24 @@ gates, or the same center Ridge residual family without genuinely new
 information.
 
 Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical.
+
+
+### 06F — selective center expert / abstention gate
+
+06F is the only active modeling experiment. It is a constrained post-hoc
+follow-up to 06E, not a reopening of the Checkpoint 06 search.
+
+Preserve these boundaries:
+
+- freeze the center expert to all-agronomic PCA 80% + Ridge alpha=1000;
+- reuse the 06B/06E water-productivity low gate and thermal high gate;
+- apply the center correction only when both raw tail scores are below the
+  candidate cutoff;
+- otherwise return Local04D exactly;
+- test only cutoffs 0.40, 0.50, 0.60, 0.70, 0.80;
+- do not add tail offsets, clusters, CatBoost experts or another representation;
+- require LOSO screening and then fresh confirmation because the hypothesis was
+  proposed after observing 06E;
+- do not change the 59 canonical predictions before fresh confirmation passes.
+
+Canonical design: `docs/CHECKPOINT_06F_PLAN.md`.
