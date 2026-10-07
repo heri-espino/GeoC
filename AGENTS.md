@@ -144,6 +144,7 @@ information and a pretrained EO representation. Canonical design:
 Active sources:
 
 - NASA HLS v2 (HLSL30 + HLSS30) for actual raster chips and Prithvi input;
+- NASA SMAP Enhanced L3 9 km daily soil moisture as a regional water-state signal;
 - Sentinel-1 GRD VV/VH for SAR structure/moisture signal;
 - AgERA5 v2 daily weather/stress;
 - Prithvi-EO-2.0-300M-TL and 600M-TL.
