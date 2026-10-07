@@ -532,7 +532,7 @@ def _sentinel1_request(
             "bounds": {
                 "bbox": list(bbox),
                 "properties": {
-                    "crs": "http://www.opengis.net/def/crs/EPSG/0/4326"
+                    "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
                 },
             },
             "data": [
