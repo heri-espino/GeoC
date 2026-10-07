@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 06F selective center/abstention follow-up is IMPLEMENTED / RUN PENDING. Local04D remains the frozen competition method.  
+**Current phase:** Checkpoint 07 RMSE Offensive is ACTIVE; data acquisition is implemented, Local07/Prithvi07 modeling pending. Local04D remains incumbent.  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -12,7 +12,7 @@ Before changing modeling or data logic, read:
 1. `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 2. `.ai_handoff`.
 3. this file.
-4. `docs/CHECKPOINT_06F_PLAN.md`, `docs/CHECKPOINT_06_FINDINGS.md` and `checkpoints/06_tail_regime_refinement/README.md`.
+4. `docs/CHECKPOINT_07_PLAN.md`, then `docs/CHECKPOINT_06F_FINDINGS.md` and `checkpoints/07_rmse_offensive/README.md`.
 5. `docs/CHECKPOINT_05_FINDINGS.md` and `docs/CHECKPOINT_04D1_FINDINGS.md` for incumbent evidence.
 6. `docs/CHECKPOINT_03D_FINDINGS.md` for the final global-model closure evidence.
 7. `docs/CHECKPOINT_05B_PLAN.md` only as an optional historical remix plan.
@@ -435,3 +435,37 @@ Preserve these boundaries:
 - do not change the 59 canonical predictions before fresh confirmation passes.
 
 Canonical design: `docs/CHECKPOINT_06F_PLAN.md`.
+
+
+### Checkpoint 07 — RMSE Offensive
+
+Checkpoint 06A–06F is closed. Checkpoint 07 is the active modeling line because
+it introduces new measurements and pretrained representations.
+
+Acquisition:
+
+```powershell
+python -m pip install -e ".[dev,geo,checkpoint07]"
+python tools\download_checkpoint_07_data.py --preflight
+python tools\download_checkpoint_07_data.py --catalog-only --sources hls sentinel1
+python tools\download_checkpoint_07_data.py --sources all
+```
+
+Never commit `data/raw/checkpoint_07/` or `models/checkpoint_07/`.
+
+Model order:
+
+1. audit HLS/Sentinel-1/AgERA5 coverage;
+2. build Local07 deterministic features and compare against frozen Local04D;
+3. build four-frame HLS chips and extract frozen Prithvi-EO-2.0 embeddings;
+4. fit compact honest heads (Ridge/PLS/GP);
+5. only if useful, test partial/parameter-efficient Prithvi fine-tuning;
+6. test Local07 + Prithvi07 fusion from honest OOF predictions;
+7. freeze a small finalist set;
+8. evaluate that set once on a fresh X-only target-matched confirmation bank.
+
+For Checkpoint 07, LOSO is reported but is not an automatic veto. The final
+decision prioritizes untouched fresh-confirmation pooled and mean RMSE because
+the competition objective is the RMSE of the fixed 59 hidden parcels.
+
+Canonical plan: `docs/CHECKPOINT_07_PLAN.md`.
