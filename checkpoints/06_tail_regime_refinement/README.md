@@ -1,6 +1,6 @@
 # Checkpoint 06 — Tail-Aware Regime Refinement
 
-**Status:** 06A–06E CLOSED; 06F IMPLEMENTED / WORKSTATION RUN PENDING  
+**Status:** CLOSED / NO PROMOTION  
 **Opened:** 2026-10-03  
 **Canonical plan:** docs/CHECKPOINT_06_PLAN.md
 
@@ -183,3 +183,37 @@ Expected decision:
 
 Until a fresh confirmation passes, Local04D and
 `reports/checkpoint_05/final_predictions.csv` remain canonical.
+
+
+## Checkpoint 06F completed — no promotion
+
+06F was run after the 06E soft-mixture result. The best full-development hard
+gate was `SelectiveCenter_t0p7`:
+
+```text
+                         Local04D     SelectiveCenter_t0p7
+mean RMSE                0.487845     0.487108
+pooled RMSE              0.495741     0.494704
+center pooled RMSE       0.360770     0.354471
+tail pooled RMSE         0.664049     0.667687
+```
+
+However, the split-excluded selection rule again failed:
+
+```text
+LOSO selected mean RMSE    0.490847
+LOSO selected pooled RMSE  0.498636
+LOSO selected center RMSE  0.361407
+LOSO selected tail RMSE    0.669269
+06F_LOSO_GATE              FAIL
+```
+
+The selected methods across the 16 holdouts were Local04D 6/16,
+SelectiveCenter_t0p6 5/16 and SelectiveCenter_t0p7 5/16.
+
+Checkpoint 06A–06F is now closed. Do not continue threshold/gate tuning on the
+same information. Canonical 06F interpretation:
+`docs/CHECKPOINT_06F_FINDINGS.md`.
+
+Checkpoint 07 is the new active line because it adds genuinely new data and a
+new pretrained representation.
