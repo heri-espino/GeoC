@@ -1310,3 +1310,37 @@ Checkpoint 06 was closed without fresh confirmation or model promotion.
 Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical.
 
 Canonical interpretation: `docs/CHECKPOINT_06_FINDINGS.md`.
+
+
+---
+
+## 2026-10-06 — Checkpoint 06F selective center expert implemented
+
+After 06E failed its LOSO gate, the user proposed a narrower routing rule:
+apply the center residual model only when a parcel is confidently central and
+otherwise keep the general Local04D prediction.
+
+The implementation freezes the strongest 06E center-only specification
+(G1/all-agronomic PCA retaining 80% variance, Ridge alpha=1000) and reuses the
+water-productivity low-tail and thermal high-tail classifiers. It removes all
+tail offsets. The only candidate dimension is a five-value hard-abstention
+cutoff grid, 0.40 through 0.80.
+
+The cutoff range was chosen from the already-generated 06E X-derived gate-score
+distribution, not from y-performance. The experiment records routing coverage,
+true-tail intrusion after scoring, center/tail RMSE and LOSO selection.
+
+Because this hypothesis was proposed after inspecting 06E, a LOSO PASS is
+explicitly treated as screening evidence only. Exactly one cutoff must then be
+frozen and evaluated against Local04D on a fresh confirmation bank before any
+of the 59 competition predictions may change.
+
+Implementation:
+`configs/checkpoint06f.yaml`,
+`src/geocebada/evaluation/checkpoint06f.py`,
+`tools/run_checkpoint_06f.py`,
+`tests/test_checkpoint06f.py`,
+`docs/CHECKPOINT_06F_PLAN.md`.
+
+At implementation time Local04D and
+`reports/checkpoint_05/final_predictions.csv` remain canonical.
