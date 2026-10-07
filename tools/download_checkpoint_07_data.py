@@ -137,13 +137,7 @@ def _parcel_bbox(
     if not parcel_path.is_file():
         raise FileNotFoundError(f"Parcel archive not found: {parcel_path}")
 
-    source: str | Path
-    if parcel_path.suffix.lower() == ".zip":
-        source = f"zip://{parcel_path.resolve()}"
-    else:
-        source = parcel_path
-
-    frame = gpd.read_file(source)
+    frame = gpd.read_file(parcel_path)
     if len(frame) != 197:
         raise ValueError(f"Expected 197 parcel polygons, found {len(frame)}.")
     if frame.crs is None:
