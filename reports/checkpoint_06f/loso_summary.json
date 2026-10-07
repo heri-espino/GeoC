@@ -1,0 +1,20 @@
+{
+  "center_rmse_improvement": -0.0006374560158893261,
+  "incumbent_center_rmse": 0.36076982220030784,
+  "incumbent_pooled_rmse": 0.49574142871073495,
+  "incumbent_rmse_mean": 0.48784531674343823,
+  "incumbent_tail_rmse": 0.6640489003338566,
+  "n_splits": 16,
+  "pooled_rmse_improvement": -0.002894428279336947,
+  "rmse_mean_improvement": -0.003002120526943375,
+  "selected_center_rmse": 0.36140727821619717,
+  "selected_pooled_rmse": 0.4986358569900719,
+  "selected_rmse_mean": 0.4908474372703816,
+  "selected_tail_rmse": 0.669269457296827,
+  "selection_counts": {
+    "Local04D": 6,
+    "SelectiveCenter_t0p6": 5,
+    "SelectiveCenter_t0p7": 5
+  },
+  "tail_rmse_change": 0.005220556962970413
+}
