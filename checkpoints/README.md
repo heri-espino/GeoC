@@ -16,11 +16,11 @@ documentation of a stable state, not a second source of truth.
 | [03d_large_global_modeling](03d_large_global_modeling/README.md) | **Closed — completed** | Balanced high-compute global closure and verified ONNX deployment path. |
 | [04_transductive_competition](04_transductive_competition/README.md) | Closed / incumbent line | Target topology, pseudo-competition, local/graph/external modeling and Local04D. |
 | [05_global_local_mixture](05_global_local_mixture/README.md) | **Closed — no promotion** | Cross-fitted global-local stacking/MoE; Local04D retained. |
-| [06_tail_regime_refinement](06_tail_regime_refinement/README.md) | **Closed — no promotion** | Tail concentration and shrinkage verified; global calibration, X-only regimes, and supervised center/tail mixture all failed promotion gates. Local04D retained. |
+| [06_tail_regime_refinement](06_tail_regime_refinement/README.md) | **06F run pending** | 06A–06E closed without promotion; one constrained hard-abstention center follow-up is implemented. Local04D remains incumbent. |
 
-Broad model search remains closed. Checkpoint 06 is also closed after its narrow tail/regime hypotheses failed the required promotion gates. The canonical competition file remains
+Broad model search remains closed. Checkpoint 06A–06E are frozen; only the tightly constrained 06F hard-abstention follow-up is active. The canonical competition file remains
 `reports/checkpoint_05/final_predictions.csv`.
 
 03D was executed after 05 as an additive closure of the global line. Its
 state/grouped metrics are not directly interchangeable with Local04D's
-target-matched metric. No modeling checkpoint is currently active: new modeling work should require a genuinely new information source or hypothesis. Checkpoint 05B remains historical and should not be reopened unless explicitly requested.
+target-matched metric. Checkpoint 06F is the only active modeling experiment. It may vary only the predeclared abstention cutoff around the frozen 06E center expert. Checkpoint 05B remains historical and should not be reopened unless explicitly requested.
