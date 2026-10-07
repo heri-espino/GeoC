@@ -1369,8 +1369,9 @@ After closing repeated center/tail corrections on the existing deterministic
 feature set, the project opened a new-information checkpoint whose explicit
 objective is to minimize expected RMSE on the fixed 59 FIRA targets.
 
-The new acquisition layer includes NASA HLS v2, Copernicus Sentinel-1 GRD,
-AgERA5 v2 daily weather and Prithvi-EO-2.0-TL weights. The two main model lines
+The new acquisition layer includes NASA HLS v2, NASA SMAP Enhanced L3 soil
+moisture, Copernicus Sentinel-1 GRD, AgERA5 v2 daily weather and
+Prithvi-EO-2.0-TL weights. The two main model lines
 are Local07 (the local-Ridge/Local04D idea with new physical/spatial features)
 and Prithvi07 (frozen Prithvi embeddings with compact supervised heads, followed
 by conditional partial fine-tuning only if warranted). A final fusion stage
