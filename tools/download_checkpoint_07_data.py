@@ -46,7 +46,7 @@ CDSE_TOKEN_URL = (
     "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/"
     "protocol/openid-connect/token"
 )
-CDSE_PROCESS_URL = "https://sh.dataspace.copernicus.eu/api/v1/process"
+CDSE_PROCESS_URL = "https://sh.dataspace.copernicus.eu/process/v1"
 
 AGERA5_ARCO_TIME_URL = (
     "https://arco.datastores.ecmwf.int/cadl-arco-time-001/arco/"
@@ -477,7 +477,7 @@ def _sentinel1_request(
                     "dataFilter": data_filter,
                     "processing": {
                         "backCoeff": "GAMMA0_TERRAIN",
-                        "orthorectify": True,
+                        "orthorectify": "true",
                         "demInstance": "COPERNICUS_30",
                         "radiometricTerrainOversampling": 2,
                     },
