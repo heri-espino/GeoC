@@ -1,6 +1,6 @@
 # Checkpoint 06 — Tail-Aware Regime Refinement
 
-**Status:** CLOSED / NO PROMOTION  
+**Status:** 06A–06E CLOSED; 06F IMPLEMENTED / WORKSTATION RUN PENDING  
 **Opened:** 2026-10-03  
 **Canonical plan:** docs/CHECKPOINT_06_PLAN.md
 
@@ -147,3 +147,39 @@ run and the canonical 59 predictions remain
 `reports/checkpoint_05/final_predictions.csv`.
 
 Canonical interpretation: `docs/CHECKPOINT_06_FINDINGS.md`.
+
+
+## Checkpoint 06F — selective center expert / abstention gate
+
+After 06E closed without promotion, one narrower post-hoc follow-up was proposed:
+do not blend the center expert softly into every parcel. Instead, apply the
+frozen best 06E center residual expert only when **both** supervised tail scores
+are below a conservative cutoff; otherwise return Local04D unchanged.
+
+06F freezes the G1-PCA(80%) Ridge(alpha=1000) center expert and the existing
+water-productivity/thermal tail classifiers. It varies only five predeclared
+tail-score cutoffs: 0.40, 0.50, 0.60, 0.70 and 0.80. There are no tail
+corrections and no new model families.
+
+Because this hypothesis was proposed after seeing 06E, LOSO on the same 16
+splits is only a screening gate. Even a PASS cannot promote the model: exactly
+one cutoff must then be frozen and evaluated on a fresh confirmation bank
+against Local04D.
+
+Canonical design: `docs/CHECKPOINT_06F_PLAN.md`.
+
+Run:
+
+```powershell
+python tools\run_checkpoint_06f.py --preflight
+python tools\run_checkpoint_06f.py
+```
+
+Expected decision:
+
+```text
+06F_LOSO_GATE = PASS / FAIL
+```
+
+Until a fresh confirmation passes, Local04D and
+`reports/checkpoint_05/final_predictions.csv` remain canonical.
