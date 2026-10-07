@@ -267,8 +267,6 @@ def _search_hls(
     except ImportError as exc:
         raise RuntimeError("Install the checkpoint07 extra first.") from exc
 
-    _log("Earthdata login for HLS")
-    earthaccess.login()
     _log("Searching all HLSL30 + HLSS30 v2 granules in the target season")
     results: list[Any] = []
     for short_name in HLS_SHORT_NAMES:
@@ -313,6 +311,8 @@ def _download_hls(
     if not catalog_only:
         import earthaccess
 
+        _log("Earthdata login for HLS download")
+        earthaccess.login()
         folder.mkdir(parents=True, exist_ok=True)
         downloaded = earthaccess.download(results, str(folder))
         files = [str(Path(path)) for path in downloaded]
