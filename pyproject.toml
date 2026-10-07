@@ -57,8 +57,8 @@ external = [
 ]
 checkpoint07 = [
   "requests>=2.31",
-  "earthaccess>=0.15",
-  "xarray>=2025.6",
+  "earthaccess>=0.15,<0.18",
+  "xarray>=2024.7",
   "zarr>=2.18,<3",
   "fsspec>=2025.5",
   "dask[array]>=2025.5",
