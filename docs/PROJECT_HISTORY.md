@@ -1344,3 +1344,41 @@ Implementation:
 
 At implementation time Local04D and
 `reports/checkpoint_05/final_predictions.csv` remain canonical.
+
+
+---
+
+## 2026-10-07 — Checkpoint 06F completed without promotion
+
+The selective-center hard-abstention experiment was executed. On the complete
+development table, cutoff 0.70 improved Local04D mean RMSE from 0.487845 to
+0.487108, pooled RMSE from 0.495741 to 0.494704, and center RMSE from 0.360770
+to 0.354471, while tail RMSE worsened from 0.664049 to 0.667687.
+
+The LOSO-selected rule did not generalize: selected mean/pooled RMSE were
+0.490847/0.498636 and center/tail RMSE were 0.361407/0.669269. The gate therefore
+failed and Checkpoint 06A–06F closed without promotion.
+
+Canonical detailed interpretation: `docs/CHECKPOINT_06F_FINDINGS.md`.
+
+---
+
+## 2026-10-07 — Checkpoint 07 RMSE Offensive opened
+
+After closing repeated center/tail corrections on the existing deterministic
+feature set, the project opened a new-information checkpoint whose explicit
+objective is to minimize expected RMSE on the fixed 59 FIRA targets.
+
+The new acquisition layer includes NASA HLS v2, Copernicus Sentinel-1 GRD,
+AgERA5 v2 daily weather and Prithvi-EO-2.0-TL weights. The two main model lines
+are Local07 (the local-Ridge/Local04D idea with new physical/spatial features)
+and Prithvi07 (frozen Prithvi embeddings with compact supervised heads, followed
+by conditional partial fine-tuning only if warranted). A final fusion stage
+combines honest OOF predictions from both families.
+
+The existing 16 target-matched splits remain the development laboratory. LOSO
+is retained as a stability diagnostic rather than an absolute veto. Final
+promotion requires an untouched fresh X-only target-matched confirmation bank.
+
+Acquisition is implemented in `tools/download_checkpoint_07_data.py`.
+Canonical specification: `docs/CHECKPOINT_07_PLAN.md`.
