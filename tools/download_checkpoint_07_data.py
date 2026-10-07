@@ -3,6 +3,7 @@
 
 Sources:
 - NASA HLS v2 (HLSL30 + HLSS30) through earthaccess.
+- NASA SMAP Enhanced L3 9 km daily soil moisture v6 through earthaccess.
 - Copernicus Sentinel-1 GRD as terrain-corrected regional GeoTIFFs.
 - Copernicus AgERA5 v2 through the official ARCO Zarr store.
 - Optional Prithvi-EO-2.0-TL weights from Hugging Face.
@@ -41,6 +42,8 @@ DEFAULT_OUTPUT = ROOT / "data/raw/checkpoint_07"
 DEFAULT_MODELS = ROOT / "models/checkpoint_07"
 
 HLS_SHORT_NAMES = ["HLSL30", "HLSS30"]
+SMAP_SHORT_NAME = "SPL3SMP_E"
+SMAP_VERSION = "006"
 CDSE_STAC_SEARCH = "https://stac.dataspace.copernicus.eu/v1/search"
 CDSE_TOKEN_URL = (
     "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/"
@@ -201,7 +204,7 @@ def _preflight(
     print(f"credentials: {_credential_summary()}")
 
     required_modules = {"geopandas": "geo"}
-    if "hls" in sources:
+    if "hls" in sources or "smap" in sources:
         required_modules["earthaccess"] = "checkpoint07"
     if "agera5" in sources:
         required_modules.update(
@@ -317,6 +320,62 @@ def _download_hls(
         downloaded = earthaccess.download(results, str(folder))
         files = [str(Path(path)) for path in downloaded]
         _log(f"HLS downloaded/reused files: {len(files)}")
+
+    return {
+        "granule_count": len(results),
+        "downloaded_files": len(files),
+        "directory": str(folder),
+    }
+
+
+
+def _download_smap(
+    output: Path,
+    bbox: tuple[float, float, float, float],
+    start: date,
+    end: date,
+    *,
+    catalog_only: bool,
+) -> dict[str, Any]:
+    """Search/download daily SMAP Enhanced L3 9 km soil moisture v6."""
+
+    try:
+        import earthaccess
+    except ImportError as exc:
+        raise RuntimeError("Install the checkpoint07 extra first.") from exc
+
+    _log("Searching SMAP SPL3SMP_E v006 daily soil-moisture granules")
+    results = earthaccess.search_data(
+        short_name=SMAP_SHORT_NAME,
+        version=SMAP_VERSION,
+        bounding_box=bbox,
+        temporal=(start.isoformat(), end.isoformat()),
+        count=-1,
+    )
+    folder = output / "smap_spl3smp_e_v006"
+    _write_json(
+        folder / "search_manifest.json",
+        {
+            "generated_at": datetime.now(UTC).isoformat(),
+            "bbox": bbox,
+            "start": start,
+            "end": end,
+            "short_name": SMAP_SHORT_NAME,
+            "version": SMAP_VERSION,
+            "granule_count": len(results),
+            "granules": [_hls_manifest_row(result) for result in results],
+        },
+    )
+    _log(f"SMAP catalogue: {len(results)} granules")
+
+    files: list[str] = []
+    if not catalog_only:
+        _log("Earthdata login for SMAP download")
+        earthaccess.login()
+        folder.mkdir(parents=True, exist_ok=True)
+        downloaded = earthaccess.download(results, str(folder))
+        files = [str(Path(path)) for path in downloaded]
+        _log(f"SMAP downloaded/reused files: {len(files)}")
 
     return {
         "granule_count": len(results),
@@ -757,7 +816,7 @@ def _parse_args() -> argparse.Namespace:
         "--sources",
         nargs="+",
         default=["all"],
-        choices=["all", "hls", "sentinel1", "agera5", "prithvi"],
+        choices=["all", "hls", "smap", "sentinel1", "agera5", "prithvi"],
     )
     parser.add_argument("--start", default="2025-04-01")
     parser.add_argument("--end", default="2025-10-31")
@@ -787,7 +846,7 @@ def _main() -> int:
 
     sources = set(args.sources)
     if "all" in sources:
-        sources = {"hls", "sentinel1", "agera5", "prithvi"}
+        sources = {"hls", "smap", "sentinel1", "agera5", "prithvi"}
 
     parcel_path = args.parcels.expanduser().resolve()
     output = args.out.expanduser().resolve()
@@ -812,6 +871,14 @@ def _main() -> int:
 
     if "hls" in sources:
         manifest["sources"]["hls"] = _download_hls(
+            output,
+            bbox,
+            start,
+            end,
+            catalog_only=args.catalog_only,
+        )
+    if "smap" in sources:
+        manifest["sources"]["smap"] = _download_smap(
             output,
             bbox,
             start,
