@@ -735,6 +735,8 @@ def _download_prithvi(
             allow_patterns=[
                 "*.pt",
                 "*.json",
+                "*.yaml",
+                "*.yml",
                 "*.py",
                 "README.md",
                 "requirements.txt",
