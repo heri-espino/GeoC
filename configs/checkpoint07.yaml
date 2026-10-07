@@ -1,0 +1,131 @@
+schema_version: 1
+updated: 2026-10-07
+
+stage:
+  checkpoint: "07"
+  name: rmse_offensive_new_information
+  status: data_acquisition_implemented
+  active_track: competition
+
+objective:
+  primary: minimize_rmse_on_fixed_59_fira_targets
+  incumbent: Local04D
+  incumbent_method: LocalRidge_C4_all_deterministic_Geo_k24_a30_p1
+  incumbent_mean_rmse: 0.48784531674343823
+  incumbent_pooled_rmse: 0.49574142871073495
+  hidden_fira_y_allowed: false
+  doctrine: >
+    Validation is evidence for choosing the competition model, not the objective
+    itself. Checkpoint 07 prioritizes genuinely new information and a fresh
+    confirmation bank over further tuning of Checkpoint 06 gates.
+
+data:
+  start: "2025-04-01"
+  end: "2025-10-31"
+  parcel_geometry: data/source/geospatial/Parcelas_Reto_AGC_CONJUNTO_70_30.zip
+  raw_root: data/raw/checkpoint_07
+  model_root: models/checkpoint_07
+  sources:
+    hls_v2:
+      short_names: [HLSL30, HLSS30]
+      purpose: prithvi_input_and_spatial_reflectance
+    sentinel1_grd:
+      bands: [VV, VH, localIncidenceAngle, scatteringArea, shadowMask, dataMask]
+      backscatter: GAMMA0_TERRAIN
+      orthorectify: true
+      output_resolution_m: 30
+      purpose: new_sar_structure_and_moisture_signal
+    agera5_v2:
+      access: official_arco_time_chunked_zarr
+      purpose: daily_weather_water_and_thermal_stress
+    prithvi:
+      models:
+        - ibm-nasa-geospatial/Prithvi-EO-2.0-300M-TL
+        - ibm-nasa-geospatial/Prithvi-EO-2.0-600M-TL
+
+local_track:
+  name: Local07
+  anchor: Local04D
+  new_feature_blocks:
+    - sentinel1_temporal_and_spatial
+    - agera5_daily_agronomic_stress
+    - hls_spatial_distribution
+  compare:
+    - frozen_Local04D
+    - same_local_family_with_new_features
+    - small_local_hyperparameter_refresh
+  allowed_small_grid:
+    neighbor_k: [16, 20, 24, 30, 36]
+    ridge_alpha: [10.0, 30.0, 100.0]
+  note: >
+    New features change the geometry used by the local model, so a small
+    predeclared local refresh is allowed. Do not reopen a broad model zoo.
+
+prithvi_track:
+  input_product: NASA_HLS_v2
+  frames: 4
+  chip_size: 224
+  resolution_m: 30
+  bands_semantic_order:
+    - blue
+    - green
+    - red
+    - narrow_nir
+    - swir1
+    - swir2
+  temporal_windows:
+    - ["2025-04-15", "2025-05-31"]
+    - ["2025-06-01", "2025-07-15"]
+    - ["2025-07-16", "2025-08-31"]
+    - ["2025-09-01", "2025-10-15"]
+  scene_selection: best_parcel_level_fmask_quality_within_each_window
+  models:
+    - ibm-nasa-geospatial/Prithvi-EO-2.0-300M-TL
+    - ibm-nasa-geospatial/Prithvi-EO-2.0-600M-TL
+  stages:
+    - frozen_encoder_embeddings
+    - compact_supervised_heads
+    - conditional_partial_finetuning_only_if_frozen_embeddings_help
+  compact_heads:
+    - Ridge
+    - PLS
+    - GaussianProcess
+  embedding_pooling:
+    - parcel_overlapping_tokens
+    - parcel_plus_context
+
+fusion:
+  candidates:
+    - Local04D
+    - Local07
+    - Prithvi07
+    - Local07_Prithvi07_fixed_blend
+    - Local07_Prithvi07_nonnegative_oof_blend
+  rule: >
+    Fusion weights must be learned only from honest OOF predictions. The real
+    59 target y values are never scored or used.
+
+validation:
+  development:
+    protocol: existing_16_target_matched_splits
+    role: model_development_and_diagnostics
+  loso:
+    role: diagnostic_not_absolute_veto
+  fresh_confirmation:
+    required: true
+    construct_before_final_candidate_scoring: true
+    x_only_masks: true
+    candidates_per_family_max: 2
+  final_ranking_priority:
+    - fresh_pooled_rmse
+    - fresh_mean_rmse
+    - fresh_worst_split_rmse
+    - development_pooled_rmse
+  promotion:
+    require_better_fresh_pooled_rmse_than_Local04D: true
+    require_better_fresh_mean_rmse_than_Local04D: true
+    no_hidden_target_scoring: true
+
+outputs:
+  download_manifest: data/raw/checkpoint_07/download_manifest.json
+  report_directory: reports/checkpoint_07
