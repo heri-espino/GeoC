@@ -270,13 +270,18 @@ def _search_hls(
     _log("Earthdata login for HLS")
     earthaccess.login()
     _log("Searching all HLSL30 + HLSS30 v2 granules in the target season")
-    return earthaccess.search_data(
-        short_name=HLS_SHORT_NAMES,
-        version="2.0",
-        bounding_box=bbox,
-        temporal=(start.isoformat(), end.isoformat()),
-        count=-1,
-    )
+    results: list[Any] = []
+    for short_name in HLS_SHORT_NAMES:
+        found = earthaccess.search_data(
+            short_name=short_name,
+            version="2.0",
+            bounding_box=bbox,
+            temporal=(start.isoformat(), end.isoformat()),
+            count=-1,
+        )
+        _log(f"HLS {short_name}: {len(found)} granules")
+        results.extend(found)
+    return results
 
 
 def _download_hls(
