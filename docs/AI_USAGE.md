@@ -99,3 +99,6 @@ Los archivos `.ai_handoff` y `AGENTS.md` sirven para continuidad operativa entre
 
 
 | 2026-10-06 | ChatGPT | Checkpoint 06F selective center expert / abstention gate | El usuario propuso usar el modelo residual del centro sólo cuando X indique con suficiente confianza que la parcela es central y usar Local04D en cualquier caso dudoso/de cola | Se implementaron config, módulo, runner, tests, documentación, CI/preflight y diagnósticos de routing; se congeló G1-PCA80 Ridge alpha=1000 y sólo se varía el cutoff 0.40–0.80 | Es un follow-up post-hoc a 06E: LOSO sólo filtra; promoción exige fresh confirmation; hidden FIRA y no se usa y las 59 predicciones no cambian durante 06F |
+
+
+| 2026-10-07 | ChatGPT | Checkpoint 07 RMSE Offensive: new data + Prithvi-EO-2.0 | El usuario pidió priorizar el RMSE del conjunto fijo de 59 parcelas aunque implique más datos o modelos pesados, y solicitó un downloader y plan para Local + Prithvi | Se implementó `tools/download_checkpoint_07_data.py` para HLS v2, Sentinel-1 GRD, AgERA5 v2 y pesos Prithvi-EO-2.0-TL; se añadió `configs/checkpoint07.yaml`, `docs/CHECKPOINT_07_PLAN.md`, extra de dependencias, gitignore y checkpoint/report namespaces | Hidden FIRA y permanece inaccesible; LOSO pasa a diagnóstico en 07 y la promoción final requiere un banco fresh X-only; raw data y pesos grandes no se versionan |
