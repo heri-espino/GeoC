@@ -1,12 +1,11 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-10-06  
-**Active phase:** Checkpoint 06 is CLOSED / NO PROMOTION. 06E failed LOSO. Local04D remains the frozen competition method and the canonical 59 predictions remain `reports/checkpoint_05/final_predictions.csv`.
+**Active phase:** Checkpoint 06F selective center/abstention follow-up is IMPLEMENTED / WORKSTATION RUN PENDING. Local04D remains the frozen competition method and the canonical 59 predictions remain `reports/checkpoint_05/final_predictions.csv`.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
-`docs/CHECKPOINT_06_FINDINGS.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
-`docs/PROJECT_HISTORY.md`. Checkpoints 03C/03D, 05 and 06 are frozen historical evidence;
-no modeling checkpoint is currently active.
+`docs/CHECKPOINT_06F_PLAN.md`, `docs/CHECKPOINT_06_FINDINGS.md`,
+`docs/CHECKPOINT_05_FINDINGS.md` and `docs/PROJECT_HISTORY.md`. Checkpoint 06A–06E is frozen historical evidence; 06F is the only active modeling experiment.
 
 ## Current mission
 
@@ -145,31 +144,40 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Checkpoint 06 is closed. Do not continue tuning center/tail corrections on the
-same 16 development splits.
+Run Checkpoint 06F, the single constrained follow-up to the failed 06E soft
+mixture:
 
-Canonical result:
-
-```text
-Local04D mean RMSE     0.487845
-Local04D pooled RMSE   0.495741
-Local04D center RMSE   0.360770
-Local04D tail RMSE     0.664049
-06E_LOSO_GATE          FAIL
+```powershell
+git pull --ff-only
+git lfs pull
+conda activate geocebada
+python -m pip install -e ".[dev,geo]"
+python tools\run_checkpoint_06f.py --preflight
 ```
 
-06E did show an aggregate center signal: G1-PCA Ridge residual experts reached
-center RMSE about 0.351, but that gain did not survive split-excluded
-selection. LOSO chose Local04D on 13/16 holdouts and was slightly worse on mean,
-pooled, center and tail RMSE.
+If preflight passes:
 
-Read `docs/CHECKPOINT_06_FINDINGS.md` before proposing any new modeling work.
+```powershell
+python tools\run_checkpoint_06f.py
+```
+
+06F freezes the G1-PCA(80%) Ridge(alpha=1000) center residual expert and uses
+Local04D unchanged whenever either tail score is above the cutoff. Only the
+predeclared cutoffs 0.40/0.50/0.60/0.70/0.80 are tested. There are no tail
+offsets and no new model families.
+
+Expected terminal decision:
+
+```text
+06F_LOSO_GATE = PASS / FAIL
+```
+
+Because 06F was proposed after seeing 06E, PASS only permits one frozen
+challenger to proceed to fresh confirmation. It does not permit changing the 59
+predictions.
 
 Current competition source of truth remains:
 `reports/checkpoint_05/final_predictions.csv`.
-
-The next work should be submission/app/report/deployment unless a genuinely new
-source of information or hypothesis is introduced.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
 
