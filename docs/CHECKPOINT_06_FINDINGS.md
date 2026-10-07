@@ -1,6 +1,6 @@
 # Checkpoint 06 findings — Tail and center refinement
 
-**Status:** 06A–06E CLOSED / NO PROMOTION; 06F FOLLOW-UP RUN PENDING  
+**Status:** CLOSED / NO PROMOTION (06A–06F complete)  
 **Date closed:** 2026-10-06  
 **Track:** competition-only  
 **Incumbent retained:** Local04D  
@@ -288,3 +288,34 @@ would require exactly one frozen cutoff to beat Local04D on a fresh confirmation
 bank.
 
 Canonical specification: `docs/CHECKPOINT_06F_PLAN.md`.
+
+
+## 06F final result
+
+The hard-abstention follow-up was subsequently run. The full-development
+`tau=0.70` candidate improved mean, pooled and center RMSE, but increased
+tail RMSE and did not survive leave-one-split-out selection.
+
+```text
+SelectiveCenter_t0p7 development:
+  mean RMSE       0.487108
+  pooled RMSE     0.494704
+  center RMSE     0.354471
+  tail RMSE       0.667687
+
+LOSO selected:
+  mean RMSE       0.490847
+  pooled RMSE     0.498636
+  center RMSE     0.361407
+  tail RMSE       0.669269
+
+06F_LOSO_GATE     FAIL
+```
+
+Checkpoint 06 is therefore fully closed. Canonical detailed interpretation:
+`docs/CHECKPOINT_06F_FINDINGS.md`.
+
+The next modeling phase is Checkpoint 07, which is allowed to reopen model
+development specifically because it introduces new information (HLS raster
+data, Sentinel-1 SAR, AgERA5 daily weather and Prithvi-EO-2.0
+representations), not another variant of the same center/tail gate.
