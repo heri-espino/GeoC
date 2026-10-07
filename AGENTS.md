@@ -132,30 +132,42 @@ for interpreting Checkpoint 03 but are superseded for active Checkpoint 04 by
 `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 
 
-## Checkpoint 06F — only active modeling experiment
+## Checkpoint 07 — only active modeling experiment
 
-Checkpoint 06A–06E are frozen historical evidence. 06E failed LOSO, but it
-showed one aggregate center-only signal. The user authorized exactly one
-post-hoc follow-up: `docs/CHECKPOINT_06F_PLAN.md`.
+Checkpoint 06A–06F is closed without promotion. Do not continue tuning its
+center/tail thresholds, gates, cluster specialists or residual corrections.
 
-06F must remain narrow:
+Checkpoint 07 is allowed to reopen modeling because it introduces genuinely new
+information and a pretrained EO representation. Canonical design:
+`docs/CHECKPOINT_07_PLAN.md`.
 
-- Local04D is the anchor and canonical competition method;
-- low gate family remains `water_productivity`;
-- high gate family remains `thermal`;
-- center expert is frozen to G1 agronomic -> PCA 80% -> Ridge alpha=1000;
-- no low/high tail correction is allowed;
-- no clustering or new model family is allowed;
-- only cutoffs 0.40, 0.50, 0.60, 0.70, 0.80 may be compared;
-- pseudo-target y is scoring-only;
-- a LOSO PASS is not sufficient because 06F was proposed after seeing 06E;
-- after LOSO PASS, freeze exactly one cutoff and require fresh confirmation;
-- no actual 59-target prediction may change before fresh confirmation passes.
+Active sources:
 
-If 06F fails, close center/tail correction work on these development splits.
-Do not add another threshold grid or routing variant.
+- NASA HLS v2 (HLSL30 + HLSS30) for actual raster chips and Prithvi input;
+- Sentinel-1 GRD VV/VH for SAR structure/moisture signal;
+- AgERA5 v2 daily weather/stress;
+- Prithvi-EO-2.0-300M-TL and 600M-TL.
 
-Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical.
+Primary model lines:
+
+1. Local07: Local04D/local-Ridge family augmented with new physical/spatial features;
+2. Prithvi07: frozen Prithvi embeddings first, compact Ridge/PLS/GP heads;
+3. Local07 + Prithvi07 fusion from honest OOF predictions.
+
+Do not fine-tune hundreds of millions of parameters before frozen Prithvi
+embeddings show useful honest OOF signal. Do not use hidden 59-target y.
+
+For Checkpoint 07, LOSO is a stability diagnostic rather than an absolute veto.
+Development uses the existing 16 target-matched splits. Final candidate
+selection requires a fresh X-only target-matched confirmation bank constructed
+before finalist scores are inspected. The primary goal is lowest expected RMSE
+on the fixed 59 targets.
+
+Large Checkpoint 07 acquisitions and model weights are local only:
+`data/raw/checkpoint_07/` and `models/checkpoint_07/`. Never commit them.
+
+Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical
+until fresh confirmation supports a replacement.
 
 ## Frozen final-state summary
 
