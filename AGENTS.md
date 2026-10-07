@@ -132,23 +132,30 @@ for interpreting Checkpoint 03 but are superseded for active Checkpoint 04 by
 `docs/TRANSDUCTIVE_OBJECTIVE.md`.
 
 
-## Checkpoint 06 — active planned hypothesis
+## Checkpoint 06F — only active modeling experiment
 
-As of 2026-10-03 the project has one narrow planned reopening:
-`docs/CHECKPOINT_06_PLAN.md`.
+Checkpoint 06A–06E are frozen historical evidence. 06E failed LOSO, but it
+showed one aggregate center-only signal. The user authorized exactly one
+post-hoc follow-up: `docs/CHECKPOINT_06F_PLAN.md`.
 
-The hypothesis is that remaining Local04D/CatBoost squared error may be
-concentrated in low/high-yield regimes that are recognizable from observable X.
-This is currently a teammate observation, not a validated fact.
+06F must remain narrow:
 
-Future agents must verify the premise with honest target-matched residuals
-before implementing tail-specific models. Prefer calibration and partial pooling
-over independent complex models on tiny tails. X-only clustering may use all
-197 X under the transductive contract, but y may not define cluster membership
-for prediction.
+- Local04D is the anchor and canonical competition method;
+- low gate family remains `water_productivity`;
+- high gate family remains `thermal`;
+- center expert is frozen to G1 agronomic -> PCA 80% -> Ridge alpha=1000;
+- no low/high tail correction is allowed;
+- no clustering or new model family is allowed;
+- only cutoffs 0.40, 0.50, 0.60, 0.70, 0.80 may be compared;
+- pseudo-target y is scoring-only;
+- a LOSO PASS is not sufficient because 06F was proposed after seeing 06E;
+- after LOSO PASS, freeze exactly one cutoff and require fresh confirmation;
+- no actual 59-target prediction may change before fresh confirmation passes.
 
-Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical
-until every Checkpoint 06 promotion gate passes.
+If 06F fails, close center/tail correction work on these development splits.
+Do not add another threshold grid or routing variant.
+
+Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical.
 
 ## Frozen final-state summary
 
