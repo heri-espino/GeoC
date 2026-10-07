@@ -396,6 +396,58 @@ Current policy:
 - if revisited, prefer small resumable requests or the ERA5-Land time-series product at unique grid points.
 - CHIRPS + WaPOR already provide strong water/climate information for the first feature set.
 
+## Checkpoint 07 new-information sources
+
+Checkpoint 07 adds a separate local-only acquisition namespace under
+`data/raw/checkpoint_07/`. These files are intentionally gitignored.
+
+### NASA HLS v2
+
+Products: `HLSL30` and `HLSS30`, version 2.0, April–October 2025.
+
+Purpose:
+
+- actual 30 m reflectance raster distributions rather than only parcel summaries;
+- four-frame HLS sequences for Prithvi-EO-2.0;
+- HLS Fmask-based scene-quality selection.
+
+Download/search is implemented with `earthaccess`. Catalogue search is public;
+bulk download requires a free NASA Earthdata Login.
+
+### Copernicus Sentinel-1 GRD
+
+Purpose: genuinely new SAR measurement signal for canopy/structure/moisture
+proxies.
+
+The Checkpoint 07 downloader searches the `sentinel-1-grd` catalogue and
+requests terrain-corrected, orthorectified `VV`/`VH` regional GeoTIFFs plus
+local incidence angle, scattering area, shadow mask and data mask through the
+Sentinel Hub Process API. Bulk processing requires a Copernicus Data Space
+Sentinel Hub OAuth client (`CDSE_CLIENT_ID`, `CDSE_CLIENT_SECRET`).
+
+### AgERA5 v2
+
+Purpose: daily agronomic weather/stress features beyond the existing monthly
+climate summaries.
+
+The downloader uses the official AgERA5 v2 time-chunked ARCO Zarr store and
+subsets only the target period and challenge area. Access requires a CDS API
+key in `CDSAPI_KEY` or `~/.cdsapirc`.
+
+### Prithvi-EO-2.0
+
+Model weights are stored locally under `models/checkpoint_07/` and are
+gitignored. Planned variants are the 300M-TL and 600M-TL models. The model line
+uses HLS-compatible six-band, four-frame inputs before considering any
+target-aware fine-tuning.
+
+Canonical acquisition script:
+`tools/download_checkpoint_07_data.py`.
+
+Canonical modeling plan:
+`docs/CHECKPOINT_07_PLAN.md`.
+
+
 # Join and aggregation rules
 
 ## Parcel is the master key
