@@ -85,3 +85,7 @@ venv/
 
 # # Checkpoint 03D resumable workstation intermediates (local only)
 # /reports/checkpoint_03d/_partial_*
+
+# Checkpoint 07 large local-only acquisitions and foundation-model weights
+/data/raw/checkpoint_07/
+/models/checkpoint_07/
