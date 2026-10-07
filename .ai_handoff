@@ -1,11 +1,12 @@
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-10-06  
-**Active phase:** Checkpoint 06F selective center/abstention follow-up is IMPLEMENTED / WORKSTATION RUN PENDING. Local04D remains the frozen competition method and the canonical 59 predictions remain `reports/checkpoint_05/final_predictions.csv`.
+**Active phase:** Checkpoint 07 RMSE Offensive is ACTIVE; data acquisition is implemented and Local07/Prithvi07 modeling is pending. Local04D remains the frozen competition method until fresh confirmation supports a replacement.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
-`docs/CHECKPOINT_06F_PLAN.md`, `docs/CHECKPOINT_06_FINDINGS.md`,
-`docs/CHECKPOINT_05_FINDINGS.md` and `docs/PROJECT_HISTORY.md`. Checkpoint 06A–06E is frozen historical evidence; 06F is the only active modeling experiment.
+`docs/CHECKPOINT_07_PLAN.md`, `docs/CHECKPOINT_06F_FINDINGS.md`,
+`docs/CHECKPOINT_06_FINDINGS.md`, `docs/CHECKPOINT_05_FINDINGS.md` and
+`docs/PROJECT_HISTORY.md`. Checkpoint 06A–06F is frozen historical evidence; Checkpoint 07 is the only active modeling experiment.
 
 ## Current mission
 
@@ -144,37 +145,46 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 
 ## Immediate next action
 
-Run Checkpoint 06F, the single constrained follow-up to the failed 06E soft
-mixture:
+Checkpoint 06F was run and failed LOSO. It is closed. The active work is
+Checkpoint 07 new-data acquisition.
+
+Install the new downloader dependencies:
 
 ```powershell
 git pull --ff-only
 git lfs pull
 conda activate geocebada
-python -m pip install -e ".[dev,geo]"
-python tools\run_checkpoint_06f.py --preflight
+python -m pip install -e ".[dev,geo,checkpoint07]"
 ```
 
-If preflight passes:
+First validate the local environment:
 
 ```powershell
-python tools\run_checkpoint_06f.py
+python tools\download_checkpoint_07_data.py --preflight
 ```
 
-06F freezes the G1-PCA(80%) Ridge(alpha=1000) center residual expert and uses
-Local04D unchanged whenever either tail score is above the cutoff. Only the
-predeclared cutoffs 0.40/0.50/0.60/0.70/0.80 are tested. There are no tail
-offsets and no new model families.
+Then query HLS and Sentinel-1 catalogues before bulk transfer:
 
-Expected terminal decision:
-
-```text
-06F_LOSO_GATE = PASS / FAIL
+```powershell
+python tools\download_checkpoint_07_data.py --catalog-only --sources hls sentinel1
 ```
 
-Because 06F was proposed after seeing 06E, PASS only permits one frozen
-challenger to proceed to fresh confirmation. It does not permit changing the 59
-predictions.
+After credentials are configured, download all new inputs:
+
+```powershell
+python tools\download_checkpoint_07_data.py --sources all
+```
+
+Large data are local-only under `data/raw/checkpoint_07/`; Prithvi weights are
+local-only under `models/checkpoint_07/`. Both paths are gitignored.
+
+After acquisition/audit, implement 07B Local07 and 07C Prithvi07 according to
+`docs/CHECKPOINT_07_PLAN.md`. Use the existing 16 target-matched splits for
+development, reduce each family to a small shortlist, then use a new untouched
+X-only target-matched confirmation bank for the competition decision.
+
+LOSO remains a stability diagnostic in Checkpoint 07; the primary objective is
+lowest expected RMSE on the fixed 59 targets. Hidden FIRA y remains forbidden.
 
 Current competition source of truth remains:
 `reports/checkpoint_05/final_predictions.csv`.
