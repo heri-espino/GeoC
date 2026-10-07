@@ -29,6 +29,11 @@ data:
     hls_v2:
       short_names: [HLSL30, HLSS30]
       purpose: prithvi_input_and_spatial_reflectance
+    smap_spl3smp_e:
+      short_name: SPL3SMP_E
+      version: "006"
+      resolution_km: 9
+      purpose: daily_microwave_surface_soil_moisture
     sentinel1_grd:
       bands: [VV, VH, localIncidenceAngle, scatteringArea, shadowMask, dataMask]
       backscatter: GAMMA0_TERRAIN
@@ -48,6 +53,7 @@ local_track:
   anchor: Local04D
   new_feature_blocks:
     - sentinel1_temporal_and_spatial
+    - smap_daily_soil_moisture
     - agera5_daily_agronomic_stress
     - hls_spatial_distribution
   compare:
