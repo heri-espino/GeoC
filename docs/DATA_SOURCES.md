@@ -414,6 +414,16 @@ Purpose:
 Download/search is implemented with `earthaccess`. Catalogue search is public;
 bulk download requires a free NASA Earthdata Login.
 
+### NASA SMAP Enhanced L3 9 km
+
+Product: `SPL3SMP_E` version 6, daily April–October 2025.
+
+Purpose: L-band microwave surface-soil-moisture signal at regional scale. Its
+9 km resolution is too coarse to be interpreted as parcel-resolution soil
+moisture, so it is used only as a drought/water-state covariate and in
+interactions with finer SAR/optical measurements. Search/download uses the same
+Earthdata authentication as HLS.
+
 ### Copernicus Sentinel-1 GRD
 
 Purpose: genuinely new SAR measurement signal for canopy/structure/moisture
