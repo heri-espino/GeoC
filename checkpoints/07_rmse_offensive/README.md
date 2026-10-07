@@ -5,7 +5,7 @@
 **Incumbent:** Local04D
 
 Checkpoint 07 opens a genuinely new-information line after the closure of
-Checkpoint 06. It downloads HLS v2, Sentinel-1 GRD and AgERA5 v2 and prepares
+Checkpoint 06. It downloads HLS v2, SMAP soil moisture, Sentinel-1 GRD and AgERA5 v2 and prepares
 Prithvi-EO-2.0-TL weights.
 
 The two primary model families are:
