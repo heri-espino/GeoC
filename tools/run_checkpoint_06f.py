@@ -272,7 +272,8 @@ def main() -> int:
         lines.extend(
             [
                 "Selective hard routing did not survive the predeclared LOSO gate.",
-                "Retain Local04D and close center/tail correction work on these development splits.",
+                "Retain Local04D and close center/tail correction work on "
+                "these development splits.",
             ]
         )
 
