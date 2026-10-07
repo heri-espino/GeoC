@@ -178,6 +178,8 @@ python tools\download_checkpoint_07_data.py --sources all
 Large data are local-only under `data/raw/checkpoint_07/`; Prithvi weights are
 local-only under `models/checkpoint_07/`. Both paths are gitignored.
 
+The acquisition set is HLS v2 + SMAP v6 + Sentinel-1 GRD + AgERA5 v2 + Prithvi weights.
+
 After acquisition/audit, implement 07B Local07 and 07C Prithvi07 according to
 `docs/CHECKPOINT_07_PLAN.md`. Use the existing 16 target-matched splits for
 development, reduce each family to a small shortlist, then use a new untouched
