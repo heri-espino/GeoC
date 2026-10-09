@@ -60,10 +60,31 @@ class RunnerTests(unittest.TestCase):
         token = "test-nasa-token-only-in-env-file"
         calls = []
 
+        class Response:
+            status_code = 206
+            headers = {"Content-Type": "image/tiff"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+        class Session:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def get(self, url, **kwargs):
+                self.assertion_placeholder = url
+                return Response()
+
         def login(*, strategy):
             self.assertEqual(strategy, "environment")
             calls.append(os.environ.get("EARTHDATA_TOKEN"))
-            return types.SimpleNamespace(authenticated=True)
+            return types.SimpleNamespace(authenticated=True, get_session=lambda: Session())
 
         fake = types.SimpleNamespace(login=login)
         with patch.dict(sys.modules, {"earthaccess": fake}):
@@ -74,8 +95,53 @@ class RunnerTests(unittest.TestCase):
                 self.assertEqual(os.environ["EARTHDATA_TOKEN"], "prior-token")
         self.assertEqual(code, 0)
         self.assertEqual(calls, [token])
-        self.assertIn("credentials loaded", text)
+        self.assertIn("protected-file access verified", text)
         self.assertNotIn(token, text)
+
+    def test_nasa_http_401_stops_bulk_download(self):
+        import sys
+        import types
+        from unittest.mock import patch
+
+        class Response:
+            status_code = 401
+            headers = {"Content-Type": "application/json"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+        class Session:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def get(self, url, **kwargs):
+                return Response()
+
+        auth = types.SimpleNamespace(authenticated=True, get_session=lambda: Session())
+        fake = types.SimpleNamespace(login=lambda **kwargs: auth)
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            script = root / "tools/download_checkpoint_07_data.py"
+            script.parent.mkdir(parents=True)
+            script.write_text("raise AssertionError('Bulk downloader must not start')", encoding="utf-8")
+            with patch.dict(sys.modules, {"earthaccess": fake}):
+                with io.StringIO() as stdout, redirect_stdout(stdout):
+                    code = runner.run_download(
+                        root, {"EARTHDATA_TOKEN": "fake-secret-123456789"}, ["hls"],
+                        execute=True, catalog_only=False, start="2025-04-01",
+                        end="2025-10-31", parcels=None, margin=0.02, resolution=30.0,
+                    )
+                    output = stdout.getvalue()
+            self.assertEqual(code, 2)
+            self.assertIn("HTTP 401", output)
+            self.assertIn("bulk transfer was not started", output)
+            self.assertNotIn("fake-secret-123456789", output)
 
     def test_doctor_does_not_echo_local_credentials(self):
         import io
