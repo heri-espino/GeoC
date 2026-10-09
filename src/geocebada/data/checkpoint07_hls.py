@@ -10,6 +10,7 @@ import csv
 import json
 import re
 from collections import defaultdict
+from contextlib import ExitStack
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
@@ -114,6 +115,8 @@ def summarize_scene_for_parcel(
     scene: dict[str, Any],
     parcel_id: str,
     geometry_wgs84: Any,
+    *,
+    datasets: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     """Read polygon windows from one scene, never whole full-resolution rasters."""
     import rasterio
@@ -123,7 +126,11 @@ def summarize_scene_for_parcel(
     from shapely.geometry import mapping
     from shapely.ops import transform
 
-    with rasterio.open(scene["files"]["Fmask"]) as qa_ds:
+    with ExitStack() as stack:
+        qa_ds = (
+            datasets["Fmask"] if datasets is not None
+            else stack.enter_context(rasterio.open(scene["files"]["Fmask"]))
+        )
         if qa_ds.crs is None:
             raise ValueError(f"Missing raster CRS: {scene['scene_id']}")
         transformer = Transformer.from_crs(
@@ -167,19 +174,22 @@ def summarize_scene_for_parcel(
             BANDS[scene["sensor"]],
             strict=True,
         ):
-            with rasterio.open(scene["files"][band]) as ds:
-                if ds.crs != qa_ds.crs or ds.transform != qa_ds.transform:
-                    raise ValueError(
-                        f"Unaligned HLS band {band} in {scene['scene_id']}"
-                    )
-                raw = ds.read(1, window=win, masked=True)
-                valid = band_valid(raw, quality)
-                # HLS packed DN=reflectance * 10000. Prithvi uses packed DN.
-                # The Local07 panel uses physical reflectance.
-                refl = raw.data.astype(np.float32) * 0.0001
-                row.update(_stats(semantic, refl[valid]))
-                reflectances.append(refl)
-                combined &= valid
+            ds = (
+                datasets[band] if datasets is not None
+                else stack.enter_context(rasterio.open(scene["files"][band]))
+            )
+            if ds.crs != qa_ds.crs or ds.transform != qa_ds.transform:
+                raise ValueError(
+                    f"Unaligned HLS band {band} in {scene['scene_id']}"
+                )
+            raw = ds.read(1, window=win, masked=True)
+            valid = band_valid(raw, quality)
+            # HLS DN = reflectance * 10000; Prithvi uses packed DN.
+            # Local07 panel statistics are physical reflectances.
+            refl = raw.data.astype(np.float32) * 0.0001
+            row.update(_stats(semantic, refl[valid]))
+            reflectances.append(refl)
+            combined &= valid
         row["n_pixels_all_bands_valid"] = int(combined.sum())
         row["valid_fraction"] = float(combined.sum() / n_polygon)
         red, nir, swir1 = (
@@ -304,10 +314,21 @@ def run_panel(
             reused += 1
             continue
         rows = []
-        for parcel_id, polygon in parcels:
-            row = summarize_scene_for_parcel(scene, parcel_id, polygon)
-            if row is not None:
-                rows.append(row)
+        import rasterio
+
+        # Open the seven needed COGs just once per scene, then read only
+        # polygon windows for every intersecting parcel.
+        with ExitStack() as stack:
+            open_datasets = {
+                band: stack.enter_context(rasterio.open(scene["files"][band]))
+                for band in ("Fmask", *BANDS[scene["sensor"]])
+            }
+            for parcel_id, polygon in parcels:
+                row = summarize_scene_for_parcel(
+                    scene, parcel_id, polygon, datasets=open_datasets
+                )
+                if row is not None:
+                    rows.append(row)
         tmp = dst.with_suffix(".json.tmp")
         tmp.write_text(json.dumps(rows, allow_nan=True), encoding="utf-8")
         tmp.replace(dst)
