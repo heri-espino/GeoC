@@ -357,8 +357,8 @@ def _prithvi_chip(
     selected: list[dict[str, Any]],
     scenes_by_id: dict[str, dict[str, Any]],
     polygon_wgs84: Any,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Four aligned 224px chips in raw HLS DN, plus valid/parcel masks."""
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, str, np.ndarray]:
+    """Four aligned HLS-DN frames, valid/parcel masks and grid provenance."""
     import rasterio
     from affine import Affine
     from pyproj import Transformer
@@ -414,7 +414,10 @@ def _prithvi_chip(
         # Invalid pixels are stored as 0 but are NEVER considered measured zero.
         frames[t, :, ~pixel_good] = 0
         valid[t] = pixel_good.astype(np.uint8)
-    return frames, valid, parcel_mask.astype(np.uint8)
+    return (
+        frames, valid, parcel_mask.astype(np.uint8),
+        str(crs), np.asarray(tuple(affine)[:6], dtype=np.float64),
+    )
 
 
 def run_chips(
@@ -445,6 +448,9 @@ def run_chips(
         )
         row: dict[str, Any] = {
             "ID_POLIGONO": parcel_id,
+            "centroid_lat_lon": [
+                float(polygon.centroid.y), float(polygon.centroid.x)
+            ],
             "available_windows": int(sum(c is not None for c in choices)),
             "complete": all(c is not None for c in choices),
             "dates": [c["date"] if c else None for c in choices],
@@ -469,7 +475,7 @@ def run_chips(
             row["chip_path"] = filename.name
             row["reused"] = True
         else:
-            frames, valid, parcel_mask = _prithvi_chip(
+            frames, valid, parcel_mask, crs_name, affine_values = _prithvi_chip(
                 selected, scenes_by_id, polygon
             )
             tmp = filename.with_suffix(".npz.tmp")
@@ -481,6 +487,11 @@ def run_chips(
                     valid_mask=valid,
                     parcel_mask=parcel_mask,
                     acquisition_dates=np.asarray(row["dates"], dtype="U10"),
+                    centroid_lat_lon=np.asarray(
+                        row["centroid_lat_lon"], dtype=np.float64
+                    ),
+                    reference_crs=np.asarray(crs_name),
+                    reference_affine=affine_values,
                 )
             tmp.replace(filename)
             row["chip_path"] = filename.name
