@@ -8,6 +8,17 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | Symbol | Kind | Module | Purpose | Source |
 |---|---|---|---|---|
 | `load_config` | function | `geocebada.config` | Load a YAML configuration file. | `src/geocebada/config.py` |
+| `band_valid` | function | `geocebada.data.checkpoint07_hls` | Preserve negative possible HLS reflectance and remove nodata/saturation. | `src/geocebada/data/checkpoint07_hls.py` |
+| `choose_prithvi_scenes` | function | `geocebada.data.checkpoint07_hls` | Choose one X-only quality-ranked scene per fixed 2025 window. | `src/geocebada/data/checkpoint07_hls.py` |
+| `clear_land_mask` | function | `geocebada.data.checkpoint07_hls` | Exclude HLS v2 cloud, adjacency, shadow, snow, water and fill pixels. | `src/geocebada/data/checkpoint07_hls.py` |
+| `load_parcels` | function | `geocebada.data.checkpoint07_hls` | Load immutable polygons and normalize official truncated ID field. | `src/geocebada/data/checkpoint07_hls.py` |
+| `parse_scene_name` | function | `geocebada.data.checkpoint07_hls` | Return scene ID, L30/S30, acquisition day and band. | `src/geocebada/data/checkpoint07_hls.py` |
+| `run_chips` | function | `geocebada.data.checkpoint07_hls` | Save one compressed NPZ per parcel; missing 4-frame sequences are reported. | `src/geocebada/data/checkpoint07_hls.py` |
+| `run_panel` | function | `geocebada.data.checkpoint07_hls` | Checkpoint 07A2 parcel-date raster feature extraction, resumable per scene. | `src/geocebada/data/checkpoint07_hls.py` |
+| `scan_hls` | function | `geocebada.data.checkpoint07_hls` | Group source files without reading pixels; reject incomplete scenes. | `src/geocebada/data/checkpoint07_hls.py` |
+| `summarize_scene_for_parcel` | function | `geocebada.data.checkpoint07_hls` | Read polygon windows from one scene, never whole full-resolution rasters. | `src/geocebada/data/checkpoint07_hls.py` |
+| `parse_smap_day` | function | `geocebada.data.checkpoint07_smap` |  | `src/geocebada/data/checkpoint07_smap.py` |
+| `run_smap` | function | `geocebada.data.checkpoint07_smap` | Stream 9-km AM and PM measurements to a parcel-date CSV. | `src/geocebada/data/checkpoint07_smap.py` |
 | `build_admin_mapping` | function | `geocebada.data.external` | Resolve official administrative keys and spatial-overlap QA per parcel. | `src/geocebada/data/external.py` |
 | `load_inegi_municipalities` | function | `geocebada.data.external` | Load and normalize the three INEGI municipality layers from Data Contract v2. | `src/geocebada/data/external.py` |
 | `load_siap_barley_detail` | function | `geocebada.data.external` | Load target-state SIAP barley rows with cycle/modality detail preserved. | `src/geocebada/data/external.py` |
