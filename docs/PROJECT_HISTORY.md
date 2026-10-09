@@ -1383,3 +1383,35 @@ promotion requires an untouched fresh X-only target-matched confirmation bank.
 
 Acquisition is implemented in `tools/download_checkpoint_07_data.py`.
 Canonical specification: `docs/CHECKPOINT_07_PLAN.md`.
+
+
+---
+
+## 2026-10-09 — Checkpoint 07A2 raw-data inventory and streaming processors
+
+The university workstation reported 180.140 GiB raw: HLS 41.846 GiB
+(197 complete granules, 3,250 files, zero missing Prithvi-band/Fmask sets),
+SMAP 135.492 GiB (215 HDF5s), Sentinel-1 2.801 GiB (66 GeoTIFFs),
+AgERA5 small (two files). The Prithvi weight cache is 3.693 GiB, separate
+from raw, and free disk was 935.644 GiB.
+
+The primary storage issue is SMAP's *global 9-km daily HDF5 archive* rather
+than the HLS scenes. No new raw download is necessary to start HLS/SMAP
+processing.
+
+Implemented two deterministic, X-only processing lines:
+- 07A2 HLS scene-first window reads -> date/parcel spectral panel with HLS
+  Fmask and complete metadata; 4 selected quality windows -> aligned masked
+  224px int16 HLS Prithvi chips; resumable scene/parcel outputs.
+- 07A3 SMAP -> nearest region-grid cell per parcel centroid, read unique AM/PM
+  soil-moisture/quality cells per day, compact parcel-date CSV.
+
+Both pipelines have isolated smoke modes and do not delete or change raw files.
+Output is gitignored under data/processed/checkpoint_07/. The user needs to
+run preflight, smoke and full processing, and return quality reports before
+any model can train.
+
+Canonical detailed plan and run instructions:
+docs/CHECKPOINT_07A_PROCESSING.md.
+
+Local04D remains the competition incumbent; no hidden FIRA y accessed.
