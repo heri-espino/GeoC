@@ -170,6 +170,35 @@ Large Checkpoint 07 acquisitions and model weights are local only:
 Local04D and `reports/checkpoint_05/final_predictions.csv` remain canonical
 until fresh confirmation supports a replacement.
 
+## Checkpoint 07A2 streaming processing boundary (2026-10-09)
+
+The source download is complete for HLS, SMAP, AgERA5, Prithvi; Sentinel-1
+was marked running at the user's last status check. The verified inventory is
+180.140 GiB raw, dominated by SMAP (135.492 GiB), not HLS (41.846 GiB).
+HLS has 197 scenes with the six required Prithvi bands and Fmask.
+
+Active code:
+- src/geocebada/data/checkpoint07_hls.py
+- tools/run_checkpoint_07_processing.py
+- src/geocebada/data/checkpoint07_smap.py
+- tools/run_checkpoint_07_smap.py
+
+Inspect docs/CHECKPOINT_07A_PROCESSING.md and the generated processing reports.
+Do not invent an extraction PASS before workstation execution.
+
+Do not load full satellite scenes into RAM. Read scene/window and unique
+SMAP regional grid cells; keep full temporal acquisition date, sensor and
+QA provenance. Prithvi chips must use fixed georeferenced 30-m 224x224
+grids with masks and exactly four X-only selected dates. Missing windows
+must be reported, never filled silently. Keep packed HLS int16 DN for
+the future model-config normalization; avoid double scaling.
+
+Do not commit data/processed/checkpoint_07/, models/checkpoint_07/,
+data/raw/checkpoint_07/ or any credentials. Never auto-delete raw.
+
+Local04D remains canonical; 07A2 does no supervised modeling or hidden
+FIRA-y access.
+
 ## Frozen final-state summary
 
 As of 2026-09-24:
