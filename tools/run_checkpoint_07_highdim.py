@@ -165,7 +165,7 @@ def _feature_build(
     if not args.include_siap_2025:
         proxy_columns = [
             col for col in merged
-            if "siap_2025" in col or "siap_recent_yield_x" in col
+            if "siap_2025" in col
         ]
         merged = merged.drop(columns=proxy_columns)
     seeds = 25 if args.smoke else args.max_seeds
