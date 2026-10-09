@@ -14,11 +14,14 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 SOURCES = ("hls", "smap", "sentinel1", "agera5", "prithvi")
+CREDENTIAL_KEYS = ("EARTHDATA_TOKEN", "EARTHDATA_USERNAME", "EARTHDATA_PASSWORD",
+                   "CDSE_CLIENT_ID", "CDSE_CLIENT_SECRET", "CDSAPI_KEY")
 TOKEN_URL = (
     "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/"
     "protocol/openid-connect/token"
@@ -165,6 +168,41 @@ def _http_session():
     return session
 
 
+@contextmanager
+def _earthdata_environment(config: dict[str, str]):
+    """Expose NASA credentials to earthaccess temporarily, then restore the process environment.
+
+    In contrast to run_download(), check_auth runs inside this Python process,
+    so a private .env file must be passed to os.environ explicitly.
+    """
+    keys = ("EARTHDATA_TOKEN", "EARTHDATA_USERNAME", "EARTHDATA_PASSWORD")
+    previous = {key: os.environ.get(key) for key in keys}
+    try:
+        for key in keys:
+            value = config.get(key)
+            if available(value):
+                os.environ[key] = value
+            else:
+                os.environ.pop(key, None)
+        yield
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
+def doctor(root: Path, env_path: Path, config: dict[str, str]) -> int:
+    """Report the discovered credential-file path and key presence, never values."""
+    print(f"Repository root: {root}")
+    print(f"Credentials file: {env_path}")
+    print(f"Credentials file exists: {env_path.is_file()}")
+    for key in CREDENTIAL_KEYS:
+        print(f"{key}: {'configured' if available(config.get(key)) else 'missing'}")
+    return 0
+
+
 def check_auth(config: dict[str, str], selected: list[str], *, execute: bool) -> int:
     """Test credentials without downloading datasets or printing secrets."""
     if not execute:
@@ -179,10 +217,11 @@ def check_auth(config: dict[str, str], selected: list[str], *, execute: bool) ->
     if {"hls", "smap"} & set(selected):
         try:
             import earthaccess
-            auth = earthaccess.login(strategy="environment")
+            with _earthdata_environment(config):
+                auth = earthaccess.login(strategy="environment")
             if not getattr(auth, "authenticated", False):
                 raise RuntimeError("NASA authentication did not report success")
-            print("NASA Earthdata: OK")
+            print("NASA Earthdata: credentials loaded (server-side token validity not yet checked)")
         except Exception as e:
             safe_print(f"NASA Earthdata: FAIL ({type(e).__name__}: {e})", config)
             ok = False
@@ -291,7 +330,7 @@ def run_download(root: Path, config: dict[str, str], selected: list[str], *,
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["init", "simulate", "preflight", "check-auth", "catalog", "download"])
+    parser.add_argument("action", choices=["init", "simulate", "doctor", "preflight", "check-auth", "catalog", "download"])
     parser.add_argument("--root", help="GeoC repository root (inferred from script path by default)")
     parser.add_argument("--env-file", help="Local, gitignored credentials file")
     parser.add_argument("--sources", nargs="+", choices=["all", *SOURCES], default=["all"])
@@ -314,8 +353,12 @@ def main(argv: list[str] | None = None) -> int:
         return initialize(env_path)
     if args.action == "simulate":
         return simulate(root, selected)
-    config = parse_env(env_path)
-    config.update({k: v for k, v in os.environ.items() if available(v)})
+    # Local credentials take precedence; placeholders never override real OS variables.
+    config = {k: v for k, v in os.environ.items() if k in CREDENTIAL_KEYS and available(v)}
+    config.update({k: v for k, v in parse_env(env_path).items()
+                   if k in CREDENTIAL_KEYS and available(v)})
+    if args.action == "doctor":
+        return doctor(root, env_path, config)
     if args.action == "check-auth":
         return check_auth(config, selected, execute=args.execute)
     if args.action == "preflight":
