@@ -92,3 +92,6 @@ venv/
 
 # Checkpoint 07 X-only processing outputs: regenerate locally, never commit images
 /data/processed/checkpoint_07/
+
+# Checkpoint 07B high-dimensional X-only features and validation results
+/reports/checkpoint_07/highdim/
