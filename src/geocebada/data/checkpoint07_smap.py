@@ -168,7 +168,7 @@ def run_smap(
                     ):
                         continue
                     measurements: dict[tuple[int, int], tuple[float, float]] = {}
-                    for row, col, _ in set(lookups.values()):
+                    for row, col in sorted({pair[:2] for pair in lookups.values()}):
                         val = _dataset_scalar(group["soil_moisture"], row, col)
                         flag = _dataset_scalar(
                             group["retrieval_qual_flag"], row, col
