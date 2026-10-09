@@ -1,6 +1,6 @@
 # GeoCebada agent guide
 
-**Current phase:** Checkpoint 07 RMSE Offensive is ACTIVE; data acquisition is implemented, Local07/Prithvi07 modeling pending. Local04D remains incumbent.  
+**Current phase:** Checkpoint 07A2 streaming HLS/SMAP processors IMPLEMENTED / WORKSTATION RUN PENDING. Local04D remains incumbent.  
 **Canonical objective:** `docs/TRANSDUCTIVE_OBJECTIVE.md`
 
 This is the operational entry point for any AI agent, collaborator or new contributor.
@@ -469,3 +469,18 @@ decision prioritizes untouched fresh-confirmation pooled and mean RMSE because
 the competition objective is the RMSE of the fixed 59 hidden parcels.
 
 Canonical plan: `docs/CHECKPOINT_07_PLAN.md`.
+
+
+### 07A2 2026-10-09 — actual 180-GiB inventory and processing
+
+Observed workstation totals: HLS 41.846 GiB (197 complete scenes, 3250 files),
+SMAP 135.492 GiB (215 HDF5 files), Sentinel-1 2.801 GiB (66 files),
+Prithvi weights 3.693 GiB separately, disk free 935.644 GiB.
+
+Next action: read docs/CHECKPOINT_07A_PROCESSING.md and run its two pipelines,
+first on isolated smoke inputs, then against the full archive. The scripts
+produce only X-only parcel-date records and four-frame Prithvi chips; they
+do not fit supervised models or touch hidden y.
+
+Inspect panel coverage, valid-pixel counts, missing four-frame sequences and
+SMAP daily retrieval-quality counts before allowing Local07/Prithvi modeling.
