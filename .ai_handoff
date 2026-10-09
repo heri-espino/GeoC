@@ -143,6 +143,32 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 - record material AI-assisted work in `docs/AI_USAGE.md`;
 - update this handoff, `docs/AGENT_GUIDE.md` and the active checkpoint when project doctrine changes.
 
+## New 2026-10-09 07B feature expansion and neural benchmark
+
+The user clarified GeoCebada is agricultural modeling research, NOT a
+competition or challenge. Use research terminology going forward. The
+fixed 197 geometry, 138 known yield labels, and 59 missing yields still
+define the data constraint. Respect no-hidden-label access.
+
+New requested research path implemented:
+- `src/geocebada/features/checkpoint07_highdim.py`: numerous
+  per-acquisition HLS trajectory/QA/season and SMAP dynamics metrics;
+  7/14/30-day antecedent moisture × vegetation; signed logs/squares
+  and bounded cross-family interaction products (180 seeds, 12k cap);
+- `src/geocebada/evaluation/checkpoint07_pca.py`: fold-local
+  imputation/scaling/dual PCA by X explained variance + Ridge,
+  quadratic PCs, and regularized MLP (16, 32→16 hidden units), internal
+  pseudo-train-only early stopping;
+- `tools/run_checkpoint_07_highdim.py`: preflight, smoke and
+  full 16 target-matched split evaluation;
+- `docs/CHECKPOINT_07B_HIGH_DIMENSIONAL.md`: instructions and caveats.
+
+The workspace scientific run is pending. No neural/RMSE victory has
+been demonstrated. HLS/SMAP 07A2 extraction must be run first.
+Canonical Local04D is unchanged. Default 07B excludes SIAP 2025
+municipal outcome proxies; opt-in separately if doing retrospective
+research.
+
 ## Immediate next action: run 07A2 extraction, NOT another download
 
 The user has acquired 180.140 GiB:
