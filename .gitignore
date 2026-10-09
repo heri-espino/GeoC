@@ -89,3 +89,6 @@ venv/
 # Checkpoint 07 large local-only acquisitions and foundation-model weights
 /data/raw/checkpoint_07/
 /models/checkpoint_07/
+
+# Checkpoint 07 X-only processing outputs: regenerate locally, never commit images
+/data/processed/checkpoint_07/
