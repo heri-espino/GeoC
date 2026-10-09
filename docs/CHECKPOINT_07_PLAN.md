@@ -130,6 +130,63 @@ The tracked acquisition logic and config are the provenance source of truth.
 - raster/parcel overlap is verified;
 - source dates, CRS, bands and missingness are audited.
 
+## 07A.2 — Processing 180+ GiB without loading full satellite scenes
+
+The raw HLS tiles are **archive inputs**, not an ML training matrix.
+The system must never materialize every pixel/date/band in RAM.
+
+Before extraction, run the metadata-only audit:
+
+    python tools/audit_checkpoint_07_storage.py --sample-raster-headers 8
+
+Review the generated report:
+
+    reports/checkpoint_07/storage_inventory.json
+
+Its source totals, free disk space, and required-band gaps determine whether
+acquisition is actually complete. A source-status exit_code=0 alone is NOT
+a parcel-coverage/quality guarantee. Sentinel-1 may still be in progress;
+the audit is safe to run concurrently.
+
+The next processing deliverables are separate:
+
+1. **07A2 scene catalog** — map each HLS/S1 granule to dates, grid/tile, cloud
+   QA, bands and parcel intersections using coordinates only. Do not read full
+   scene pixels.
+2. **07A3 original temporal parcel panel** — group parcels by scene/tile,
+   read raster windows with Rasterio; intersect true parcel masks; record
+   valid-pixel count, date, sensor, orbit, band statistics and spatial
+   quantiles. Preserve daily/acquisition dates and masks, then write Parquet.
+3. **07A4 Prithvi chips** — for each of 197 parcels select four X-only
+   Fmask-qualified HLS dates from the predeclared windows. Read six bands
+   plus Fmask only within needed local windows, save 197 x 4 x 6 x 224 x 224
+   as compressed int16/chunked storage, plus masks, dates and metadata.
+   Read as small batches (1–4) into GPU for frozen embedding extraction.
+4. **07A5 climate/SMAP context** — subset only the grid cells/timestamps
+   containing each parcel, preserving native spatial resolution. Store a
+   compact date/parcel panel and derived agronomic phase summaries.
+
+Order of execution is **scene-first** (read a tile/date once, process every
+parcel within it) rather than reopening every image 197 times.
+
+For scale, exactly 197 parcels x 4 dates x 6 bands x 224 x 224 pixels uses
+about 0.44 GiB of raw int16 reflectance values (before masks/compression).
+This is not a promise about actual output size: extra frames, masks, context
+and compression change storage requirements.
+
+HLS reflectance values are stored as scaled int16 (scale factor 0.0001).
+For Prithvi, preserve the raw encoding as appropriate to the official model
+normalization and document every conversion; do not inadvertently normalize
+the image twice. Respect HLS Fmask, NoData and sensor-specific band IDs.
+
+A 224 x 224 HLS chip spans roughly 6.72 x 6.72 km at 30 m, often much wider
+than the true parcel. Preserve the polygon mask and compare parcel-only token
+pooling vs parcel-plus-context to avoid learning mainly adjacent land.
+
+**Deletion policy:** No automatic deletion. After QA verifies chips, temporal
+panels and provenance, raw granules can be archived or deliberately removed by
+a human, not by the processing runner.
+
 ## Phase 07B — Local07 with new information
 
 The first model line stays close to the strongest incumbent so the effect of
