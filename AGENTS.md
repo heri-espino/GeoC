@@ -199,6 +199,33 @@ data/raw/checkpoint_07/ or any credentials. Never auto-delete raw.
 Local04D remains canonical; 07A2 does no supervised modeling or hidden
 FIRA-y access.
 
+## Checkpoint 07B high-dimensional and neural ablations (2026-10-09)
+
+Implemented `src/geocebada/features/checkpoint07_highdim.py`,
+`src/geocebada/evaluation/checkpoint07_pca.py`,
+`tools/run_checkpoint_07_highdim.py` and
+`tests/test_checkpoint07_highdim.py`. Scientific readme:
+`docs/CHECKPOINT_07B_HIGH_DIMENSIONAL.md`.
+
+The user wants many high-order candidate features, PCA based on X variance,
+and a neural comparison. This is explicitly a modeling research project,
+not a contest. Do not describe it as a challenge or competition in new prose.
+
+All feature construction is X-only and 197-row aligned. Imputation, scaling,
+dual Gram PCA, Ridge and regularized MLP fitting are performed separately
+inside each 97-label pseudo-training fold. Only frozen held-out labels may
+be used to score the fold. Do not pool 16 overlapping splits as independent
+observations or promote the lowest development RMSE without fresh confirmation.
+
+A big-feature matrix is not a big-label dataset: only 138 observed y.
+The large pretrained neural model Prithvi remains a distinct branch.
+Concurrently reported 2025 SIAP municipal outcome proxies are excluded
+by default from 07B due to potential outcome leakage; enabling them is
+explicit and must be disclosed.
+
+No raw raster re-download; respect prior 07A processing QA.
+Local-only outputs in `reports/checkpoint_07/highdim/`, gitignored.
+
 ## Frozen final-state summary
 
 As of 2026-09-24:
