@@ -40,11 +40,14 @@ It does **not** prove access to the remote scientific datasets.
 python tools/run_checkpoint_07_acquisition.py check-auth --execute
 ```
 
-This loads the NASA token locally in earthaccess, calls CDSE OAuth, CDS ARCO
-metadata and the public Prithvi HTTP endpoint. A successful NASA login with a
-preexisting token **only verifies that earthaccess loaded it**; validity,
-expiration and actual file-download permissions are not checked until an
-authenticated NASA request is made. It does **not** download any large datasets. The CDS check validates
+This loads the NASA token locally and verifies protected-file HTTP access on
+one published HLS and one SMAP file by streaming a one-byte Range request.
+HTTP 200/206 (non-HTML) means protected-file access works; HTTP 401/403 means
+the token or data-provider authorization must be corrected before bulk transfer.
+It also calls CDSE OAuth, CDS ARCO metadata and the public Prithvi HTTP endpoint.
+The NASA probe transfers only response headers/a minimal payload and saves no files.
+It does **not** download any large datasets. The original downloader now runs
+this NASA probe before starting each HLS/SMAP bulk download. The CDS check validates
 HTTP access to metadata only, not NetCDF writing or full temporal coverage.
 
 ## Inventory before downloading
@@ -97,4 +100,27 @@ preferred virtual environment.
 
 ```powershell
 python -m unittest discover -s tests -p 'test_checkpoint07_runner.py'
+```
+## NASA 401 troubleshooting (HLS or SMAP)
+
+If `check-auth --sources hls smap --execute` reports HTTP 401, visit
+https://urs.earthdata.nasa.gov/ and generate a fresh, unmodified **user token**.
+Replace only `EARTHDATA_TOKEN` in the private `.env.checkpoint07` file.
+Earthaccess accepts an environment token locally without checking its signature,
+so the protected-file probe is necessary. If a fresh token still returns 401,
+open the corresponding HLS/SMAP granule link in a browser while signed in to
+Earthdata, and check for pending LP DAAC / NSIDC application authorization or
+EULA approval; contact the appropriate DAAC if the error persists.
+
+You may alternatively configure `EARTHDATA_USERNAME` and
+`EARTHDATA_PASSWORD` in the private env file, but remove or comment out
+`EARTHDATA_TOKEN` first: tokens take precedence in earthaccess. Never store
+these secrets in the repository or print them in terminal output.
+
+Run the protected-file check again before retrying the download:
+
+```powershell
+python tools/run_checkpoint_07_acquisition.py check-auth --sources hls smap --execute
+python tools/run_checkpoint_07_acquisition.py download --sources hls --execute
+python tools/run_checkpoint_07_acquisition.py download --sources smap --execute
 ```
