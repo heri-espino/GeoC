@@ -1,7 +1,7 @@
 # AI Handoff — GeoCebada
 
-**Updated:** 2026-10-06  
-**Active phase:** Checkpoint 07 RMSE Offensive is ACTIVE; data acquisition is implemented and Local07/Prithvi07 modeling is pending. Local04D remains the frozen competition method until fresh confirmation supports a replacement.
+**Updated:** 2026-10-09  
+**Active phase:** Checkpoint 07A2 HLS/SMAP streaming processors IMPLEMENTED / WORKSTATION RUN PENDING. Raw acquisition inventory: 180.140 GiB; HLS 41.846 GiB complete (197 granules), SMAP 135.492 GiB (215 daily files), Sentinel-1 2.801 GiB. Local04D remains frozen competition incumbent until honest fresh-confirmation evidence supports a replacement.
 
 Read `docs/TRANSDUCTIVE_OBJECTIVE.md` first, then `docs/AGENT_GUIDE.md`, then
 `docs/CHECKPOINT_07_PLAN.md`, `docs/CHECKPOINT_06F_FINDINGS.md`,
@@ -143,53 +143,48 @@ Start with 04A/04B before spending heavily on a larger CatBoost search.
 - record material AI-assisted work in `docs/AI_USAGE.md`;
 - update this handoff, `docs/AGENT_GUIDE.md` and the active checkpoint when project doctrine changes.
 
-## Immediate next action
+## Immediate next action: run 07A2 extraction, NOT another download
 
-Checkpoint 06F was run and failed LOSO. It is closed. The active work is
-Checkpoint 07 new-data acquisition.
+The user has acquired 180.140 GiB:
+- HLS 41.846 GiB, 3,250 files, 197 complete scenes (zero missing needed bands);
+- SMAP 135.492 GiB, 215 HDF5 files;
+- Sentinel-1 2.801 GiB, 66 files (previous status still marked running);
+- AgERA5 completed; Prithvi weights 3.693 GiB; 935.644 GiB free.
 
-Install the new downloader dependencies:
+The HLS + SMAP processing scripts are IMPLEMENTED, not yet run on these
+actual workstation files. Do not claim scientific extraction success until
+the user runs them and shares their reports.
+
+Read docs/CHECKPOINT_07A_PROCESSING.md, then execute:
 
 ```powershell
 git pull --ff-only
-git lfs pull
 conda activate geocebada
 python -m pip install -e ".[dev,geo,checkpoint07]"
+
+python tools\run_checkpoint_07_processing.py --preflight
+python tools\run_checkpoint_07_processing.py --stage panel --max-scenes 3 --max-parcels 3
+python tools\run_checkpoint_07_processing.py --stage all
+
+python tools\run_checkpoint_07_smap.py --preflight
+python tools\run_checkpoint_07_smap.py --max-files 2
+python tools\run_checkpoint_07_smap.py
 ```
 
-First validate the local environment:
+Review:
+- data/processed/checkpoint_07/processing_report.json
+- data/processed/checkpoint_07/hls_parcel_observations.csv
+- data/processed/checkpoint_07/prithvi_chip_manifest.json
+- data/processed/checkpoint_07/smap_processing_report.json
 
-```powershell
-python tools\download_checkpoint_07_data.py --preflight
-```
+These are X-only local outputs, gitignored; no hidden y is accessed. No
+automated deletion of raw data. If incomplete four-frame coverage is found,
+review date/QA missingness before any Prithvi modeling.
 
-Then query HLS and Sentinel-1 catalogues before bulk transfer:
+After 07A2 output quality is verified: 07B Local07 model with new temporal
+features, 07C Prithvi frozen embeddings, 07D fusion and fresh confirmation.
+The 59 canonical predictions remain reports/checkpoint_05/final_predictions.csv.
 
-```powershell
-python tools\download_checkpoint_07_data.py --catalog-only --sources hls sentinel1
-```
-
-After credentials are configured, download all new inputs:
-
-```powershell
-python tools\download_checkpoint_07_data.py --sources all
-```
-
-Large data are local-only under `data/raw/checkpoint_07/`; Prithvi weights are
-local-only under `models/checkpoint_07/`. Both paths are gitignored.
-
-The acquisition set is HLS v2 + SMAP v6 + Sentinel-1 GRD + AgERA5 v2 + Prithvi weights.
-
-After acquisition/audit, implement 07B Local07 and 07C Prithvi07 according to
-`docs/CHECKPOINT_07_PLAN.md`. Use the existing 16 target-matched splits for
-development, reduce each family to a small shortlist, then use a new untouched
-X-only target-matched confirmation bank for the competition decision.
-
-LOSO remains a stability diagnostic in Checkpoint 07; the primary objective is
-lowest expected RMSE on the fixed 59 targets. Hidden FIRA y remains forbidden.
-
-Current competition source of truth remains:
-`reports/checkpoint_05/final_predictions.csv`.
 
 ## 2026-09-23 — Checkpoint 03D ONNX preflight compatibility incident
 
