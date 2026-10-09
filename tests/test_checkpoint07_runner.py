@@ -69,7 +69,7 @@ class RunnerTests(unittest.TestCase):
         with patch.dict(sys.modules, {"earthaccess": fake}):
             with patch.dict(os.environ, {"EARTHDATA_TOKEN": "prior-token"}):
                 with io.StringIO() as stdout, redirect_stdout(stdout):
-                    code = module.check_auth({"EARTHDATA_TOKEN": token}, ["hls"], execute=True)
+                    code = runner.check_auth({"EARTHDATA_TOKEN": token}, ["hls"], execute=True)
                     text = stdout.getvalue()
                 self.assertEqual(os.environ["EARTHDATA_TOKEN"], "prior-token")
         self.assertEqual(code, 0)
@@ -86,7 +86,7 @@ class RunnerTests(unittest.TestCase):
             secret = "NASA_FAKE_TOKEN_FOR_DOCTOR_123"
             env_file.write_text("EARTHDATA_TOKEN=" + secret + "\n", encoding="utf-8")
             with io.StringIO() as stdout, redirect_stdout(stdout):
-                self.assertEqual(module.main(["doctor", "--root", folder]), 0)
+                self.assertEqual(runner.main(["doctor", "--root", folder]), 0)
                 output = stdout.getvalue()
             self.assertIn("EARTHDATA_TOKEN: configured", output)
             self.assertNotIn(secret, output)
