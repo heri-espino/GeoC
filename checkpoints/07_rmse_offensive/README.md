@@ -27,3 +27,16 @@ Large raw files and model weights are local-only and must not be committed.
 
 Local04D and reports/checkpoint_05/final_predictions.csv remain canonical until
 Checkpoint 07 fresh confirmation supports a replacement.
+
+
+## Raw-data storage audit
+
+With HLS/SMAP/AgERA5/Prithvi downloaded and Sentinel-1 potentially running,
+audit the size and scene-band inventory without loading raster pixels:
+
+    python tools/audit_checkpoint_07_storage.py --sample-raster-headers 8
+
+Inspect reports/checkpoint_07/storage_inventory.json for per-source GiB,
+available disk space and missing HLS bands/Fmask. This metadata-only tool is
+safe during acquisition. Then implement the scene-first streaming extraction
+described in docs/CHECKPOINT_07_PLAN.md. Do not train on 180 GB of raw tiles.
