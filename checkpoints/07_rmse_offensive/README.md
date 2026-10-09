@@ -1,6 +1,6 @@
 # Checkpoint 07 — RMSE Offensive
 
-**Status:** DATA ACQUISITION IMPLEMENTED / MODELING PENDING  
+**Status:** 07A2 STREAMING PROCESSORS IMPLEMENTED / WORKSTATION RUN PENDING  
 **Canonical plan:** docs/CHECKPOINT_07_PLAN.md  
 **Incumbent:** Local04D
 
@@ -40,3 +40,23 @@ Inspect reports/checkpoint_07/storage_inventory.json for per-source GiB,
 available disk space and missing HLS bands/Fmask. This metadata-only tool is
 safe during acquisition. Then implement the scene-first streaming extraction
 described in docs/CHECKPOINT_07_PLAN.md. Do not train on 180 GB of raw tiles.
+
+
+## 07A2 — Workstation raw-data reduction
+
+The reported 180.140 GiB raw storage is dominated by SMAP (135.492 GiB),
+not HLS (41.846 GiB). The complete HLS inventory has 197 granules and no
+missing Prithvi band/Fmask files.
+
+Next steps are implemented (do not download again):
+
+    python tools\run_checkpoint_07_processing.py --preflight
+    python tools\run_checkpoint_07_processing.py --stage all
+
+    python tools\run_checkpoint_07_smap.py --preflight
+    python tools\run_checkpoint_07_smap.py
+
+Use smoke mode first if desired. Both output into gitignored
+data/processed/checkpoint_07/ and do not delete raw input files.
+
+Canonical detailed handoff: docs/CHECKPOINT_07A_PROCESSING.md.
