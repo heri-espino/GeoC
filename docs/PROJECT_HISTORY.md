@@ -1415,3 +1415,37 @@ Canonical detailed plan and run instructions:
 docs/CHECKPOINT_07A_PROCESSING.md.
 
 Local04D remains the competition incumbent; no hidden FIRA y accessed.
+
+
+---
+
+## 2026-10-09 — Checkpoint 07B high-dimensional trajectories, PCA and neural benchmark
+
+Following the request to exploit many temporal metrics, interactions and PCA
+without an interpretability constraint, 07B now has a deterministic X-only
+feature generator. Its sources are the 2025 HLS parcel-date panel, SMAP
+parcel-daily panel, frozen parcel feature table and historical agronomic
+derivatives. It computes irregular-series velocity, acceleration proxy,
+continuity-aware AUC, quantiles, phenological timing, per-sensor and per-period
+features, antecedent SMAP×HLS lag metrics, and bounded cross-family signed-log
+interaction products (default up to 180 seed variables and 12,000 products).
+
+The benchmark fits training-only imputer/scaler/dual PCA, Ridge, Ridge with
+quadratic principal-component terms and small regularized neural MLPs
+(16 or 32/16 hidden neurons) with internal training-only early stopping.
+The 16 frozen target-matched pseudo-splits each have 97 labeled pseudo-train
+and 41 labeled pseudo-target parcels. Model selection from reused development
+folds requires a subsequent untouched confirmation step. Explained X variance
+does not by itself establish predictive performance. Do not assume 12k features
+means 12k independent labeled examples.
+
+Research terminology applies: GeoCebada is not to be described as a contest.
+The 59 missing yields remain unavailable. SIAP 2025 contemporaneous outcome
+proxies are OFF by default in this new benchmark.
+
+Executable:
+tools/run_checkpoint_07_highdim.py --preflight / --smoke / --stage all.
+
+Full protocol: docs/CHECKPOINT_07B_HIGH_DIMENSIONAL.md.
+
+No workstation 07B result has been reported at implementation time.
