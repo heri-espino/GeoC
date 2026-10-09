@@ -57,7 +57,11 @@ def irregular_series_features(
     out = {"n_observations": float(valid.sum())}
     if not valid.any():
         return out
-    times = np.asarray(dates[valid].asi8, dtype=np.float64) / 86400e9
+    # Pandas may store datetimes in ns or us; cast to calendar days first.
+    # Dividing .asi8 by a fixed ns divisor silently corrupts us-backed dates.
+    times = np.asarray(
+        dates[valid].to_numpy(), dtype="datetime64[D]"
+    ).astype("int64").astype(float)
     v, weights_valid = val[valid], w[valid]
     order = np.argsort(times, kind="stable")
     times, v, weights_valid = times[order], v[order], weights_valid[order]
@@ -410,7 +414,9 @@ def build_nonlinear_interactions(
     columns: dict[str, np.ndarray] = {}
     transformed: dict[str, np.ndarray] = {}
     for name in seeds:
-        values = pd.to_numeric(frame[name], errors="coerce").to_numpy(dtype=float)
+        values = pd.to_numeric(frame[name], errors="coerce").to_numpy(
+            dtype=float, copy=True
+        )
         values[~np.isfinite(values)] = np.nan
         signed_log = np.sign(values) * np.log1p(np.abs(values))
         transformed[name] = signed_log
