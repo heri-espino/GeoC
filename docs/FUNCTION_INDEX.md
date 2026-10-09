@@ -183,7 +183,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `build_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Build the additive agronomic nonlinear feature layer. | `src/geocebada/features/agronomic.py` |
 | `join_agronomic_features` | function | `geocebada.features.agronomic` | Join the additive agronomic layer after exact parcel-coverage validation. | `src/geocebada/features/agronomic.py` |
 | `validate_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Validate one-to-one parcel coverage and numeric derived features. | `src/geocebada/features/agronomic.py` |
-| `build_hls_smap_lag_features` | function | `geocebada.features.checkpoint07_highdim` | Combine HLS greenness with preceding 7/14/30-day SMAP moisture. | `src/geocebada/features/checkpoint07_highdim.py` |
+| `build_hls_smap_lag_features` | function | `geocebada.features.checkpoint07_highdim` | Combine HLS greenness with *preceding* 7/14/30-day SMAP moisture. | `src/geocebada/features/checkpoint07_highdim.py` |
 | `build_hls_time_features` | function | `geocebada.features.checkpoint07_highdim` | High-dimensional per-parcel HLS date, spectral, QA and sensor features. | `src/geocebada/features/checkpoint07_highdim.py` |
 | `build_nonlinear_interactions` | function | `geocebada.features.checkpoint07_highdim` | Generate bounded pointwise transforms and cross-family pair products. | `src/geocebada/features/checkpoint07_highdim.py` |
 | `build_smap_time_features` | function | `geocebada.features.checkpoint07_highdim` | Per-parcel daily regional soil-moisture dynamics and AM/PM contrasts. | `src/geocebada/features/checkpoint07_highdim.py` |
