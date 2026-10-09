@@ -9,7 +9,6 @@ import numpy as np
 import pytest
 
 from geocebada.data.checkpoint07_hls import (
-    _prithvi_chip,
     band_valid,
     choose_prithvi_scenes,
     clear_land_mask,
