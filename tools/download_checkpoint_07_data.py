@@ -311,7 +311,7 @@ def _download_hls(
         _log("Earthdata login for HLS download")
         earthaccess.login()
         folder.mkdir(parents=True, exist_ok=True)
-        downloaded = earthaccess.download(results, str(folder))
+        downloaded = earthaccess.download(results, str(folder), show_progress=True)
         files = [str(Path(path)) for path in downloaded]
         _log(f"HLS downloaded/reused files: {len(files)}")
 
@@ -367,7 +367,7 @@ def _download_smap(
         _log("Earthdata login for SMAP download")
         earthaccess.login()
         folder.mkdir(parents=True, exist_ok=True)
-        downloaded = earthaccess.download(results, str(folder))
+        downloaded = earthaccess.download(results, str(folder), show_progress=True)
         files = [str(Path(path)) for path in downloaded]
         _log(f"SMAP downloaded/reused files: {len(files)}")
 
