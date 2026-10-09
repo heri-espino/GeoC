@@ -20,6 +20,19 @@ from pathlib import Path
 from typing import Any
 
 SOURCES = ("hls", "smap", "sentinel1", "agera5", "prithvi")
+# Stable publicly catalogued data-file URLs used only for an authenticated check.
+# These are example 2025 scenes, not credentials or generated download links.
+NASA_PROBE_URLS = {
+    "hls": (
+        "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/"
+        "HLSL30.020/HLS.L30.T14QNH.2025093T165916.v2.0/"
+        "HLS.L30.T14QNH.2025093T165916.v2.0.B06.tif"
+    ),
+    "smap": (
+        "https://data.nsidc.earthdatacloud.nasa.gov/nsidc-cumulus-prod-protected/"
+        "SMAP/SPL3SMP_E/006/2025/04/01/SMAP_L3_SM_P_E_20250401_R19240_002.h5"
+    ),
+}
 CREDENTIAL_KEYS = ("EARTHDATA_TOKEN", "EARTHDATA_USERNAME", "EARTHDATA_PASSWORD",
                    "CDSE_CLIENT_ID", "CDSE_CLIENT_SECRET", "CDSAPI_KEY")
 TOKEN_URL = (
@@ -203,6 +216,51 @@ def doctor(root: Path, env_path: Path, config: dict[str, str]) -> int:
     return 0
 
 
+def probe_nasa(config: dict[str, str], selected: list[str]) -> bool:
+    """Verify actual protected HLS/SMAP file access without saving data to disk.
+
+    A local earthaccess.login() with EARTHDATA_TOKEN is not proof of validity:
+    earthaccess marks the supplied token as authenticated without server check.
+    Probe one byte using earthaccess's authenticated session.
+    """
+    try:
+        import earthaccess
+
+        with _earthdata_environment(config):
+            auth = earthaccess.login(strategy="environment")
+        if not getattr(auth, "authenticated", False):
+            print("NASA: Earthdata login did not load any credentials")
+            return False
+        with auth.get_session() as session:
+            for source in selected:
+                url = NASA_PROBE_URLS[source]
+                with session.get(
+                    url,
+                    headers={"Range": "bytes=0-0"},
+                    stream=True,
+                    allow_redirects=True,
+                    timeout=(15, 75),
+                ) as response:
+                    status = int(response.status_code)
+                    media_type = response.headers.get("Content-Type", "").lower()
+                    if status not in (200, 206) or "text/html" in media_type:
+                        if status in (401, 403):
+                            print(
+                                f"NASA {source}: HTTP {status} on protected file. "
+                                "Replace/reissue EARTHDATA_TOKEN or verify DAAC "
+                                "application/EULA authorization."
+                            )
+                        else:
+                            print(f"NASA {source}: protected-file check failed (HTTP {status})")
+                        return False
+                    print(f"NASA {source}: protected-file access verified (HTTP {status})")
+        return True
+    except Exception as exc:
+        # Provider error bodies/redirect URLs can contain signed query strings.
+        print(f"NASA protected-file check: {type(exc).__name__} (no file downloaded)")
+        return False
+
+
 def check_auth(config: dict[str, str], selected: list[str], *, execute: bool) -> int:
     """Test credentials without downloading datasets or printing secrets."""
     if not execute:
@@ -214,17 +272,9 @@ def check_auth(config: dict[str, str], selected: list[str], *, execute: bool) ->
         return 2
     ok = True
     session = _http_session()
-    if {"hls", "smap"} & set(selected):
-        try:
-            import earthaccess
-            with _earthdata_environment(config):
-                auth = earthaccess.login(strategy="environment")
-            if not getattr(auth, "authenticated", False):
-                raise RuntimeError("NASA authentication did not report success")
-            print("NASA Earthdata: credentials loaded (server-side token validity not yet checked)")
-        except Exception as e:
-            safe_print(f"NASA Earthdata: FAIL ({type(e).__name__}: {e})", config)
-            ok = False
+    nasa = [source for source in ("hls", "smap") if source in selected]
+    if nasa and not probe_nasa(config, nasa):
+        ok = False
     if "sentinel1" in selected:
         try:
             response = session.post(TOKEN_URL, data={
@@ -289,6 +339,11 @@ def run_download(root: Path, config: dict[str, str], selected: list[str], *,
         except (ValueError, OSError):
             pass
     for s in selected:
+        if s in NASA_PROBE_URLS and not catalog_only:
+            print(f"Checking NASA {s} protected-file access before bulk transfer")
+            if not probe_nasa(config, [s]):
+                print(f"STOP {s}: NASA access not verified; bulk transfer was not started")
+                return 2
         cmd = [sys.executable, str(script), "--sources", s,
                "--start", start, "--end", end,
                "--margin-deg", str(margin),
