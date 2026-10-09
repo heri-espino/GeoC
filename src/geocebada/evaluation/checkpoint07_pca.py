@@ -15,6 +15,7 @@ import pandas as pd
 from scipy.linalg import eigh
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
+from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 ID = "ID_POLIGONO"
@@ -107,6 +108,51 @@ def ridge_from_pca(
     return model.predict(xtest), n
 
 
+def mlp_from_pca(
+    pca: DualPCAScores,
+    ytrain: np.ndarray,
+    *,
+    components: float | int,
+    hidden_layers: tuple[int, ...] = (16,),
+    alpha: float = 1.0,
+    max_iter: int = 600,
+    seed: int = 7,
+) -> tuple[np.ndarray, int]:
+    """Train a small regularized neural net with internal training-only validation.
+
+    This is NOT a large network: the 97 pseudo-train yield labels constrain
+    capacity even when tens of thousands of X-only features are available.
+    """
+    n = retained_components(pca.explained_ratio, components)
+    xtrain = pca.train[:, :n]
+    xtest = pca.test[:, :n]
+    scaler = StandardScaler()
+    xtrain = scaler.fit_transform(xtrain)
+    xtest = scaler.transform(xtest)
+    y = np.asarray(ytrain, dtype=float)
+    center = float(y.mean())
+    spread = float(y.std())
+    if spread < 1e-10:
+        return np.full(len(xtest), center), n
+    if len(y) < 20:
+        raise ValueError("MLP early stopping requires at least 20 train labels.")
+    learner = MLPRegressor(
+        hidden_layer_sizes=hidden_layers,
+        activation="relu",
+        solver="adam",
+        alpha=float(alpha),
+        batch_size=min(32, len(y)),
+        learning_rate_init=0.001,
+        early_stopping=True,
+        validation_fraction=0.20,
+        n_iter_no_change=40,
+        max_iter=max_iter,
+        random_state=seed,
+    )
+    learner.fit(xtrain, (y - center) / spread)
+    return learner.predict(xtest) * spread + center, n
+
+
 def _rmse(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.sqrt(np.mean((a - b) ** 2)))
 
@@ -120,6 +166,10 @@ def evaluate_highdim_pca(
     fixed_ranks: Sequence[int] = (16, 32, 64),
     alphas: Sequence[float] = (10, 100, 1000),
     quadratic: bool = True,
+    neural: bool = True,
+    mlp_hidden: Sequence[tuple[int, ...]] = ((16,), (32, 16)),
+    mlp_alphas: Sequence[float] = (1.0, 10.0),
+    mlp_max_iter: int = 600,
     max_splits: int = 0,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Benchmark PCA on held-out 41-parcel pseudo-targets; yield-only fit/train."""
@@ -203,6 +253,36 @@ def evaluate_highdim_pca(
                             "observed": float(truth),
                             "predicted": float(prediction),
                         })
+        if neural:
+            for request in options:
+                n = retained_components(pca.explained_ratio, request)
+                explained = float(pca.explained_ratio[:n].sum())
+                for hidden in mlp_hidden:
+                    for alpha in mlp_alphas:
+                        guess, _ = mlp_from_pca(
+                            pca, ytrain, components=request,
+                            hidden_layers=hidden, alpha=alpha,
+                            max_iter=mlp_max_iter, seed=207,
+                        )
+                        architecture = "_".join(map(str, hidden))
+                        label = f"PCA_{request:g}__MLP_{architecture}__a{alpha:g}"
+                        metrics.append({
+                            "split_id": split_id,
+                            "model": label,
+                            "rmse": _rmse(ytest, guess),
+                            "n_components": n,
+                            "explained_x_variance": explained,
+                            "n_training": len(train_ids),
+                            "n_test": len(test_ids),
+                        })
+                        for pid, truth, prediction in zip(
+                            test_ids, ytest, guess, strict=True
+                        ):
+                            predictions.append({
+                                "split_id": split_id, ID: pid, "model": label,
+                                "observed": float(truth),
+                                "predicted": float(prediction),
+                            })
         diagnostics.append({
             "split_id": split_id,
             "n_features": numeric.shape[1],
