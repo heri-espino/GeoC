@@ -48,6 +48,49 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(runner.main(["check-auth", "--root", "/tmp/GeoC"]), 2)
         self.assertEqual(runner.main(["download", "--root", "/tmp/GeoC"]), 2)
 
+    def test_nasa_check_reads_private_file_token_and_restores_environment(self):
+        """A check-auth call must pass .env token to earthaccess without persisting it."""
+        import io
+        import os
+        import sys
+        import types
+        from contextlib import redirect_stdout
+        from unittest.mock import patch
+
+        token = "test-nasa-token-only-in-env-file"
+        calls = []
+
+        def login(*, strategy):
+            self.assertEqual(strategy, "environment")
+            calls.append(os.environ.get("EARTHDATA_TOKEN"))
+            return types.SimpleNamespace(authenticated=True)
+
+        fake = types.SimpleNamespace(login=login)
+        with patch.dict(sys.modules, {"earthaccess": fake}):
+            with patch.dict(os.environ, {"EARTHDATA_TOKEN": "prior-token"}):
+                with io.StringIO() as stdout, redirect_stdout(stdout):
+                    code = module.check_auth({"EARTHDATA_TOKEN": token}, ["hls"], execute=True)
+                    text = stdout.getvalue()
+                self.assertEqual(os.environ["EARTHDATA_TOKEN"], "prior-token")
+        self.assertEqual(code, 0)
+        self.assertEqual(calls, [token])
+        self.assertIn("credentials loaded", text)
+        self.assertNotIn(token, text)
+
+    def test_doctor_does_not_echo_local_credentials(self):
+        import io
+        from contextlib import redirect_stdout
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            env_file = root / ".env.checkpoint07"
+            secret = "NASA_FAKE_TOKEN_FOR_DOCTOR_123"
+            env_file.write_text("EARTHDATA_TOKEN=" + secret + "\n", encoding="utf-8")
+            with io.StringIO() as stdout, redirect_stdout(stdout):
+                self.assertEqual(module.main(["doctor", "--root", folder]), 0)
+                output = stdout.getvalue()
+            self.assertIn("EARTHDATA_TOKEN: configured", output)
+            self.assertNotIn(secret, output)
+
     def test_redacts_secrets(self):
         secret = "TOKEN_ABC123456789"
         with io.StringIO() as output, redirect_stdout(output):
