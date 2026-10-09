@@ -97,3 +97,21 @@ families. On completion it writes three global finalists and a verified
 - `run_checkpoint_06e.py`: supervised soft low/center/high residual mixture;
   explicitly tests whether the non-outlier center can improve while preserving
   tail performance.
+
+
+### Checkpoint 07B — high-dimensional PCA + neural benchmarking
+
+After running 07A HLS and SMAP extraction:
+
+```powershell
+python tools\run_checkpoint_07_highdim.py --preflight --require-hls --require-smap
+python tools\run_checkpoint_07_highdim.py --smoke --require-hls --require-smap
+python tools\run_checkpoint_07_highdim.py --require-hls --require-smap
+```
+
+This computes thousands of X-only temporal/nonlinear features, up to 12,000
+bounded products, and evaluates within-fold PCA→Ridge versus PCA→MLP
+on the frozen pseudo-training splits. Use \`--skip-neural\` for Ridge-only.
+Outputs: \`reports/checkpoint_07/highdim/\` (local, gitignored). No hidden
+target y or incumbent model is modified. For full protocol/limitations see
+\`docs/CHECKPOINT_07B_HIGH_DIMENSIONAL.md\`.
