@@ -16,6 +16,15 @@ Edit **`.env.checkpoint07`** locally, replacing the placeholders. Never paste li
 into chat or commit the file. This credentials file is already ignored by the
 existing repository pattern `.env.*`.
 
+## Confirm credentials are being discovered (no secrets printed)
+
+```powershell
+python tools/run_checkpoint_07_acquisition.py doctor
+```
+
+`doctor` reports the expected `.env.checkpoint07` location and which key names
+are configured, but **never prints their values**. It does not access the internet.
+
 ## Test safely without sending any credentials
 
 ```powershell
@@ -31,8 +40,11 @@ It does **not** prove access to the remote scientific datasets.
 python tools/run_checkpoint_07_acquisition.py check-auth --execute
 ```
 
-This calls NASA login, CDSE OAuth, CDS ARCO metadata and public Prithvi HTTP
-endpoint. It does **not** download any large datasets. The CDS check validates
+This loads the NASA token locally in earthaccess, calls CDSE OAuth, CDS ARCO
+metadata and the public Prithvi HTTP endpoint. A successful NASA login with a
+preexisting token **only verifies that earthaccess loaded it**; validity,
+expiration and actual file-download permissions are not checked until an
+authenticated NASA request is made. It does **not** download any large datasets. The CDS check validates
 HTTP access to metadata only, not NetCDF writing or full temporal coverage.
 
 ## Inventory before downloading
