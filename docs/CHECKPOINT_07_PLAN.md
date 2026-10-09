@@ -211,6 +211,15 @@ a human, not by the processing runner.
 
 ## Phase 07B — Local07 with new information
 
+**Implementation update 2026-10-09:** X-only high-dimensional temporal
+feature factory, balanced nonlinear cross-source products and fold-local
+PCA+Ridge/MLP benchmark now exist. See
+`docs/CHECKPOINT_07B_HIGH_DIMENSIONAL.md` and
+`tools/run_checkpoint_07_highdim.py`. Workstation results pending;
+feature count/variance explained do not establish RMSE improvement.
+
+
+
 The first model line stays close to the strongest incumbent so the effect of
 the new data can be measured cleanly.
 
