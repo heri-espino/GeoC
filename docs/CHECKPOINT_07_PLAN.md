@@ -1,6 +1,6 @@
 # Checkpoint 07 — RMSE Offensive: New Information + Prithvi-EO-2.0
 
-**Status:** DATA ACQUISITION IMPLEMENTED / MODELING PENDING  
+**Status:** ACQUISITION COMPLETED FOR 4/5 SOURCES; 07A2 HLS/SMAP PROCESSORS IMPLEMENTED / WORKSTATION RUN PENDING  
 **Track:** competition-only  
 **Primary objective:** minimize RMSE on the fixed 59 FIRA parcels  
 **Incumbent:** Local04D  
@@ -26,7 +26,7 @@ veto in Checkpoint 07.
 
 ## New data
 
-Checkpoint 07 acquires four new resources.
+Checkpoint 07 uses five new resources.
 
 ### 1. NASA HLS v2
 
@@ -103,7 +103,29 @@ Prepare both:
 The TL variants include temporal and location embeddings and are appropriate
 for the four-frame parcel sequences planned here.
 
-## Phase 07A — acquisition and audit
+## Phase 07A — acquisition, audit and streaming preparation
+
+**Observed workstation audit, 2026-10-09:** 180.140 GiB total raw;
+HLS 41.846 GiB (197 scenes, 0 missing 6-band/Fmask sets),
+SMAP 135.492 GiB (215 HDF5), Sentinel-1 2.801 GiB (66 files),
+Prithvi weights 3.693 GiB separately; 935.644 GiB free disk.
+HLS/SMAP/AgERA5/Prithvi download statuses completed. Sentinel-1 was
+still marked running, not assumed complete.
+
+The user has all the HLS band files necessary to begin.
+**DO NOT download anything again for 07A2.**
+
+Next runner instructions and protocol:
+`docs/CHECKPOINT_07A_PROCESSING.md`.
+
+HLS processing now writes a resumable X-only longitudinal parcel-date panel
+and four-frame aligned masked Prithvi input chips. SMAP processing samples
+only unique nearby regional cells from its very large global HDF5 files.
+Both pipelines have isolated smoke modes.
+
+## Historical acquisition commands (do not rerun if files are present)
+
+### Acquisition and audit
 
 Run:
 
