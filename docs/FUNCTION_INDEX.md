@@ -37,29 +37,29 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `load_yield_split` | function | `geocebada.data.targets` | Load the official parcel target/split table. | `src/geocebada/data/targets.py` |
 | `partition_yield_split` | function | `geocebada.data.targets` | Return independent training and prediction DataFrames. | `src/geocebada/data/targets.py` |
 | `validate_yield_split` | function | `geocebada.data.targets` | Validate the known invariants of the official 70/30 split. | `src/geocebada/data/targets.py` |
-| `RepresentationSpec` | class | `geocebada.evaluation.checkpoint03c` | One track-specific feature representation used in Checkpoint 03C. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `build_layer_feature_catalog` | function | `geocebada.evaluation.checkpoint03c` | Build one cross-layer feature catalog with mode and numeric availability. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `build_representation_specs` | function | `geocebada.evaluation.checkpoint03c` | Resolve configured 03C representations into exact numeric feature lists. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `evaluate_representation_benchmark` | function | `geocebada.evaluation.checkpoint03c` | Evaluate representations on frozen folds and return scores, OOF rows and discovery logs. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `make_representation_estimator` | function | `geocebada.evaluation.checkpoint03c` | Create one fixed baseline pipeline for representation comparison. | `src/geocebada/evaluation/checkpoint03c.py` |
+| `RepresentationSpec` | class | `geocebada.evaluation.checkpoint03c` | One track-specific feature representation used in Checkpoint 03C. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `summarize_representation_benchmark` | function | `geocebada.evaluation.checkpoint03c` | Summarize mean-fold and parcel-weighted OOF metrics for each experiment. | `src/geocebada/evaluation/checkpoint03c.py` |
-| `ModelSearchSpec` | class | `geocebada.evaluation.checkpoint03c2` | Pipeline plus a small deterministic candidate grid. | `src/geocebada/evaluation/checkpoint03c2.py` |
 | `build_competition_representation_specs` | function | `geocebada.evaluation.checkpoint03c2` | Resolve competition-only 03C.2 representations. | `src/geocebada/evaluation/checkpoint03c2.py` |
 | `evaluate_nested_model_families` | function | `geocebada.evaluation.checkpoint03c2` | Run nested tuning under both frozen outer validation protocols. | `src/geocebada/evaluation/checkpoint03c2.py` |
 | `make_inner_cv_splits` | function | `geocebada.evaluation.checkpoint03c2` | Create leakage-safe inner splits aligned with the outer protocol. | `src/geocebada/evaluation/checkpoint03c2.py` |
 | `make_model_search_spec` | function | `geocebada.evaluation.checkpoint03c2` | Construct one 03C.2 estimator and its disciplined candidate grid. | `src/geocebada/evaluation/checkpoint03c2.py` |
+| `ModelSearchSpec` | class | `geocebada.evaluation.checkpoint03c2` | Pipeline plus a small deterministic candidate grid. | `src/geocebada/evaluation/checkpoint03c2.py` |
 | `summarize_nested_results` | function | `geocebada.evaluation.checkpoint03c2` | Build protocol-specific and cross-protocol robustness summaries. | `src/geocebada/evaluation/checkpoint03c2.py` |
 | `validate_nested_oof_coverage` | function | `geocebada.evaluation.checkpoint03c2` | Require one OOF prediction per parcel for every protocol/representation/model. | `src/geocebada/evaluation/checkpoint03c2.py` |
 | `build_finalist_ensemble_predictions` | function | `geocebada.evaluation.checkpoint03c3` | Build fixed finalist and equal-weight ensemble predictions from 03C.2 OOF rows. | `src/geocebada/evaluation/checkpoint03c3.py` |
 | `summarize_finalist_ensemble_results` | function | `geocebada.evaluation.checkpoint03c3` | Summarize fold, protocol, robustness and residual-correlation evidence. | `src/geocebada/evaluation/checkpoint03c3.py` |
 | `validate_finalist_oof_coverage` | function | `geocebada.evaluation.checkpoint03c3` | Require complete one-row-per-parcel OOF coverage for every 03C.3 candidate. | `src/geocebada/evaluation/checkpoint03c3.py` |
-| `EmbeddingResult` | class | `geocebada.evaluation.checkpoint04a` | One transductive PCA representation and its metadata. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `adversarial_train_target_validation` | function | `geocebada.evaluation.checkpoint04a` | Cross-validate a train-vs-target classifier in a transductive X embedding. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `build_checkpoint03_ensemble_residuals` | function | `geocebada.evaluation.checkpoint04a` | Reconstruct E13/E123 OOF residuals from the frozen 03C.2 finalists. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `build_monthly_temporal_arrays` | function | `geocebada.evaluation.checkpoint04a` | Extract configured monthly parcel trajectories from Feature Table v1. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `build_target_support_profile` | function | `geocebada.evaluation.checkpoint04a` | Assemble one diagnostic support profile for each of the 59 targets. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `build_train_pair_validation` | function | `geocebada.evaluation.checkpoint04a` | Build one row per labeled-labeled pair with distance and \|delta y\|. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `build_transductive_pca_embedding` | function | `geocebada.evaluation.checkpoint04a` | Fit median imputation, scaling and PCA jointly on all available X rows. | `src/geocebada/evaluation/checkpoint04a.py` |
+| `EmbeddingResult` | class | `geocebada.evaluation.checkpoint04a` | One transductive PCA representation and its metadata. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `feature_neighbor_tables` | function | `geocebada.evaluation.checkpoint04a` | Compute Euclidean neighbour tables in one transductive PCA space. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `feature_shift_table` | function | `geocebada.evaluation.checkpoint04a` | Compute per-feature standardized mean and missingness shift. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `geographic_neighbor_tables` | function | `geocebada.evaluation.checkpoint04a` | Return target-to-train and train leave-one-out geographic neighbours. | `src/geocebada/evaluation/checkpoint04a.py` |
@@ -70,7 +70,6 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `summarize_similarity_yield_relationships` | function | `geocebada.evaluation.checkpoint04a` | Summarize monotone association between pair similarity and \|delta yield\|. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `temporal_neighbor_tables` | function | `geocebada.evaluation.checkpoint04a` | Rank temporal neighbours by high lagged correlation then low DTW. | `src/geocebada/evaluation/checkpoint04a.py` |
 | `temporal_pair_metrics` | function | `geocebada.evaluation.checkpoint04a` | Compute aggregate target-train and unique train-train temporal similarities. | `src/geocebada/evaluation/checkpoint04a.py` |
-| `PseudoSplit` | class | `geocebada.evaluation.checkpoint04b` | One pseudo-competition split over the 138 observed labels. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `build_knn_graph` | function | `geocebada.evaluation.checkpoint04b` | Build a symmetric RBF-weighted kNN graph from X-only distances. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `build_legacy_stress_splits` | function | `geocebada.evaluation.checkpoint04b` | Convert frozen Checkpoint 02 folds into transductive stress-test splits. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `build_static_x_profile` | function | `geocebada.evaluation.checkpoint04b` | Build X-only support descriptors relative to the full 138-label set. | `src/geocebada/evaluation/checkpoint04b.py` |
@@ -87,6 +86,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `predict_local_ridge` | function | `geocebada.evaluation.checkpoint04b` | Fit one distance-weighted Ridge model per pseudo-target. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `predict_municipality_shrinkage` | function | `geocebada.evaluation.checkpoint04b` | Shrink municipality means toward the visible same-state mean. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `predict_state_mean` | function | `geocebada.evaluation.checkpoint04b` | Predict state means with global fallback. | `src/geocebada/evaluation/checkpoint04b.py` |
+| `PseudoSplit` | class | `geocebada.evaluation.checkpoint04b` | One pseudo-competition split over the 138 observed labels. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `regression_metrics` | function | `geocebada.evaluation.checkpoint04b` | Return RMSE, MAE and R2. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `split_x_support` | function | `geocebada.evaluation.checkpoint04b` | Compute dynamic X-only support against the labels visible in one split. | `src/geocebada/evaluation/checkpoint04b.py` |
 | `standardized_profile_coordinates` | function | `geocebada.evaluation.checkpoint04b` | Standardize X-only target-matching descriptors over all 197 parcels. | `src/geocebada/evaluation/checkpoint04b.py` |
@@ -99,13 +99,13 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `predict_catboost_seed_ensemble` | function | `geocebada.evaluation.checkpoint04c` | Fit one CatBoost model per seed on visible labels and average predictions. | `src/geocebada/evaluation/checkpoint04c.py` |
 | `residual_correlation_table` | function | `geocebada.evaluation.checkpoint04c` | Return pairwise residual correlations for selected methods within one family. | `src/geocebada/evaluation/checkpoint04c.py` |
 | `resolve_agronomic_competition_features` | function | `geocebada.evaluation.checkpoint04c` | Resolve numeric clean+competition agronomic features from the manifest. | `src/geocebada/evaluation/checkpoint04c.py` |
-| `SplitPositions` | class | `geocebada.evaluation.checkpoint04d1` | Resolved pseudo-train and pseudo-target row positions for one frozen split. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `fit_pls_anchor_with_cross_fitted_residuals` | function | `geocebada.evaluation.checkpoint04d1` | Fit a full PLS anchor and cross-fitted residuals on visible labels only. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `leave_one_split_out_method_selection` | function | `geocebada.evaluation.checkpoint04d1` | Evaluate split-level hyperparameter selection without scoring on its training splits. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `leave_one_split_out_tier_routing` | function | `geocebada.evaluation.checkpoint04d1` | Validate support-tier method routing on pseudo-splits excluded from route fitting. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `predict_residual_graph_correction` | function | `geocebada.evaluation.checkpoint04d1` | Add graph-propagated cross-fitted residuals to a global anchor. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `predict_weighted_local_ridge` | function | `geocebada.evaluation.checkpoint04d1` | Fit one inverse-distance weighted Ridge model per query parcel. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `split_positions_from_membership` | function | `geocebada.evaluation.checkpoint04d1` | Resolve committed 04B split membership into row-position tuples. | `src/geocebada/evaluation/checkpoint04d1.py` |
+| `SplitPositions` | class | `geocebada.evaluation.checkpoint04d1` | Resolved pseudo-train and pseudo-target row positions for one frozen split. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `summarize_nested_predictions` | function | `geocebada.evaluation.checkpoint04d1` | Summarize nested selected/routed predictions with equal-weight split RMSE. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `summarize_predictions_by_method` | function | `geocebada.evaluation.checkpoint04d1` | Summarize equal-weight split RMSE and pooled row metrics by method. | `src/geocebada/evaluation/checkpoint04d1.py` |
 | `aggregate_siap_scope` | function | `geocebada.evaluation.checkpoint04e` | Aggregate one explicit SIAP crop/cycle/modality scope by municipality-year. | `src/geocebada/evaluation/checkpoint04e.py` |
@@ -123,12 +123,12 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `build_local_graph_blends` | function | `geocebada.evaluation.checkpoint04f` | Build fixed Local04D/Graph04D blends for one validation family. | `src/geocebada/evaluation/checkpoint04f.py` |
 | `leave_one_split_out_blend_selection` | function | `geocebada.evaluation.checkpoint04f` | Select a fixed blend weight on all other splits and score the holdout. | `src/geocebada/evaluation/checkpoint04f.py` |
 | `summarize_blend_predictions` | function | `geocebada.evaluation.checkpoint04f` | Summarize fixed blend candidates using equal-weight split RMSE. | `src/geocebada/evaluation/checkpoint04f.py` |
-| `ConvexStackRegressor` | class | `geocebada.evaluation.checkpoint05` | Squared-error convex stack with optional L2 weight shrinkage. | `src/geocebada/evaluation/checkpoint05.py` |
-| `FittedMetaCandidate` | class | `geocebada.evaluation.checkpoint05` | Serializable meta-model plus selected hyperparameters. | `src/geocebada/evaluation/checkpoint05.py` |
-| `SupportMixtureOfExperts` | class | `geocebada.evaluation.checkpoint05` | Softmax-gated mixture whose weights depend on support descriptors. | `src/geocebada/evaluation/checkpoint05.py` |
 | `candidate_prediction_frame` | function | `geocebada.evaluation.checkpoint05` | Convert candidate prediction arrays into the canonical long format. | `src/geocebada/evaluation/checkpoint05.py` |
 | `constrain_component_param_grid` | function | `geocebada.evaluation.checkpoint05` | Restrict component-count candidates to values feasible in every inner fold. | `src/geocebada/evaluation/checkpoint05.py` |
+| `ConvexStackRegressor` | class | `geocebada.evaluation.checkpoint05` | Squared-error convex stack with optional L2 weight shrinkage. | `src/geocebada/evaluation/checkpoint05.py` |
+| `FittedMetaCandidate` | class | `geocebada.evaluation.checkpoint05` | Serializable meta-model plus selected hyperparameters. | `src/geocebada/evaluation/checkpoint05.py` |
 | `support_descriptors` | function | `geocebada.evaluation.checkpoint05` | Compute leakage-safe support features relative to currently visible labels. | `src/geocebada/evaluation/checkpoint05.py` |
+| `SupportMixtureOfExperts` | class | `geocebada.evaluation.checkpoint05` | Softmax-gated mixture whose weights depend on support descriptors. | `src/geocebada/evaluation/checkpoint05.py` |
 | `aggregate_residuals_by_parcel` | function | `geocebada.evaluation.checkpoint06` | Aggregate repeated honest pseudo-target appearances to equal-weight parcel summaries. | `src/geocebada/evaluation/checkpoint06.py` |
 | `assign_fold_valid_tails` | function | `geocebada.evaluation.checkpoint06` | Assign pseudo-target tails using thresholds computed from visible pseudo-train y only. | `src/geocebada/evaluation/checkpoint06.py` |
 | `build_residual_diagnostics` | function | `geocebada.evaluation.checkpoint06` | Convert wide honest base predictions into a long residual diagnostic table. | `src/geocebada/evaluation/checkpoint06.py` |
@@ -159,6 +159,13 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `leave_one_split_out_mixture_selection` | function | `geocebada.evaluation.checkpoint06e` | Select 06E candidates on 15 splits and score the selected rule on the 16th. | `src/geocebada/evaluation/checkpoint06e.py` |
 | `normalize_gate_probabilities` | function | `geocebada.evaluation.checkpoint06e` | Convert separate low/high probabilities into normalized low/center/high weights. | `src/geocebada/evaluation/checkpoint06e.py` |
 | `summarize_mixture_predictions` | function | `geocebada.evaluation.checkpoint06e` | Summarize split-level and pooled 06E performance. | `src/geocebada/evaluation/checkpoint06e.py` |
+| `dual_pca_fold` | function | `geocebada.evaluation.checkpoint07_pca` | PCA through small training Gram matrix; no giant feature covariance. | `src/geocebada/evaluation/checkpoint07_pca.py` |
+| `DualPCAScores` | class | `geocebada.evaluation.checkpoint07_pca` | Out-of-fold PCA scores and explained X variance from training only. | `src/geocebada/evaluation/checkpoint07_pca.py` |
+| `evaluate_highdim_pca` | function | `geocebada.evaluation.checkpoint07_pca` | Benchmark PCA on held-out 41-parcel pseudo-targets; yield-only fit/train. | `src/geocebada/evaluation/checkpoint07_pca.py` |
+| `mlp_from_pca` | function | `geocebada.evaluation.checkpoint07_pca` | Train a small regularized neural net with internal training-only validation. | `src/geocebada/evaluation/checkpoint07_pca.py` |
+| `retained_components` | function | `geocebada.evaluation.checkpoint07_pca` | Choose smallest retained rank meeting a fraction, or fixed rank. | `src/geocebada/evaluation/checkpoint07_pca.py` |
+| `ridge_from_pca` | function | `geocebada.evaluation.checkpoint07_pca` | Fit Ridge on PCA scores, optionally with fold-local quadratic PC terms. | `src/geocebada/evaluation/checkpoint07_pca.py` |
+| `summarize_pca_predictions` | function | `geocebada.evaluation.checkpoint07_pca` | Aggregate mean-split and pooled errors; repeated splits are not independent. | `src/geocebada/evaluation/checkpoint07_pca.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
@@ -176,16 +183,23 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `build_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Build the additive agronomic nonlinear feature layer. | `src/geocebada/features/agronomic.py` |
 | `join_agronomic_features` | function | `geocebada.features.agronomic` | Join the additive agronomic layer after exact parcel-coverage validation. | `src/geocebada/features/agronomic.py` |
 | `validate_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Validate one-to-one parcel coverage and numeric derived features. | `src/geocebada/features/agronomic.py` |
+| `build_hls_smap_lag_features` | function | `geocebada.features.checkpoint07_highdim` | Combine HLS greenness with preceding 7/14/30-day SMAP moisture. | `src/geocebada/features/checkpoint07_highdim.py` |
+| `build_hls_time_features` | function | `geocebada.features.checkpoint07_highdim` | High-dimensional per-parcel HLS date, spectral, QA and sensor features. | `src/geocebada/features/checkpoint07_highdim.py` |
+| `build_nonlinear_interactions` | function | `geocebada.features.checkpoint07_highdim` | Generate bounded pointwise transforms and cross-family pair products. | `src/geocebada/features/checkpoint07_highdim.py` |
+| `build_smap_time_features` | function | `geocebada.features.checkpoint07_highdim` | Per-parcel daily regional soil-moisture dynamics and AM/PM contrasts. | `src/geocebada/features/checkpoint07_highdim.py` |
+| `irregular_series_features` | function | `geocebada.features.checkpoint07_highdim` | Describe irregular observations without inventing values in long gaps. | `src/geocebada/features/checkpoint07_highdim.py` |
+| `merge_x_only_blocks` | function | `geocebada.features.checkpoint07_highdim` | Combine 197-row X tables with ID integrity and no supervised target. | `src/geocebada/features/checkpoint07_highdim.py` |
+| `select_x_only_interaction_seeds` | function | `geocebada.features.checkpoint07_highdim` | Select balanced, well-observed seed columns without using the target. | `src/geocebada/features/checkpoint07_highdim.py` |
 | `ExpressionSpec` | class | `geocebada.features.discovery` | One selected two-variable expression. | `src/geocebada/features/discovery.py` |
 | `FoldLocalExpressionAugmenter` | class | `geocebada.features.discovery` | Append fold-local discovered expressions to a numeric feature DataFrame. | `src/geocebada/features/discovery.py` |
 | `FoldLocalExpressionMiner` | class | `geocebada.features.discovery` | Select simple target-associated expressions using training data only. | `src/geocebada/features/discovery.py` |
-| `EmpiricalFeatureRecord` | class | `geocebada.features.empirical` | Machine-readable provenance for one deterministic empirical feature. | `src/geocebada/features/empirical.py` |
 | `build_empirical_feature_layer` | function | `geocebada.features.empirical` | Build deterministic target-free empirical features for all parcels. | `src/geocebada/features/empirical.py` |
+| `EmpiricalFeatureRecord` | class | `geocebada.features.empirical` | Machine-readable provenance for one deterministic empirical feature. | `src/geocebada/features/empirical.py` |
 | `join_empirical_features` | function | `geocebada.features.empirical` | Join the empirical layer after exact parcel-coverage validation. | `src/geocebada/features/empirical.py` |
 | `validate_empirical_feature_layer` | function | `geocebada.features.empirical` | Validate one-to-one coverage and numeric empirical predictors. | `src/geocebada/features/empirical.py` |
-| `FeatureRecipe` | class | `geocebada.features.interactive` | Declarative recipe for one grouped feature derived from a source column. | `src/geocebada/features/interactive.py` |
 | `apply_feature_recipe` | function | `geocebada.features.interactive` | Apply a feature recipe and return one row per group with the new feature. | `src/geocebada/features/interactive.py` |
 | `feature_recipe_to_dict` | function | `geocebada.features.interactive` | Serialize a feature recipe into a plain dictionary for YAML/JSON storage. | `src/geocebada/features/interactive.py` |
+| `FeatureRecipe` | class | `geocebada.features.interactive` | Declarative recipe for one grouped feature derived from a source column. | `src/geocebada/features/interactive.py` |
 | `merge_features` | function | `geocebada.features.interactive` | Left-join one-row-per-parcel feature tables onto a base table. | `src/geocebada/features/interactive.py` |
 | `build_base_features` | function | `geocebada.features.parcel` | Build identity, geometry and administrative parcel features. | `src/geocebada/features/parcel.py` |
 | `build_cem15_features` | function | `geocebada.features.parcel` | Build one state-appropriate high-resolution CEM elevation block. | `src/geocebada/features/parcel.py` |
