@@ -7,7 +7,7 @@ A high-dimensional representation may explain X variance without predicting y.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import numpy as np
