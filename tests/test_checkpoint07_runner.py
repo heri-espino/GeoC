@@ -129,7 +129,10 @@ class RunnerTests(unittest.TestCase):
             root = Path(folder)
             script = root / "tools/download_checkpoint_07_data.py"
             script.parent.mkdir(parents=True)
-            script.write_text("raise AssertionError('Bulk downloader must not start')", encoding="utf-8")
+            script.write_text(
+                "raise AssertionError('Bulk downloader must not start')",
+                encoding="utf-8",
+            )
             with patch.dict(sys.modules, {"earthaccess": fake}):
                 with io.StringIO() as stdout, redirect_stdout(stdout):
                     code = runner.run_download(
