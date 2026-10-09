@@ -61,7 +61,8 @@ Processing order:
 8. Read each selected scene on a **fixed projected 30 m grid around that
    parcel**, producing aligned 224 x 224 frames.
 9. Save packed HLS int16 DN values (not pre-normalized floats), valid masks,
-   polygon mask and acquisition dates as compressed parcel-level NPZ.
+   polygon mask, acquisition dates, centroid latitude/longitude, source CRS
+   and fixed-grid affine transform as compressed parcel-level NPZ.
 10. If any quality window is missing, record an incomplete sequence; do not
     silently repeat another date or impute a fake observation.
 
