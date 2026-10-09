@@ -47,11 +47,21 @@ HF_CONFIG_URL = (
     "https://huggingface.co/ibm-nasa-geospatial/Prithvi-EO-2.0-300M-TL/"
     "resolve/main/config.json"
 )
-TEMPLATE = """# PRIVATE local credentials. NEVER commit this file.\n# Replace EXAMPLE values with real values locally; do not share them in chat.\n# For NASA, an EARTHDATA_TOKEN is preferred over a password.\nEARTHDATA_TOKEN=REPLACE_WITH_NASA_EARTHDATA_TOKEN\nCDSE_CLIENT_ID=sh-REPLACE_WITH_CDSE_CLIENT_ID\nCDSE_CLIENT_SECRET=REPLACE_WITH_CDSE_CLIENT_SECRET\nCDSAPI_KEY=REPLACE_WITH_CDS_API_KEY\n"""
+TEMPLATE = (
+    "# PRIVATE local credentials. NEVER commit this file.\n"
+    "# Replace EXAMPLE values with real values locally; do not share them in chat.\n"
+    "# For NASA, an EARTHDATA_TOKEN is preferred over a password.\n"
+    "EARTHDATA_TOKEN=REPLACE_WITH_NASA_EARTHDATA_TOKEN\n"
+    "CDSE_CLIENT_ID=sh-REPLACE_WITH_CDSE_CLIENT_ID\n"
+    "CDSE_CLIENT_SECRET=REPLACE_WITH_CDSE_CLIENT_SECRET\n"
+    "CDSAPI_KEY=REPLACE_WITH_CDS_API_KEY\n"
+)
 
 
 def locate_root(override: str | None) -> Path:
-    return Path(override).expanduser().resolve() if override else Path(__file__).resolve().parents[1]
+    if override:
+        return Path(override).expanduser().resolve()
+    return Path(__file__).resolve().parents[1]
 
 
 def config_file(root: Path, override: str | None) -> Path:
@@ -86,7 +96,8 @@ def available(value: str | None) -> bool:
     if not value:
         return False
     uppercase = value.upper()
-    return not any(marker in uppercase for marker in ("REPLACE_WITH", "YOUR_", "<TOKEN>", "EXAMPLE"))
+    markers = ("REPLACE_WITH", "YOUR_", "<TOKEN>", "EXAMPLE")
+    return not any(marker in uppercase for marker in markers)
 
 
 def requirements(config: dict[str, str], source: str) -> bool:
@@ -96,7 +107,10 @@ def requirements(config: dict[str, str], source: str) -> bool:
             and available(config.get("EARTHDATA_PASSWORD"))
         )
     if source == "sentinel1":
-        return available(config.get("CDSE_CLIENT_ID")) and available(config.get("CDSE_CLIENT_SECRET"))
+        return (
+            available(config.get("CDSE_CLIENT_ID"))
+            and available(config.get("CDSE_CLIENT_SECRET"))
+        )
     if source == "agera5":
         return available(config.get("CDSAPI_KEY"))
     return True
@@ -111,7 +125,10 @@ def safe_print(msg: str, secrets: dict[str, str]) -> None:
 
 def atomic_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile("w", dir=path.parent, prefix=".manifest-", suffix=".tmp", delete=False, encoding="utf-8") as f:
+    with tempfile.NamedTemporaryFile(
+        "w", dir=path.parent, prefix=".manifest-", suffix=".tmp",
+        delete=False, encoding="utf-8"
+    ) as f:
         tmp = Path(f.name)
         json.dump(data, f, indent=2, ensure_ascii=False, default=str)
         f.write("\n")
@@ -385,11 +402,20 @@ def run_download(root: Path, config: dict[str, str], selected: list[str], *,
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["init", "simulate", "doctor", "preflight", "check-auth", "catalog", "download"])
-    parser.add_argument("--root", help="GeoC repository root (inferred from script path by default)")
+    parser.add_argument(
+        "action",
+        choices=["init", "simulate", "doctor", "preflight",
+                 "check-auth", "catalog", "download"],
+    )
+    parser.add_argument(
+        "--root", help="GeoC repository root (inferred from script path by default)"
+    )
     parser.add_argument("--env-file", help="Local, gitignored credentials file")
     parser.add_argument("--sources", nargs="+", choices=["all", *SOURCES], default=["all"])
-    parser.add_argument("--execute", action="store_true", help="Explicitly permit authenticated network requests")
+    parser.add_argument(
+        "--execute", action="store_true",
+        help="Explicitly permit authenticated network requests"
+    )
     parser.add_argument("--start", default="2025-04-01")
     parser.add_argument("--end", default="2025-10-31")
     parser.add_argument("--parcels", default=None)
