@@ -271,6 +271,7 @@ def test_smap_unknown_geolocation_shape_rejected(tmp_path: Path) -> None:
     """Never silently treat subregion/polar grids as global EASE2."""
     h5py = pytest.importorskip("h5py")
     from shapely.geometry import Point
+
     from geocebada.data.checkpoint07_smap import run_smap
 
     raw = tmp_path / "raw"
