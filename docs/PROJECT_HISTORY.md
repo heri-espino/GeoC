@@ -1,3 +1,21 @@
+
+## 2026-10-10 — Selected three-model autonomous Checkpoint 07 run
+
+User explicitly selected CatBoost, Local04D updated to exploit HLS/SMAP,
+and pretrained Prithvi-EO-2.0 instead of broad XGBoost/LightGBM search.
+Added a nested Local07 neighbor-weighted Ridge, 197-chip frozen
+Prithvi TL embeddings with Ridge heads, single sequential orchestrator,
+PowerShell detached launcher and synthetic tests. Prithvi requires
+verified original TL .pt weights and local GPU smoke. All model branches
+score the exact same 16 frozen target-matched splits with inner training
+CV. The unattended launch persists Optuna studies and embedding shards
+and reports stage errors so user need not return every few hours.
+
+Guide: docs/CHECKPOINT_07_THREE_MODELS.md.
+Code: tools/start_checkpoint_07.ps1, tools/run_checkpoint_07_three.py.
+Real workstation full run, GPU Prithvi smoke and RMSE results pending.
+Neither frozen Local04D nor the 59 unavailable target yields were changed.
+
 # GeoCebada project history
 
 **Purpose:** preserve a chronological record of what was done, why it was done, what was
