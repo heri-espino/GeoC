@@ -1449,3 +1449,22 @@ tools/run_checkpoint_07_highdim.py --preflight / --smoke / --stage all.
 Full protocol: docs/CHECKPOINT_07B_HIGH_DIMENSIONAL.md.
 
 No workstation 07B result has been reported at implementation time.
+
+
+## 2026-10-10 — SMAP v006 geolocation and PM field recovery
+
+The workstation extracted all HLS granules/parcel panels: 197 scenes,
+29,592 HLS observations, 197 parcels and 197 4-frame Prithvi chips.
+The next SMAP step found 214 HDF5 files but failed because
+`checkpoint07_smap._read_reference_grid` required group `latitude` and
+`longitude` datasets that were absent in the actual first file.
+This prevented the high-dimensional PCA/MLP stage from finding the
+SMAP compact panel.
+
+Implemented shape-validated fallback to EPSG:6933 NSIDC EASE2 global
+9-km grid (3856 columns, 1624 rows), PM `_pm` science field names,
+quality bit interpretation and scalar fill checks, with synthetic
+regression tests for the absence of lat/lon rasters.
+
+No HLS rerun or redownload needed. Await user confirmation from
+SMAP --max-files 2 and full runs, and then Local07B preflight.
