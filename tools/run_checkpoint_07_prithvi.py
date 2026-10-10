@@ -30,10 +30,22 @@ def main() -> int:
     parser.add_argument("--model", choices=("300", "600"), default="300")
     parser.add_argument("--models-root", type=Path, default=ROOT / "models/checkpoint_07")
     parser.add_argument("--processed", type=Path, default=ROOT / "data/processed/checkpoint_07")
-    parser.add_argument("--features", type=Path, default=ROOT / "reports/checkpoint_07/highdim/expanded_parcel_features.csv")
-    parser.add_argument("--targets", type=Path, default=ROOT / "data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv")
-    parser.add_argument("--membership", type=Path, default=ROOT / "reports/checkpoint_04b/pseudo_competition_splits.csv")
-    parser.add_argument("--baseline", type=Path, default=ROOT / "reports/checkpoint_06/parcel_oof_residuals.csv")
+    parser.add_argument(
+        "--features", type=Path,
+        default=ROOT / "reports/checkpoint_07/highdim/expanded_parcel_features.csv",
+    )
+    parser.add_argument(
+        "--targets", type=Path,
+        default=ROOT / "data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv",
+    )
+    parser.add_argument(
+        "--membership", type=Path,
+        default=ROOT / "reports/checkpoint_04b/pseudo_competition_splits.csv",
+    )
+    parser.add_argument(
+        "--baseline", type=Path,
+        default=ROOT / "reports/checkpoint_06/parcel_oof_residuals.csv",
+    )
     parser.add_argument("--output", type=Path, default=ROOT / "reports/checkpoint_07_three/prithvi")
     args = parser.parse_args()
 
