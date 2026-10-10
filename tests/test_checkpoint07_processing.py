@@ -198,3 +198,107 @@ def test_smap_hdf5_small_grid(tmp_path: Path) -> None:
     assert report["hdf5_files"] == 1
     assert report["rows"] == 2
     assert report["recommended_quality_rows"] == 2
+
+
+
+def test_smap_v006_missing_geolocation_uses_projected_global_grid(tmp_path: Path) -> None:
+    """Reproduce real 2025 HDF5s lacking latitude/longitude arrays.
+
+    The full 1624x3856 shape is represented by sparse chunked datasets, not
+    25MB dense global arrays. AM fields have no suffix, PM fields have _pm.
+    """
+    h5py = pytest.importorskip("h5py")
+    from pyproj import Transformer
+    from shapely.geometry import Point
+
+    from geocebada.data.checkpoint07_smap import (
+        EASE2_GLOBAL_RES,
+        EASE2_GLOBAL_SHAPE,
+        EASE2_GLOBAL_UL_X,
+        EASE2_GLOBAL_UL_Y,
+        run_smap,
+    )
+
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    path = raw / "SMAP_L3_SM_P_E_20250520_R19240_001.h5"
+    row, col = 600, 860
+    x = EASE2_GLOBAL_UL_X + (col + 0.5) * EASE2_GLOBAL_RES
+    y = EASE2_GLOBAL_UL_Y - (row + 0.5) * EASE2_GLOBAL_RES
+    lon, lat = Transformer.from_crs(
+        "EPSG:6933", "EPSG:4326", always_xy=True
+    ).transform(x, y)
+    with h5py.File(path, "w") as h5:
+        for suffix, moisture in (("AM", 0.23), ("PM", 0.27)):
+            group = h5.create_group(f"Soil_Moisture_Retrieval_Data_{suffix}")
+            value_name = "soil_moisture_pm" if suffix == "PM" else "soil_moisture"
+            flag_name = (
+                "retrieval_qual_flag_pm" if suffix == "PM"
+                else "retrieval_qual_flag"
+            )
+            value = group.create_dataset(
+                value_name, shape=EASE2_GLOBAL_SHAPE, dtype="float32",
+                chunks=(32, 32), fillvalue=-9999,
+            )
+            flag = group.create_dataset(
+                flag_name, shape=EASE2_GLOBAL_SHAPE, dtype="uint16",
+                chunks=(32, 32), fillvalue=65534,
+            )
+            value[row, col] = moisture
+            flag[row, col] = 0 if suffix == "AM" else 8
+
+    out = tmp_path / "processed"
+    report = run_smap(raw, [("AGC_X", Point(lon, lat))], out)
+    assert report["rows"] == 2
+    assert report["recommended_quality_rows"] == 2
+    assert set(report["geolocation_methods"].values()) == {"EPSG6933_fixed_global"}
+    assert report["unique_grid_cells"] == {
+        "Soil_Moisture_Retrieval_Data_AM": 1,
+        "Soil_Moisture_Retrieval_Data_PM": 1,
+    }
+    import pandas as pd
+
+    panel = pd.read_csv(out / "smap_parcel_daily.csv")
+    assert set(panel["overpass"]) == {"AM", "PM"}
+    assert set(panel["smap_grid_row"]) == {row}
+    assert set(panel["smap_grid_col"]) == {col}
+    assert np.allclose(
+        panel.sort_values("overpass")["soil_moisture_m3_m3"], [0.23, 0.27],
+    )
+
+
+def test_smap_unknown_geolocation_shape_rejected(tmp_path: Path) -> None:
+    """Never silently treat subregion/polar grids as global EASE2."""
+    h5py = pytest.importorskip("h5py")
+    from shapely.geometry import Point
+    from geocebada.data.checkpoint07_smap import run_smap
+
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    with h5py.File(raw / "SMAP_L3_SM_P_E_20250520_R19240_001.h5", "w") as h5:
+        g = h5.create_group("Soil_Moisture_Retrieval_Data_AM")
+        g.create_dataset("soil_moisture", data=np.full((2, 2), 0.3))
+        g.create_dataset(
+            "retrieval_qual_flag", data=np.zeros((2, 2), dtype=np.uint16),
+        )
+    with pytest.raises(ValueError, match="Cannot geolocate SMAP"):
+        run_smap(raw, [("AGC_X", Point(-99.0, 19.0))], tmp_path / "processed")
+
+
+def test_smap_fill_before_scaling_and_quality_bits(tmp_path: Path) -> None:
+    h5py = pytest.importorskip("h5py")
+    from geocebada.data.checkpoint07_smap import _dataset_scalar
+
+    with h5py.File(tmp_path / "packed.h5", "w") as h5:
+        values = h5.create_dataset(
+            "soil_moisture", data=np.array([[-9999, 230]], dtype=np.int16),
+        )
+        values.attrs["_FillValue"] = -9999
+        values.attrs["scale_factor"] = 0.001
+        assert np.isnan(_dataset_scalar(values, 0, 0))
+        assert np.isclose(_dataset_scalar(values, 0, 1), 0.23)
+    assert _usable_moisture(0.23, 8)
+    assert not _usable_moisture(0.23, 1)
+    assert not _usable_moisture(0.23, 2)
+    assert not _usable_moisture(0.23, 4)
+    assert not _usable_moisture(0.23, 65534)
