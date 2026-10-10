@@ -139,7 +139,6 @@ def _summary(folder: Path, *, require_complete: bool) -> pd.DataFrame:
         "local07": folder / "local07",
         "prithvi": folder / "prithvi" / "300M" / "heads",
     }
-    model_name = "Prithvi07"
     if (folder / "prithvi" / "600M" / "heads").is_dir():
         inputs["prithvi"] = folder / "prithvi" / "600M" / "heads"
     scores = []
