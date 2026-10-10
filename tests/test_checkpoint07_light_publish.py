@@ -4,12 +4,21 @@ from __future__ import annotations
 
 import csv
 import gzip
+import importlib.util
 import json
 from pathlib import Path
 
 import pytest
 
-from tools import publish_checkpoint_07_light as share
+_SCRIPT = (
+    Path(__file__).resolve().parents[1]
+    / "tools"
+    / "publish_checkpoint_07_light.py"
+)
+_spec = importlib.util.spec_from_file_location("checkpoint07_share", _SCRIPT)
+assert _spec is not None and _spec.loader is not None
+share = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(share)
 
 
 def _write_x(path: Path, rows: list[list[str]]) -> None:
