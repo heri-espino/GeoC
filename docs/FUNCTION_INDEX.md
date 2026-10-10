@@ -159,6 +159,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `leave_one_split_out_mixture_selection` | function | `geocebada.evaluation.checkpoint06e` | Select 06E candidates on 15 splits and score the selected rule on the 16th. | `src/geocebada/evaluation/checkpoint06e.py` |
 | `normalize_gate_probabilities` | function | `geocebada.evaluation.checkpoint06e` | Convert separate low/high probabilities into normalized low/center/high weights. | `src/geocebada/evaluation/checkpoint06e.py` |
 | `summarize_mixture_predictions` | function | `geocebada.evaluation.checkpoint06e` | Summarize split-level and pooled 06E performance. | `src/geocebada/evaluation/checkpoint06e.py` |
+| `run_local07` | function | `geocebada.evaluation.checkpoint07_local` | Nested tuning and resumable Local07 evaluation with paired Local04D. | `src/geocebada/evaluation/checkpoint07_local.py` |
 | `DualPCAScores` | class | `geocebada.evaluation.checkpoint07_pca` | Out-of-fold PCA scores and explained X variance from training only. | `src/geocebada/evaluation/checkpoint07_pca.py` |
 | `dual_pca_fold` | function | `geocebada.evaluation.checkpoint07_pca` | PCA through small training Gram matrix; no giant feature covariance. | `src/geocebada/evaluation/checkpoint07_pca.py` |
 | `evaluate_highdim_pca` | function | `geocebada.evaluation.checkpoint07_pca` | Benchmark PCA on held-out 41-parcel pseudo-targets; yield-only fit/train. | `src/geocebada/evaluation/checkpoint07_pca.py` |
@@ -166,6 +167,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `retained_components` | function | `geocebada.evaluation.checkpoint07_pca` | Choose smallest retained rank meeting a fraction, or fixed rank. | `src/geocebada/evaluation/checkpoint07_pca.py` |
 | `ridge_from_pca` | function | `geocebada.evaluation.checkpoint07_pca` | Fit Ridge on PCA scores, optionally with fold-local quadratic PC terms. | `src/geocebada/evaluation/checkpoint07_pca.py` |
 | `summarize_pca_predictions` | function | `geocebada.evaluation.checkpoint07_pca` | Aggregate mean-split and pooled errors; repeated splits are not independent. | `src/geocebada/evaluation/checkpoint07_pca.py` |
+| `extract_frozen_embeddings` | function | `geocebada.evaluation.checkpoint07_prithvi` | Resume per-parcel frozen embeddings, then atomically merge all 197. | `src/geocebada/evaluation/checkpoint07_prithvi.py` |
+| `load_chip` | function | `geocebada.evaluation.checkpoint07_prithvi` | Convert HLS digital numbers to normalized B,C,T,H,W for frozen encoder. | `src/geocebada/evaluation/checkpoint07_prithvi.py` |
+| `load_local_backbone` | function | `geocebada.evaluation.checkpoint07_prithvi` | Build actual pretrained TerraTorch TL encoder using local model weights. | `src/geocebada/evaluation/checkpoint07_prithvi.py` |
+| `pool_features` | function | `geocebada.evaluation.checkpoint07_prithvi` | Return global+parcel pooled features if patch-grid geometry is available. | `src/geocebada/evaluation/checkpoint07_prithvi.py` |
+| `evaluate_prithvi` | function | `geocebada.evaluation.checkpoint07_prithvi_head` | Evaluate honest frozen Prithvi head, checkpointing each outer split. | `src/geocebada/evaluation/checkpoint07_prithvi_head.py` |
 | `DevelopmentData` | class | `geocebada.evaluation.checkpoint07c` | Read-only predictor matrix, visible y and frozen split/method evidence. | `src/geocebada/evaluation/checkpoint07c.py` |
 | `FoldRepresentations` | class | `geocebada.evaluation.checkpoint07c` | Cache fold-local raw-feature selection and dual PCA without leaking y. | `src/geocebada/evaluation/checkpoint07c.py` |
 | `aggregate_07c_results` | function | `geocebada.evaluation.checkpoint07c` | Summarize completed split-model CSVs; repeated parcels remain correlated. | `src/geocebada/evaluation/checkpoint07c.py` |
