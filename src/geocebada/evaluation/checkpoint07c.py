@@ -354,8 +354,30 @@ def run_nested_search(
     output.mkdir(parents=True, exist_ok=True)
     pred_path = output / f"{split_id}__{family}.csv"
     meta_path = output / f"{split_id}__{family}.json"
+    if pred_path.is_file() != meta_path.is_file():
+        raise RuntimeError(
+            f"Incomplete 07C split result: {split_id} {family}. "
+            "Inspect files before resuming; never silently overwrite."
+        )
     if pred_path.is_file() and meta_path.is_file():
-        return pd.read_csv(pred_path), pd.read_json(meta_path, typ="series").to_dict()
+        import json
+
+        prediction = pd.read_csv(pred_path)
+        saved = json.loads(meta_path.read_text(encoding="utf-8"))
+        if (
+            saved.get("split_id") != split_id
+            or saved.get("family") != family
+            or len(prediction) != 41 * 5
+            or set(prediction["model"].unique()) != {
+                "Local04D", family,
+                *(f"Local04D_plus_{family}_w{weight:.2f}"
+                  for weight in (0.10, 0.25, 0.50))
+            }
+        ):
+            raise RuntimeError(
+                f"Corrupt or incompatible 07C completed result: {split_id} {family}"
+            )
+        return prediction, saved
 
     outer_train, outer_test = data.splits[split_id]
     y_train = data.known_y.loc[outer_train].to_numpy(float)
@@ -391,12 +413,14 @@ def run_nested_search(
             scores.append(float(np.mean((pred - yb) ** 2)))
         return float(np.sqrt(np.mean(scores)))
 
-    previous = len(study.trials)
-    to_run = max(0, trials - previous)
+    completed = sum(
+        t.state == optuna.trial.TrialState.COMPLETE for t in study.trials
+    )
+    to_run = max(0, trials - completed)
     if to_run:
         print(
-            f"[07C] {split_id} {family} nested trials "
-            f"{previous + 1}..{previous + to_run}/{trials}",
+            f"[07C] {split_id} {family} complete nested trials "
+            f"{completed}/{trials}; scheduling {to_run} more",
             flush=True,
         )
         study.optimize(objective, n_trials=to_run, gc_after_trial=True)
