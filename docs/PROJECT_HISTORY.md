@@ -1468,3 +1468,24 @@ regression tests for the absence of lat/lon rasters.
 
 No HLS rerun or redownload needed. Await user confirmation from
 SMAP --max-files 2 and full runs, and then Local07B preflight.
+
+
+## 2026-10-10 — Completed HLS/SMAP extraction and Checkpoint 07B smoke
+
+New workstation SMAP processing report: 214 dated v006 files, 84,316
+parcel-overpass rows, 29,006 recommended-quality rows, 15 distinct
+regional SMAP grid cells per AM and PM overpass. AM geolocation used
+coordinate datasets and PM used validated global EPSG:6933 fixed-grid
+fallback. The high-dimensional smoke then passed for 197 parcels with
+9,195 derived X columns and 60 cross-domain products. One held-out
+development fold (41 parcels) ranked PCA 80% + MLP(16) first at RMSE
+0.615971; not a full benchmark or improvement over frozen Local04D.
+
+To permit lightweight reproducibility without uploading raw ~180 GiB,
+added tools/publish_checkpoint_07_light.py and tests. It exports
+checksummed, size-limited X-only gzip HLS/SMAP panels through existing
+data/** Git LFS routing, optionally complete expanded highdim X, plus
+sanitized normal-Git QC and benchmark reports. See
+docs/CHECKPOINT_07_COMPACT_SHARING.md. Workstation push must be
+user-executed after inspection; no Git staging or uploads occurred by
+merely implementing this tool.
