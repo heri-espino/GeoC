@@ -72,6 +72,57 @@ if this changes a working CUDA PyTorch build or preflight sees no CUDA,
 restore the official CUDA-enabled PyTorch build for the workstation before
 starting. These packages do **not** download the ~180 GiB raw data.
 
+## Windows CUDA recovery (if -Smoke stops at Prithvi)
+
+A failure at `torch.cuda.is_available() == False` occurs **before** any
+Prithvi image or checkpoint inference. It does **not** mean the HLS,
+SMAP, 07B features, CatBoost or Local07 failed. The main three-model
+launcher intentionally aborts so it does not abandon the third model.
+
+From the active `geocebada` environment, inspect **without changing
+anything**:
+
+```powershell
+nvidia-smi
+python -c "import sys,torch; print('Python:',sys.executable); print('Torch:',torch.__version__); print('Compiled CUDA:',torch.version.cuda); print('CUDA available:',torch.cuda.is_available()); print('GPU count:',torch.cuda.device_count())"
+python -m pip check
+```
+
+- If `nvidia-smi` cannot detect an NVIDIA GPU, inspect the university
+  workstation/VM GPU assignment and NVIDIA driver first. Installing
+  random Python wheels will not restore a missing driver or VM pass-through.
+- If `nvidia-smi` sees the GPU but `Compiled CUDA: None`, pip most
+  likely installed a CPU-only PyTorch build. Install the CUDA 12.8 wheels
+  explicitly (choose an alternative official build only if required by
+  the host driver and installed dependencies):
+
+```powershell
+python -m pip install --force-reinstall torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
+python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'NO GPU')"
+python -m pip check
+```
+
+These version-aligned builds are from the
+[official PyTorch releases](https://pytorch.org/get-started/previous-versions/).
+If `pip check` reports dependency conflicts, resolve those before the
+full training; do not assume they are harmless. If `Compiled CUDA` is
+non-None but availability remains False, investigate the installed GPU
+driver, VM session and CUDA compatibility instead of reinstalling
+Torch repeatedly.
+
+After GPU verification, retry **the same** checks and smoke. Nothing
+needs to be downloaded or reconstructed from the geospatial inputs:
+
+```powershell
+.\tools\start_checkpoint_07.ps1 -Check
+.\tools\start_checkpoint_07.ps1 -Smoke
+.\tools\start_checkpoint_07.ps1 -Start
+```
+
+Prithvi is still required. Do not bypass this check or claim that
+CUDA is usable based only on the CatBoost `--preflight` report,
+which verifies capability/options rather than a real TerraTorch inference.
+
 ## Operator commands (Windows PowerShell)
 
 Run from repository root. **Only checks**:
