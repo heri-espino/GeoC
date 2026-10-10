@@ -355,9 +355,19 @@ def run_nested_search(
     pred_path = output / f"{split_id}__{family}.csv"
     meta_path = output / f"{split_id}__{family}.json"
     if pred_path.is_file() != meta_path.is_file():
-        raise RuntimeError(
-            f"Incomplete 07C split result: {split_id} {family}. "
-            "Inspect files before resuming; never silently overwrite."
+        # A kill between atomic CSV and JSON renames is recoverable.
+        # Preserve the orphan rather than pretending it is completed.
+        orphan = pred_path if pred_path.is_file() else meta_path
+        backup = orphan.with_suffix(orphan.suffix + ".incomplete")
+        if backup.exists():
+            raise RuntimeError(
+                f"Unresolved interrupted 07C result: {orphan} and {backup}"
+            )
+        orphan.replace(backup)
+        print(
+            f"[07C RESUME] Preserved incomplete result as {backup.name}; "
+            "recomputing final outer refit from saved Optuna trials.",
+            flush=True,
         )
     if pred_path.is_file() and meta_path.is_file():
         import json
