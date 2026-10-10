@@ -1,3 +1,41 @@
+## 2026-10-10 — Checkpoint 07C.1 heavy nested tuning RESUMED, GPU run pending
+
+The user's last 07B workstation run completed, 21,445 X features (180
+seed columns and 12,000 cross-source interaction products), 16 target-
+matched outer splits, 60 07B configurations; PCA16 + MLP16 produced best
+pooled RMSE 0.552642, with non-converged MLP warning; benchmark not a
+promotion. Earlier 07A HLS + SMAP extraction succeeded.
+
+The user wants much heavier evaluation and notes the 07C implementation
+was left half finished. Indeed `tools/run_checkpoint_07c.py` and
+`src/geocebada/evaluation/checkpoint07c.py` were already committed before
+this continuation. We preserved and completed rather than restarted them.
+They implement nested inner-CV Optuna over CatBoost/XGBoost/LightGBM/
+Kernel Ridge/PLS (raw256/512 vs fold-local PCA16/32/64), 16 frozen 97/41
+outer splits, frozen Local04D baseline and fixed 10/25/50% blends.
+
+New safeguards: tests/test_checkpoint07c.py synthetic validation,
+SHA-256 data/code/package version/config run_spec.json lock to refuse
+incompatible resumes, corrected completed-trial accounting, robust split
+resume verification, explicit CPU authorization, and gitignore for
+reports/checkpoint_07c/. Full scientific GPU run has NOT been run here;
+no new model is promoted. User can run:
+
+    git pull --ff-only
+    conda activate geocebada
+    python -m pip install -e ".[dev,models,checkpoint07]"
+    python tools/run_checkpoint_07c.py --preflight --device gpu
+    python tools/run_checkpoint_07c.py --smoke --device cpu
+    python tools/run_checkpoint_07c.py --device gpu --trials 48
+    python tools/run_checkpoint_07c.py --stage summarize
+
+Code/doc: docs/CHECKPOINT_07C_NESTED_SEARCH.md. This nested model search
+is 07C.1; the originally planned Prithvi frozen-encoder workflow remains
+07C.2 and is NOT implemented by the nested search. True residual correction
+would require fresh cross-fitted Local04D predictions within each outer
+train and is NOT claimed; current 07C.1 blends are fixed, leakage-safe.
+Use the terms 'research modeling' rather than reto/competition in new text.
+
 ## 2026-10-10 — User workstation 07A and 07B smoke finished; portable snapshots prepared
 
 User reported HLS done: 197 scenes, 29,592 observations; 197/197
