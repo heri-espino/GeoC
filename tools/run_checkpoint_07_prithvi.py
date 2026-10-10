@@ -58,7 +58,32 @@ def main() -> int:
     import torch
 
     if not torch.cuda.is_available():
-        raise RuntimeError("Prithvi requires usable CUDA; do not silently use CPU.")
+        build_cuda = torch.version.cuda
+        # A CPU-only torch wheel has no CUDA runtime even if nvidia-smi
+        # reports a functioning NVIDIA GPU. Avoid a vague message.
+        if build_cuda is None:
+            reason = (
+                "Installed PyTorch is CPU-only (torch.version.cuda=None). "
+                "Restore the CUDA-enabled PyTorch wheel matching your "
+                "NVIDIA driver and Python environment."
+            )
+        else:
+            reason = (
+                f"PyTorch was built with CUDA {build_cuda} but cannot use the "
+                "GPU in this Windows session. Check nvidia-smi, NVIDIA "
+                "driver availability and virtual-machine GPU passthrough."
+            )
+        raise RuntimeError(
+            "Prithvi requires a working CUDA GPU. "
+            f"torch={torch.__version__}; compiled_cuda={build_cuda}; "
+            f"python={Path(__import__('sys').executable)}. "
+            + reason
+            + " Run: nvidia-smi; python -c \"import torch; "
+            "print(torch.__version__, torch.version.cuda, "
+            "torch.cuda.is_available())\". "
+            "See https://pytorch.org/get-started/previous-versions/ "
+            "for an official CUDA wheel. Do not run the full workflow yet."
+        )
     root = args.models_root / f"Prithvi-EO-2.0-{args.model}M-TL"
     config = root / "config.json"
     pts = list(root.glob("*.pt")) if root.exists() else []
