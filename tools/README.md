@@ -115,3 +115,24 @@ on the frozen pseudo-training splits. Use \`--skip-neural\` for Ridge-only.
 Outputs: \`reports/checkpoint_07/highdim/\` (local, gitignored). No hidden
 target y or incumbent model is modified. For full protocol/limitations see
 \`docs/CHECKPOINT_07B_HIGH_DIMENSIONAL.md\`.
+
+
+### Checkpoint 07C.1 — nested Optuna heavy model search (resumable)
+
+Runs off the **full** 07B expanded X matrix, not the smoke matrix, with
+inner 3-fold tuning inside each of the frozen 16 × (97 train, 41 held-out)
+development splits. Families: CatBoost, XGBoost, LightGBM, Kernel Ridge, PLS.
+Raw256/raw512 and fold-local PCA16/32/64 compete in the inner search.
+Frozen Local04D provides a strictly paired benchmark and *fixed* blends;
+no supervised residual calibration is claimed. All Optuna studies are
+local-only under reports/checkpoint_07c/ and fingerprint-guarded.
+
+```powershell
+python -m pip install -e ".[dev,models,checkpoint07]"
+python tools\run_checkpoint_07c.py --preflight --device gpu
+python tools\run_checkpoint_07c.py --smoke --device cpu
+python tools\run_checkpoint_07c.py --device gpu --trials 48
+python tools\run_checkpoint_07c.py --stage summarize
+```
+
+Protocol and safe resume: docs/CHECKPOINT_07C_NESTED_SEARCH.md.
