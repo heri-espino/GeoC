@@ -95,3 +95,6 @@ venv/
 
 # Checkpoint 07B high-dimensional X-only features and validation results
 /reports/checkpoint_07/highdim/
+
+# Heavy nested 07C Optuna SQLite studies and per-fold predictions stay local
+/reports/checkpoint_07c/
