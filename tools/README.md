@@ -136,3 +136,26 @@ python tools\run_checkpoint_07c.py --stage summarize
 ```
 
 Protocol and safe resume: docs/CHECKPOINT_07C_NESTED_SEARCH.md.
+
+
+### Checkpoint 07 selected three-model unattended research
+
+Only optimized CatBoost, Local04D adapted to HLS/SMAP (Local07), and
+pretrained Prithvi-EO-2.0-TL frozen embeddings with fold-local Ridge heads.
+This explicitly excludes XGBoost and LightGBM in the final experiment.
+
+From the `geocebada` conda environment after installing
+`.[dev,models,checkpoint07,prithvi]`:
+
+```powershell
+.\tools\start_checkpoint_07.ps1 -Check
+.\tools\start_checkpoint_07.ps1 -Smoke
+.\tools\start_checkpoint_07.ps1 -Start
+.\tools\start_checkpoint_07.ps1 -Status
+```
+
+The `-Start` command starts **one detached worker** that runs all three
+in sequence and records logs/checkpoints/status under gitignored
+`reports/checkpoint_07_three/`. Keep the Windows VM awake; a restart
+requires rerunning `-Start` to resume. Read
+`docs/CHECKPOINT_07_THREE_MODELS.md` for full safety/validation details.
