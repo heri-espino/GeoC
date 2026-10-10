@@ -1,6 +1,6 @@
 # Checkpoint 07A.2 — From 180 GiB of raw imagery to parcel-level data
 
-**Status:** PROCESSORS IMPLEMENTED / WORKSTATION EXECUTION PENDING  
+**Status:** HLS COMPLETED ON WORKSTATION; SMAP v006 COORDINATE FALLBACK FIX IMPLEMENTED / RETEST PENDING  
 **Track:** competition-only; no use of the 59 hidden yields  
 **Purpose:** convert HLS and SMAP source archives into small X-only inputs for
 Local07 and Prithvi07. This phase does not train or promote any model.
@@ -123,6 +123,56 @@ not become a valid Prithvi frame. Tiny polygons may intersect just one or a few
 
 An incomplete Prithvi sequence is not a training example until a defensible
 X-only missing-frame strategy has been defined, tested and documented.
+
+## Workstation HLS completion and SMAP v006 fix (2026-10-10)
+
+Confirmed from workstation execution log:
+- All 197/197 HLS granules processed successfully, producing **29,592**
+  parcel-date observation rows; all 197 parcels were covered.
+- All 197/197 parcels have **four HLS quality-filtered frames** for Prithvi.
+- The original HLS archive was not changed.
+- 214 downloaded SMAP HDF5 files were found in preflight, but both
+  smoke and full SMAP originally failed because the code required explicit
+  `latitude` and `longitude` datasets inside the HDF5 AM group.
+- The resulting missing `smap_parcel_daily.csv` blocked Checkpoint 07B;
+  this is NOT an HLS or PCA bug.
+
+The revised SMAP reader supports:
+- the standard global **EASE-Grid 2.0 EPSG:6933** geolocation when
+  latitude/longitude arrays are absent, validated by exact full-global
+  HDF5 shape 1624 x 3856; unsupported subset/polar grids are rejected;
+- native `_pm` dataset suffixes for the PM overpass in v006;
+- QA bit-flag validity, HDF5 missing/fill data checks, individual cell
+  access without loading global moisture arrays;
+- reporting the selected geolocation method and distinct 9-km grid cells.
+
+Official references:
+- https://nsidc.org/sites/default/files/documents/user-guide/spl3smp_e-v006-userguide.pdf
+- https://nsidc.org/data/ease
+- https://nsidc.org/data/spl3smp_e/versions/6
+
+**Important grid caveat:** the NSIDC v006 user guide labels the 9-km
+grid cell size as 9,024.31 m, but the canonical NSIDC EASE-Grid 2.0
+reference lists approximately 9,008.05 m for 3856 global columns. The
+implementation uses the canonical extent and column count to derive
+spacing, with no empirically guessed shifts. The final cell rows/columns
+must be checked against actual lat/lon metadata or a small known-point
+subset where possible. SMAP is regional; many parcels share 9-km cells.
+
+Do **not** rerun HLS. The next workstation commands are:
+
+```powershell
+git pull --ff-only
+conda activate geocebada
+python tools\run_checkpoint_07_smap.py --max-files 2
+python tools\run_checkpoint_07_smap.py
+python tools\run_checkpoint_07_highdim.py --preflight --require-hls --require-smap
+python tools\run_checkpoint_07_highdim.py --smoke --require-hls --require-smap
+```
+
+If an HDF5 file has a non-global shape or unexpected naming after this
+fix, report the new exact error and inspect its group layout; do not
+silently invent coordinates or redownload everything.
 
 ## Implemented stage B — SMAP regional daily extraction
 
