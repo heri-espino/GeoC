@@ -1,3 +1,25 @@
+## User-corrected active Checkpoint 07 mode: ONLY 3 models (2026-10-10)
+
+**Do not use XGBoost, LightGBM, KRR model zoo** for the currently selected
+07 branch. The user insists on these exact three:
+1. GPU CatBoost nested tuning, reuse checkpoint07c.py with --families catboost.
+2. Local07: Local04D-style geographic+new-X neighborhood Ridge, with nested
+   fold-local representation/neighborhood/alpha selection.
+3. Prithvi-EO-2.0-300M-TL pretrained from verified local checkpoints and HLS
+   4 × 6 × 224 × 224 chips. Frozen image encoder, trained low-capacity head.
+
+See docs/CHECKPOINT_07_THREE_MODELS.md. The Windows workstation should run
+tools/start_checkpoint_07.ps1 -Check, optionally -Smoke, then -Start ONE TIME
+to launch all three sequentially, with resume/restart-safe stage checkpoints.
+Do not promise that the detached Windows worker survives VM reboot; rerun
+-Start to resume. Local outputs reports/checkpoint_07_three/ are gitignored.
+Prithvi actual weights/GPU are unavailable in GitHub CI and need local smoke.
+
+Only 138 visible yields (97 in each pseudo-training split), 59 hidden,
+197 X-known parcels. Do not fit supervised components on held-out y.
+Do not replace frozen Local04D or claim RMSE improvement until fresh
+confirmation. Fixed Local04D blends are NOT supervised residual correctors.
+
 # AGENTS.md — GeoCebada
 
 These instructions apply repository-wide unless a more specific handoff adds constraints.
