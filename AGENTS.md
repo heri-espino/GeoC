@@ -226,6 +226,34 @@ explicit and must be disclosed.
 No raw raster re-download; respect prior 07A processing QA.
 Local-only outputs in `reports/checkpoint_07/highdim/`, gitignored.
 
+## Checkpoint 07C.1 resumed nested search (2026-10-10)
+
+The new HLS/SMAP 07B full feature matrix contains ~21,445 X-only columns
+and 12,000 generated interaction products. 07B's 16-split PCA16+MLP16
+development RMSE was 0.552642; do not compare unmatched protocols.
+
+The user wants the partially written *heavy* 07C search finished, not a
+fresh modeling stack. Continue the already committed
+`src/geocebada/evaluation/checkpoint07c.py` and
+`tools/run_checkpoint_07c.py`; documented at
+`docs/CHECKPOINT_07C_NESTED_SEARCH.md`.
+
+The 07C.1 heavy nested tuning families are CatBoost, XGBoost, LightGBM,
+RBF Kernel Ridge, PLS; representations include fold-local no-PCA and PCA.
+Model/hyperparameter selection is inside 97-label pseudo-train subsets,
+with 41 held-out labels never used during selection. Use frozen Local04D
+paired predictions only for comparison and fixed blends. True supervised
+residual fitting is NOT implemented and must not be faked with OOF
+predictions that may contain current pseudo-target labels.
+
+Results are resumable via separate Optuna SQLite files with a JSON run
+fingerprint locking code/data versions, inner CV, seed and compute settings.
+Do not mix past partial studies with changed search configurations. Run
+heavy training locally, GPU-first. Optuna/ML tests are lightweight CI only.
+Use `reports/checkpoint_07c/` locally; this directory is ignored by Git.
+Original 07C Prithvi encoder is now 07C.2, still pending. Local04D remains
+canonical, the 59 hidden yields are NEVER available.
+
 ## Frozen final-state summary
 
 As of 2026-09-24:
