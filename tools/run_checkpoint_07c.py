@@ -16,6 +16,8 @@ not trained on pseudo-target labels. No official 59-target predictions.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import importlib.metadata
 import importlib.util
 import json
 import subprocess
@@ -49,6 +51,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-splits", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20261010)
     parser.add_argument("--threads", type=int, default=8)
+    parser.add_argument(
+        "--yes-cpu", action="store_true",
+        help="Explicit noninteractive CPU authorization, e.g. for workstation batch jobs.",
+    )
     parser.add_argument(
         "--features", type=Path,
         default=ROOT / "reports/checkpoint_07/highdim/expanded_parcel_features.csv",
@@ -130,6 +136,88 @@ def _preflight(args: argparse.Namespace, families: tuple[str, ...]) -> dict:
     }
 
 
+def _sha256_file(path: Path) -> str:
+    """Hash source files in streaming chunks without loading raster archives."""
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for part in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(part)
+    return digest.hexdigest()
+
+
+def _run_spec(
+    args: argparse.Namespace, families: tuple[str, ...], *,
+    trials: int, device: str,
+) -> dict:
+    """Fingerprint all data, algorithm code and knobs needed for safe resume."""
+    packages = ("numpy", "pandas", "scikit-learn", "optuna")
+    packages += tuple(f for f in families if f in ("catboost", "xgboost", "lightgbm"))
+    inputs = {
+        label: _sha256_file(path)
+        for label, path in {
+            "features": args.features,
+            "targets": args.targets,
+            "membership": args.membership,
+            "baseline": args.baseline,
+        }.items()
+    }
+    code_files = {
+        "07c": ROOT / "src/geocebada/evaluation/checkpoint07c.py",
+        "pca": ROOT / "src/geocebada/evaluation/checkpoint07_pca.py",
+    }
+    spec = {
+        "schema": 1,
+        "data_sha256": inputs,
+        "code_sha256": {
+            name: _sha256_file(p) for name, p in code_files.items()
+        },
+        "dependencies": {
+            p: importlib.metadata.version(p) for p in sorted(set(packages))
+        },
+        "families": list(families),
+        "n_trials_per_split_family": trials,
+        "inner_folds": args.inner_folds,
+        "seed": args.seed,
+        "threads": args.threads,
+        "device": device,
+        "smoke": args.smoke,
+        "max_splits": 1 if args.smoke else args.max_splits,
+    }
+    return spec
+
+
+def _lock_run_spec(output: Path, spec: dict) -> None:
+    """Refuse incompatible resumes; never silently mix Optuna study budgets."""
+    path = output / "run_spec.json"
+    if path.exists():
+        old = json.loads(path.read_text(encoding="utf-8"))
+        if old != spec:
+            differing = sorted(
+                key for key in set(old) | set(spec)
+                if old.get(key) != spec.get(key)
+            )
+            raise ValueError(
+                "07C resume fingerprint mismatch: "
+                f"{differing}. Keep prior results; choose a NEW --output "
+                "directory for a different search design or software version."
+            )
+        return
+    # Historical partially written runs have no reliable configuration hash.
+    existing = [
+        p.name for p in output.iterdir()
+        if p.suffix in (".sqlite", ".csv", ".json")
+        and p.name != "run_spec.json"
+    ]
+    if existing:
+        raise ValueError(
+            f"Existing unversioned 07C artifacts: {existing[:5]}. "
+            "Choose a new --output instead of mixing experiments."
+        )
+    temp = path.with_suffix(".json.tmp")
+    temp.write_text(json.dumps(spec, indent=2) + "\n", encoding="utf-8")
+    temp.replace(path)
+
+
 def _commit() -> str | None:
     try:
         return subprocess.run(
@@ -168,6 +256,19 @@ def main() -> int:
     if args.smoke:
         output = output / "smoke"
     output.mkdir(parents=True, exist_ok=True)
+    if not args.smoke and args.device == "cpu" and not args.yes_cpu:
+        answer = input(
+            "Full Checkpoint 07C CPU training can be extremely slow. "
+            "Type y to authorize CPU (or use --yes-cpu): "
+        )
+        if answer.strip().lower() != "y":
+            raise RuntimeError("CPU training not authorized.")
+    run_spec = _run_spec(
+        args, families,
+        trials=min(args.trials, 2) if args.smoke else args.trials,
+        device="cpu" if args.smoke else args.device,
+    )
+    _lock_run_spec(output, run_spec)
     # The full 07B feature table is built X-only; no synthetic smoke matrix.
     x = pd.read_csv(args.features, low_memory=False)
     y = load_yield_split(path=args.targets, validate=True)
@@ -217,6 +318,7 @@ def main() -> int:
         "inner_folds": args.inner_folds,
         "n_outer_splits_completed": len(split_ids),
         "nested_cv": True,
+        "run_spec": "run_spec.json",
         "selection_status": "development only; no model promoted",
         "canonical_local04d_modified": False,
     }
