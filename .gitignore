@@ -98,3 +98,6 @@ venv/
 
 # Heavy nested 07C Optuna SQLite studies and per-fold predictions stay local
 /reports/checkpoint_07c/
+
+# Checkpoint 07 selected three-model GPU/CPU research results (local only)
+/reports/checkpoint_07_three/
