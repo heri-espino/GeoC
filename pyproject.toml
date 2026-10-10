@@ -24,6 +24,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=8.3",
+  "optuna>=4.0",
   "h5py>=3.11",
   "ruff>=0.6",
   "jupyterlab>=4.2",
