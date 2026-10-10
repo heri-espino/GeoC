@@ -67,6 +67,10 @@ checkpoint07 = [
   "h5netcdf>=1.3",
   "huggingface-hub>=0.35",
 ]
+prithvi = [
+  "torch>=2.4",
+  "terratorch>=1.2,<1.4",
+]
 gpu = [
   "cupy-cuda12x>=13.0",
 ]
