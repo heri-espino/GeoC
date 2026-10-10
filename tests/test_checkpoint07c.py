@@ -151,6 +151,16 @@ def test_07c_nested_search_resumes_completed_fit_and_preserves_baseline(
     )
     pd.testing.assert_frame_equal(pred, pred2, check_exact=False)
     assert meta2["best_params"] == meta["best_params"]
+    # Simulate an interruption after CSV rename but before JSON rename.
+    (output / "target_matched_01__krr.json").unlink()
+    pred3, meta3 = run_nested_search(
+        data, "target_matched_01", "krr",
+        output=output, trials=2, inner_folds=2,
+        device="cpu", threads=1, seed=123,
+    )
+    assert len(pred3) == 205
+    assert meta3["tuning_trials_complete"] == 2
+    assert (output / "target_matched_01__krr.csv.incomplete").is_file()
     full, summary = aggregate_07c_results(output)
     assert len(full) == 205
     assert len(summary) == 5
