@@ -51,8 +51,10 @@ def _last_tensor(output: object) -> object:
         return output
     if isinstance(output, (list, tuple)) and output:
         for element in reversed(output):
-            if isinstance(element, torch.Tensor):
-                return element
+            try:
+                return _last_tensor(element)
+            except TypeError:
+                continue
     if isinstance(output, dict):
         for key in ("features", "x", "last_hidden_state", "out"):
             if key in output:
