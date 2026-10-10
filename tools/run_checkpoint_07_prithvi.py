@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -76,7 +77,7 @@ def main() -> int:
         raise RuntimeError(
             "Prithvi requires a working CUDA GPU. "
             f"torch={torch.__version__}; compiled_cuda={build_cuda}; "
-            f"python={Path(__import__('sys').executable)}. "
+            f"python={Path(sys.executable)}. "
             + reason
             + " Run: nvidia-smi; python -c \"import torch; "
             "print(torch.__version__, torch.version.cuda, "
