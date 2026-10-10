@@ -1,3 +1,29 @@
+## 2026-10-10 SMAP v006 recovery after successful HLS (WORKSTATION RETEST PENDING)
+
+User ran 07A HLS successfully: all 197 granules/197 parcels,
+29,592 HLS observations, 197/197 four-window Prithvi chips.
+SMAP: 214 HDF5 files found. Previously both runs crashed with
+`ValueError: SMAP group missing latitude/longitude datasets`.
+07B failed only because `smap_parcel_daily.csv` had not been created.
+
+Implemented 07A3 fix in `src/geocebada/data/checkpoint07_smap.py`:
+- when explicit lat/lon arrays absent use validated full-global
+  EASE2 EPSG:6933 shape 1624x3856, transforming only polygon centroids,
+  nearest 3x3 geodesic cells; reject shapes unknown;
+- PM dataset names have required v006 `_pm` suffix;
+- respect QA flag bits and fill values; avoid 2D full-field reads.
+Synthetic tests added to `tests/test_checkpoint07_processing.py`,
+including no-lat/lon sparse global HDF5 shape and PM suffix.
+
+User should pull main and re-run ONLY SMAP smoke and full. HLS already
+done; never redownload the originals. Then 07B highdim smoke/full.
+Full 07B and MLP RMSE results still pending.
+
+Source: NASA NSIDC SPL3SMP_E v006 userguide:
+https://nsidc.org/sites/default/files/documents/user-guide/spl3smp_e-v006-userguide.pdf
+NSIDC EASE grid canonical 9km global:
+https://nsidc.org/data/ease
+
 # AI Handoff — GeoCebada
 
 **Updated:** 2026-10-09  
