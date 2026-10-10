@@ -88,7 +88,12 @@ def run_local07(
     stem = f"{split_id}__local07"
     csv_path, json_path = output / f"{stem}.csv", output / f"{stem}.json"
     if csv_path.exists() != json_path.exists():
-        raise RuntimeError(f"Partial Local07 outer result: {stem}; inspect files.")
+        orphan = csv_path if csv_path.exists() else json_path
+        backup = orphan.with_suffix(orphan.suffix + ".incomplete")
+        if backup.exists():
+            raise RuntimeError(f"Repeated partial Local07 result: {stem}")
+        orphan.replace(backup)
+        print(f"[LOCAL07] Preserved partial {orphan.name}; recovering.", flush=True)
     if csv_path.exists():
         meta = json.loads(json_path.read_text(encoding="utf-8"))
         rows = pd.read_csv(csv_path)
