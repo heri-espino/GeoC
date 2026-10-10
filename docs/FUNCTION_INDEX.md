@@ -166,6 +166,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `retained_components` | function | `geocebada.evaluation.checkpoint07_pca` | Choose smallest retained rank meeting a fraction, or fixed rank. | `src/geocebada/evaluation/checkpoint07_pca.py` |
 | `ridge_from_pca` | function | `geocebada.evaluation.checkpoint07_pca` | Fit Ridge on PCA scores, optionally with fold-local quadratic PC terms. | `src/geocebada/evaluation/checkpoint07_pca.py` |
 | `summarize_pca_predictions` | function | `geocebada.evaluation.checkpoint07_pca` | Aggregate mean-split and pooled errors; repeated splits are not independent. | `src/geocebada/evaluation/checkpoint07_pca.py` |
+| `DevelopmentData` | class | `geocebada.evaluation.checkpoint07c` | Read-only predictor matrix, visible y and frozen split/method evidence. | `src/geocebada/evaluation/checkpoint07c.py` |
+| `FoldRepresentations` | class | `geocebada.evaluation.checkpoint07c` | Cache fold-local raw-feature selection and dual PCA without leaking y. | `src/geocebada/evaluation/checkpoint07c.py` |
+| `aggregate_07c_results` | function | `geocebada.evaluation.checkpoint07c` | Summarize completed split-model CSVs; repeated parcels remain correlated. | `src/geocebada/evaluation/checkpoint07c.py` |
+| `load_development` | function | `geocebada.evaluation.checkpoint07c` | Check 07C coverage and align frozen Local04D pseudo-target predictions. | `src/geocebada/evaluation/checkpoint07c.py` |
+| `run_nested_search` | function | `geocebada.evaluation.checkpoint07c` | Tune on inner pseudo-train folds, then produce one honest outer forecast. | `src/geocebada/evaluation/checkpoint07c.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
