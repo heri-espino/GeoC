@@ -79,7 +79,12 @@ def evaluate_prithvi(
         csv_path = output / f"{split_id}__prithvi.csv"
         json_path = output / f"{split_id}__prithvi.json"
         if csv_path.exists() != json_path.exists():
-            raise RuntimeError(f"Incomplete Prithvi head result: {split_id}")
+            orphan = csv_path if csv_path.exists() else json_path
+            backup = orphan.with_suffix(orphan.suffix + ".incomplete")
+            if backup.exists():
+                raise RuntimeError(f"Repeated partial Prithvi result: {split_id}")
+            orphan.replace(backup)
+            print(f"[PRITHVI] Preserved partial {orphan.name}; recovering.", flush=True)
         if csv_path.exists():
             meta = json.loads(json_path.read_text(encoding="utf-8"))
             if len(pd.read_csv(csv_path)) != 205 or meta.get("split_id") != split_id:
