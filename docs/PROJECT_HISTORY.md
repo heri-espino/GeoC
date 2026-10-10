@@ -1489,3 +1489,24 @@ sanitized normal-Git QC and benchmark reports. See
 docs/CHECKPOINT_07_COMPACT_SHARING.md. Workstation push must be
 user-executed after inspection; no Git staging or uploads occurred by
 merely implementing this tool.
+
+
+## 2026-10-10 — Resume previously half-finished Checkpoint 07C nested model search
+
+The user asked to continue the partially implemented 07C heavy-training stage,
+not recreate it. The two existing modules were `src/geocebada/evaluation/checkpoint07c.py`
+and `tools/run_checkpoint_07c.py`. They already contained nested Optuna tuning
+for CatBoost/XGBoost/LightGBM/Kernel Ridge/PLS and same-split Local04D fixed
+blends. This continuation added unit and synthetic nested smoke tests,
+versioned run fingerprint locking, robust completed-result validation,
+completed-trial counters and explicit CPU authorization. Workspace output
+is gitignored; 07C changes do not modify Local04D or hidden-target predictions.
+
+Actual 07B workstation context: 21,445 X features (180 seeds, 12,000 products),
+60 development configurations across 16 overlapping target-matched splits;
+best PCA16 + MLP16 pooled RMSE 0.552642. That score is not a like-for-like
+comparison against Local04D until the same held-out split results are used.
+
+The original 07C Prithvi chapter remains planned and is now distinguished as
+07C.2; this existing heavy nested search is 07C.1. The full Optuna workstation
+run is still pending. See docs/CHECKPOINT_07C_NESTED_SEARCH.md.
