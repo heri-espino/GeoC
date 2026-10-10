@@ -1,3 +1,28 @@
+## 2026-10-10 — User workstation 07A and 07B smoke finished; portable snapshots prepared
+
+User reported HLS done: 197 scenes, 29,592 observations; 197/197
+4-frame Prithvi chips. SMAP v006 now done: 214 HDF5 files, 84,316
+parcel-overpass rows; 29,006 quality-recommended, 15 AM and 15 PM
+unique cells. AM geolocation source coordinate_datasets; PM
+EPSG6933_fixed_global. More spatial QA warranted.
+
+07B smoke succeeded: 197 parcels, 9,195 features (60 pair products),
+one split of 41 held-out: PCA_0.8__MLP_16__a1 RMSE 0.615971,
+PCA0.95 Ridge 0.634681, PCA0.8 Ridge 0.642756. Warning MLP
+max_iter=120; no evidence of improvement vs Local04D from this smoke.
+
+New `tools/publish_checkpoint_07_light.py` prepares only X-only
+HLS and SMAP CSV.gz snapshots, optional full (non-smoke) expanded X,
+source/output SHA256 manifest, sanitized quality and smoke reports.
+Max 25 MiB per compressed asset, 60 MiB total by default.
+`data/**` automatically Git LFS, reports normal Git.
+It NEVER executes git add/commit/push. The actual workstation-generated
+outputs have not yet been uploaded. User should run --check, --build,
+--verify and manually git add exact allowlisted paths, commit, push.
+See `docs/CHECKPOINT_07_COMPACT_SHARING.md`. Do not upload raw
+180GB, satellite chips, network weights, parcel yields, 2025 SIAP
+contemporaneous outcomes. No heavy auto-GitHub Actions.
+
 ## 2026-10-10 SMAP v006 recovery after successful HLS (WORKSTATION RETEST PENDING)
 
 User ran 07A HLS successfully: all 197 granules/197 parcels,
