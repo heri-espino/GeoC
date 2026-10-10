@@ -23,10 +23,22 @@ def main() -> int:
     parser.add_argument("--trials", type=int, default=48)
     parser.add_argument("--inner-folds", type=int, default=3)
     parser.add_argument("--seed", type=int, default=20261010)
-    parser.add_argument("--features", type=Path, default=ROOT / "reports/checkpoint_07/highdim/expanded_parcel_features.csv")
-    parser.add_argument("--targets", type=Path, default=ROOT / "data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv")
-    parser.add_argument("--membership", type=Path, default=ROOT / "reports/checkpoint_04b/pseudo_competition_splits.csv")
-    parser.add_argument("--baseline", type=Path, default=ROOT / "reports/checkpoint_06/parcel_oof_residuals.csv")
+    parser.add_argument(
+        "--features", type=Path,
+        default=ROOT / "reports/checkpoint_07/highdim/expanded_parcel_features.csv",
+    )
+    parser.add_argument(
+        "--targets", type=Path,
+        default=ROOT / "data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv",
+    )
+    parser.add_argument(
+        "--membership", type=Path,
+        default=ROOT / "reports/checkpoint_04b/pseudo_competition_splits.csv",
+    )
+    parser.add_argument(
+        "--baseline", type=Path,
+        default=ROOT / "reports/checkpoint_06/parcel_oof_residuals.csv",
+    )
     parser.add_argument("--output", type=Path, default=ROOT / "reports/checkpoint_07_three/local07")
     args = parser.parse_args()
 
