@@ -1,3 +1,40 @@
+## 2026-10-10 — Explicitly narrowed Checkpoint 07 to THREE models unattended
+
+The user corrected previous assistant: DO NOT waste GPU time on XGBoost,
+LightGBM or broad model zoo. Only run 1) heavy Optuna CatBoost on 07B X,
+2) Local04D neighborhood Ridge adapted to NEW HLS/SMAP X (Local07),
+3) real pretrained Prithvi-EO-2.0-TL on 197 × four-frame HLS chips
+with a compact inner-CV-trained Ridge head.
+
+New modules: src/geocebada/evaluation/checkpoint07_local.py,
+checkpoint07_prithvi.py, checkpoint07_prithvi_head.py.
+New runners: tools/run_checkpoint_07_local.py,
+run_checkpoint_07_prithvi.py, run_checkpoint_07_three.py and one-command
+Windows launcher tools/start_checkpoint_07.ps1.
+Full guide docs/CHECKPOINT_07_THREE_MODELS.md.
+Tests tests/test_checkpoint07_three.py.
+
+On workstation: git pull --ff-only; conda activate geocebada;
+python -m pip install -e ".[dev,models,checkpoint07,prithvi]".
+Then ".\tools\start_checkpoint_07.ps1 -Check" and optionally "-Smoke"
+(real pretrained Prithvi one-chip inference on GPU), then "-Start" once.
+The one background worker automatically executes CatBoost -> Local07 ->
+Prithvi, recording individual stage logs, status.json, Optuna SQLite
+and per-chip embedding shards under gitignored reports/checkpoint_07_three/.
+It survives closing the terminal in ordinary Windows conditions, but is
+NOT reboot-persistent. After VM restart re-run -Start to resume.
+"-Status" prints current progress. Run-spec hashes and per-stage cached
+results prevent mixing incompatible experiments.
+
+The Prithvi dependency TerraTorch with local .pt checkpoint must be
+validated by REAL workstation smoke before multi-hour unattended launch.
+GitHub CI has no 24GB NVIDIA GPU nor the 3.7GB weights, so tests validate
+only synthetic math/orchestration, NOT real encoder execution.
+
+No real 07 three-model RMSE or model promotion has happened. 59 hidden
+parcel y are not accessed. Frozen Local04D still reference. Fixed blends
+are comparisons, not learned residual calibrators.
+
 ## 2026-10-10 — Checkpoint 07C.1 heavy nested tuning RESUMED, GPU run pending
 
 The user's last 07B workstation run completed, 21,445 X features (180
