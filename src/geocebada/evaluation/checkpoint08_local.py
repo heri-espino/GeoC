@@ -55,6 +55,7 @@ def input_paths(root: Path) -> dict[str, Path]:
         "embeddings": root / "reports/checkpoint_04a/transductive_embeddings.csv",
         "highdim": root / "reports/checkpoint_07/highdim/expanded_parcel_features.csv",
         "original_splits": root / "reports/checkpoint_04b/pseudo_competition_splits.csv",
+        "reference": root / "reports/checkpoint_06/parcel_oof_residuals.csv",
     }
 
 
@@ -371,6 +372,42 @@ def fixed_baseline(data: Inputs, split_id: str) -> pd.DataFrame:
         "observed": data.y.loc[test].to_numpy(float),
         "predicted": predict_old(data, train, test, FROZEN),
     })
+
+
+
+def verify_original_control(root: Path, data: Inputs, *, atol: float = 1e-7) -> float:
+    """Prove frozen 04D reproduces its stored 04B held-out forecasts.
+
+    This audit uses historical development labels only. It does not inspect
+    confirmation-split held-out yields when selecting hyperparameters.
+    """
+    historical = pd.read_csv(input_paths(root)["original_splits"])
+    previous = pd.read_csv(input_paths(root)["reference"])
+    previous = previous.loc[
+        previous["family"].eq("target_matched")
+        & previous["split_id"].eq("target_matched_01")
+        & previous["method"].eq("Local04D")
+    ].copy()
+    block = historical.loc[
+        historical["split_id"].eq("target_matched_01")
+        & historical["family"].eq("target_matched")
+    ]
+    train = block.loc[block["role"].eq("pseudo_train"), ID].astype(str).tolist()
+    test = block.loc[block["role"].eq("pseudo_target"), ID].astype(str).tolist()
+    if len(train) != 97 or len(test) != 41 or len(previous) != 41:
+        raise RuntimeError("Historical Local04D parity test has incomplete inputs.")
+    if set(previous[ID].astype(str)) != set(test):
+        raise RuntimeError("Historical Local04D IDs do not match frozen membership.")
+    ref = previous.set_index(ID).loc[test, "predicted"].to_numpy(float)
+    actual = predict_old(data, train, test, FROZEN)
+    difference = float(np.max(np.abs(actual - ref)))
+    if not np.isfinite(difference) or difference > atol:
+        raise RuntimeError(
+            f"Original Local04D mismatch {difference:.8g} (limit {atol}). "
+            "Do not trust the new comparison until representation and "
+            "distance normalization reproduce the frozen baseline."
+        )
+    return difference
 
 
 def summarize(predictions: pd.DataFrame, *, bootstraps: int = 1000,
