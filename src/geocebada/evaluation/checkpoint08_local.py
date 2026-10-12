@@ -295,8 +295,13 @@ def tune_and_predict(data: Inputs, split_id: str, family: str, *,
         if len(result) != 41 or meta["n_trials"] != trials or meta["split_id"] != split_id:
             raise ValueError(f"Incomplete or incompatible completed result {stem}")
         return result
-    if csv_path.exists() or info_path.exists():
-        raise RuntimeError(f"Partial paired result for {stem}; investigate before resuming.")
+    if csv_path.exists() != info_path.exists():
+        orphan = csv_path if csv_path.exists() else info_path
+        archived = orphan.with_suffix(orphan.suffix + ".incomplete")
+        if archived.exists():
+            raise RuntimeError(f"Repeated partial output for {stem}; inspect manually.")
+        orphan.replace(archived)
+        print(f"[08] Preserved partial {orphan.name}; refitting after saved trials.", flush=True)
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     if family == "Local04D_nested":
