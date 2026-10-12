@@ -27,6 +27,7 @@
         <a href="#reto">El reto</a>
         <a href="#datos">Los datos</a>
         <a href="#metodo">Método</a>
+        <a href="#validacion">Validación</a>
         <a href="#resultados">Resultados</a>
         <a href="#explorar">Explorador</a>
         <a class="nav-cta" href="#anexo">Anexo técnico <span aria-hidden="true">↗</span></a>
@@ -163,9 +164,91 @@
       </div>
     </section>
 
+
+    <section id="validacion" class="section cv-section" aria-labelledby="cv-heading">
+      <div class="shell">
+        <div class="section-heading" data-reveal>
+          <div><p class="eyebrow">04 / CÓMO VALIDAMOS</p><h2 id="cv-heading">Ocultar la respuesta.<br><em>Conservar la evidencia.</em></h2></div>
+          <p>Como los 59 rendimientos finales están ocultos, construimos simulaciones del mismo problema con parcelas cuyo rendimiento sí conocemos. La validación nunca utiliza las respuestas reservadas durante el ajuste.</p>
+        </div>
+        <div class="cv-main-grid">
+          <div class="cv-main-explanation" data-reveal>
+            <p class="cv-kicker"><span class="cv-live-dot"></span> UNA PARTICIÓN EXTERNA</p>
+            <p class="cv-narrative">Partimos de las <strong>138 parcelas etiquetadas</strong>. Para cada repetición, apartamos temporalmente los rendimientos de <strong>41</strong>, entrenamos con los otros <strong>97</strong> y medimos el error únicamente cuando el modelo ha terminado de predecir.</p>
+            <div class="cv-split-labels"><span>97 / SE PUEDE ENTRENAR</span><span>41 / RENDIMIENTO OCULTO</span></div>
+            <div class="cv-split-big" role="img" aria-label="Partición esquemática: 97 de las 138 parcelas etiquetadas para entrenamiento y 41 para evaluación externa.">
+              <div class="cv-train"><strong>97</strong><span>Entrenamiento</span></div>
+              <div class="cv-hold"><strong>41</strong><span>Pseudo-objetivos</span></div>
+            </div>
+            <div class="cv-caption">El modelo conoce las covariables X de las parcelas reservadas, pero no sus valores de rendimiento y. Las 59 parcelas finales no intervienen con rendimientos conocidos.</div>
+          </div>
+          <div class="cv-repeat-figure" data-reveal>
+            <div class="cv-repeat-head"><span>16 PARTICIONES REPRODUCIBLES</span><span>97 / 41 CADA UNA</span></div>
+            <div class="cv-split-array" role="list" aria-label="Dieciséis simulaciones, cada una con 97 parcelas de entrenamiento y 41 pseudo-objetivos.">
+              <div class="cv-mini-split" role="listitem" aria-label="Partición 01: 97 parcelas de entrenamiento y 41 de evaluación"><span>01</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 02: 97 parcelas de entrenamiento y 41 de evaluación"><span>02</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 03: 97 parcelas de entrenamiento y 41 de evaluación"><span>03</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 04: 97 parcelas de entrenamiento y 41 de evaluación"><span>04</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 05: 97 parcelas de entrenamiento y 41 de evaluación"><span>05</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 06: 97 parcelas de entrenamiento y 41 de evaluación"><span>06</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 07: 97 parcelas de entrenamiento y 41 de evaluación"><span>07</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 08: 97 parcelas de entrenamiento y 41 de evaluación"><span>08</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 09: 97 parcelas de entrenamiento y 41 de evaluación"><span>09</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 10: 97 parcelas de entrenamiento y 41 de evaluación"><span>10</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 11: 97 parcelas de entrenamiento y 41 de evaluación"><span>11</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 12: 97 parcelas de entrenamiento y 41 de evaluación"><span>12</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 13: 97 parcelas de entrenamiento y 41 de evaluación"><span>13</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 14: 97 parcelas de entrenamiento y 41 de evaluación"><span>14</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 15: 97 parcelas de entrenamiento y 41 de evaluación"><span>15</span><div aria-hidden="true"><i></i><b></b></div></div>
+            <div class="cv-mini-split" role="listitem" aria-label="Partición 16: 97 parcelas de entrenamiento y 41 de evaluación"><span>16</span><div aria-hidden="true"><i></i><b></b></div></div>
+            </div>
+            <div class="cv-repeat-foot"><span><i class="cv-key-train"></i> 97 para entrenar</span><span><i class="cv-key-test"></i> 41 para evaluar</span></div>
+            <p>Esquema de los tamaños de las particiones; las barras <strong>no representan qué IDs específicos</strong> entraron en cada una.</p>
+          </div>
+        </div>
+        <div class="cv-protocols" data-reveal>
+          <div class="cv-intro"><span>LA CONSTRUCCIÓN DE LAS PARTICIONES</span><p>No usamos simplemente un K-fold aleatorio: elegimos pseudo-objetivos mediante información observada, buscando aproximarnos a la estructura del conjunto de 59 parcelas de destino.</p></div>
+          <details class="cv-protocol" open>
+            <summary><span class="cv-protocol-number">A / DESARROLLO · CHECKPOINT 04B Y 07</span><span class="cv-protocol-title">Simular parcelas parecidas al destino</span><span class="cv-summary-icon" aria-hidden="true">+</span></summary>
+            <div class="cv-protocol-content">
+              <ol class="cv-steps">
+                <li><strong>Comparar perfiles sin usar y.</strong> Se construyeron perfiles geográficos, agronómicos, temporales y de similitud respecto de las 59 parcelas reales.</li>
+                <li><strong>Respetar los estados.</strong> Se asignaron cuotas para los 41 pseudo-objetivos con el método de Hamilton; se consideró además la distribución municipal.</li>
+                <li><strong>Elegir máscaras diversas.</strong> Se generaron 80 propuestas por repetición y se seleccionaron según semejanza con el conjunto destino y penalización por superposición de Jaccard.</li>
+                <li><strong>Congelar y evaluar.</strong> Quedaron 16 particiones con 97/41, utilizadas para comparar los modelos de Checkpoint 07 sobre exactamente los mismos casos.</li>
+              </ol>
+              <div class="cv-protocol-facts"><span><strong>16</strong> splits</span><span><strong>80</strong> candidatos por repetición</span><span><strong>125</strong> parcelas únicas evaluadas</span></div>
+            </div>
+          </details>
+          <details class="cv-protocol">
+            <summary><span class="cv-protocol-number">B / CONFIRMACIÓN · CHECKPOINT 08</span><span class="cv-protocol-title">Comprobar con nuevas particiones y tuning interno</span><span class="cv-summary-icon" aria-hidden="true">+</span></summary>
+            <div class="cv-protocol-content">
+              <ol class="cv-steps">
+                <li><strong>Rediseñar sin consultar el rendimiento.</strong> Nuevas cuotas por estado y municipio, con 160 máscaras candidatas por repetición.</li>
+                <li><strong>Reducir el solapamiento.</strong> Se eligieron 16 máscaras nuevas minimizando la máxima similitud Jaccard respecto de las anteriores y de las ya elegidas.</li>
+                <li><strong>Ajustar dentro del entrenamiento.</strong> Local04D reajustado y Local07 buscaron sus hiperparámetros con Optuna (96 ensayos por familia y split; validación interna de tres partes sobre los 97).</li>
+                <li><strong>Evaluar externamente.</strong> Se reentrenó cada configuración con los 97 rendimientos disponibles y sólo después se calcularon errores sobre los 41 ocultados. La referencia Local04D fija no se volvió a optimizar.</li>
+              </ol>
+              <div class="cv-protocol-facts"><span><strong>16</strong> splits nuevos</span><span><strong>160</strong> candidatos por repetición</span><span><strong>132</strong> parcelas únicas evaluadas</span></div>
+            </div>
+          </details>
+        </div>
+        <div class="cv-nested" data-reveal>
+          <div><p class="cv-kicker">POR QUÉ ANIDAMOS LA VALIDACIÓN</p><h3>Elegir parámetros y evaluar son tareas distintas.</h3><p>La búsqueda interna encuentra una configuración usando <em>únicamente</em> los 97 datos disponibles. Los 41 rendimientos externos nunca guían Optuna ni el ajuste del modelo.</p></div>
+          <div class="cv-nested-diagram" role="img" aria-label="Diagrama de validación cruzada anidada: 97 datos de entrenamiento, tres folds internos para elegir hiperparámetros; reentrenamiento con 97; evaluación externa con los 41 reservados.">
+            <div class="cv-nested-top"><span>EXTERIOR · 97 ENTRENAMIENTO</span><span>41 RESERVADOS</span></div>
+            <div class="cv-inner-bars"><span>FOLD 1</span><span>FOLD 2</span><span>FOLD 3</span></div>
+            <div class="cv-nested-action"><span>Optuna / seleccionar parámetros</span><span aria-hidden="true">↓</span><span>Reajustar con 97</span><span aria-hidden="true">→</span><strong>Evaluar 41</strong></div>
+          </div>
+        </div>
+        <p class="cv-limit"><strong>Lectura correcta:</strong> 16 × 41 = 656 predicciones por banco, pero las parcelas se repiten (125 IDs únicos en 07; 132 en 08). Los bancos 07 y 08 no son idénticos ni equivalen a 656 observaciones agrícolas independientes. Los rendimientos de las 59 parcelas finales siguen desconocidos.</p>
+        <div class="cv-links"><a class="text-link" href="https://github.com/heri-espino/GeoC/blob/main/docs/METODOLOGIA_Y_RESULTADOS.md#5-c%C3%B3mo-se-gener%C3%B3-la-validaci%C3%B3n-original-checkpoint-04b">Validación 04B paso a paso <span aria-hidden="true">↗</span></a><a class="text-link" href="https://github.com/heri-espino/GeoC/blob/main/docs/METODOLOGIA_Y_RESULTADOS.md#9-por-qu%C3%A9-hicimos-checkpoint-08-y-qu%C3%A9-cambia-en-la-validaci%C3%B3n">Validación anidada 08 <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </section>
+
     <section id="resultados" class="section results-section">
       <div class="shell">
-        <div class="section-heading" data-reveal><div><p class="eyebrow">04 / VALIDACIÓN</p><h2>La evidencia decide.<br><em>No la complejidad.</em></h2></div><p>Local04D conservó el menor error entre los modelos comparados en los dos bancos de validación. Menor RMSE significa mejor ajuste a los rendimientos reportados.</p></div>
+        <div class="section-heading" data-reveal><div><p class="eyebrow">05 / RESULTADOS</p><h2>La evidencia decide.<br><em>No la complejidad.</em></h2></div><p>Local04D conservó el menor error entre los modelos comparados en los dos bancos de validación. Menor RMSE significa mejor ajuste a los rendimientos reportados.</p></div>
         <div class="winner-card" data-reveal>
           <div class="winner-info"><span class="winner-label">MODELO SELECCIONADO</span><h3>Local<span>04D</span></h3><p>Regresión Ridge por vecindad geográfica. La configuración final permanece congelada.</p><div class="winner-tags"><span>k = 24</span><span>α = 30</span><span>p = 1</span></div></div>
           <div class="winner-metrics">
@@ -198,7 +281,7 @@
 
     <section id="explorar" class="section explore-section dark-section">
       <div class="shell">
-        <div class="section-heading model-heading" data-reveal><div><p class="eyebrow light">05 / EXPLORADOR</p><h2>Una estimación<br><em>por parcela.</em></h2></div><p>Consulta el archivo oficial generado por Local04D para las 59 parcelas objetivo. Esta interfaz recupera predicciones congeladas: no vuelve a entrenar el modelo.</p></div>
+        <div class="section-heading model-heading" data-reveal><div><p class="eyebrow light">06 / EXPLORADOR</p><h2>Una estimación<br><em>por parcela.</em></h2></div><p>Consulta el archivo oficial generado por Local04D para las 59 parcelas objetivo. Esta interfaz recupera predicciones congeladas: no vuelve a entrenar el modelo.</p></div>
         <div class="explorer-layout">
           <div class="explorer-control" data-reveal>
             <label for="parcel-search">BUSCAR PARCELA</label>
@@ -228,7 +311,7 @@
 
     <section id="anexo" class="section appendix-section">
       <div class="shell">
-        <div class="section-heading" data-reveal><div><p class="eyebrow">06 / ANEXO TÉCNICO</p><h2>Todo lo que<br><em>pusimos a prueba.</em></h2></div><p>Un resultado negativo también es un resultado científico. Documentamos las alternativas, sus métricas y por qué no reemplazaron el modelo seleccionado.</p></div>
+        <div class="section-heading" data-reveal><div><p class="eyebrow">07 / ANEXO TÉCNICO</p><h2>Todo lo que<br><em>pusimos a prueba.</em></h2></div><p>Un resultado negativo también es un resultado científico. Documentamos las alternativas, sus métricas y por qué no reemplazaron el modelo seleccionado.</p></div>
         <div class="appendix-panels">
           <details class="appendix-detail" open data-reveal>
             <summary><span><small>ANEXO A / 07</small><strong>Modelos y mezclas de desarrollo</strong></span><span class="summary-arrow" aria-hidden="true">+</span></summary>
@@ -268,7 +351,7 @@
     </section>
   </main>
   <footer class="footer dark-section">
-    <div class="shell footer-top"><div><a href="#inicio" class="brand"><span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>Geo<span class="brand-accent">Cebada</span></a><p>Ciencia de datos aplicada a la agricultura.<br>Reto AgroCebada FIRA 2026.</p></div><div><span class="footer-title">PROYECTO</span><a href="#reto">El reto</a><a href="#metodo">Método</a><a href="#resultados">Resultados</a><a href="#explorar">Explorador</a></div><div><span class="footer-title">FUENTES</span><a href="https://github.com/heri-espino/GeoC">Repositorio</a><a href="https://github.com/heri-espino/GeoC/blob/main/docs/METODOLOGIA_Y_RESULTADOS.md">Informe técnico</a><a href="https://github.com/heri-espino/GeoC/blob/main/reports/checkpoint_07/shared/README.md">Tablas verificadas</a></div></div>
+    <div class="shell footer-top"><div><a href="#inicio" class="brand"><span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>Geo<span class="brand-accent">Cebada</span></a><p>Ciencia de datos aplicada a la agricultura.<br>Reto AgroCebada FIRA 2026.</p></div><div><span class="footer-title">PROYECTO</span><a href="#reto">El reto</a><a href="#metodo">Método</a><a href="#validacion">Validación</a><a href="#resultados">Resultados</a><a href="#explorar">Explorador</a></div><div><span class="footer-title">FUENTES</span><a href="https://github.com/heri-espino/GeoC">Repositorio</a><a href="https://github.com/heri-espino/GeoC/blob/main/docs/METODOLOGIA_Y_RESULTADOS.md">Informe técnico</a><a href="./resumen.html">Resumen ejecutivo (1 página)</a><a href="https://github.com/heri-espino/GeoC/blob/main/reports/checkpoint_07/shared/README.md">Tablas verificadas</a></div></div>
     <div class="shell footer-bottom"><span>© 2026 GeoCebada · Proyecto de investigación</span><span>Identidad visual inspirada en el sector agrícola; sin afiliación institucional implícita.</span><a href="#inicio">Volver arriba ↑</a></div>
   </footer>
   <noscript><div class="nojs">Activa JavaScript para explorar los gráficos comparativos y consultar las 59 estimaciones. La metodología y los textos permanecen disponibles.</div></noscript>
