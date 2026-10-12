@@ -6,7 +6,8 @@
 
 La web pública de presentación (en español) vive en **[`website/`](website/)**. Presenta el problema,
 las fuentes de datos, el funcionamiento de **Local04D**, las comparaciones de Checkpoints
-07 y 08 **en bancos separados**, las 59 estimaciones fijas y un anexo técnico con
+07 y 08 **en bancos separados**, una explicación visual de validación cruzada 97/41,
+las 59 estimaciones fijas y un anexo técnico con
 alternativas no promovidas. No sustituye al laboratorio Streamlit de `app/` ni
 reentrena los modelos al consultar una parcela.
 
@@ -16,7 +17,9 @@ Para probarla sin instalar dependencias adicionales:
 python -m http.server 8000 --directory website
 ```
 
-Visitar `http://localhost:8000`. Guía técnica: [website/README.md](website/README.md).
+Visitar `http://localhost:8000`. Resumen ejecutivo de una página:
+[`website/resumen.html`](website/resumen.html) (imprimir en tamaño carta como PDF).
+Guía técnica: [website/README.md](website/README.md).
 Para comprobar que los CSV de la web siguen exactamente los resultados canónicos:
 `python tools/sync_website_data.py --check`. El despliegue a GitHub Pages es ligero y requiere
 tener configurada la fuente **GitHub Actions** en Settings → Pages.
