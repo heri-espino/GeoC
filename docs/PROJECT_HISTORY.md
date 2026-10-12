@@ -1533,3 +1533,7 @@ run is still pending. See docs/CHECKPOINT_07C_NESTED_SEARCH.md.
 ## 2026-10-11 — Checkpoint 08 paired nested local comparison prepared
 
 After the three-model Checkpoint 07 development benchmark retained frozen Local04D, the team requested a final symmetric hyperparameter experiment comparing Local04D and Local07. Checkpoint 08 is implemented on the experiment/08-nested-local-comparison branch (pull request #11). It freezes a new X-only 16-split pseudo-target bank, runs inner-CV Optuna for both local families, verifies archived Local04D numerical parity, checkpoints results for reboot recovery, and reports a paired parcel-bootstrap delta MSE. **No full 08 run has been executed and no 59-parcel predictions have changed.** See docs/CHECKPOINT_08_NESTED_LOCAL.md.
+
+## 2026-10-12 — Comprehensive methodology and CV history publication
+
+Added a canonical narrative in `docs/METODOLOGIA_Y_RESULTADOS.md` covering all Checkpoints 02–08 with deeper technical details for 04B, 07 and 08: how target-matched masks were built; exact 16×(97/41) outer validation; separate inner Optuna/PCA tuning; frozen Local04D; 13 Checkpoint07 results; 3 Checkpoint08 results with paired parcel-bootstrap intervals; target-label and leakage boundaries; final 59-parcel artifact; and limitations. Also linked from READMEs and Sphinx. No model promotion or change in the 59 estimates.
