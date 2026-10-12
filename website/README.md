@@ -1,7 +1,8 @@
 # GeoCebada · sitio de presentación (2026)
 
 Sitio editorial **estático, sin dependencias de npm**. Presenta en español el reto, los datos,
-la metodología Local04D, dos evaluaciones separadas (Checkpoints 07/08), un explorador de las
+la metodología Local04D, una explicación visual de la validación cruzada 97/41 y los
+protocolos 04B/08, dos evaluaciones separadas (Checkpoints 07/08), un explorador de las
 59 predicciones congeladas y un anexo con los modelos descartados.
 
 ## Abrir localmente
@@ -18,6 +19,34 @@ por `fetch` y muchos navegadores bloquean solicitudes locales entre archivos.
 El HTML/CSS/JS está en `website/index.html`, `website/styles.css` y `website/app.js`.
 No hay llamadas a APIs externas, rastreadores, mapas georreferenciados ficticios ni backend
 de aprendizaje. Se usan gráficos esquemáticos etiquetados como conceptuales.
+
+## Resumen de una página para la entrega
+
+Abrir [`website/resumen.html`](resumen.html) para consultar el **resumen ejecutivo en
+una página tamaño carta**. Elegir «Imprimir o guardar como PDF» en el navegador y seleccionar
+«Guardar como PDF», con tamaño carta, escala 100 %, márgenes ninguno y gráficos de fondo.
+El PDF exportado debe revisarse para confirmar que contiene exactamente una página,
+sin cortar texto o cifras. Este es un **anexo breve de presentación**: no sustituye los
+archivos, videos y demás entregables específicos indicados en las bases del reto.
+
+El PDF de una página también se puede producir a partir de este HTML mediante un navegador
+headless para control visual, pero esa construcción de PDF es manual; no se ejecuta por cada push.
+
+## Cómo explicamos la validación cruzada
+
+La sección `#validacion` contiene un diagrama **esquemático** de 97 parcelas
+de entrenamiento y 41 pseudo-objetivos en cada una de las 16 particiones. Las 16 barras
+representan **sólo tamaños**, nunca identidades de parcelas. La página explica:
+
+- 04B/07: selección X-only de los pseudo-objetivos que imitan el destino, cuotas de
+  estados por Hamilton, balance municipal, 80 propuestas por repetición, penalización
+  por similitud de Jaccard; 125 parcelas únicas reservadas.
+- 08: nuevo banco X-only por estratos estado/municipio, 160 propuestas por repetición,
+  selección de superposición mínima y 132 parcelas únicas; las dos familias candidatas
+  se reajustan con 3-fold interior sobre los 97 ejemplos y Optuna.
+- El RMSE se mide **después** del ajuste sobre los 41 rendimientos reservados. Las
+  656 predicciones no son independientes, los bancos 07/08 no se comparan como una
+  única muestra, y las 59 etiquetas finales permanecen ocultas.
 
 ## Origen y sincronización de los datos
 
