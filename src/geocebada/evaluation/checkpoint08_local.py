@@ -82,7 +82,8 @@ def label_blind_memberships(
     if not {ID, "split_id", "role"}.issubset(historical):
         raise ValueError("Historical 04B split membership missing.")
     def key(frame: pd.DataFrame) -> pd.Series:
-        return (frame["meta_estado"].fillna("?").astype(str) + "|"\n                + frame["meta_municipio"].fillna("?").astype(str))
+        return (frame["meta_estado"].fillna("?").astype(str) + "|"
+                + frame["meta_municipio"].fillna("?").astype(str))
     train["_stratum"] = key(train)
     target["_stratum"] = key(target)
     groups = {name: sorted(block[ID].astype(str)) for name, block in train.groupby("_stratum")}
@@ -235,7 +236,9 @@ def predict_old(data: Inputs, fit_ids: list[str], query_ids: list[str],
     )
 
 
-def geographic_pair(data: Inputs, train: list[str], test: list[str]) -> tuple[np.ndarray, np.ndarray]:
+def geographic_pair(
+    data: Inputs, train: list[str], test: list[str]
+) -> tuple[np.ndarray, np.ndarray]:
     """Single consistent coordinate projection anchored at training latitudes."""
     view = data.meta.set_index(ID)
     mid = float(np.deg2rad(view.loc[train, "base_centroid_lat"].mean()))
