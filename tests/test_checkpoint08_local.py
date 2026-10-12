@@ -82,7 +82,7 @@ def test_summary_bootstraps_unique_parcels_and_paired_losses() -> None:
     assert set(summary["model"]) == {"Local04D_frozen", *FAMILIES}
     assert summary.iloc[0]["model"] == "Local04D_nested"
     assert len(diffs) == 2
-    delta = dict(zip(diffs["model"], diffs["delta_mse"]))
+    delta = dict(zip(diffs["model"], diffs["delta_mse"], strict=True))
     assert np.isclose(delta["Local04D_nested"], 0.01-0.09)
     assert np.isclose(delta["Local07_nested"], 0.25-0.09)
     assert diffs["bootstrap_unit"].eq("unique_parcel").all()
