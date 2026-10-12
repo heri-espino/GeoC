@@ -21,7 +21,6 @@ import json
 import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from geocebada.evaluation.checkpoint08_local import (
