@@ -76,8 +76,8 @@ def check(args: argparse.Namespace) -> Path:
             raise FileNotFoundError(f"Missing {name}: {path}")
     member_path = args.output / "confirmation_membership.csv"
     if not member_path.is_file():
-        raise FileNotFoundError(f"Prepare the new outer bank first: "
-                                f"python tools/run_checkpoint_08_local.py --prepare")
+        raise FileNotFoundError("Prepare the new outer bank first: "
+                                "python tools/run_checkpoint_08_local.py --prepare")
     metadata = pd.read_csv(input_paths(ROOT)["base"], usecols=[ID, "CONJUNTO"])
     validate_memberships(metadata, pd.read_csv(member_path))
     print("[08] Inputs and 16 fixed confirmation memberships PASS.", flush=True)
