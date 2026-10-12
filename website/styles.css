@@ -260,6 +260,7 @@ td:first-child{font-weight:570}
 .timeline div>span{font-weight:800;color:#40836c;font-size:16px}
 .timeline p{font-size:14px!important;line-height:1.65;margin:0!important}
 .source-banner{margin-top:65px;background:#dbe8d4;padding:38px 45px;display:flex;align-items:center;justify-content:space-between;gap:25px;border-radius:8px}
+.source-actions{display:flex;gap:17px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .source-banner span{font-size:10px;color:#3e7963;font-weight:790;letter-spacing:.14em}
 .source-banner h3{font-size:30px;margin:6px 0 8px}
 .source-banner p{font-size:13px;margin:0}
