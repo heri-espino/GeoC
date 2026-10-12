@@ -177,6 +177,21 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `aggregate_07c_results` | function | `geocebada.evaluation.checkpoint07c` | Summarize completed split-model CSVs; repeated parcels remain correlated. | `src/geocebada/evaluation/checkpoint07c.py` |
 | `load_development` | function | `geocebada.evaluation.checkpoint07c` | Check 07C coverage and align frozen Local04D pseudo-target predictions. | `src/geocebada/evaluation/checkpoint07c.py` |
 | `run_nested_search` | function | `geocebada.evaluation.checkpoint07c` | Tune on inner pseudo-train folds, then produce one honest outer forecast. | `src/geocebada/evaluation/checkpoint07c.py` |
+| `Inputs` | class | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `atomic_json` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `digest` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `fixed_baseline` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `geographic_pair` | function | `geocebada.evaluation.checkpoint08_local` | Single consistent coordinate projection anchored at training latitudes. | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `input_paths` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `label_blind_memberships` | function | `geocebada.evaluation.checkpoint08_local` | New fixed outer bank. Stratification uses municipality/state X, never y. | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `load_inputs` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `local07_folds` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `predict_new` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `predict_old` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `summarize` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `tune_and_predict` | function | `geocebada.evaluation.checkpoint08_local` | Resume per-split Optuna trials; only inner training y enters objective. | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `validate_memberships` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `verify_original_control` | function | `geocebada.evaluation.checkpoint08_local` | Prove frozen 04D reproduces its stored 04B held-out forecasts. | `src/geocebada/evaluation/checkpoint08_local.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |

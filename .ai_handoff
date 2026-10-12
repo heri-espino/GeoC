@@ -1,3 +1,19 @@
+## 2026-10-11 — Checkpoint 08 FINAL paired local-family confirmation PREPARED
+
+The user requested one last wide hyperparameter experiment comparing the established Local04D vs Local07 fairly. Historical 07 development: same 16 frozen outer 97/41 target-matched folds, but Local04D came from historical development-wide broad selection whereas Local07 tuned parameters within each outer training fold.
+
+Branch experiment/08-nested-local-comparison adds:
+- src/geocebada/evaluation/checkpoint08_local.py
+- tools/run_checkpoint_08_local.py
+- tests/test_checkpoint08_local.py
+- docs/CHECKPOINT_08_NESTED_LOCAL.md
+- /reports/checkpoint_08/ gitignored because its outputs include visible yields.
+
+Predeclare NEW label-blind municipal/state target-matched 16-split confirmation bank, fixed before observing y; each split 97 training, 41 pseudo-targets; same bank for both nested families and fixed Local04D reference. Inner 3-fold Optuna TPE, 96 trials per family/split by default, searches old C4+geo inverse-distance Ridge k/alpha/power and new 07B X raw/PCA geo-feature neighborhood Ridge. Persist SQLite trials and per-split predictions; output pooled and mean split RMSE plus parcel-cluster bootstrap delta MSE interval. No GPU required for sklearn local Ridge; full run must execute on workstation with 07B X file. No results or promotion yet. 59 hidden y never accessed, canonical reports/checkpoint_05/final_predictions.csv NEVER modified.
+
+Operator: python tools/run_checkpoint_08_local.py --prepare; --check; --smoke; --run --trials 96; --summary (run from repository root on the experiment branch).
+Do not mix changed code/data/options with existing SQLite runs. Do not publish per-parcel CV outcomes. The new bank is not independent field validation (unique label pool reused); claims must remain cautious.
+
 ## 2026-10-10 — Explicitly narrowed Checkpoint 07 to THREE models unattended
 
 The user corrected previous assistant: DO NOT waste GPU time on XGBoost,
