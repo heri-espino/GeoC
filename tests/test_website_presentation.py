@@ -66,7 +66,7 @@ def test_prediction_explorer_only_contains_fixed_59() -> None:
 def test_site_documents_limits_and_uses_relative_assets() -> None:
     html = (WEBSITE / "index.html").read_text(encoding="utf-8")
     javascript = (WEBSITE / "app.js").read_text(encoding="utf-8")
-    for anchor in ("reto", "datos", "metodo", "resultados", "explorar", "anexo"):
+    for anchor in ("reto", "datos", "metodo", "validacion", "resultados", "explorar", "anexo"):
         assert f'id="{anchor}"' in html
     assert "no vuelve a entrenar" in html.lower()
     assert "particiones diferentes" in html
@@ -75,3 +75,40 @@ def test_site_documents_limits_and_uses_relative_assets() -> None:
                      "checkpoint08_bootstrap.csv", "predictions.csv"):
         assert snapshot in javascript
     assert "https://api." not in javascript
+
+
+def test_cross_validation_explains_selection_and_nested_evaluation() -> None:
+    """Visible explanation must separate the label-blind protocols and tuning stages."""
+    page = (WEBSITE / "index.html").read_text(encoding="utf-8")
+    assert 'id="validacion"' in page
+    assert "97 / SE PUEDE ENTRENAR" in page
+    assert "41 / RENDIMIENTO OCULTO" in page
+    assert "16 PARTICIONES REPRODUCIBLES" in page
+    assert page.count('class="cv-mini-split"') == 16
+    for phrase in (
+        "método de Hamilton",
+        "80 propuestas por repetición",
+        "160 máscaras candidatas por repetición",
+        "Optuna (96 ensayos por familia y split",
+        "125 IDs únicos en 07; 132 en 08",
+        "Los 41 rendimientos externos nunca guían Optuna",
+    ):
+        assert phrase in page
+
+
+def test_one_page_submission_source_has_page_contract_and_scientific_limits() -> None:
+    summary = (WEBSITE / "resumen.html").read_text(encoding="utf-8")
+    assert "@page{size:letter portrait;margin:0}" in summary
+    assert '<html lang="es">' in summary
+    assert "LocalRidge_C4_all_deterministic_Geo_k24_a30_p1" in summary
+    for phrase in (
+        "0.495741",
+        "0.481936",
+        "0.493943",
+        "0.510070",
+        "Los RMSE de 07 y 08",
+        "desconocido",
+        "sólo",
+    ):
+        assert phrase in summary
+    assert 'href="./resumen.html"' in (WEBSITE / "index.html").read_text(encoding="utf-8")
