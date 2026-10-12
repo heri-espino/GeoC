@@ -24,8 +24,8 @@ from geocebada.evaluation.checkpoint04b import normalized_distance_matrix
 from geocebada.evaluation.checkpoint08_local import (
     FROZEN,
     ID,
-    Y,
     Inputs,
+    Y,
     predict_old,
     validate_memberships,
 )
@@ -345,7 +345,10 @@ def leave_one_split_out_selection(
         "min_gain_required": min_gain,
         "mae_tolerance": mae_tolerance,
         "tail_tolerance": tail_tolerance,
-        "note": "Repeated parcels across masks make LOSO a stability check, not independent validation.",
+        "note": (
+            "Repeated parcels across masks make LOSO a stability check, "
+            "not independent validation."
+        ),
     }
     return pd.DataFrame(records), selected, decision
 
