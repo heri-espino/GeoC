@@ -4,6 +4,7 @@ Machine-readable project contracts and reproducibility settings.
 
 | Config | Purpose | Status |
 |---|---|---|
+| `checkpoint09_robust.yaml` | Robust Local04D label-sensitivity candidates, 16+16 validation banks and human-audit contract | implemented; real run pending |
 | `base.yaml` | Core project invariants and active fixed-target transductive objective | active |
 | `data_contract_v2.yaml` | Full source/external audit contract | frozen for Checkpoint 01 unless evidence changes |
 | `features_v1.yaml` | Feature Table v1 temporal/source/output contract | frozen |
