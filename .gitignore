@@ -105,5 +105,10 @@ venv/
 # Checkpoint 08 nested confirmation runs contain per-parcel observed yields
 /reports/checkpoint_08/
 
-# Checkpoint 09 candidate scores and label-quality review contain official yields
-/reports/checkpoint_09/
+# Checkpoint 09: keep per-parcel diagnostics local; publish only aggregates
+/reports/checkpoint_09/*
+!/reports/checkpoint_09/shared/
+/reports/checkpoint_09/shared/*
+!/reports/checkpoint_09/shared/development_summary.csv
+!/reports/checkpoint_09/shared/decision.json
+!/reports/checkpoint_09/shared/README.md
