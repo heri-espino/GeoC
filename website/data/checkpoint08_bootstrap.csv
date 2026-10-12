@@ -1,0 +1,3 @@
+model,reference,delta_mse,ci95_low,ci95_high,bootstrap_unit
+Local04D_nested,Local04D_frozen,0.011718143638274958,0.003461427911111958,0.020478617088352746,unique_parcel
+Local07_nested,Local04D_frozen,0.027909310318096486,0.008857146739535944,0.04831640669009743,unique_parcel

@@ -2,6 +2,25 @@
 
 **Metodología y resultados consolidados (02–08):** [cómo se construyó la validación cruzada, qué modelos se compararon y por qué se conservó Local04D](docs/METODOLOGIA_Y_RESULTADOS.md). Este documento incluye los resultados finalizados de Checkpoints 07 y 08.
 
+## Sitio de presentación AgroCebada 2026
+
+La web pública de presentación (en español) vive en **[`website/`](website/)**. Presenta el problema,
+las fuentes de datos, el funcionamiento de **Local04D**, las comparaciones de Checkpoints
+07 y 08 **en bancos separados**, las 59 estimaciones fijas y un anexo técnico con
+alternativas no promovidas. No sustituye al laboratorio Streamlit de `app/` ni
+reentrena los modelos al consultar una parcela.
+
+Para probarla sin instalar dependencias adicionales:
+
+```bash
+python -m http.server 8000 --directory website
+```
+
+Visitar `http://localhost:8000`. Guía técnica: [website/README.md](website/README.md).
+Para comprobar que los CSV de la web siguen exactamente los resultados canónicos:
+`python tools/sync_website_data.py --check`. El despliegue a GitHub Pages es ligero y requiere
+tener configurada la fuente **GitHub Actions** en Settings → Pages.
+
 ## Objetivo activo — reconstrucción transductiva de 59 rendimientos
 
 Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de
