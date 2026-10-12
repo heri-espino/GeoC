@@ -101,3 +101,6 @@ venv/
 
 # Checkpoint 07 selected three-model GPU/CPU research results (local only)
 /reports/checkpoint_07_three/
+
+# Checkpoint 08 nested confirmation runs contain per-parcel observed yields
+/reports/checkpoint_08/
