@@ -1,0 +1,23 @@
+{
+  "LOSO_STABILITY_GATE": "FAIL",
+  "baseline_mae_pooled": 0.3425011444879952,
+  "baseline_model": "Local04D_frozen",
+  "baseline_rmse_pooled": 0.4957414287107349,
+  "baseline_tail_rmse": 0.8094140980228774,
+  "can_confirm": false,
+  "candidate_to_freeze_for_new_mask_confirmation": null,
+  "confirmation_membership_digest": "dc7e078378b4ae039d0c391e7a36f4a2b962e06780d953f1007c2a2cb56877e8",
+  "development_best_challenger": "LOOReliability_c3p0",
+  "hidden_fira_y_used": false,
+  "human_review_only": true,
+  "loso_mae_pooled": 0.3425011444879952,
+  "loso_rmse_pooled": 0.4957414287107349,
+  "loso_tail_rmse": 0.8094140980228774,
+  "mae_tolerance": 0.002,
+  "min_gain_required": 0.003,
+  "note": "Repeated parcels across masks make LOSO a stability check, not independent validation.",
+  "official_59_predictions_changed": false,
+  "results_compare_to": "reported_yield_not_verified_true_yield",
+  "stage": "development",
+  "tail_tolerance": 0.005
+}
