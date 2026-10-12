@@ -1,7 +1,7 @@
 # Checkpoint 09 — Robustez de Local04D frente a rendimientos posiblemente ruidosos
 
 **Fecha de diseño:** 12 de octubre de 2026  
-**Estado:** implementación y pruebas sintéticas; **NO** se han ejecutado nuevos resultados reales de 09 ni se ha promovido ningún modelo.  
+**Estado:** CERRADO / NO PROMOCIÓN; corrida de desarrollo completada 2026-10-12. LOSO_STABILITY_GATE = FAIL. Consulte [resultados y decisión](CHECKPOINT_09_FINDINGS.md).  
 **Modelo vigente:** `Local04D = LocalRidge_C4_all_deterministic_Geo_k24_a30_p1`.  
 **Predicciones oficiales congeladas:** `reports/checkpoint_05/final_predictions.csv`.
 
@@ -177,8 +177,8 @@ recalcula las 59 predicciones finales, no limpia/elimina observaciones,
 no usa ni intenta revelar las 59 etiquetas desconocidas y no escribe
 en `reports/checkpoint_05/final_predictions.csv`.
 
-El código y los tests son una **implementación pendiente de correr con
-los datos completos**. Una mejora en RMSE frente a etiquetas ruidosas
-sería evidencia predictiva condicionada al protocolo, pero no demostraría
-que las observaciones de cola estuvieron mal capturadas ni que se recuperó
-su rendimiento real.
+El desarrollo se ejecutó con los rendimientos disponibles: **Local04D sigue ganando**
+(RMSE 0.495741 frente a 0.498899 del mejor candidato robusto) y el gate LOSO
+falló. El checkpoint queda cerrado, sin ejecutar confirmación ni modificar
+las 59 predicciones. Detalles: [CHECKPOINT_09_FINDINGS.md](CHECKPOINT_09_FINDINGS.md).
+Estos resultados no demuestran que las observaciones de cola estén bien o mal capturadas.
