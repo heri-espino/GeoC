@@ -1,0 +1,72 @@
+schema_version: 1
+updated: "2026-10-12"
+
+stage:
+  checkpoint: "09"
+  name: robust_local04d_label_sensitivity
+  status: implemented_not_run_on_real_labels
+  purpose: >
+    Test whether a robust training loss or downweighting label-to-neighborhood
+    disagreement improves the original Local04D under possible measurement
+    contamination. An outlier or an extreme true yield is NOT proof of a data error.
+  hidden_fira_y_allowed: false
+  modify_59_final_predictions: false
+
+incumbent:
+  name: Local04D_frozen
+  representation: C4_all_deterministic
+  geographic_neighbours: 24
+  ridge_alpha: 30.0
+  geographic_distance_power: 1.0
+  scale: checkpoint04b.normalized_distance_matrix
+  original_pooled_development_rmse_t_ha: 0.49574142871073495
+
+candidates:
+  # Same C4, geographical distance, k, and alpha for all variants.
+  - Local04D_frozen
+  - Huber_c1p5
+  - Huber_c2p5
+  - LOOReliability_c2p0
+  - LOOReliability_c3p0
+  huber:
+    local_mad_floor_t_ha: 0.20
+    max_irls_steps: 10
+  loo_reliability:
+    training_partition_only: true
+    robust_mad_floor_t_ha: 0.20
+    minimum_training_weight: 0.35
+    label_correction_enabled: false
+
+validation:
+  development: reports/checkpoint_04b/pseudo_competition_splits.csv
+  family: target_matched
+  outer_splits: 16
+  train_per_split: 97
+  hidden_pseudo_target_per_split: 41
+  repeated_evaluations: 656
+  confirmation_seed: 20261013
+  confirmation_generator: checkpoint08_local.label_blind_memberships
+  confirmation_masks_frozen_before_development_scoring: true
+  # LOSO repeats parcel IDs between held-out masks: stability diagnostic only.
+  min_loso_pooled_rmse_improvement_t_ha: 0.003
+  max_loso_mae_degradation_t_ha: 0.002
+  max_loso_tail_rmse_degradation_t_ha: 0.005
+  confirmation_bootstrap_repeats: 1000
+  confirmation_paired_bootstrap_unit: unique_parcel
+  no_automatic_promotion: true
+
+data_quality:
+  review_queue: reports/checkpoint_09/human_label_review_candidates.csv
+  ranks_training_labels_by: leave_one_out_local04d_absolute_residual
+  output_meaning: candidates_for_human_audit_not_confirmed_errors
+  independently_verified_corrections: required_before_changing_any_label
+  automatic_delete_labels: false
+  automatically_clip_test_y: false
+
+outputs:
+  directory: reports/checkpoint_09
+  local_only: true
+  preserve_existing_predictions: true
+  forbidden_to_modify:
+    - reports/checkpoint_05/final_predictions.csv
+    - reports/checkpoint_05/model_manifest.json
