@@ -11,8 +11,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = {
     "reports/checkpoint_07/shared/three_model_summary.csv": "website/data/checkpoint07_summary.csv",
-    "reports/checkpoint_07/shared/checkpoint08_comparison_summary.csv": "website/data/checkpoint08_summary.csv",
-    "reports/checkpoint_07/shared/checkpoint08_paired_cluster_bootstrap.csv": "website/data/checkpoint08_bootstrap.csv",
+    "reports/checkpoint_07/shared/checkpoint08_comparison_summary.csv": (
+        "website/data/checkpoint08_summary.csv"
+    ),
+    "reports/checkpoint_07/shared/checkpoint08_paired_cluster_bootstrap.csv": (
+        "website/data/checkpoint08_bootstrap.csv"
+    ),
     "reports/checkpoint_05/final_predictions.csv": "website/data/predictions.csv",
 }
 
