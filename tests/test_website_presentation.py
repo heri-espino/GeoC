@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import csv
+import subprocess
+import sys
 from pathlib import Path
-
-from tools.sync_website_data import sync
 
 ROOT = Path(__file__).resolve().parents[1]
 WEBSITE = ROOT / "website"
@@ -16,7 +16,14 @@ def read_rows(path: str) -> list[dict[str, str]]:
 
 
 def test_website_snapshot_matches_canonical_results() -> None:
-    assert sync() == []
+    completed = subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "sync_website_data.py"), "--check"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_website_best_model_and_split_banks_are_distinct() -> None:
