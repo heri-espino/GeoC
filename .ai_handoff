@@ -1,3 +1,11 @@
+## 2026-10-12 — Consolidated validation and results report (02–08)
+
+User requested one readable, reproducible methodology file that explains the whole research trajectory and especially how the nested/target-matched CVs for 07 and 08 were constructed. Added `docs/METODOLOGIA_Y_RESULTADOS.md` in Spanish, plus links from root README, docs README, Sphinx toctree, and `reports/checkpoint_07/shared/README.md`.
+
+Verified published CSVs on main: Checkpoint07 `three_model_summary.csv` (16×41=656 repeated rows, 125 unique parcels; frozen Local04D pooled 0.495741; Local07 0.523081; Prithvi07 0.556672; CatBoost07 0.561325); Checkpoint08 `checkpoint08_comparison_summary.csv` (same count, 132 unique parcels; Local04D_frozen 0.481936, Local04D_nested 0.493943, Local07_nested 0.510070); paired bootstrap CIs positive for both challengers. No hidden 59 yields scored.
+
+Report explicitly distinguishes 04B X-profile matching (Hamilton state quotas + 80 candidates/repeat; 16 splits, 97/41) from 08 confirmation (municipality/state quotas + 160 candidates/repeat minimized maximum Jaccard against prior masks), development vs confirmation model-selection histories, parcel-correlated repeated holdouts, and model fit on 138 labeled parcels for final 59. No models or outputs were changed; only documentation.
+
 ## 2026-10-11 — Checkpoint 08 FINAL paired local-family confirmation PREPARED
 
 The user requested one last wide hyperparameter experiment comparing the established Local04D vs Local07 fairly. Historical 07 development: same 16 frozen outer 97/41 target-matched folds, but Local04D came from historical development-wide broad selection whereas Local07 tuned parameters within each outer training fold.
