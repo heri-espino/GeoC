@@ -131,7 +131,7 @@ def run(args: argparse.Namespace, *, smoke: bool = False) -> None:
         print(f"[08 {j}/{len(names)}] {split} finished and checkpointed.", flush=True)
 
     if smoke:
-        print("[08 SMOKE] One full nested paired split completed. This is NOT a final RMSE.", flush=True)
+        print("[08 SMOKE] One paired split completed, not a final RMSE.", flush=True)
     else:
         summarize_files(folder)
 
