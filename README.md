@@ -2,6 +2,21 @@
 
 **Metodología y resultados consolidados (02–08):** [cómo se construyó la validación cruzada, qué modelos se compararon y por qué se conservó Local04D](docs/METODOLOGIA_Y_RESULTADOS.md). Este documento incluye los resultados finalizados de Checkpoints 07 y 08.
 
+## Nuevo experimento — Checkpoint 09, etiquetas posiblemente ruidosas
+
+La hipótesis de que unos pocos rendimientos reportados pueden contener errores de captura
+se estudiará **sin presumir que los valores extremos sean incorrectos**. Checkpoint 09
+compara el Local04D congelado con dos variantes Huber locales y dos variantes de
+ponderación conservadora basadas en residuos *leave-one-out* internos. Conserva la
+representación C4, 24 vecinos y la geometría de Local04D.
+
+**Estado: implementación lista para ejecutar, sin resultados reales de 09.** No sustituye
+las 59 estimaciones congeladas. Guía, validación y pasos PowerShell:
+[docs/CHECKPOINT_09_ROBUST_LABELS.md](docs/CHECKPOINT_09_ROBUST_LABELS.md).
+
+`python tools/run_checkpoint_09_robust.py --preflight` comprueba el contrato 197/138/59
+y la paridad exacta con el control histórico, una vez ejecutado `git lfs pull`.
+
 ## Sitio de presentación AgroCebada 2026
 
 La web pública de presentación (en español) vive en **[`website/`](website/)**. Presenta el problema,
