@@ -9,7 +9,13 @@ import pandas as pd
 import pytest
 
 from geocebada.evaluation.checkpoint08_local import (
-    ID, FAMILIES, label_blind_memberships, validate_memberships, summarize,
+    FAMILIES,
+    ID,
+    Inputs,
+    label_blind_memberships,
+    summarize,
+    tune_and_predict,
+    validate_memberships,
 )
 
 
@@ -99,3 +105,44 @@ def test_source_code_never_auto_promotes_predictions() -> None:
               "tools/run_checkpoint_08_local.py").read_text(encoding="utf-8")
     assert "reports/checkpoint_05/final_predictions.csv" not in source
     assert "git push" not in source
+
+
+def test_both_model_families_nested_train_and_resume(tmp_path: Path) -> None:
+    pytest.importorskip("optuna")
+    rng = np.random.default_rng(42)
+    ids = [f"AGC_{i:03d}" for i in range(1, 198)]
+    meta = pd.DataFrame({
+        ID: ids,
+        "CONJUNTO": ["ENTRENAMIENTO"] * 138 + ["PREDICCION"] * 59,
+        "meta_estado": ["Puebla"] * 197,
+        "meta_municipio": ["A"] * 197,
+        "base_centroid_lat": np.linspace(19.0, 20.0, 197),
+        "base_centroid_lon": np.linspace(-99.0, -98.0, 197),
+    })
+    x = pd.DataFrame(
+        rng.normal(size=(197, 65)),
+        index=ids,
+        columns=[f"hls__f{i}" for i in range(65)],
+    ).astype(np.float32)
+    geo = rng.uniform(0.1, 5.0, size=(197, 197))
+    geo = (geo + geo.T) * 0.5
+    np.fill_diagonal(geo, 0)
+    data = Inputs(
+        x07=x, old=rng.normal(size=(197, 20)), geographic=geo,
+        index={pid: i for i, pid in enumerate(ids)},
+        y=pd.Series(rng.normal(3.5, 0.5, 138), index=ids[:138]),
+        meta=meta,
+        folds={"confirm_01": (ids[:97], ids[97:138])},
+    )
+    for family in FAMILIES:
+        first = tune_and_predict(
+            data, "confirm_01", family, trials=2, seed=42,
+            n_folds=2, folder=tmp_path,
+        )
+        second = tune_and_predict(
+            data, "confirm_01", family, trials=2, seed=42,
+            n_folds=2, folder=tmp_path,
+        )
+        assert len(first) == len(second) == 41
+        pd.testing.assert_frame_equal(first, second)
+        assert first["predicted"].notna().all()
