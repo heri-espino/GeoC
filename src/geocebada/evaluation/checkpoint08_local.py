@@ -20,8 +20,8 @@ from sklearn.preprocessing import StandardScaler
 from geocebada.evaluation.checkpoint04a import haversine_distance_matrix
 from geocebada.evaluation.checkpoint04b import normalized_distance_matrix
 from geocebada.evaluation.checkpoint04d1 import predict_weighted_local_ridge
-from geocebada.evaluation.checkpoint07_local import _geographic_xy, _predict_local
-from geocebada.evaluation.checkpoint07c import DevelopmentData, FoldRepresentations
+from geocebada.evaluation.checkpoint07_local import _predict_local
+from geocebada.evaluation.checkpoint07c import FoldRepresentations
 
 ID = "ID_POLIGONO"
 Y = "RENDIMIENTO_T_HA"
@@ -82,7 +82,7 @@ def label_blind_memberships(
     if not {ID, "split_id", "role"}.issubset(historical):
         raise ValueError("Historical 04B split membership missing.")
     def key(frame: pd.DataFrame) -> pd.Series:
-        return frame["meta_estado"].fillna("?").astype(str) + "|" + frame["meta_municipio"].fillna("?").astype(str)
+        return (frame["meta_estado"].fillna("?").astype(str) + "|"\n                + frame["meta_municipio"].fillna("?").astype(str))
     train["_stratum"] = key(train)
     target["_stratum"] = key(target)
     groups = {name: sorted(block[ID].astype(str)) for name, block in train.groupby("_stratum")}
@@ -100,9 +100,12 @@ def label_blind_memberships(
         counts[g] += 1
 
     known = set(train[ID].astype(str))
+    prior_rows = historical.loc[
+        historical["split_id"].astype(str).str.startswith("target_matched_")
+    ]
     prior_sets = [
         set(block.loc[block["role"].eq("pseudo_target"), ID].astype(str))
-        for _, block in historical.loc[historical["split_id"].astype(str).str.startswith("target_matched_")].groupby("split_id")
+        for _, block in prior_rows.groupby("split_id")
     ]
     if len(prior_sets) != 16:
         raise ValueError("Expected 16 historical target-matched splits.")
@@ -165,7 +168,6 @@ class Inputs:
     x07: pd.DataFrame
     old: np.ndarray
     geographic: np.ndarray
-    xy: dict[str, np.ndarray]
     index: dict[str, int]
     y: pd.Series
     meta: pd.DataFrame
@@ -175,7 +177,8 @@ class Inputs:
 def load_inputs(root: Path, membership: pd.DataFrame) -> Inputs:
     paths = input_paths(root)
     meta = pd.read_csv(paths["base"], usecols=[ID, "CONJUNTO", "base_centroid_lat",
-                                                "base_centroid_lon", "meta_estado", "meta_municipio"])
+                                                "base_centroid_lon", "meta_estado",
+                                                "meta_municipio"])
     meta[ID] = meta[ID].astype(str)
     folds = validate_memberships(meta, membership)
     targets = pd.read_csv(paths["targets"], usecols=[ID, "CONJUNTO", Y])
@@ -205,17 +208,17 @@ def load_inputs(root: Path, membership: pd.DataFrame) -> Inputs:
     raw[ID] = raw[ID].astype(str)
     if len(raw) != 197 or not raw[ID].is_unique or set(raw[ID]) != set(meta[ID]):
         raise ValueError("07B high-dimensional X alignment failure.")
-    forbidden = [c for c in raw.columns if c.upper() in {Y, "CONJUNTO", "PRODUCCION_T", "RENDIMIENTO"}
-                 or "siap_2025" in c.lower()]
+    forbidden = [
+        c for c in raw.columns
+        if c.upper() in {Y, "CONJUNTO", "PRODUCCION_T", "RENDIMIENTO"}
+        or "siap_2025" in c.lower()
+    ]
     if forbidden:
         raise ValueError(f"Outcome leakage in 07B predictors: {forbidden[:5]}")
-    x07 = raw.set_index(ID).select_dtypes(include=[np.number]).replace([np.inf, -np.inf], np.nan).astype(np.float32)
+    x07 = (raw.set_index(ID).select_dtypes(include=[np.number])
+           .replace([np.inf, -np.inf], np.nan).astype(np.float32))
     x07 = x07.reindex(meta[ID])
-    xy = {
-        pid: np.array([float(a), float(b)])
-        for pid, a, b in zip(meta[ID], meta["base_centroid_lat"], meta["base_centroid_lon"], strict=True)
-    }
-    return Inputs(x07=x07, old=old, geographic=normal, xy=xy,
+    return Inputs(x07=x07, old=old, geographic=normal,
                   index={pid: i for i, pid in enumerate(meta[ID])},
                   y=y, meta=meta, folds=folds)
 
@@ -232,6 +235,19 @@ def predict_old(data: Inputs, fit_ids: list[str], query_ids: list[str],
     )
 
 
+def geographic_pair(data: Inputs, train: list[str], test: list[str]) -> tuple[np.ndarray, np.ndarray]:
+    """Single consistent coordinate projection anchored at training latitudes."""
+    view = data.meta.set_index(ID)
+    mid = float(np.deg2rad(view.loc[train, "base_centroid_lat"].mean()))
+
+    def project(ids: list[str]) -> np.ndarray:
+        lat = view.loc[ids, "base_centroid_lat"].to_numpy(float)
+        lon = view.loc[ids, "base_centroid_lon"].to_numpy(float)
+        return np.column_stack([111.195 * lat, 111.195 * np.cos(mid) * lon])
+
+    return project(train), project(test)
+
+
 def local07_folds(data: Inputs, training_ids: list[str], n_folds: int, seed: int):
     inner = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     output = []
@@ -239,8 +255,7 @@ def local07_folds(data: Inputs, training_ids: list[str], n_folds: int, seed: int
         a = [training_ids[i] for i in ia]
         b = [training_ids[i] for i in ib]
         transforms = FoldRepresentations(data.x07, a, b)
-        train_coords = _geographic_xy(DevelopmentData(data.x07, data.y, {}, pd.DataFrame()), a)
-        test_coords = _geographic_xy(DevelopmentData(data.x07, data.y, {}, pd.DataFrame()), b)
+        train_coords, test_coords = geographic_pair(data, a, b)
         output.append((a, b, transforms, train_coords, test_coords))
     return output
 
@@ -252,9 +267,7 @@ def predict_new(data: Inputs, train: list[str], test: list[str],
         transform = FoldRepresentations(data.x07, train, test)
     a, b = transform.get(str(pars["representation"]))
     if coordinates is None:
-        view = DevelopmentData(data.x07, data.y, {}, pd.DataFrame())
-        coords_a = _geographic_xy(view, train)
-        coords_b = _geographic_xy(view, test)
+        coords_a, coords_b = geographic_pair(data, train, test)
     else:
         coords_a, coords_b = coordinates
     return _predict_local(a, b, coords_a, coords_b, data.y.loc[train].to_numpy(float),
@@ -400,8 +413,10 @@ def summarize(predictions: pd.DataFrame, *, bootstraps: int = 1000,
         sims = np.empty(bootstraps)
         for z in range(bootstraps):
             sampled = rng.choice(names, len(names), replace=True)
-            values = np.concatenate([(groups[k][contender] - groups[k]["Local04D_frozen"]).to_numpy()
-                                     for k in sampled])
+            values = np.concatenate([
+                (groups[k][contender] - groups[k]["Local04D_frozen"]).to_numpy()
+                for k in sampled
+            ])
             sims[z] = float(values.mean())
         low, high = np.quantile(sims, [0.025, 0.975])
         delta.append({"model": contender, "reference": "Local04D_frozen",
