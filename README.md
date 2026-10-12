@@ -1,5 +1,7 @@
 # GeoCebada
 
+**Metodología y resultados consolidados (02–08):** [cómo se construyó la validación cruzada, qué modelos se compararon y por qué se conservó Local04D](docs/METODOLOGIA_Y_RESULTADOS.md). Este documento incluye los resultados finalizados de Checkpoints 07 y 08.
+
 ## Objetivo activo — reconstrucción transductiva de 59 rendimientos
 
 Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de
