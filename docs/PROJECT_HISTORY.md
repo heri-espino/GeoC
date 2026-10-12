@@ -1529,3 +1529,7 @@ comparison against Local04D until the same held-out split results are used.
 The original 07C Prithvi chapter remains planned and is now distinguished as
 07C.2; this existing heavy nested search is 07C.1. The full Optuna workstation
 run is still pending. See docs/CHECKPOINT_07C_NESTED_SEARCH.md.
+
+## 2026-10-11 — Checkpoint 08 paired nested local comparison prepared
+
+After the three-model Checkpoint 07 development benchmark retained frozen Local04D, the team requested a final symmetric hyperparameter experiment comparing Local04D and Local07. Checkpoint 08 is implemented on the experiment/08-nested-local-comparison branch (pull request #11). It freezes a new X-only 16-split pseudo-target bank, runs inner-CV Optuna for both local families, verifies archived Local04D numerical parity, checkpoints results for reboot recovery, and reports a paired parcel-bootstrap delta MSE. **No full 08 run has been executed and no 59-parcel predictions have changed.** See docs/CHECKPOINT_08_NESTED_LOCAL.md.
