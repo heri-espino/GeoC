@@ -192,6 +192,15 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `tune_and_predict` | function | `geocebada.evaluation.checkpoint08_local` | Resume per-split Optuna trials; only inner training y enters objective. | `src/geocebada/evaluation/checkpoint08_local.py` |
 | `validate_memberships` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
 | `verify_original_control` | function | `geocebada.evaluation.checkpoint08_local` | Prove frozen 04D reproduces its stored 04B held-out forecasts. | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `build_review_queue` | function | `geocebada.evaluation.checkpoint09_robust` | Rank training labels for HUMAN provenance review, never auto-delete any. | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `evaluate_bank` | function | `geocebada.evaluation.checkpoint09_robust` | Score frozen candidates on held-out pseudo-targets; no tuning on test y. | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `leave_one_split_out_selection` | function | `geocebada.evaluation.checkpoint09_robust` | LOSO stability diagnostic (NOT statistically independent parcel folds). | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `load_legacy_inputs` | function | `geocebada.evaluation.checkpoint09_robust` | Load original C4/Geo features without the 07B high-dimensional downloads. | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `loo_reliability` | function | `geocebada.evaluation.checkpoint09_robust` | Convert training-only LOO disagreement to conservative soft weights. | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `paired_cluster_interval` | function | `geocebada.evaluation.checkpoint09_robust` | Parcel-block bootstrap over repeated paired errors (not spatial CI). | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `predict_robust_local` | function | `geocebada.evaluation.checkpoint09_robust` | Fit weighted-Ridge IRLS Huber or training-LOO reliability by target parcel. | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `summarize_bank` | function | `geocebada.evaluation.checkpoint09_robust` | Compute RMSE/MAE and train-defined tail metrics for paired forecasts. | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `training_loo_residuals` | function | `geocebada.evaluation.checkpoint09_robust` | Calculate training-only LOO Local04D errors, never using external targets. | `src/geocebada/evaluation/checkpoint09_robust.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |

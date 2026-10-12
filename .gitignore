@@ -104,3 +104,6 @@ venv/
 
 # Checkpoint 08 nested confirmation runs contain per-parcel observed yields
 /reports/checkpoint_08/
+
+# Checkpoint 09 candidate scores and label-quality review contain official yields
+/reports/checkpoint_09/

@@ -3,6 +3,7 @@
 Esta carpeta concentra la documentación del proyecto, la referencia de la librería Python y los materiales oficiales del Reto AgroCebada FIRA 2026.
 
 - `METODOLOGIA_Y_RESULTADOS.md`: recorrido completo de Checkpoints 02–08, generación de particiones target-matched y anidadas, resultados de 07/08, incertidumbre, limitaciones y decisión final.
+- `CHECKPOINT_09_ROBUST_LABELS.md`: experimento nuevo para comprobar sensibilidad a etiquetas ruidosas mediante Huber y confiabilidad LOO, sin alterar las 59 predicciones.
 - `TRANSDUCTIVE_OBJECTIVE.md`: especificación canónica del objetivo transductivo de las 59 parcelas fijas y validación pseudo-competition.
 - `CHECKPOINT_03D_FINDINGS.md`: cierre del benchmark global balanced, finalistas state/grouped y deployment ONNX.
 - `CHECKPOINT_05_FINDINGS.md`: cierre del ensamble global/local; gate LOSO fallido y retención de Local04D.
