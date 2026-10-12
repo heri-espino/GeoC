@@ -11,7 +11,6 @@ the weights applied to potentially unreliable *training* observations.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -317,7 +316,9 @@ def leave_one_split_out_selection(
         chosen.append(group)
         records.append({"split_id": holdout, "selected_on_other_15": method})
     selected = pd.concat(chosen, ignore_index=True)
-    chosen_metrics = summarize_bank(selected).iloc[0].to_dict()
+    selected_as_single_rule = selected.copy()
+    selected_as_single_rule["model"] = "LOSO_selected"
+    chosen_metrics = summarize_bank(selected_as_single_rule).iloc[0].to_dict()
     base = summarize_bank(
         predictions.loc[predictions["model"].eq("Local04D_frozen")]
     ).iloc[0].to_dict()
