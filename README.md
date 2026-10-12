@@ -2,20 +2,23 @@
 
 **Metodología y resultados consolidados (02–08):** [cómo se construyó la validación cruzada, qué modelos se compararon y por qué se conservó Local04D](docs/METODOLOGIA_Y_RESULTADOS.md). Este documento incluye los resultados finalizados de Checkpoints 07 y 08.
 
-## Nuevo experimento — Checkpoint 09, etiquetas posiblemente ruidosas
+## Checkpoint 09 — Robustez a etiquetas ruidosas (CERRADO)
 
-La hipótesis de que unos pocos rendimientos reportados pueden contener errores de captura
-se estudiará **sin presumir que los valores extremos sean incorrectos**. Checkpoint 09
-compara el Local04D congelado con dos variantes Huber locales y dos variantes de
-ponderación conservadora basadas en residuos *leave-one-out* internos. Conserva la
-representación C4, 24 vecinos y la geometría de Local04D.
+Se compararon cuatro variantes robustas (dos Huber y dos ponderaciones LOO)
+contra **Local04D**, sin modificar su representación C4, sus 24 vecinos ni
+su regularización. En 16 particiones emparejadas, Local04D volvió a obtener
+el mejor RMSE pooled: **0.495741 t/ha**. La mejor alternativa obtuvo
+**0.498899 t/ha**. El criterio predeclarado **LOSO_STABILITY_GATE = FAIL**.
 
-**Estado: implementación lista para ejecutar, sin resultados reales de 09.** No sustituye
-las 59 estimaciones congeladas. Guía, validación y pasos PowerShell:
-[docs/CHECKPOINT_09_ROBUST_LABELS.md](docs/CHECKPOINT_09_ROBUST_LABELS.md).
+**Decisión:** ningún modelo se promueve; no ejecutar confirmación 09 ni cambiar
+las 59 predicciones finales. No se confirma ni descarta la hipótesis de
+rendimientos mal capturados, que requeriría verificación independiente.
 
-`python tools/run_checkpoint_09_robust.py --preflight` comprueba el contrato 197/138/59
-y la paridad exacta con el control histórico, una vez ejecutado `git lfs pull`.
+- [Hallazgos y cierre de Checkpoint 09](docs/CHECKPOINT_09_FINDINGS.md)
+- [Protocolo e implementación del experimento](docs/CHECKPOINT_09_ROBUST_LABELS.md)
+- [Resultados agregados públicos](reports/checkpoint_09/shared/README.md)
+
+Los resultados por parcela y la lista de revisión de calidad se mantienen locales.
 
 ## Sitio de presentación AgroCebada 2026
 
