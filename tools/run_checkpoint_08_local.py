@@ -30,6 +30,7 @@ from geocebada.evaluation.checkpoint08_local import (
     summarize,
     tune_and_predict,
     validate_memberships,
+    verify_original_control,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -103,6 +104,8 @@ def run(args: argparse.Namespace, *, smoke: bool = False) -> None:
     ensure_spec(folder, specification)
     membership = pd.read_csv(member_path)
     data = load_inputs(ROOT, membership)
+    difference = verify_original_control(ROOT, data)
+    print(f"[08] Frozen Local04D historical numerical parity PASS ({difference:.2g}).", flush=True)
     names = sorted(data.folds)
     if smoke:
         names = names[:1]
