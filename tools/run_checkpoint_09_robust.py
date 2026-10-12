@@ -24,7 +24,6 @@ from pathlib import Path
 import pandas as pd
 
 from geocebada.evaluation.checkpoint08_local import (
-    ID,
     atomic_json,
     digest,
     label_blind_memberships,
