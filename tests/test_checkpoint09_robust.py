@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from geocebada.evaluation.checkpoint08_local import Inputs, predict_old, FROZEN
+from geocebada.evaluation.checkpoint08_local import FROZEN, Inputs, predict_old
 from geocebada.evaluation.checkpoint09_robust import (
     METHODS,
     build_review_queue,
