@@ -7,6 +7,7 @@ Esta carpeta concentra la documentación del proyecto, la referencia de la libre
 - `CHECKPOINT_09_FINDINGS.md`: ejecución completada de Checkpoint 09, puntuaciones agregadas, fallo LOSO y decisión de conservar Local04D.
 - `CHECKPOINT_10_PCA_GRID.md`: diseño de un único grid anidado de PCA (20/40/80/160), vecinos k, regularización Ridge alfa y potencia espacial p; no modifica las predicciones finales.
 - `CHECKPOINT_11_WIDE_PCA.md`: búsqueda amplia de Local04D con 1,960 configuraciones (PCA/k/alpha/p), CV interior repetida y comparación emparejada; sin modificación de pronósticos finales.
+- `CHECKPOINT_12_ALTERNATIVES.md`: comparación ligera de PLS, PCA→ICA, proyección aleatoria, Ridge y Elastic Net local, con PLS supervisado ajustado dentro de los folds.
 - `TRANSDUCTIVE_OBJECTIVE.md`: especificación canónica del objetivo transductivo de las 59 parcelas fijas y validación pseudo-competition.
 - `CHECKPOINT_03D_FINDINGS.md`: cierre del benchmark global balanced, finalistas state/grouped y deployment ONNX.
 - `CHECKPOINT_05_FINDINGS.md`: cierre del ensamble global/local; gate LOSO fallido y retención de Local04D.
