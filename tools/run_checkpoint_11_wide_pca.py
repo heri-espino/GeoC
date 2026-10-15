@@ -207,7 +207,14 @@ def _run(args, paths: dict[str, Path], *, smoke: bool) -> None:
             )
             _save_frame(rank_path, rerank)
         if rows_path.exists() != report_path.exists():
-            raise ValueError(f"Partial paired scores for {split}: inspect before resuming.")
+            # An interruption between atomic CSV and JSON writes is safe:
+            # archive the orphan and deterministically rebuild both outputs.
+            orphan = rows_path if rows_path.exists() else report_path
+            archived = orphan.with_suffix(orphan.suffix + ".incomplete")
+            if archived.exists():
+                raise ValueError(f"Repeated partial output for {split}: inspect manually.")
+            orphan.replace(archived)
+            print(f"[11] Archived interrupted {orphan.name}; rebuilding.", flush=True)
         paired, selection = choose_nested(
             data, split, rerank, dimensions=dimensions
         )
@@ -272,6 +279,8 @@ def main() -> int:
         _load_data(DIMS)
         print("[11 CHECK] C4 160-PC representation and frozen baseline verified.", flush=True)
     elif args.summary:
+        # Never summarize incompatible cached results after changing inputs/code.
+        _spec(args.output, paths, smoke=False)
         _summary(args.output)
     else:
         _run(args, paths, smoke=args.smoke)
