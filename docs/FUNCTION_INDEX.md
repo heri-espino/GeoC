@@ -226,8 +226,8 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `summarize` | function | `geocebada.evaluation.checkpoint12_representations` | Compute paired RMSE/R2 and bootstrap MSE intervals clustered by parcel. | `src/geocebada/evaluation/checkpoint12_representations.py` |
 | `candidate_predict` | function | `geocebada.evaluation.checkpoint13_randomized` | Predict without using any held-out labels; fit PLS within train_ids. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
 | `choose_and_evaluate` | function | `geocebada.evaluation.checkpoint13_randomized` | Select only on inner-RMSE, then score external 41 parcels once. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
-| `extend_pca` | function | `geocebada.evaluation.checkpoint13_randomized` | Add cheap PCA prefixes, leaving other target-free transforms unchanged. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
-| `model_names` | function | `geocebada.evaluation.checkpoint13_randomized` | Six family procedures, a joint selector, and the frozen Local04D. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
+| `extend_pca` | function | `geocebada.evaluation.checkpoint13_randomized` | Build target-free PCA/ICA representations for the broad rank search. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
+| `model_names` | function | `geocebada.evaluation.checkpoint13_randomized` | Five family procedures, a joint selector, and the frozen Local04D. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
 | `parse_candidate` | function | `geocebada.evaluation.checkpoint13_randomized` | Normalize candidate floats and optional L1 from a CSV or pandas row. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
 | `repeated_cv_folds` | function | `geocebada.evaluation.checkpoint13_randomized` | Deterministic inner folds on the 97 IDs only. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
 | `rerank_finalists` | function | `geocebada.evaluation.checkpoint13_randomized` | Repeated CV is trained/validated solely on the 97 outer training IDs. | `src/geocebada/evaluation/checkpoint13_randomized.py` |
