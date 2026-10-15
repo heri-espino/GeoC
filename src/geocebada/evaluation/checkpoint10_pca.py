@@ -133,7 +133,8 @@ def load_pca_data(root: Path, membership: Path, *, max_components: int = 160) ->
     )
     c4 = next(row for row in reference_manifest
               if row["representation"] == "C4_all_deterministic")
-    if len(embedded.features_used) != EXPECTED_FEATURES or c4["n_features_used"] != EXPECTED_FEATURES:
+    if (len(embedded.features_used) != EXPECTED_FEATURES
+            or c4["n_features_used"] != EXPECTED_FEATURES):
         raise ValueError("C4 features no longer match the frozen 2,082-feature input.")
     if embedded.n_components != max_components:
         raise ValueError("PCA cannot retain all requested components.")
