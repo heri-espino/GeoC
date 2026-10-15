@@ -9,10 +9,10 @@ from geocebada.evaluation.checkpoint10_pca import PcaData
 from geocebada.evaluation.checkpoint12_representations import RepresentationData
 from geocebada.evaluation.checkpoint13_randomized import (
     BASELINE,
+    DIMENSIONS,
     FAMILIES,
     JOINT,
     candidate_predict,
-    DIMENSIONS,
     choose_and_evaluate,
     extend_pca,
     model_names,
