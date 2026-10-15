@@ -46,6 +46,8 @@ tener configurada la fuente **GitHub Actions** en Settings → Pages.
 
 **Experimento adicional (Checkpoint 11):** [grid amplio y selección por CV repetida de componentes PCA, vecinos geográficos, Ridge y potencia de distancia](docs/CHECKPOINT_11_WIDE_PCA.md), preservando el control congelado y las 59 predicciones canónicas.
 
+**Benchmark de representaciones (Checkpoint 12):** [PCA→ICA, proyección aleatoria, PLS supervisado y Elastic Net local](docs/CHECKPOINT_12_ALTERNATIVES.md), separado del grid amplio de Checkpoint 11.
+
 ## Objetivo activo — reconstrucción transductiva de 59 rendimientos
 
 Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de
