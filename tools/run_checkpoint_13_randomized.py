@@ -9,7 +9,7 @@ Run:
 
 Exactly 10,000 candidates are screened INSIDE EACH of 16 frozen 97/41
 outer splits; 12 inner training examples are held out for the first pass.
-A balanced top 12 from each of six families are reranked by repeated 4-fold
+A balanced top 12 from each of five families are reranked by repeated 4-fold
 CV (2 repeats) using only the outer 97 yields. Only then are 41 external
 pseudo-targets evaluated. Old outer bank is exploratory, not independent.
 """
@@ -123,7 +123,7 @@ def _candidates(folder: Path, count: int) -> pd.DataFrame:
 
 
 def _data():
-    data = extend_pca(prepare(ROOT, MEMBERSHIPS))
+    data = extend_pca(prepare(ROOT, MEMBERSHIPS, include_rp=False))
     old = ROOT / "reports/checkpoint_08/confirm_01__paired.csv"
     if old.is_file():
         reference = pd.read_csv(old)
