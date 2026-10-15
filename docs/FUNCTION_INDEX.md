@@ -216,6 +216,14 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `score_grid` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Score candidate configurations using ONLY the supplied training IDs. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
 | `shortlist` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Promote strongest coarse configurations by PCA rank plus fixed anchor. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
 | `summarize` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Paired outer-split RMSE/R2 and parcel-clustered delta-MSE intervals. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
+| `RepresentationData` | class | `geocebada.evaluation.checkpoint12_representations` |  | `src/geocebada/evaluation/checkpoint12_representations.py` |
+| `configurations` | function | `geocebada.evaluation.checkpoint12_representations` | Small predeclared dimensions/penalties for a fair compact benchmark. | `src/geocebada/evaluation/checkpoint12_representations.py` |
+| `evaluate` | function | `geocebada.evaluation.checkpoint12_representations` | Fit the designated fold-local model without external target labels. | `src/geocebada/evaluation/checkpoint12_representations.py` |
+| `inner_grid` | function | `geocebada.evaluation.checkpoint12_representations` | Calculate candidates' RMSE from only the outer 97 training yields. | `src/geocebada/evaluation/checkpoint12_representations.py` |
+| `load_c4_z` | function | `geocebada.evaluation.checkpoint12_representations` | Rebuild the exact C4 X-only 2082-column standardized matrix. | `src/geocebada/evaluation/checkpoint12_representations.py` |
+| `paired_split` | function | `geocebada.evaluation.checkpoint12_representations` | Run frozen Local04D plus five inner-selected alternatives. | `src/geocebada/evaluation/checkpoint12_representations.py` |
+| `prepare` | function | `geocebada.evaluation.checkpoint12_representations` | Build target-free alternatives once, never using observed yields. | `src/geocebada/evaluation/checkpoint12_representations.py` |
+| `summarize` | function | `geocebada.evaluation.checkpoint12_representations` | Compute paired RMSE/R2 and bootstrap MSE intervals clustered by parcel. | `src/geocebada/evaluation/checkpoint12_representations.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
