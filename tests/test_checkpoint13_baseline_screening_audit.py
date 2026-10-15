@@ -11,6 +11,7 @@ import pytest
 
 from geocebada.evaluation.checkpoint10_pca import PcaData
 from geocebada.evaluation.checkpoint13_randomized import FAMILIES, SEED
+
 # The tools directory consists of runnable scripts; it is not installed as a package.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 _audit = importlib.import_module("audit_checkpoint_13_baseline")
