@@ -20,7 +20,6 @@ from geocebada.evaluation.checkpoint10_pca import FROZEN, predict
 from geocebada.evaluation.checkpoint12_representations import RepresentationData, prepare
 from geocebada.evaluation.checkpoint13_randomized import (
     candidate_predict,
-    parse_candidate,
     repeated_cv_folds,
 )
 
@@ -49,6 +48,26 @@ PLS_COMPONENTS = (4, 5, 8, 12, 16, 24, 32)
 K_VALUES = (8, 12, 16, 20, 24, 30, 32, 40, 48)
 K_PROBABILITIES = (.03, .06, .11, .17, .26, .16, .12, .07, .02)
 ANCHOR_NAME = "PCA_Ridge_anchor_Local04D"
+
+
+def parse_focused_candidate(row: dict | pd.Series) -> dict:
+    """Parse PCA/PLS candidate without Checkpoint13's incompatible PLS grid."""
+    rep = str(row["representation"])
+    reg = str(row["regressor"])
+    n = int(row["components"])
+    if ((rep == "PCA" and n not in PCA_COMPONENTS)
+            or (rep == "PLS" and n not in PLS_COMPONENTS)
+            or rep not in {"PCA", "PLS"}):
+        raise ValueError(f"Unsupported focused representation/rank: {rep}/{n}")
+    if reg not in {"ridge", "elasticnet"}:
+        raise ValueError(f"Unsupported focused regressor: {reg}")
+    ratio = row.get("l1_ratio")
+    return {
+        "representation": rep, "components": n, "regressor": reg,
+        "k": int(row["k"]), "alpha": float(row["alpha"]),
+        "power": float(row["power"]),
+        "l1_ratio": None if pd.isna(ratio) else float(ratio),
+    }
 
 
 def model_names() -> set[str]:
@@ -119,7 +138,7 @@ def focused_candidates(*, count: int = COUNT, seed: int = SEED) -> pd.DataFrame:
     if frame.groupby("family").size().to_dict() != FAMILY_QUOTAS:
         raise RuntimeError("A model family exceeded its reserved search budget.")
     anchor = frame.loc[frame["candidate_id"].eq(ANCHOR_NAME)].iloc[0]
-    if parse_candidate(anchor) != {
+    if parse_focused_candidate(anchor) != {
         "representation": "PCA", "components": 20, "regressor": "ridge",
         "k": int(FROZEN["k"]), "alpha": float(FROZEN["alpha"]),
         "power": float(FROZEN["power"]), "l1_ratio": None,
@@ -157,7 +176,7 @@ def score_candidates(
     ]
     results = []
     for item in candidates.to_dict("records"):
-        parameters = parse_candidate(item)
+        parameters = parse_focused_candidate(item)
         error_sum = 0.
         for (fit_ids, valid_ids), observed in zip(pairs, observations, strict=True):
             prediction = candidate_predict(
@@ -225,7 +244,7 @@ def evaluate_outer(
             prediction = baseline
         else:
             prediction = candidate_predict(
-                data, tr, held, parse_candidate(winners[name]), cache={}
+                data, tr, held, parse_focused_candidate(winners[name]), cache={}
             )
         records.extend({
             "split_id": split, ID: pid, "model": name,
@@ -248,7 +267,7 @@ def evaluate_outer(
                 "candidate_id": str(row["candidate_id"]),
                 "family": str(row["family"]),
                 "inner_rmse": float(row["inner_rmse"]),
-                **parse_candidate(row),
+                **parse_focused_candidate(row),
             } for name, row in winners.items()
         },
         "hidden_y_accessed": False,
