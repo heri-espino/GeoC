@@ -1,10 +1,10 @@
 """Checkpoint 13: randomized 10,000-model search with nested, staged validation.
 
-Six local regression / representation families compete. Exactly 10,000
+Five local regression / representation families compete. Exactly 10,000
 seeded configurations are SCREENED PER OUTER SPLIT using only outer-training
 y. Strongest candidates per family then receive two repeated 4-fold inner CVs
 on the same 97 labels; the 41 outer labels are used only for final scoring.
-X-only PCA, RP, ICA may use all 197 parcel X; PLS is fitted within each inner
+X-only PCA and ICA may use all 197 parcel X; PLS is fitted within each inner
 fold from training y. No promotion of the 59 fixed forecasts occurs here.
 """
 from __future__ import annotations
@@ -19,7 +19,6 @@ from sklearn.linear_model import ElasticNet
 from sklearn.metrics import r2_score
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler
-from sklearn.random_projection import GaussianRandomProjection
 
 from geocebada.evaluation.checkpoint04d1 import predict_weighted_local_ridge
 from geocebada.evaluation.checkpoint08_local import ID
@@ -33,7 +32,6 @@ SEED = 20261015
 FAMILIES = (
     "PCA_Ridge",
     "ICA_Ridge",
-    "RP_Ridge",
     "PLS_Ridge",
     "PCA_ElasticNet",
     "PLS_ElasticNet",
@@ -41,7 +39,6 @@ FAMILIES = (
 DIMENSIONS = {
     "PCA": (5, 8, 12, 16, 20, 24, 32, 40, 48, 64, 96, 128, 160, 192),
     "ICA": (5, 8, 12, 16, 24, 32),
-    "RP": (5, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160, 200),
     "PLS": (5, 8, 12, 16, 24, 32),
 }
 NEIGHBORS = (8, 12, 16, 20, 24, 32, 48)
@@ -53,7 +50,7 @@ JOINT = "Random_joint_nested"
 
 
 def model_names() -> set[str]:
-    """Six family procedures, a joint selector, and the frozen Local04D."""
+    """Five family procedures, a joint selector, and the frozen Local04D."""
     return {BASELINE, JOINT, *FAMILIES}
 
 
@@ -100,11 +97,10 @@ def extend_pca(
     dimensions: dict[str, tuple[int, ...]] | None = None,
     check_parity: bool = True,
 ) -> RepresentationData:
-    """Build all X-only PCA/ICA/RP representations for the broad rank search.
+    """Build target-free PCA/ICA representations for the broad rank search.
 
     PCA is limited to at most n_X-1 nonzero centered scores (196 for 197
-    parcels); random projections can have 200 *output* columns but do not
-    increase the underlying rank. ICA fits after PCA40 and cannot exceed 40.
+    parcels). ICA fits after PCA40 and cannot exceed 40.
     All choices use the 197 covariate rows and never access reported yields.
     """
     spaces = DIMENSIONS if dimensions is None else dimensions
@@ -145,12 +141,6 @@ def extend_pca(
             raise ValueError(f"Nonfinite ICA components: {components}.")
         data.unsupervised[("ICA", components)] = StandardScaler().fit_transform(scores)
 
-    for components in spaces["RP"]:
-        random = GaussianRandomProjection(
-            n_components=components, random_state=SEED + components,
-        )
-        scores = random.fit_transform(x)
-        data.unsupervised[("RP", components)] = StandardScaler().fit_transform(scores)
     return data
 
 
