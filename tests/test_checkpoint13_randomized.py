@@ -80,7 +80,9 @@ def test_exactly_ten_thousand_seeded_balanced_random_models() -> None:
     assert max(DIMENSIONS["RP"]) == 200
     assert max(DIMENSIONS["ICA"]) <= 40
     assert max(DIMENSIONS["PLS"]) <= 32
-    assert all(set(generated.loc[generated["representation"].eq(rep), "components"]) == set(values) for rep, values in DIMENSIONS.items())
+    for rep, values in DIMENSIONS.items():
+        sampled = generated.loc[generated["representation"].eq(rep), "components"]
+        assert set(sampled) == set(values)
     assert set(generated["family"]) == set(FAMILIES)
     assert generated.groupby("family").size().max() - generated.groupby("family").size().min() <= 1
     pd.testing.assert_frame_equal(generated, sample_candidates())
