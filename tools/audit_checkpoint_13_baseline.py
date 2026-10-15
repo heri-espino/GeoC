@@ -31,7 +31,6 @@ from geocebada.evaluation.checkpoint13_randomized import (
     FAMILIES,
     SCREEN_TARGETS,
     SEED,
-    SHORTLIST_PER_FAMILY,
     repeated_cv_folds,
 )
 
