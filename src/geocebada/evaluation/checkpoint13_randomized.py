@@ -15,8 +15,8 @@ import numpy as np
 import pandas as pd
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import ElasticNet
-from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score
+from sklearn.model_selection import KFold
 
 from geocebada.evaluation.checkpoint04d1 import predict_weighted_local_ridge
 from geocebada.evaluation.checkpoint08_local import ID
