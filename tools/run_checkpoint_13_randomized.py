@@ -26,7 +26,6 @@ from geocebada.evaluation.checkpoint08_local import ID, atomic_json, digest
 from geocebada.evaluation.checkpoint10_pca import FROZEN, inputs, predict
 from geocebada.evaluation.checkpoint12_representations import prepare
 from geocebada.evaluation.checkpoint13_randomized import (
-    BASELINE,
     FAMILIES,
     SCREEN_TARGETS,
     SEED,
