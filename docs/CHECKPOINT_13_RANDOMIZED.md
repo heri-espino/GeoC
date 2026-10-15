@@ -100,6 +100,32 @@ No es necesario ejecutar Checkpoint 12 nuevamente para correr el 13; ambos leen 
 | `paired_cluster_bootstrap.csv` | Diferencias de MSE contra Local04D, con IC95% agrupados por parcela |
 | `selected_hyperparameters.csv` | Modelos/hiperparámetros elegidos por split |
 
+## Auditoría posterior: ¿cómo rindió Local04D en las mismas 12 parcelas?
+
+La evaluación original no conservó directamente el RMSE de \`PCA20_frozen\` en las 12 parcelas **internas de cribado**; solo lo incluyó en los 41 pseudo-objetivos externos por split. Por ello, los RMSE finales 0.481936 y 0.522300 no responden a si la prueba de cribado inicial fue favorable o desfavorable al incumbente.
+
+Sin recomputar los 100 000 candidatos, el auditor **lee sus 16 × 400 CSV de cribado** y reconstruye exactamente el 12/85 original con las mismas semillas. Calcula y compara:
+
+- RMSE de \`PCA20_frozen\` en las **mismas 12 parcelas por split**, con las otras 85 como entrenamiento.
+- Su **rango hipotético** entre los 100 000 candidatos y dentro de la familia \`PCA_Ridge\`. No significa que el incumbente haya estado efectivamente en la muestra aleatoria.
+- Si habría superado el filtro de las 12 configuraciones \`PCA_Ridge\` más favorables a esas 12 parcelas.
+- RMSE de \`PCA20_frozen\` con el **mismo 2×4-fold CV de 194 predicciones** que se aplicó a los 60 finalistas. El valor se compara con los RMSE internos guardados para esos finalistas.
+- Cuántas veces el incumbente superaría el filtro por familia en los 16 splits.
+
+\`\`\`powershell
+cd C:\Users\175199\GeoC
+conda activate geocebada
+git switch main
+git pull --ff-only origin main
+python tools/audit_checkpoint_13_baseline.py --output reports/checkpoint_13_100k
+\`\`\`
+
+Salida privada local: \`reports/checkpoint_13_100k/baseline_screening_audit.csv\`.
+
+Este auditor **no escribe ni modifica** \`run_spec.json\`, \`candidates.csv\`, los archivos de predicción originales ni las 59 estimaciones; tampoco vuelve a ajustar los modelos aleatorios. Requiere el mismo código y fuentes que se utilizaron para terminar la corrida, verificados mediante SHA-256 del contrato guardado. Si el usuario hizo \`git pull\` entre la corrida y la auditoría y hubo cambios reales en el modelo, el auditor detendrá la comparación en lugar de mezclar versiones.
+
+**Interpretación:** que el incumbente pase o no pase la selección de las 12 observaciones diagnostica la inestabilidad del filtro, pero no vuelve independientes las 16 máscaras históricas ni borra la ventaja por desarrollo previo de \`Local04D\`.
+
 ## Conclusión prevista, no resultado
 
 **No se espera necesariamente mejorar Local04D** por aumentar el número de modelos explorados. Es particularmente probable que una búsqueda de 10 000 candidatos encuentre configuraciones con buen RMSE de cribado interno por simple azar. La CV repetida sirve para filtrar ese ruido; el banco exterior se emplea para una evaluación emparejada exploratoria, no para seguir iterando indefinidamente.
