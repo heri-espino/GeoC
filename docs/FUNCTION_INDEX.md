@@ -192,6 +192,14 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `tune_and_predict` | function | `geocebada.evaluation.checkpoint08_local` | Resume per-split Optuna trials; only inner training y enters objective. | `src/geocebada/evaluation/checkpoint08_local.py` |
 | `validate_memberships` | function | `geocebada.evaluation.checkpoint08_local` |  | `src/geocebada/evaluation/checkpoint08_local.py` |
 | `verify_original_control` | function | `geocebada.evaluation.checkpoint08_local` | Prove frozen 04D reproduces its stored 04B held-out forecasts. | `src/geocebada/evaluation/checkpoint08_local.py` |
+| `PcaData` | class | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `assemble_split` | function | `geocebada.evaluation.checkpoint10_pca` | Fit frozen PCA20, 4 per-dimension tuned models, and joint tuned PCA model. | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `grid_parameters` | function | `geocebada.evaluation.checkpoint10_pca` | Exhaustive small, interpretable grid over k, Ridge alpha, and distance p. | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `inner_scores` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `inputs` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `load_pca_data` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `predict` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `summarize` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
 | `build_review_queue` | function | `geocebada.evaluation.checkpoint09_robust` | Rank training labels for HUMAN provenance review, never auto-delete any. | `src/geocebada/evaluation/checkpoint09_robust.py` |
 | `evaluate_bank` | function | `geocebada.evaluation.checkpoint09_robust` | Score frozen candidates on held-out pseudo-targets; no tuning on test y. | `src/geocebada/evaluation/checkpoint09_robust.py` |
 | `leave_one_split_out_selection` | function | `geocebada.evaluation.checkpoint09_robust` | LOSO stability diagnostic (NOT statistically independent parcel folds). | `src/geocebada/evaluation/checkpoint09_robust.py` |
