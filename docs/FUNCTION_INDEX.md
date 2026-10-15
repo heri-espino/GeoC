@@ -238,6 +238,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `evaluate_outer` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Select nested hyperparameters on 97 labels and predict 41 just once. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
 | `focused_candidates` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Reproducible broad-but-localized proposals and permanent incumbent. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
 | `model_names` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Original frozen baseline, four family selectors and joint selector. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
+| `parse_focused_candidate` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Parse PCA/PLS candidate without Checkpoint13's incompatible PLS grid. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
 | `prepare_focused` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Preserve original C4, reconstruct PCA192 X-only, and prepare PLS inputs. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
 | `score_candidates` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Full inner CV for every candidate, not a 12-parcel holdout screen. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
 | `shortlist_candidates` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Shortlist per family, ALWAYS preserving Local04D as a finalist. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
