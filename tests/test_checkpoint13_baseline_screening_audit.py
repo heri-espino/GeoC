@@ -1,17 +1,22 @@
 """Checkpoint13 incumbent 12-parcel screening audit tests."""
 from __future__ import annotations
 
+import importlib
+import sys
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from geocebada.evaluation.checkpoint10_pca import PcaData
 from geocebada.evaluation.checkpoint13_randomized import FAMILIES, SEED
-from tools.audit_checkpoint_13_baseline import (
-    baseline_inner_scores,
-    screening_folds,
-    virtual_ranks,
-)
+# The tools directory consists of runnable scripts; it is not installed as a package.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+_audit = importlib.import_module("audit_checkpoint_13_baseline")
+baseline_inner_scores = _audit.baseline_inner_scores
+screening_folds = _audit.screening_folds
+virtual_ranks = _audit.virtual_ranks
 
 ID = "ID_POLIGONO"
 
