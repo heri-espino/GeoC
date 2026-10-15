@@ -48,6 +48,8 @@ tener configurada la fuente **GitHub Actions** en Settings → Pages.
 
 **Benchmark de representaciones (Checkpoint 12):** [PCA→ICA, proyección aleatoria, PLS supervisado y Elastic Net local](docs/CHECKPOINT_12_ALTERNATIVES.md), separado del grid amplio de Checkpoint 11.
 
+**Búsqueda aleatoria amplia (Checkpoint 13):** [10 000 configuraciones de PCA, ICA, RP, PLS y Ridge/Elastic Net local con selección anidada reanudable](docs/CHECKPOINT_13_RANDOMIZED.md), sin cambiar el modelo oficial.
+
 ## Objetivo activo — reconstrucción transductiva de 59 rendimientos
 
 Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de
