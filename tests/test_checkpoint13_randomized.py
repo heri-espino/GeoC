@@ -12,8 +12,8 @@ from geocebada.evaluation.checkpoint13_randomized import (
     FAMILIES,
     JOINT,
     candidate_predict,
-    choose_and_evaluate,
     DIMENSIONS,
+    choose_and_evaluate,
     extend_pca,
     model_names,
     parse_candidate,
@@ -44,9 +44,6 @@ def data() -> RepresentationData:
     representations = {
         ("ICA", n): x[:, :n] for n in (8, 16, 32)
     }
-    representations.update({
-        ("RP", n): x[:, :n] for n in (16, 32, 64)
-    })
     return extend_pca(
         RepresentationData(base, raw, representations, []),
         dimensions=SMALL_DIMENSIONS,
@@ -57,7 +54,6 @@ def data() -> RepresentationData:
 SMALL_DIMENSIONS = {
     "PCA": (5, 8, 12, 16, 20, 24, 32, 40),
     "ICA": (5, 8, 12, 16, 24, 32),
-    "RP": (5, 8, 12, 16, 24, 32),
     "PLS": (5, 8, 12, 16, 24, 32),
 }
 
@@ -65,7 +61,7 @@ SMALL_DIMENSIONS = {
 def small_candidates(count: int) -> pd.DataFrame:
     """Keep sampled models inside the 138x55 synthetic fixture's X rank."""
     frame = sample_candidates(count=count)
-    fixed = {"PCA": 20, "ICA": 8, "RP": 16, "PLS": 8}
+    fixed = {"PCA": 20, "ICA": 8, "PLS": 8}
     frame["components"] = [fixed[str(rep)] for rep in frame["representation"]]
     return frame
 
@@ -76,8 +72,9 @@ def test_exactly_ten_thousand_seeded_balanced_random_models() -> None:
     assert generated["candidate_id"].is_unique
     assert min(DIMENSIONS["PCA"]) == 5
     assert max(DIMENSIONS["PCA"]) == 192
-    assert min(DIMENSIONS["RP"]) == 5
-    assert max(DIMENSIONS["RP"]) == 200
+    assert "RP" not in DIMENSIONS
+    assert "RP_Ridge" not in FAMILIES
+    assert len(FAMILIES) == 5
     assert max(DIMENSIONS["ICA"]) <= 40
     assert max(DIMENSIONS["PLS"]) <= 32
     for rep, values in DIMENSIONS.items():
