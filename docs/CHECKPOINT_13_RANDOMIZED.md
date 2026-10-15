@@ -10,13 +10,12 @@ La muestra es pequeña (**138 rendimientos reportados**, de los que se utilizan 
 
 ## Diseño exacto
 
-Se muestrean **exactamente 10 000 configuraciones únicas de semilla fija**, aproximadamente repartidas por igual entre seis familias:
+Se muestrean **exactamente 10 000 configuraciones aleatorias de semilla fija**, aproximadamente repartidas por igual entre cinco familias:
 
 | Familia | Reducción o representación | Regresor |
 |---|---|---|
 | PCA_Ridge | PCA de la representación C4 | Ridge local |
 | ICA_Ridge | PCA40 → FastICA | Ridge local |
-| RP_Ridge | Proyección aleatoria gaussiana | Ridge local |
 | PLS_Ridge | PLS supervisado dentro del fold | Ridge local |
 | PCA_ElasticNet | PCA C4 | Elastic Net local |
 | PLS_ElasticNet | PLS supervisado dentro del fold | Elastic Net local |
@@ -27,7 +26,6 @@ Los candidatos se generan mediante un generador aleatorio fijo, antes de observa
 |---|---|
 | Componentes PCA | 5, 8, 12, 16, 20, 24, 32, 40, 48, 64, 96, 128, 160, 192 |
 | Componentes PCA→ICA | 5, 8, 12, 16, 24, 32 |
-| Componentes RP | 5, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160, 200 |
 | Componentes PLS | 5, 8, 12, 16, 24, 32 |
 | Vecinos geográficos k | 8, 12, 16, 20, 24, 32, 48 |
 | Exponente geográfico p | Uniforme entre 0 y 2.5 |
@@ -35,9 +33,9 @@ Los candidatos se generan mediante un generador aleatorio fijo, antes de observa
 | alfa Elastic Net | Log-uniforme entre 0.001 y aproximadamente 2 |
 | Proporción L1 Elastic Net | Uniforme entre 0.05 y 0.95 |
 
-**Límites de dimensión:** con 197 parcelas, el PCA centrado tiene rango máximo 196, por lo que **192** es el máximo ensayado. Una proyección aleatoria sí puede devolver **200 columnas**, pero esas columnas no añaden 200 direcciones linealmente independientes: el rango de su matriz de salida sigue limitado por los datos. La ICA utilizada es **PCA40→ICA**, por tanto no puede superar 40 componentes. PLS depende del número de etiquetas internas y se restringe a 32 componentes, aun cuando las variables originales sean 2 082.
+**Límites de dimensión:** con 197 parcelas, el PCA centrado tiene rango máximo 196, por lo que **192** es el máximo ensayado (no 200). La ICA utilizada es **PCA40→ICA**, por tanto no puede superar 40 componentes. PLS depende del número de etiquetas internas y se restringe a 32 componentes, aun cuando las variables originales sean 2 082. **Se excluye explícitamente la proyección aleatoria**, por decisión del usuario.
 
-**Importante:** ICA y proyección aleatoria utilizan únicamente la X de las 197 parcelas y son transductivos. PLS está supervisado, por lo que se **vuelve a ajustar exclusivamente con las etiquetas del fold de entrenamiento** para cada evaluación interna y para el reajuste exterior. Nunca se crea un PLS supervisado global usando y de los 41 pseudo-objetivos o de las 59 consultas reales.
+**Importante:** PCA e ICA utilizan únicamente la X de las 197 parcelas y son transductivos. PLS está supervisado, por lo que se **vuelve a ajustar exclusivamente con las etiquetas del fold de entrenamiento** para cada evaluación interna y para el reajuste exterior. Nunca se crea un PLS supervisado global usando y de los 41 pseudo-objetivos o de las 59 consultas reales.
 
 El control `PCA20_frozen` reproduce la configuración original `Local04D`; no compite por hiperparámetros ni se cambia.
 
@@ -46,7 +44,7 @@ El control `PCA20_frozen` reproduce la configuración original `Local04D`; no co
 Para cada una de las **16 máscaras X-only del Checkpoint 08** (97 parcelas en el entrenamiento exterior, 41 pseudo-objetivos externos):
 
 1. **Cribado de 10 000 candidatos:** se reservan **12 de los 97 rendimientos para el cribado interno** (los mismos para todos los candidatos), y se ajusta cada configuración con los otros 85. No se consulta ningún y externo.
-2. **Selección balanceada:** se conservan los **12 candidatos con menor RMSE de cribado de cada una de las seis familias**, máximo 72 finalistas. Esto evita que una familia domine por azar el presupuesto.
+2. **Selección balanceada:** se conservan los **12 candidatos con menor RMSE de cribado de cada una de las cinco familias**, máximo 60 finalistas. Esto evita que una familia domine por azar el presupuesto.
 3. **Reevaluación de finalistas:** se ejecuta un **4-fold CV con dos repeticiones** sobre las 97 etiquetas exteriores de entrenamiento. Cada candidato obtiene **194 predicciones internas**, y con ellas un RMSE de selección.
 4. **Evaluación exterior:** se elige el ganador de cada familia y el ganador conjunto entre todos los finalistas. Después se predicen los **41 pseudo-objetivos externos una vez por procedimiento**, junto con Local04D fijo. Resultado: **8 modelos/procedimientos emparejados**, 16 × 41 = 656 pronósticos repetidos por procedimiento.
 5. **Informe:** RMSE pooled, R² pooled, peor RMSE de split, comparaciones de \(\Delta\)MSE y bootstrap por parcela (todas las repeticiones de un ID se remuestrean juntas), además de la familia e hiperparámetros seleccionados en cada split.
