@@ -1534,6 +1534,10 @@ run is still pending. See docs/CHECKPOINT_07C_NESTED_SEARCH.md.
 
 After the three-model Checkpoint 07 development benchmark retained frozen Local04D, the team requested a final symmetric hyperparameter experiment comparing Local04D and Local07. Checkpoint 08 is implemented on the experiment/08-nested-local-comparison branch (pull request #11). It freezes a new X-only 16-split pseudo-target bank, runs inner-CV Optuna for both local families, verifies archived Local04D numerical parity, checkpoints results for reboot recovery, and reports a paired parcel-bootstrap delta MSE. **No full 08 run has been executed and no 59-parcel predictions have changed.** See docs/CHECKPOINT_08_NESTED_LOCAL.md.
 
+## 2026-10-15 — Checkpoint 12 alternative local models and representation ablation
+
+User proposed ElasticNet and non-PCA dimensionality reduction as cheaper alternatives. Created a separate fold-safe benchmark comparing fixed PCA20 Local04D vs PCA→ICA, Gaussian random projection, supervised PLS, PCA+local ElasticNet and PLS+local ElasticNet, keeping the geographic Local04D k=24/p=1 fixed. Uses X-only transductive transforms or PLS explicitly within each training fold to prevent label leakage, with 16 reused Checkpoint08 outer masks (exploratory). Runner and docs in tools/run_checkpoint_12_representations.py and docs/CHECKPOINT_12_ALTERNATIVES.md. No results claimed or predictions changed.
+
 ## 2026-10-15 — Checkpoint 11 wide search after negative Checkpoint10 result
 
 Checkpoint10 workstation results: original frozen Local04D pooled RMSE 0.481936, R2 0.685388; nested PCA20 .493880, PCA40 .494361, PCA80 .492532, PCA160 .495184, joint nested .497939; all paired parcel-bootstrapped delta-MSE CIs positive. User asked for a wider CV search. A separate Checkpoint11 implements 1960 PCA/k/alpha/p configurations in eight PCA dimensions, screening each by 3fold internal CV then reranking four best per dimension plus anchors via 2x5fold repeated CV; frozen 16 outer masks reused, no fresh independent validation, no promotion. Docs/CHECKPOINT_11_WIDE_PCA.md. No checkpoint11 observed RMSE yet.
