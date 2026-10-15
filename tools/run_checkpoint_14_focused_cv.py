@@ -26,7 +26,6 @@ from geocebada.evaluation.checkpoint08_local import ID, atomic_json, digest
 from geocebada.evaluation.checkpoint10_pca import FROZEN, inputs, predict
 from geocebada.evaluation.checkpoint14_focused_cv import (
     ANCHOR_NAME,
-    BASELINE,
     COUNT,
     FAMILIES,
     JOINT,
@@ -335,7 +334,7 @@ def main() -> int:
         parser.error("chunk size must be at least 1.")
     paths = input_checks()
     if args.check:
-        data = load_data()
+        load_data()
         candidates = focused_candidates()
         print(
             f"[14 CHECK] C4, masks, historical Local04D and "
