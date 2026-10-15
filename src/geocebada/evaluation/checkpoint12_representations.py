@@ -22,12 +22,12 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import ElasticNet
 from sklearn.metrics import r2_score
 from sklearn.model_selection import KFold
-from sklearn.random_projection import GaussianRandomProjection
 from sklearn.preprocessing import StandardScaler
+from sklearn.random_projection import GaussianRandomProjection
 
 from geocebada.evaluation.checkpoint04a import resolve_numeric_representation_features
 from geocebada.evaluation.checkpoint04d1 import predict_weighted_local_ridge
-from geocebada.evaluation.checkpoint08_local import ID, Y
+from geocebada.evaluation.checkpoint08_local import ID
 from geocebada.evaluation.checkpoint10_pca import (
     EXPECTED_FEATURES,
     FROZEN,
