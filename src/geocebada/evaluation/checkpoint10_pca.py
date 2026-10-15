@@ -34,7 +34,9 @@ from geocebada.evaluation.checkpoint08_local import (
 from geocebada.features import join_agronomic_features, join_empirical_features
 
 DIMS = (20, 40, 80, 160)
-ALPHA_GRID = (10.0, 30.0, 100.0, 300.0, 1000.0)
+K_GRID = (12, 20, 24, 36)
+ALPHA_GRID = (10.0, 30.0, 100.0, 300.0)
+POWER_GRID = (0.5, 1.0, 2.0)
 FROZEN = {"k": 24, "alpha": 30.0, "power": 1.0}
 EXPECTED_FEATURES = 2082
 
@@ -56,10 +58,17 @@ def inputs(root: Path, membership: Path) -> dict[str, Path]:
 
 
 def grid_parameters(*, smoke: bool = False) -> list[dict]:
-    """Five reasonable Ridge strengths; keep Local04D geography unchanged."""
+    """Exhaustive small, interpretable grid over k, Ridge alpha, and distance p.
+
+    Grid is applied identically within every PCA dimension; no use of outer
+    pseudo-test yields enters parameter selection.
+    """
+    ks = (20, 24) if smoke else K_GRID
+    alphas = (30.0,) if smoke else ALPHA_GRID
+    powers = (1.0,) if smoke else POWER_GRID
     return [
-        {"k": 24, "alpha": alpha, "power": 1.0}
-        for alpha in ((30.0, 100.0) if smoke else ALPHA_GRID)
+        {"k": k, "alpha": alpha, "power": power}
+        for k in ks for alpha in alphas for power in powers
     ]
 
 
@@ -205,7 +214,7 @@ def inner_scores(data: PcaData, train: list[str], *, components: int,
 
 def assemble_split(data: PcaData, split_id: str,
                    grids: dict[int, pd.DataFrame]) -> tuple[pd.DataFrame, dict]:
-    """Fit a fixed incumbent and four internally tuned dimensions on outer holdout."""
+    """Fit frozen PCA20, 4 per-dimension tuned models, and joint tuned PCA model."""
     train, test = data.folds[split_id]
     actual = data.y.loc[test].to_numpy(float)
     records = []
@@ -221,19 +230,21 @@ def assemble_split(data: PcaData, split_id: str,
     add_model("PCA20_frozen", 20, FROZEN)
     for n in sorted(grids):
         options = grids[n].sort_values(
-            ["inner_rmse", "alpha"], kind="mergesort",
+            ["inner_rmse", "k", "alpha", "power"], kind="mergesort",
         )
         best = options.iloc[0]
-        params = {"k": 24, "alpha": float(best["alpha"]), "power": 1.0}
+        params = {"k": int(best["k"]), "alpha": float(best["alpha"]),
+                  "power": float(best["power"])}
         best_by_dim[n] = {**params, "inner_rmse": float(best["inner_rmse"])}
-        add_model(f"PCA{n}_alpha_nested", n, params)
+        add_model(f"PCA{n}_nested", n, params)
 
     merged = pd.concat(grids.values(), ignore_index=True).sort_values(
-        ["inner_rmse", "components", "alpha"], kind="mergesort"
+        ["inner_rmse", "components", "k", "alpha", "power"], kind="mergesort"
     )
     joint = merged.iloc[0]
     n_best = int(joint["components"])
-    jointpars = {"k": 24, "alpha": float(joint["alpha"]), "power": 1.0}
+    jointpars = {"k": int(joint["k"]), "alpha": float(joint["alpha"]),
+                 "power": float(joint["power"])}
     add_model("PCA_joint_nested", n_best, jointpars)
     return pd.DataFrame(records), {
         "split_id": split_id, "best_by_dimension": best_by_dim,
@@ -246,11 +257,11 @@ def assemble_split(data: PcaData, split_id: str,
 
 def summarize(predictions: pd.DataFrame, *, bootstraps: int = 1000,
               seed: int = 20261014) -> tuple[pd.DataFrame, pd.DataFrame]:
-    expected = {*(f"PCA{n}_alpha_nested" for n in DIMS),
+    expected = {*(f"PCA{n}_nested" for n in DIMS),
                 "PCA20_frozen", "PCA_joint_nested"}
     if set(predictions["model"]) != expected:
         raise ValueError("Summary requires six complete PCA CV models.")
-    keys = [ "split_id", ID ]
+    keys = ["split_id", ID]
     if predictions.duplicated(keys + ["model"]).any():
         raise ValueError("Duplicated per-parcel model results.")
     count = predictions.groupby(keys)["model"].nunique()
