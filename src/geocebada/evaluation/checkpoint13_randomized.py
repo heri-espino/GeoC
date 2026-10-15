@@ -10,13 +10,13 @@ fold from training y. No promotion of the 59 fixed forecasts occurs here.
 from __future__ import annotations
 
 import warnings
-from itertools import product
 
 import numpy as np
 import pandas as pd
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import ElasticNet
 from sklearn.model_selection import KFold
+from sklearn.metrics import r2_score
 
 from geocebada.evaluation.checkpoint04d1 import predict_weighted_local_ridge
 from geocebada.evaluation.checkpoint08_local import ID
@@ -24,7 +24,6 @@ from geocebada.evaluation.checkpoint10_pca import FROZEN, predict
 from geocebada.evaluation.checkpoint12_representations import (
     RepresentationData,
     _matrix,
-    summarize as summarize_checkpoint12,
 )
 
 SEED = 20261015
@@ -340,30 +339,65 @@ def choose_and_evaluate(
     return pd.DataFrame(records), report
 
 
-def summarize(predictions: pd.DataFrame):
-    """Reuse parcel-cluster bootstrap, mapping arbitrary family names."""
-    # Checkpoint12 summary hardcodes five models, so generalize only name checks
-    # through an explicit copied, transparent procedure.
-    from geocebada.evaluation.checkpoint11_wide_pca import summarize as common_summary
-
-    # Common summary expects PCA-prefixed names, so delegate through a
-    # reversible relabeling of all family names into eight stable names.
-    from geocebada.evaluation.checkpoint11_wide_pca import DIMS as EIGHT_DIMS
-
-    mapping = {BASELINE: "PCA20_frozen", JOINT: "PCA_joint_nested"}
-    mapping.update({
-        family: f"PCA{n}_nested"
-        for family, n in zip(FAMILIES, EIGHT_DIMS, strict=False)
-    })
-    remapped = predictions.copy()
-    remapped["model"] = remapped["model"].map(mapping)
-    if remapped["model"].isna().any():
-        raise ValueError("Unknown model label in evaluation.")
-    scores, comparison = common_summary(
-        remapped, dimensions=EIGHT_DIMS[:len(FAMILIES)]
-    )
-    reverse = {value: key for key, value in mapping.items()}
-    scores["model"] = scores["model"].map(reverse)
-    comparison["model"] = comparison["model"].map(reverse)
-    comparison["reference"] = BASELINE
-    return scores, comparison
+def summarize(
+    predictions: pd.DataFrame, *,
+    outer_splits: int = 16,
+    held_out_per_split: int = 41,
+    bootstraps: int = 1000,
+    seed: int = SEED,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Report paired RMSE/R2 and parcel-block bootstrap delta-MSE intervals."""
+    required = model_names()
+    if set(predictions["model"]) != required:
+        raise ValueError("Missing models in the final paired benchmark.")
+    keys = ["split_id", ID]
+    if predictions.duplicated([*keys, "model"]).any():
+        raise ValueError("Duplicate model/split/parcel score.")
+    n = predictions.groupby(keys)["model"].nunique()
+    if len(n) != outer_splits * held_out_per_split or not n.eq(len(required)).all():
+        raise ValueError("Incomplete paired outer-validation predictions.")
+    if not predictions.groupby(keys)["observed"].nunique().eq(1).all():
+        raise ValueError("Disagreeing observed values across paired models.")
+    records = []
+    for model, frame in predictions.groupby("model"):
+        rmse = frame.groupby("split_id").apply(
+            lambda f: float(np.sqrt(np.mean(
+                np.square(f["predicted"] - f["observed"])
+            ))), include_groups=False,
+        )
+        records.append({
+            "model": model, "n_splits": outer_splits,
+            "repeated_predictions": len(frame),
+            "unique_parcels": frame[ID].nunique(),
+            "rmse_pooled": float(np.sqrt(np.mean(
+                np.square(frame["predicted"] - frame["observed"])
+            ))),
+            "r2_pooled": float(r2_score(frame["observed"], frame["predicted"])),
+            "rmse_mean_split": float(rmse.mean()),
+            "rmse_worst_split": float(rmse.max()),
+        })
+    summary = pd.DataFrame(records).sort_values("rmse_pooled")
+    wide = predictions.pivot(index=keys, columns="model", values="predicted")
+    actual = predictions.drop_duplicates(keys).set_index(keys)["observed"]
+    mse = wide.sub(actual, axis=0).pow(2).sort_index()
+    clusters = {pid: f for pid, f in mse.groupby(level=ID, sort=True)}
+    parcel_ids = sorted(clusters)
+    rng = np.random.default_rng(seed)
+    intervals = []
+    for model in sorted(required - {BASELINE}):
+        differences = mse[model] - mse[BASELINE]
+        samples = np.empty(bootstraps, dtype=float)
+        for iteration in range(bootstraps):
+            draw = rng.choice(parcel_ids, size=len(parcel_ids), replace=True)
+            samples[iteration] = float(np.concatenate([
+                (clusters[pid][model] - clusters[pid][BASELINE]).to_numpy()
+                for pid in draw
+            ]).mean())
+        intervals.append({
+            "model": model, "reference": BASELINE,
+            "delta_mse": float(differences.mean()),
+            "ci95_low": float(np.quantile(samples, 0.025)),
+            "ci95_high": float(np.quantile(samples, 0.975)),
+            "bootstrap_unit": "unique_parcel",
+        })
+    return summary, pd.DataFrame(intervals)
