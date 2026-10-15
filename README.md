@@ -50,6 +50,8 @@ tener configurada la fuente **GitHub Actions** en Settings → Pages.
 
 **Búsqueda aleatoria amplia (Checkpoint 13):** [10 000 configuraciones de PCA, ICA, PLS y Ridge/Elastic Net local (sin proyección aleatoria) con selección anidada reanudable](docs/CHECKPOINT_13_RANDOMIZED.md), sin cambiar el modelo oficial.
 
+**Nueva CV enfocada (Checkpoint 14):** [1 000 configuraciones próximas a Local04D con CV completa y comparación interna directa del incumbente](docs/CHECKPOINT_14_FOCUSED_CV.md); resultados exploratorios, sin promoción.
+
 ## Objetivo activo — reconstrucción transductiva de 59 rendimientos
 
 Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de

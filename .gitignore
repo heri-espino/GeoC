@@ -118,6 +118,9 @@ venv/
 /reports/checkpoint_13_randomized/
 /reports/checkpoint_13_pilot/
 
+# Checkpoint 14: full inner-CV search, label-bearing per-fold outputs
+/reports/checkpoint_14_focused_1k/
+
 # Checkpoint 09: keep per-parcel diagnostics local; publish only aggregates
 /reports/checkpoint_09/*
 !/reports/checkpoint_09/shared/
