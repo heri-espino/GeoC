@@ -201,6 +201,14 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `predict_robust_local` | function | `geocebada.evaluation.checkpoint09_robust` | Fit weighted-Ridge IRLS Huber or training-LOO reliability by target parcel. | `src/geocebada/evaluation/checkpoint09_robust.py` |
 | `summarize_bank` | function | `geocebada.evaluation.checkpoint09_robust` | Compute RMSE/MAE and train-defined tail metrics for paired forecasts. | `src/geocebada/evaluation/checkpoint09_robust.py` |
 | `training_loo_residuals` | function | `geocebada.evaluation.checkpoint09_robust` | Calculate training-only LOO Local04D errors, never using external targets. | `src/geocebada/evaluation/checkpoint09_robust.py` |
+| `PcaData` | class | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `assemble_split` | function | `geocebada.evaluation.checkpoint10_pca` | Fit frozen PCA20, 4 per-dimension tuned models, and joint tuned PCA model. | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `grid_parameters` | function | `geocebada.evaluation.checkpoint10_pca` | Exhaustive small, interpretable grid over k, Ridge alpha, and distance p. | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `inner_scores` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `inputs` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `load_pca_data` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `predict` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `summarize` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |

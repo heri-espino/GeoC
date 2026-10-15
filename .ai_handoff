@@ -1,3 +1,7 @@
+## 2026-10-14 — New Local04D PCA dimensionality joint grid (Checkpoint 10)
+
+User requested ONE experiment sweeping together 4 parameters: PCA dimensions 20/40/80/160, geographic k=12/20/24/36, Ridge alpha=10/30/100/300, geographic inverse-distance power p=.5/1/2. 192 exact combinations per outer split, inner 3-fold CV on 97 labels, same 16 frozen Checkpoint08 outer masks, fixed Local04D reference PCA20 k24 a30 p1, four dimension-specific nested winners and one fully joint nested winner (6 paired model results). Existing 08 outer bank already inspected; 10 is exploratory, not independent confirmation. Code: src/geocebada/evaluation/checkpoint10_pca.py; tools/run_checkpoint_10_pca.py; tests/test_checkpoint10_pca.py; docs/CHECKPOINT_10_PCA_GRID.md. All workstation per-parcel runs ignored in reports/checkpoint_10_pca/. No promotion or official 59 changes. PCA C4 is rebuilt by 04A canonical X-only procedure; numerical original PC20 parity is required; observed reference 08 paired parity validated when available. Run --check / --smoke / --run / --summary. Verify CI before claiming real data run.
+
 ## 2026-10-12 — Consolidated validation and results report (02–08)
 
 User requested one readable, reproducible methodology file that explains the whole research trajectory and especially how the nested/target-matched CVs for 07 and 08 were constructed. Added `docs/METODOLOGIA_Y_RESULTADOS.md` in Spanish, plus links from root README, docs README, Sphinx toctree, and `reports/checkpoint_07/shared/README.md`.

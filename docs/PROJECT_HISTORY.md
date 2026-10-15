@@ -1534,6 +1534,10 @@ run is still pending. See docs/CHECKPOINT_07C_NESTED_SEARCH.md.
 
 After the three-model Checkpoint 07 development benchmark retained frozen Local04D, the team requested a final symmetric hyperparameter experiment comparing Local04D and Local07. Checkpoint 08 is implemented on the experiment/08-nested-local-comparison branch (pull request #11). It freezes a new X-only 16-split pseudo-target bank, runs inner-CV Optuna for both local families, verifies archived Local04D numerical parity, checkpoints results for reboot recovery, and reports a paired parcel-bootstrap delta MSE. **No full 08 run has been executed and no 59-parcel predictions have changed.** See docs/CHECKPOINT_08_NESTED_LOCAL.md.
 
+## 2026-10-14 — Checkpoint 10: joint PCA and neighborhood hyperparameter experiment
+
+Implemented a single 16-split, threefold-inner, target-matched exploration of 192 predeclared combinations: PCA 20/40/80/160 from the original 2082-feature C4 representation; geographic neighbors k=12/20/24/36; Ridge alpha=10/30/100/300; inverse-distance power p=.5/1/2. Reuses X-only Checkpoint08 confirmation masks, so these are not fresh independent confirmation cases. Six paired outputs: frozen PCA20 Local04D, 4 dimension-specific nested selections, and joint nested selection. CPU-only, deterministic, resumable and fingerprint-checked. Does not change final 59 predictions. Spec: docs/CHECKPOINT_10_PCA_GRID.md. 
+
 ## 2026-10-12 — Comprehensive methodology and CV history publication
 
 Added a canonical narrative in `docs/METODOLOGIA_Y_RESULTADOS.md` covering all Checkpoints 02–08 with deeper technical details for 04B, 07 and 08: how target-matched masks were built; exact 16×(97/41) outer validation; separate inner Optuna/PCA tuning; frozen Local04D; 13 Checkpoint07 results; 3 Checkpoint08 results with paired parcel-bootstrap intervals; target-label and leakage boundaries; final 59-parcel artifact; and limitations. Also linked from READMEs and Sphinx. No model promotion or change in the 59 estimates.
