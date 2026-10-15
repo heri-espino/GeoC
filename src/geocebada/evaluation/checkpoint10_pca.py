@@ -8,7 +8,6 @@ once, after a candidate is frozen; 59 actual target yields are never present.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -30,8 +29,6 @@ from geocebada.evaluation.checkpoint04d1 import predict_weighted_local_ridge
 from geocebada.evaluation.checkpoint08_local import (
     ID,
     Y,
-    atomic_json,
-    digest,
     validate_memberships,
 )
 from geocebada.features import join_agronomic_features, join_empirical_features
@@ -159,10 +156,7 @@ def load_pca_data(root: Path, membership: Path, *, max_components: int = 160) ->
     x = {n: StandardScaler().fit_transform(full_x[:, :n]) for n in DIMS if n <= max_components}
     # PCA explained variance for a truncated full SVD is tracked per prefix.
     # The original embedding contains 20-PC cumulative variance only.
-    # To compute all cumulative shares without fitting a second PCA,
-    # exploit variance ratios from the first max_components eigenspectrum:
-    centered_scaled = None  # no supervised use; placeholder is never persisted
-    del centered_scaled
+    # Compute cumulative explained shares from each PC sample variance.
     # The PCA coordinates' sample variances are eigenvalues; source columns were standardized.
     usable = len(embedded.features_used)
     squared = np.var(full_x, axis=0, ddof=1)
@@ -219,7 +213,7 @@ def assemble_split(data: PcaData, split_id: str,
     actual = data.y.loc[test].to_numpy(float)
     records = []
     best_by_dim = {}
-    for n in DIMS:
+    for n in sorted(grids):
         options = grids[n].sort_values(
             ["inner_rmse", "k", "alpha", "power"], kind="mergesort",
         )
