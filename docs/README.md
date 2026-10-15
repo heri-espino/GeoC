@@ -5,6 +5,7 @@ Esta carpeta concentra la documentación del proyecto, la referencia de la libre
 - `METODOLOGIA_Y_RESULTADOS.md`: recorrido completo de Checkpoints 02–08, generación de particiones target-matched y anidadas, resultados de 07/08, incertidumbre, limitaciones y decisión final.
 - `CHECKPOINT_09_ROBUST_LABELS.md`: protocolo congelado para comprobar sensibilidad a etiquetas ruidosas mediante Huber y confiabilidad LOO, sin alterar las 59 predicciones.
 - `CHECKPOINT_09_FINDINGS.md`: ejecución completada de Checkpoint 09, puntuaciones agregadas, fallo LOSO y decisión de conservar Local04D.
+- `CHECKPOINT_10_PCA_GRID.md`: diseño de un único grid anidado de PCA (20/40/80/160), vecinos k, regularización Ridge alfa y potencia espacial p; no modifica las predicciones finales.
 - `TRANSDUCTIVE_OBJECTIVE.md`: especificación canónica del objetivo transductivo de las 59 parcelas fijas y validación pseudo-competition.
 - `CHECKPOINT_03D_FINDINGS.md`: cierre del benchmark global balanced, finalistas state/grouped y deployment ONNX.
 - `CHECKPOINT_05_FINDINGS.md`: cierre del ensamble global/local; gate LOSO fallido y retención de Local04D.
