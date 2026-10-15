@@ -209,6 +209,13 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `load_pca_data` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
 | `predict` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
 | `summarize` | function | `geocebada.evaluation.checkpoint10_pca` |  | `src/geocebada/evaluation/checkpoint10_pca.py` |
+| `choose_nested` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Predict the 41 outer-held-out labels once after inner-CV selection. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
+| `enlarge_c4` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Use the standardized 160-PC coordinates from canonical Checkpoint 10. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
+| `make_grid` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Construct an exhaustive, ordered grid without learning from any labels. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
+| `models` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Fixed incumbent, per-dimension nested procedures, and joint selector. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
+| `score_grid` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Score candidate configurations using ONLY the supplied training IDs. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
+| `shortlist` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Promote strongest coarse configurations by PCA rank plus fixed anchor. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
+| `summarize` | function | `geocebada.evaluation.checkpoint11_wide_pca` | Paired outer-split RMSE/R2 and parcel-clustered delta-MSE intervals. | `src/geocebada/evaluation/checkpoint11_wide_pca.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
