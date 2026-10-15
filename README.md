@@ -44,6 +44,8 @@ tener configurada la fuente **GitHub Actions** en Settings → Pages.
 
 **Nuevo experimento exploratorio (Checkpoint 10):** [grid conjunto de componentes PCA, vecinos locales, regularización Ridge y exponente espacial](docs/CHECKPOINT_10_PCA_GRID.md). Reutiliza las máscaras de Checkpoint 08 y no cambia las 59 estimaciones oficiales.
 
+**Experimento adicional (Checkpoint 11):** [grid amplio y selección por CV repetida de componentes PCA, vecinos geográficos, Ridge y potencia de distancia](docs/CHECKPOINT_11_WIDE_PCA.md), preservando el control congelado y las 59 predicciones canónicas.
+
 ## Objetivo activo — reconstrucción transductiva de 59 rendimientos
 
 Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de
