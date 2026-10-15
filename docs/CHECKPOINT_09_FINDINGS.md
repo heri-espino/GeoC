@@ -76,7 +76,7 @@ Archivos públicos, transcritos directamente de la salida que compartió el oper
 
 - [Resumen agregado de desarrollo](../reports/checkpoint_09/shared/development_summary.csv)
 - [Decisión completa](../reports/checkpoint_09/shared/decision.json)
-- [Nota de publicación y limitaciones](../reports/checkpoint_09/shared/README.md)
+- [Nota de publicación y limitaciones](https://github.com/heri-espino/GeoC/blob/main/reports/checkpoint_09/shared/README.md)
 
 El CSV público conserva los números **redondeados** de la terminal; para una auditoría con precisión original, conservar el `reports/checkpoint_09/development_summary.csv` local.
 
