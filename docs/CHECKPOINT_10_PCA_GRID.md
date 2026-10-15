@@ -7,7 +7,7 @@ Esta pregunta **no** quedó resuelta en Checkpoints 04D ni 08: ambos utilizaron 
 
 ## 1. Diseño
 
-Se utiliza la representación original \`C4_all_deterministic\` del proyecto: **2 082 variables** numéricas procedentes de las capas base, agronómica y empírica determinista, excluyendo las expresiones aprendidas supervisadamente.
+Se utiliza la representación original `C4_all_deterministic` del proyecto: **2 082 variables** numéricas procedentes de las capas base, agronómica y empírica determinista, excluyendo las expresiones aprendidas supervisadamente.
 
 Las 2 082 variables pasan por imputación mediana, estandarización y PCA calculados con las \(X\) de las 197 parcelas —la misma regla transductiva X-only de Checkpoint 04A—. PCA retiene hasta 160 componentes; se usan sus prefijos **20, 40, 80 y 160**, y cada prefijo se estandariza otra vez como se hacía con el embedding C4 original.
 
@@ -34,7 +34,7 @@ Dentro de cada grupo de 97 rendimientos se corre un **KFold de 3 partes**:
 4. Se ajusta la regla seleccionada con los 97 rendimientos y se pronostican, una sola vez, los 41 reservados externos.
 5. Se calculan RMSE y \(R^2\) *pooled*, RMSE medio y peor split; todas las comparaciones usan los **mismos 16 × 41 = 656 pseudo-objetivos repetidos**.
 
-Se guardan **6 métodos emparejados** en cada split: \`PCA20_frozen\`, \`PCA20_nested\`, \`PCA40_nested\`, \`PCA80_nested\`, \`PCA160_nested\` y \`PCA_joint_nested\`.
+Se guardan **6 métodos emparejados** en cada split: `PCA20_frozen`, `PCA20_nested`, `PCA40_nested`, `PCA80_nested`, `PCA160_nested` y `PCA_joint_nested`.
 
 Como los rendimientos de las 138 parcelas de origen y estas máscaras **ya se utilizaron** en Checkpoint 08, esto constituye una **exploración posterior**, no una nueva confirmación estadísticamente independiente. La validación interna evita seleccionar hiperparámetros mirando los 41 rendimientos de *su propio split externo*, pero no borra toda la historia previa de selección. Si resultase un candidato claramente superior, se requeriría validación con nuevos datos o un banco genuinamente independiente antes de reemplazar oficialmente las 59 estimaciones.
 
@@ -43,18 +43,18 @@ Las máscaras no se regeneran; su existencia y sus 16×138 membresías se verifi
 ## 3. Controles del método
 
 - **Sin doble trabajo sobre nuevas imágenes:** utiliza las tablas C4 ya disponibles y los manifiestos del 04A; no exige reconstruir HLS/SMAP/Prithvi.
-- **Paridad del control:** antes de puntuar, reproduce con tolerancia numérica estricta los 20 PCs almacenados en el 04A. Si existe el archivo emparejado del Checkpoint 08, también comprueba que el control PCA20 reproduzca **exactamente sus pronósticos** de \`confirm_01\`.
+- **Paridad del control:** antes de puntuar, reproduce con tolerancia numérica estricta los 20 PCs almacenados en el 04A. Si existe el archivo emparejado del Checkpoint 08, también comprueba que el control PCA20 reproduzca **exactamente sus pronósticos** de `confirm_01`.
 - **Misma geografía:** conserva las distancias de Haversine normalizadas y el algoritmo original de Ridge local ponderado.
 - **Sin fuga supervisada:** PCA utiliza únicamente \(X\); cada fold interno sólo accede a sus propios \(y\) de entrenamiento y validación interior.
 - **Reanudación:** guarda un CSV de rejilla interna, pronósticos emparejados y JSON de selección por split. Huellas SHA-256 de datos, código, parámetros y membresías impiden mezclar corridas incompatibles.
-- **Datos protegidos:** los detalles individuales con rendimientos reportados permanecen en \`reports/checkpoint_10_pca/\` (gitignored). Sólo compartir posteriormente tablas agregadas cuidadosamente revisadas.
-- **Sin promoción:** no reentrena ni cambia \`reports/checkpoint_05/final_predictions.csv\` ni predicciones oficiales.
+- **Datos protegidos:** los detalles individuales con rendimientos reportados permanecen en `reports/checkpoint_10_pca/` (gitignored). Sólo compartir posteriormente tablas agregadas cuidadosamente revisadas.
+- **Sin promoción:** no reentrena ni cambia `reports/checkpoint_05/final_predictions.csv` ni predicciones oficiales.
 
 ## 4. Ejecución en PowerShell
 
-Desde la raíz del repositorio, con \`geocebada\` activo y los archivos C4 del 04A disponibles:
+Desde la raíz del repositorio, con `geocebada` activo y los archivos C4 del 04A disponibles:
 
-\`\`\`powershell
+```powershell
 git switch main
 git pull --ff-only origin main
 conda activate geocebada
@@ -70,22 +70,22 @@ python tools/run_checkpoint_10_pca.py --run
 
 # Sólo consolidar cuando se hayan completado los 16 splits
 python tools/run_checkpoint_10_pca.py --summary
-\`\`\`
+```
 
-Una interrupción del proceso no exige borrar resultados; ejecuta **el mismo comando \`--run\`** desde el mismo commit, versión de datos y opciones. Si cambian las fuentes o el código se requiere un **nuevo directorio \`--output\`**, no mezclar tablas o estudios anteriores. No lanzar dos ejecuciones a la vez. El script funciona en CPU; no hace falta GPU.
+Una interrupción del proceso no exige borrar resultados; ejecuta **el mismo comando `--run`** desde el mismo commit, versión de datos y opciones. Si cambian las fuentes o el código se requiere un **nuevo directorio `--output`**, no mezclar tablas o estudios anteriores. No lanzar dos ejecuciones a la vez. El script funciona en CPU; no hace falta GPU.
 
 ## 5. Qué se reportará después de la ejecución
 
 | Archivo local | Contenido |
 |---|---|
-| \`comparison_summary.csv\` | RMSE pooled, \(R^2\) pooled, RMSE promedio, peor split, recuentos |
-| \`paired_cluster_bootstrap.csv\` | \(\Delta\)MSE respecto de PCA20 fijo e IC 95 %; bootstrap agrupado por parcela |
-| \`inner_cv_grid_summary.csv\` | RMSE interno medio/SD para cada **cuádrupla** (PCA, k, alfa, p) |
-| \`selected_hyperparameters.csv\` | Configuración conjunta elegida dentro de cada uno de los 16 splits |
-| \`confirm_NN__inner_grid.csv\` | 192 valores de RMSE interno del split; mantiene los 4 parámetros |
-| \`confirm_NN__paired.csv\` | Predicciones externas de los 6 métodos en las mismas 41 parcelas |
-| \`confirm_NN__selection.json\` | Selección interna específica para cada dimensión y la búsqueda conjunta |
+| `comparison_summary.csv` | RMSE pooled, \(R^2\) pooled, RMSE promedio, peor split, recuentos |
+| `paired_cluster_bootstrap.csv` | \(\Delta\)MSE respecto de PCA20 fijo e IC 95 %; bootstrap agrupado por parcela |
+| `inner_cv_grid_summary.csv` | RMSE interno medio/SD para cada **cuádrupla** (PCA, k, alfa, p) |
+| `selected_hyperparameters.csv` | Configuración conjunta elegida dentro de cada uno de los 16 splits |
+| `confirm_NN__inner_grid.csv` | 192 valores de RMSE interno del split; mantiene los 4 parámetros |
+| `confirm_NN__paired.csv` | Predicciones externas de los 6 métodos en las mismas 41 parcelas |
+| `confirm_NN__selection.json` | Selección interna específica para cada dimensión y la búsqueda conjunta |
 
-La comparación principal para una decisión será \`PCA_joint_nested\` frente a \`PCA20_frozen\`, *no* el mejor RMSE externo escogido a posteriori entre las cuatro curvas. El bootstrap por parcela trata las predicciones repetidas del mismo \`ID_POLIGONO\` como un bloque; no garantiza independencia espacial entre parcelas.
+La comparación principal para una decisión será `PCA_joint_nested` frente a `PCA20_frozen`, *no* el mejor RMSE externo escogido a posteriori entre las cuatro curvas. El bootstrap por parcela trata las predicciones repetidas del mismo `ID_POLIGONO` como un bloque; no garantiza independencia espacial entre parcelas.
 
 **Referencias:** [modelo Local04D de Checkpoint 04D](CHECKPOINT_04D1_FINDINGS.md), [comparación simétrica 08](CHECKPOINT_08_NESTED_LOCAL.md), [resumen metodológico](METODOLOGIA_Y_RESULTADOS.md).
