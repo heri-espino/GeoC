@@ -13,10 +13,13 @@ import warnings
 
 import numpy as np
 import pandas as pd
+from sklearn.decomposition import FastICA, PCA
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import ElasticNet
 from sklearn.metrics import r2_score
 from sklearn.model_selection import KFold
+from sklearn.preprocessing import StandardScaler
+from sklearn.random_projection import GaussianRandomProjection
 
 from geocebada.evaluation.checkpoint04d1 import predict_weighted_local_ridge
 from geocebada.evaluation.checkpoint08_local import ID
@@ -36,10 +39,10 @@ FAMILIES = (
     "PLS_ElasticNet",
 )
 DIMENSIONS = {
-    "PCA": (10, 20, 30, 40, 60, 80, 120, 160),
-    "ICA": (8, 16, 32),
-    "RP": (16, 32, 64),
-    "PLS": (4, 8, 16),
+    "PCA": (5, 8, 12, 16, 20, 24, 32, 40, 48, 64, 96, 128, 160, 192),
+    "ICA": (5, 8, 12, 16, 24, 32),
+    "RP": (5, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160, 200),
+    "PLS": (5, 8, 12, 16, 24, 32),
 }
 NEIGHBORS = (8, 12, 16, 20, 24, 32, 48)
 SCREEN_TARGETS = 12
@@ -91,12 +94,63 @@ def sample_candidates(*, count: int = CANDIDATES, seed: int = SEED) -> pd.DataFr
     return frame
 
 
-def extend_pca(data: RepresentationData) -> RepresentationData:
-    """Add cheap PCA prefixes, leaving other target-free transforms unchanged."""
+def extend_pca(
+    data: RepresentationData,
+    *,
+    dimensions: dict[str, tuple[int, ...]] | None = None,
+    check_parity: bool = True,
+) -> RepresentationData:
+    """Build all X-only PCA/ICA/RP representations for the broad rank search.
+
+    PCA is limited to at most n_X-1 nonzero centered scores (196 for 197
+    parcels); random projections can have 200 *output* columns but do not
+    increase the underlying rank. ICA fits after PCA40 and cannot exceed 40.
+    All choices use the 197 covariate rows and never access reported yields.
+    """
+    spaces = DIMENSIONS if dimensions is None else dimensions
     base = data.baseline
-    full = base.x[160]
-    for n in DIMENSIONS["PCA"]:
-        data.unsupervised[("PCA", n)] = full[:, :n]
+    x = data.raw_z
+    n = max(spaces["PCA"])
+    if not 1 <= n <= min(len(x) - 1, x.shape[1]):
+        raise ValueError(
+            f"Requested PCA{n} exceeds centered X rank bound {len(x) - 1}."
+        )
+    coords = PCA(n_components=n, svd_solver="full").fit_transform(x)
+    standardized = StandardScaler().fit_transform(coords)
+    if check_parity:
+        old = base.x[20]
+        parity = float(np.max(np.abs(standardized[:, :20] - old)))
+        if not np.isfinite(parity) or parity > 1e-6:
+            raise RuntimeError(f"PCA20 frozen coordinate parity FAILED: {parity:.3g}")
+    for components in spaces["PCA"]:
+        data.unsupervised[("PCA", components)] = standardized[:, :components].copy()
+
+    # The fixed ICA base is the exact PCA40 representation of C4.
+    if max(spaces["ICA"]) > 40:
+        raise ValueError("ICA components cannot exceed the PCA40 preprojection.")
+    source = data.unsupervised[("PCA", 40)]
+    for components in spaces["ICA"]:
+        transformer = FastICA(
+            n_components=components,
+            whiten="unit-variance",
+            random_state=SEED + components,
+            max_iter=1400, tol=0.005,
+        )
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", ConvergenceWarning)
+            scores = transformer.fit_transform(source)
+        if any(issubclass(w.category, ConvergenceWarning) for w in caught):
+            data.ica_warnings.append(f"PCA→ICA({components}) did not converge.")
+        if not np.isfinite(scores).all():
+            raise ValueError(f"Nonfinite ICA components: {components}.")
+        data.unsupervised[("ICA", components)] = StandardScaler().fit_transform(scores)
+
+    for components in spaces["RP"]:
+        random = GaussianRandomProjection(
+            n_components=components, random_state=SEED + components,
+        )
+        scores = random.fit_transform(x)
+        data.unsupervised[("RP", components)] = StandardScaler().fit_transform(scores)
     return data
 
 
