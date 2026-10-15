@@ -6,8 +6,16 @@ import pandas as pd
 import pytest
 
 from geocebada.evaluation.checkpoint10_pca import (
-    ALPHA_GRID, DIMS, FROZEN, K_GRID, POWER_GRID, PcaData,
-    assemble_split, grid_parameters, inner_scores, summarize,
+    ALPHA_GRID,
+    DIMS,
+    FROZEN,
+    K_GRID,
+    POWER_GRID,
+    PcaData,
+    assemble_split,
+    grid_parameters,
+    inner_scores,
+    summarize,
 )
 
 ID = "ID_POLIGONO"
