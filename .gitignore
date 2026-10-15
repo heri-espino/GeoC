@@ -105,6 +105,9 @@ venv/
 # Checkpoint 08 nested confirmation runs contain per-parcel observed yields
 /reports/checkpoint_08/
 
+# Checkpoint 10 nested PCA grid: local per-parcel outcomes and fold studies
+/reports/checkpoint_10_pca/
+
 # Checkpoint 09: keep per-parcel diagnostics local; publish only aggregates
 /reports/checkpoint_09/*
 !/reports/checkpoint_09/shared/
