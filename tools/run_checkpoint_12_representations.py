@@ -77,7 +77,9 @@ def _spec(folder: Path, paths: dict[str, Path], smoke: bool) -> None:
     frozen = folder / "run_spec.json"
     if frozen.exists():
         if json.loads(frozen.read_text(encoding="utf-8")) != specification:
-            raise ValueError("Run configuration/data/code fingerprint changed: new --output required.")
+            raise ValueError(
+                "Run fingerprint changed: choose a new --output for this experiment."
+            )
     else:
         if any(folder.glob("confirm_*")):
             raise RuntimeError("Untracked previous results without fingerprint.")
