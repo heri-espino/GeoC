@@ -42,6 +42,8 @@ Para comprobar que los CSV de la web siguen exactamente los resultados canónico
 `python tools/sync_website_data.py --check`. El despliegue a GitHub Pages es ligero y requiere
 tener configurada la fuente **GitHub Actions** en Settings → Pages.
 
+**Nuevo experimento exploratorio (Checkpoint 10):** [grid conjunto de componentes PCA, vecinos locales, regularización Ridge y exponente espacial](docs/CHECKPOINT_10_PCA_GRID.md). Reutiliza las máscaras de Checkpoint 08 y no cambia las 59 estimaciones oficiales.
+
 ## Objetivo activo — reconstrucción transductiva de 59 rendimientos
 
 Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de
