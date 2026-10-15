@@ -108,6 +108,9 @@ venv/
 # Checkpoint 10 nested PCA grid: local per-parcel outcomes and fold studies
 /reports/checkpoint_10_pca/
 
+# Checkpoint 11 wide nested PCA grid: local label-bearing results only
+/reports/checkpoint_11_wide_pca/
+
 # Checkpoint 09: keep per-parcel diagnostics local; publish only aggregates
 /reports/checkpoint_09/*
 !/reports/checkpoint_09/shared/

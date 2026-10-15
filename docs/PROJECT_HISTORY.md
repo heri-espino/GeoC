@@ -1534,6 +1534,10 @@ run is still pending. See docs/CHECKPOINT_07C_NESTED_SEARCH.md.
 
 After the three-model Checkpoint 07 development benchmark retained frozen Local04D, the team requested a final symmetric hyperparameter experiment comparing Local04D and Local07. Checkpoint 08 is implemented on the experiment/08-nested-local-comparison branch (pull request #11). It freezes a new X-only 16-split pseudo-target bank, runs inner-CV Optuna for both local families, verifies archived Local04D numerical parity, checkpoints results for reboot recovery, and reports a paired parcel-bootstrap delta MSE. **No full 08 run has been executed and no 59-parcel predictions have changed.** See docs/CHECKPOINT_08_NESTED_LOCAL.md.
 
+## 2026-10-15 — Checkpoint 11 wide search after negative Checkpoint10 result
+
+Checkpoint10 workstation results: original frozen Local04D pooled RMSE 0.481936, R2 0.685388; nested PCA20 .493880, PCA40 .494361, PCA80 .492532, PCA160 .495184, joint nested .497939; all paired parcel-bootstrapped delta-MSE CIs positive. User asked for a wider CV search. A separate Checkpoint11 implements 1960 PCA/k/alpha/p configurations in eight PCA dimensions, screening each by 3fold internal CV then reranking four best per dimension plus anchors via 2x5fold repeated CV; frozen 16 outer masks reused, no fresh independent validation, no promotion. Docs/CHECKPOINT_11_WIDE_PCA.md. No checkpoint11 observed RMSE yet.
+
 ## 2026-10-14 — Checkpoint 10: joint PCA and neighborhood hyperparameter experiment
 
 Implemented a single 16-split, threefold-inner, target-matched exploration of 192 predeclared combinations: PCA 20/40/80/160 from the original 2082-feature C4 representation; geographic neighbors k=12/20/24/36; Ridge alpha=10/30/100/300; inverse-distance power p=.5/1/2. Reuses X-only Checkpoint08 confirmation masks, so these are not fresh independent confirmation cases. Six paired outputs: frozen PCA20 Local04D, 4 dimension-specific nested selections, and joint nested selection. CPU-only, deterministic, resumable and fingerprint-checked. Does not change final 59 predictions. Spec: docs/CHECKPOINT_10_PCA_GRID.md. 
