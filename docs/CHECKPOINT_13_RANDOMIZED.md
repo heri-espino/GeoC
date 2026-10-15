@@ -25,15 +25,17 @@ Los candidatos se generan mediante un generador aleatorio fijo, antes de observa
 
 | Dimensión | Valores o distribución |
 |---|---|
-| Componentes PCA | 10, 20, 30, 40, 60, 80, 120, 160 |
-| Componentes PCA→ICA | 8, 16, 32 |
-| Componentes RP | 16, 32, 64 |
-| Componentes PLS | 4, 8, 16 |
+| Componentes PCA | 5, 8, 12, 16, 20, 24, 32, 40, 48, 64, 96, 128, 160, 192 |
+| Componentes PCA→ICA | 5, 8, 12, 16, 24, 32 |
+| Componentes RP | 5, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160, 200 |
+| Componentes PLS | 5, 8, 12, 16, 24, 32 |
 | Vecinos geográficos k | 8, 12, 16, 20, 24, 32, 48 |
 | Exponente geográfico p | Uniforme entre 0 y 2.5 |
 | alfa Ridge | Log-uniforme entre 0.1 y 1000 |
 | alfa Elastic Net | Log-uniforme entre 0.001 y aproximadamente 2 |
 | Proporción L1 Elastic Net | Uniforme entre 0.05 y 0.95 |
+
+**Límites de dimensión:** con 197 parcelas, el PCA centrado tiene rango máximo 196, por lo que **192** es el máximo ensayado. Una proyección aleatoria sí puede devolver **200 columnas**, pero esas columnas no añaden 200 direcciones linealmente independientes: el rango de su matriz de salida sigue limitado por los datos. La ICA utilizada es **PCA40→ICA**, por tanto no puede superar 40 componentes. PLS depende del número de etiquetas internas y se restringe a 32 componentes, aun cuando las variables originales sean 2 082.
 
 **Importante:** ICA y proyección aleatoria utilizan únicamente la X de las 197 parcelas y son transductivos. PLS está supervisado, por lo que se **vuelve a ajustar exclusivamente con las etiquetas del fold de entrenamiento** para cada evaluación interna y para el reajuste exterior. Nunca se crea un PLS supervisado global usando y de los 41 pseudo-objetivos o de las 59 consultas reales.
 
