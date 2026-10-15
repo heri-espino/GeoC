@@ -9,9 +9,11 @@ Usage:
 
 Reuses the existing 16 X-only Checkpoint 08 confirmation memberships as
 EXPLORATORY outer splits, with 97 training and 41 held-out labels each.
-Inner threefold CV on the 97 labels searches:
-  PCA components = 20 / 40 / 80 / 160; Ridge alpha = 10 / 30 / 100 / 300 / 1000.
-Geographic k=24 and distance power=1 stay frozen.
+Inner threefold CV on 97 labels searches a joint 4-dimensional grid:
+  PCA = 20 / 40 / 80 / 160; k = 12 / 20 / 24 / 36;
+  Ridge alpha = 10 / 30 / 100 / 300; power p = 0.5 / 1 / 2.
+  192 combinations per outer split; 16 splits; 3 inner folds.
+The original PCA20/k24/alpha30/p1 stays frozen only as the paired control.
 Does not overwrite any prior model or the 59 final predictions.
 """
 from __future__ import annotations
@@ -25,14 +27,14 @@ import pandas as pd
 
 from geocebada.evaluation.checkpoint08_local import ID, digest, atomic_json
 from geocebada.evaluation.checkpoint10_pca import (
-    ALPHA_GRID, DIMS, FROZEN, assemble_split, grid_parameters,
+    ALPHA_GRID, DIMS, FROZEN, K_GRID, POWER_GRID, assemble_split,
     inner_scores, inputs, load_pca_data, predict, summarize,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT = ROOT / "reports/checkpoint_10_pca"
 MEMBERSHIPS = ROOT / "reports/checkpoint_08/confirmation_membership.csv"
-MODELS = {*[f"PCA{n}_alpha_nested" for n in DIMS], "PCA20_frozen", "PCA_joint_nested"}
+MODELS = {*[f"PCA{n}_nested" for n in DIMS], "PCA20_frozen", "PCA_joint_nested"}
 
 
 def _preflight(membership: Path) -> dict[str, Path]:
@@ -52,8 +54,10 @@ def _ensure_spec(output: Path, paths: dict[str, Path], *, smoke: bool) -> None:
     output.mkdir(parents=True, exist_ok=True)
     spec = {
         "schema": 1, "smoke": smoke, "components": list(DIMS),
-        "alpha": list((30.0, 100.0) if smoke else ALPHA_GRID),
-        "geographic_k": FROZEN["k"], "distance_power": FROZEN["power"],
+        "neighbors_k": list((20, 24) if smoke else K_GRID),
+        "alpha": list((30.0,) if smoke else ALPHA_GRID),
+        "distance_power_p": list((1.0,) if smoke else POWER_GRID),
+        "frozen_reference": FROZEN,
         "inner_folds": 2 if smoke else 3, "outer_splits": 1 if smoke else 16,
         "seed": 20261014,
         "sha256_inputs": {k: digest(v) for k, v in paths.items()},
@@ -138,7 +142,7 @@ def _run(args: argparse.Namespace, paths: dict[str, Path], *, smoke: bool) -> No
         atomic_json(meta_path, selection)
         print(f"[10 {i}/{len(selected)}] {split}: CV and outer forecasts completed.", flush=True)
     if smoke:
-        print("[10 SMOKE] One split × 4 dimensions × 2 alphas completed; not a final result.", flush=True)
+        print("[10 SMOKE] One split × 4 PCA ranks × 2 neighbors; not a final result.", flush=True)
     else:
         _summary(args.output)
 
@@ -155,8 +159,9 @@ def _summary(output: Path) -> None:
     if len(grid_files) != 16:
         raise RuntimeError(f"Only {len(grid_files)}/16 inner-CV grids present.")
     inner = pd.concat((pd.read_csv(p).assign(split_id=p.stem.split("__")[0]) for p in grid_files), ignore_index=True)
-    means = (inner.groupby(["components", "alpha"], as_index=False)["inner_rmse"]
-             .agg(["mean", "std"]).reset_index())
+    means = inner.groupby(
+        ["components", "k", "alpha", "power"], as_index=False
+    )["inner_rmse"].agg(["mean", "std"])
     means.to_csv(output / "inner_cv_grid_summary.csv", index=False)
     selections = [json.loads(p.read_text(encoding="utf-8"))
                   for p in sorted(output.glob("confirm_*__selection.json"))]
@@ -170,7 +175,7 @@ def _summary(output: Path) -> None:
           + scores.to_string(index=False), flush=True)
     print("[10] MSE difference against fixed PCA20, negative is better:\n"
           + intervals.to_string(index=False), flush=True)
-    print("[10] Nested PCA dimensionality selection counts:\n"
+    print("[10] Nested joint (PCA, k, alpha, p) selection counts:\n"
           + chosen["components"].value_counts().sort_index().to_string(), flush=True)
     print("[10] Results exploratory on previously used Checkpoint 08 splits."
           " No promotion, no changes to 59 forecasts.", flush=True)
