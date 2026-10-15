@@ -13,7 +13,7 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from sklearn.decomposition import FastICA, PCA
+from sklearn.decomposition import PCA, FastICA
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import ElasticNet
 from sklearn.metrics import r2_score
