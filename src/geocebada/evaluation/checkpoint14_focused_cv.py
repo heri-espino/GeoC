@@ -184,7 +184,7 @@ def shortlist_candidates(
     frame = candidates.merge(
         initial_cv, on=["candidate_id", "family"], validate="one_to_one"
     )
-    if len(frame) != COUNT or not np.isfinite(frame["inner_rmse"]).all():
+    if len(frame) != len(candidates) or not np.isfinite(frame["inner_rmse"]).all():
         raise ValueError("Initial inner CV missing some candidates.")
     parts = []
     for family in FAMILIES:
