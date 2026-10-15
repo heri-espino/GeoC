@@ -97,7 +97,10 @@ def load_c4_z(root: Path) -> tuple[list[str], np.ndarray]:
     return joined[ID].astype(str).tolist(), standardized
 
 
-def prepare(root: Path, membership: Path, *, include_ica: bool = True) -> RepresentationData:
+def prepare(
+    root: Path, membership: Path, *,
+    include_ica: bool = True, include_rp: bool = True,
+) -> RepresentationData:
     """Build target-free alternatives once, never using observed yields."""
     base = load_pca_data(root, membership, max_components=160)
     ids, z = load_c4_z(root)
@@ -106,10 +109,11 @@ def prepare(root: Path, membership: Path, *, include_ica: bool = True) -> Repres
     representations = {}
     for n in PCA_DIMS:
         representations[("PCA", n)] = base.x[n]
-    for n in RP_DIMS:
-        projector = GaussianRandomProjection(n_components=n, random_state=SEED)
-        x = projector.fit_transform(z)
-        representations[("RP", n)] = StandardScaler().fit_transform(x)
+    if include_rp:
+        for n in RP_DIMS:
+            projector = GaussianRandomProjection(n_components=n, random_state=SEED)
+            x = projector.fit_transform(z)
+            representations[("RP", n)] = StandardScaler().fit_transform(x)
     messages = []
     if include_ica:
         # FastICA after a PCA40 preprojection. This is PCA→ICA, not raw ICA
