@@ -33,7 +33,6 @@ from geocebada.evaluation.checkpoint10_pca import (
 from geocebada.evaluation.checkpoint11_wide_pca import (
     ALPHAS,
     DIMS,
-    JOINT_MODEL,
     NEIGHBORS,
     POWERS,
     TOP_PER_DIM,
