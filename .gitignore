@@ -114,6 +114,10 @@ venv/
 # Checkpoint 12 representation comparison: never publish observed per-parcel yields
 /reports/checkpoint_12_representations/
 
+# Checkpoint 13 randomized 10k search: fold-level private observed yields
+/reports/checkpoint_13_randomized/
+/reports/checkpoint_13_pilot/
+
 # Checkpoint 09: keep per-parcel diagnostics local; publish only aggregates
 /reports/checkpoint_09/*
 !/reports/checkpoint_09/shared/
