@@ -25,10 +25,19 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from geocebada.evaluation.checkpoint08_local import ID, digest, atomic_json
+from geocebada.evaluation.checkpoint08_local import ID, atomic_json, digest
 from geocebada.evaluation.checkpoint10_pca import (
-    ALPHA_GRID, DIMS, FROZEN, K_GRID, POWER_GRID, assemble_split,
-    inner_scores, inputs, load_pca_data, predict, summarize,
+    ALPHA_GRID,
+    DIMS,
+    FROZEN,
+    K_GRID,
+    POWER_GRID,
+    assemble_split,
+    inner_scores,
+    inputs,
+    load_pca_data,
+    predict,
+    summarize,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,7 +92,10 @@ def _ensure_spec(output: Path, paths: dict[str, Path], *, smoke: bool) -> None:
 def _check_checkpoint08_parity(data) -> None:
     path = ROOT / "reports/checkpoint_08/confirm_01__paired.csv"
     if not path.is_file():
-        print("[10] No local checkpoint08 paired forecast found; PCA20 coordinate parity still required.", flush=True)
+        print(
+            "[10] No local checkpoint08 paired forecast; PCA20 coordinate parity required.",
+            flush=True,
+        )
         return
     original = pd.read_csv(path)
     original = original.loc[original["model"].eq("Local04D_frozen")]
@@ -158,7 +170,10 @@ def _summary(output: Path) -> None:
     grid_files = sorted(output.glob("confirm_*__inner_grid.csv"))
     if len(grid_files) != 16:
         raise RuntimeError(f"Only {len(grid_files)}/16 inner-CV grids present.")
-    inner = pd.concat((pd.read_csv(p).assign(split_id=p.stem.split("__")[0]) for p in grid_files), ignore_index=True)
+    inner = pd.concat(
+        (pd.read_csv(p).assign(split_id=p.stem.split("__")[0]) for p in grid_files),
+        ignore_index=True,
+    )
     means = inner.groupby(
         ["components", "k", "alpha", "power"], as_index=False
     )["inner_rmse"].agg(["mean", "std"])
