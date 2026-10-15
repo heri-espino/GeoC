@@ -111,6 +111,9 @@ venv/
 # Checkpoint 11 wide nested PCA grid: local label-bearing results only
 /reports/checkpoint_11_wide_pca/
 
+# Checkpoint 12 representation comparison: never publish observed per-parcel yields
+/reports/checkpoint_12_representations/
+
 # Checkpoint 09: keep per-parcel diagnostics local; publish only aggregates
 /reports/checkpoint_09/*
 !/reports/checkpoint_09/shared/
