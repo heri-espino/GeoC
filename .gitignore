@@ -121,6 +121,12 @@ venv/
 # Checkpoint 14: full inner-CV search, label-bearing per-fold outputs
 /reports/checkpoint_14_focused_1k/
 
+# Label-bearing parcel climate comparisons and private peer covariates
+/reports/area_weighted_climate_experiment/
+/reports/area_weighted_climate_with_peer/
+/data/local/
+
+
 # Checkpoint 09: keep per-parcel diagnostics local; publish only aggregates
 /reports/checkpoint_09/*
 !/reports/checkpoint_09/shared/
