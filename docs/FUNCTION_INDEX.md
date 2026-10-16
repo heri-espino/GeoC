@@ -37,6 +37,13 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `load_yield_split` | function | `geocebada.data.targets` | Load the official parcel target/split table. | `src/geocebada/data/targets.py` |
 | `partition_yield_split` | function | `geocebada.data.targets` | Return independent training and prediction DataFrames. | `src/geocebada/data/targets.py` |
 | `validate_yield_split` | function | `geocebada.data.targets` | Validate the known invariants of the official 70/30 split. | `src/geocebada/data/targets.py` |
+| `Features` | class | `geocebada.evaluation.area_weighted_climate_comparison` |  | `src/geocebada/evaluation/area_weighted_climate_comparison.py` |
+| `inner_blend_weight` | function | `geocebada.evaluation.area_weighted_climate_comparison` | Choose convex weight solely from 3fold out-of-fold errors on 97 labels. | `src/geocebada/evaluation/area_weighted_climate_comparison.py` |
+| `make_features` | function | `geocebada.evaluation.area_weighted_climate_comparison` | Freeze the incumbent 20 PCs and append controlled 6-PC blocks. | `src/geocebada/evaluation/area_weighted_climate_comparison.py` |
+| `matched_summary` | function | `geocebada.evaluation.area_weighted_climate_comparison` | Pooled matched RMSE and parcel-cluster bootstrap; repeated IDs not IID. | `src/geocebada/evaluation/area_weighted_climate_comparison.py` |
+| `predict_four_covariates` | function | `geocebada.evaluation.area_weighted_climate_comparison` | Independent, explicit *proxy* Ridge model; not a claim to replicate peer code. | `src/geocebada/evaluation/area_weighted_climate_comparison.py` |
+| `predict_local` | function | `geocebada.evaluation.area_weighted_climate_comparison` | Use identical k, alpha and geographic weights for every climate ablation. | `src/geocebada/evaluation/area_weighted_climate_comparison.py` |
+| `split_predictions` | function | `geocebada.evaluation.area_weighted_climate_comparison` | Matched 41 pseudo-target parcels; no y used for model or blend selection. | `src/geocebada/evaluation/area_weighted_climate_comparison.py` |
 | `RepresentationSpec` | class | `geocebada.evaluation.checkpoint03c` | One track-specific feature representation used in Checkpoint 03C. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `build_layer_feature_catalog` | function | `geocebada.evaluation.checkpoint03c` | Build one cross-layer feature catalog with mode and numeric availability. | `src/geocebada/evaluation/checkpoint03c.py` |
 | `build_representation_specs` | function | `geocebada.evaluation.checkpoint03c` | Resolve configured 03C representations into exact numeric feature lists. | `src/geocebada/evaluation/checkpoint03c.py` |
@@ -270,6 +277,10 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `ExpressionSpec` | class | `geocebada.features.discovery` | One selected two-variable expression. | `src/geocebada/features/discovery.py` |
 | `FoldLocalExpressionAugmenter` | class | `geocebada.features.discovery` | Append fold-local discovered expressions to a numeric feature DataFrame. | `src/geocebada/features/discovery.py` |
 | `FoldLocalExpressionMiner` | class | `geocebada.features.discovery` | Select simple target-associated expressions using training data only. | `src/geocebada/features/discovery.py` |
+| `area_weighted_climate_raster` | function | `geocebada.features.area_weighted_climate` | Exact area-weighted and like-for-like all-touched pixel averages. | `src/geocebada/features/area_weighted_climate.py` |
+| `build_climate_representations` | function | `geocebada.features.area_weighted_climate` | Weighted, unweighted, and temporal blocks, with extraction quality. | `src/geocebada/features/area_weighted_climate.py` |
+| `climate_inventory` | function | `geocebada.features.area_weighted_climate` | Index all mandatory official monthly climate rasters. | `src/geocebada/features/area_weighted_climate.py` |
+| `temporal_features` | function | `geocebada.features.area_weighted_climate` | Monthly precipitation timing, heat proxies and historical anomalies. | `src/geocebada/features/area_weighted_climate.py` |
 | `EmpiricalFeatureRecord` | class | `geocebada.features.empirical` | Machine-readable provenance for one deterministic empirical feature. | `src/geocebada/features/empirical.py` |
 | `build_empirical_feature_layer` | function | `geocebada.features.empirical` | Build deterministic target-free empirical features for all parcels. | `src/geocebada/features/empirical.py` |
 | `join_empirical_features` | function | `geocebada.features.empirical` | Join the empirical layer after exact parcel-coverage validation. | `src/geocebada/features/empirical.py` |
