@@ -8,8 +8,13 @@ import pytest
 from geocebada.evaluation.area_weighted_climate_comparison import Features
 from geocebada.evaluation.checkpoint10_pca import PcaData
 from geocebada.evaluation.climate_leave_one_out import (
-    BASE, MODELS, TEMPORAL, TOUCHED, WEIGHTED,
-    leave_one_out_predictions, leave_one_out_summary,
+    BASE,
+    MODELS,
+    TEMPORAL,
+    TOUCHED,
+    WEIGHTED,
+    leave_one_out_predictions,
+    leave_one_out_summary,
 )
 
 ID = "ID_POLIGONO"
