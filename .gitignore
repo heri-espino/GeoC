@@ -140,3 +140,7 @@ venv/
 
 # Leave-one-parcel-out climate CV contains individually observed yields
 /reports/area_weighted_climate_loo/
+
+# Nested LOOCV target-bearing folds, hyperparameters and diagnostics
+/reports/area_weighted_climate_nested_grid/
+/reports/area_weighted_climate_nested_grid_wide/
