@@ -76,3 +76,48 @@ Experiment outputs: `weighted_monthly.csv`, `touched_monthly.csv`, `weighted_tem
 ## Decision criteria
 
 Check first (1) meaningful differences between area-weighted and touched-pixel climate values, (2) climate profile duplication, (3) paired RMSE and grouped bootstrap, and (4) performance in each of the 16 outer splits. If raw weather differs only slightly between the methods, improvement may come from added variables, not from reweighting. A weather ablation that wins the same repeatedly examined masks should still **not** automatically replace the final 59 predictions. Freeze a genuine held-out confirmation protocol, or seek genuinely new labeled parcels where possible.
+
+
+## Additional check: leave-one-parcel-out (LOOCV)
+
+The historical four-arm comparisons above already use exactly matched 16 outer splits,
+and provide a fair like-for-like comparison at **97 training + 41 heldout** labels per split.
+LOOCV is an **additional** diagnostic, not a replacement or a directly comparable RMSE.
+
+This new evaluation predicts **each of the 138 known-yield parcels exactly once**,
+training each frozen candidate on the other **137** observed labels. It applies
+the **same leave-one-out masks** to all four feature arms with the **same
+fixed geographic Ridge settings** (k=24, alpha=30, inverse-distance power=1).
+It reports pooled RMSE, MAE, global R² (computed across 138 predictions, not
+per one-observation fold), mean prediction error, and paired per-parcel RMSE/MSE
+differences with descriptive bootstrap intervals. These scores are not comparable
+numerically with the historical 0.481936 because that score comes from
+97-label training fits and repeated 41-parcel test folds.
+
+This standalone runner does **not** alter the earlier implementation or saved
+runs and does **not** re-extract any raster. It needs the three already saved
+target-free climate matrices. From the repository root in the geocebada environment:
+
+```powershell
+git switch main
+git pull --ff-only origin main
+
+python tools/run_area_weighted_climate_loo.py --check
+python tools/run_area_weighted_climate_loo.py --smoke
+python tools/run_area_weighted_climate_loo.py --run
+python tools/run_area_weighted_climate_loo.py --summary
+```
+
+The private, ignored output directory is
+reports/area_weighted_climate_loo, containing loo_predictions.csv
+(138 x 4 rows), loo_summary.csv, loo_paired_differences.csv and run_spec.json.
+The latter fingerprints all relevant inputs and implementation code to prevent
+accidentally mixing a stale run with changed data or procedures.
+
+**Statistical limitations:** Nearby parcels may share conditions, coarse climate
+pixels and other spatial signals, so leave-one-parcel-out may overstate accuracy
+for genuinely new geographic areas. LOOCV also does not erase selection bias
+from years of comparing model candidates against the same 138 labels. Paired
+parcel bootstraps ignore residual geographic dependence. This round evaluates
+only **pre-fixed** candidates; picking/tuning hyperparameters using the
+outer heldout labels and then reporting the same score would be biased.
