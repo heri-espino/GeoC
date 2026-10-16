@@ -44,6 +44,7 @@ from geocebada.evaluation.checkpoint10_pca import (
     load_pca_data,
     predict,
 )
+from geocebada.geo.parcels import load_parcels
 from geocebada.features.area_weighted_climate import (
     MONTHS,
     VARIABLES,
@@ -142,9 +143,7 @@ def _build(folder: Path, rasters: dict[tuple[str, int, int], Path]) -> None:
         return
     if any(existing):
         raise ValueError("Incomplete feature build: inspect local output; do not mix files.")
-    import geopandas as gpd
-
-    geo = gpd.read_file(f"zip://{GEOMETRY}")
+    geo = load_parcels(path=GEOMETRY)
     weighted, touched, temporal, quality = build_climate_representations(geo, rasters)
     if (len(weighted) != 197 or len(touched) != 197
             or len(temporal) != 197 or quality[ID].nunique() != 197):
@@ -297,9 +296,7 @@ def main() -> int:
         parser.error(f"Peer features CSV not found: {peer}")
     official, rasters = _paths()
     if args.check:
-        import geopandas as gpd
-
-        geometries = gpd.read_file(f"zip://{GEOMETRY}")
+        geometries = load_parcels(path=GEOMETRY)
         if len(geometries) != 197 or geometries.crs is None:
             raise ValueError("Expected 197 parcels with declared geometry CRS.")
         if peer is not None and len(pd.read_csv(peer)) != 197:
