@@ -9,6 +9,7 @@ Esta carpeta concentra la documentación del proyecto, la referencia de la libre
 - `CHECKPOINT_11_WIDE_PCA.md`: búsqueda amplia de Local04D con 1,960 configuraciones (PCA/k/alpha/p), CV interior repetida y comparación emparejada; sin modificación de pronósticos finales.
 - `CHECKPOINT_12_ALTERNATIVES.md`: comparación ligera de PLS, PCA→ICA, proyección aleatoria, Ridge y Elastic Net local, con PLS supervisado ajustado dentro de los folds.
 - `CHECKPOINT_13_RANDOMIZED.md`: evaluación aleatoria de 10 000 configuraciones balanceadas entre cinco familias de modelos locales (PCA/ICA/PLS y Ridge/Elastic Net, sin proyección aleatoria), cribado y CV interior repetida, con salida reanudable y protección de rendimientos.
+- `AREA_WEIGHTED_CLIMATE_EXPERIMENT.md`: comparación X-only de extracción climática ponderada por intersección espacial, perfiles temporales y modelos comparables con nombres descriptivos.
 - `CHECKPOINT_14_FOCUSED_CV.md`: nueva evaluación enfocada de 1 000 configuraciones, CV de 3 folds para todas, CV repetida de finalistas e inclusión obligatoria del incumbente Local04D.
 - `TRANSDUCTIVE_OBJECTIVE.md`: especificación canónica del objetivo transductivo de las 59 parcelas fijas y validación pseudo-competition.
 - `CHECKPOINT_03D_FINDINGS.md`: cierre del benchmark global balanced, finalistas state/grouped y deployment ONNX.
