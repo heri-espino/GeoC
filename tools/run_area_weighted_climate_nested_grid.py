@@ -19,6 +19,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from run_area_weighted_climate_loo import MEMBERSHIPS, ROOT, SOURCE, _load
 
 from geocebada.evaluation.checkpoint08_local import ID, atomic_json, digest
 from geocebada.evaluation.climate_leave_one_out import MODELS
@@ -29,7 +30,6 @@ from geocebada.evaluation.climate_nested_grid import (
     summarize_nested_grid,
     tune_one_outer_parcel,
 )
-from run_area_weighted_climate_loo import MEMBERSHIPS, ROOT, SOURCE, _load
 
 FROZEN_LOO = ROOT / "reports/area_weighted_climate_loo/loo_predictions.csv"
 FOCUSED_OUT = ROOT / "reports/area_weighted_climate_nested_grid"
