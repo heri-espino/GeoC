@@ -52,6 +52,8 @@ tener configurada la fuente **GitHub Actions** en Settings → Pages.
 
 **Nueva CV enfocada (Checkpoint 14):** [1 000 configuraciones próximas a Local04D con CV completa y comparación interna directa del incumbente](docs/CHECKPOINT_14_FOCUSED_CV.md); resultados exploratorios, sin promoción.
 
+**Nuevas covariables climáticas (extracción espacial):** [comparación de promedios por píxeles, promedio ponderado por área y perfiles temporales](docs/AREA_WEIGHTED_CLIMATE_EXPERIMENT.md). Nuevos nombres descriptivos para el modelo original; no altera las predicciones oficiales.
+
 ## Objetivo activo — reconstrucción transductiva de 59 rendimientos
 
 Desde el 19 de septiembre de 2026, GeoCebada se modela explícitamente como un problema de
