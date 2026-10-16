@@ -137,3 +137,6 @@ venv/
 
 # Geographic weighted Ridge v2: private nested CV and per-parcel yields
 /reports/geographic_ridge_v2/
+
+# Leave-one-parcel-out climate CV contains individually observed yields
+/reports/area_weighted_climate_loo/
