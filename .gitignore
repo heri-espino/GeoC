@@ -134,3 +134,6 @@ venv/
 !/reports/checkpoint_09/shared/development_summary.csv
 !/reports/checkpoint_09/shared/decision.json
 !/reports/checkpoint_09/shared/README.md
+
+# Geographic weighted Ridge v2: private nested CV and per-parcel yields
+/reports/geographic_ridge_v2/
