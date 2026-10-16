@@ -42,15 +42,14 @@ from geocebada.evaluation.checkpoint10_pca import (
     FROZEN,
     inputs,
     load_pca_data,
-    predict,
 )
-from geocebada.geo.parcels import load_parcels
 from geocebada.features.area_weighted_climate import (
     MONTHS,
     VARIABLES,
     build_climate_representations,
     climate_inventory,
 )
+from geocebada.geo.parcels import load_parcels
 
 ROOT = Path(__file__).resolve().parents[1]
 MEMBERSHIPS = ROOT / "reports/checkpoint_08/confirmation_membership.csv"
