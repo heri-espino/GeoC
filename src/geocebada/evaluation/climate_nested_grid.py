@@ -162,7 +162,9 @@ def summarize_nested_grid(
     if (len(groups) != 138 or len(selection_groups) != 138
             or not groups["model"].nunique().eq(5).all()
             or not selection_groups["model"].nunique().eq(4).all()):
-        raise ValueError("Nested grid requires complete 138 x 5 predictions and 138 x 4 selections.")
+        raise ValueError(
+            "Nested grid requires complete 138 x 5 predictions and 138 x 4 selections."
+        )
     if set(groups.groups) != set(selection_groups.groups):
         raise ValueError("Selection/prediction parcel sets disagree.")
     if not groups["observed"].nunique().eq(1).all():
