@@ -267,6 +267,10 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `build_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Build the additive agronomic nonlinear feature layer. | `src/geocebada/features/agronomic.py` |
 | `join_agronomic_features` | function | `geocebada.features.agronomic` | Join the additive agronomic layer after exact parcel-coverage validation. | `src/geocebada/features/agronomic.py` |
 | `validate_agronomic_feature_layer` | function | `geocebada.features.agronomic` | Validate one-to-one parcel coverage and numeric derived features. | `src/geocebada/features/agronomic.py` |
+| `area_weighted_climate_raster` | function | `geocebada.features.area_weighted_climate` | Exact area-weighted and like-for-like all-touched pixel averages. | `src/geocebada/features/area_weighted_climate.py` |
+| `build_climate_representations` | function | `geocebada.features.area_weighted_climate` | Weighted, unweighted, and temporal blocks, with extraction quality. | `src/geocebada/features/area_weighted_climate.py` |
+| `climate_inventory` | function | `geocebada.features.area_weighted_climate` | Index all mandatory official monthly climate rasters. | `src/geocebada/features/area_weighted_climate.py` |
+| `temporal_features` | function | `geocebada.features.area_weighted_climate` | Monthly precipitation timing, heat proxies and historical anomalies. | `src/geocebada/features/area_weighted_climate.py` |
 | `build_hls_smap_lag_features` | function | `geocebada.features.checkpoint07_highdim` | Combine HLS greenness with *preceding* 7/14/30-day SMAP moisture. | `src/geocebada/features/checkpoint07_highdim.py` |
 | `build_hls_time_features` | function | `geocebada.features.checkpoint07_highdim` | High-dimensional per-parcel HLS date, spectral, QA and sensor features. | `src/geocebada/features/checkpoint07_highdim.py` |
 | `build_nonlinear_interactions` | function | `geocebada.features.checkpoint07_highdim` | Generate bounded pointwise transforms and cross-family pair products. | `src/geocebada/features/checkpoint07_highdim.py` |
@@ -277,10 +281,6 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `ExpressionSpec` | class | `geocebada.features.discovery` | One selected two-variable expression. | `src/geocebada/features/discovery.py` |
 | `FoldLocalExpressionAugmenter` | class | `geocebada.features.discovery` | Append fold-local discovered expressions to a numeric feature DataFrame. | `src/geocebada/features/discovery.py` |
 | `FoldLocalExpressionMiner` | class | `geocebada.features.discovery` | Select simple target-associated expressions using training data only. | `src/geocebada/features/discovery.py` |
-| `area_weighted_climate_raster` | function | `geocebada.features.area_weighted_climate` | Exact area-weighted and like-for-like all-touched pixel averages. | `src/geocebada/features/area_weighted_climate.py` |
-| `build_climate_representations` | function | `geocebada.features.area_weighted_climate` | Weighted, unweighted, and temporal blocks, with extraction quality. | `src/geocebada/features/area_weighted_climate.py` |
-| `climate_inventory` | function | `geocebada.features.area_weighted_climate` | Index all mandatory official monthly climate rasters. | `src/geocebada/features/area_weighted_climate.py` |
-| `temporal_features` | function | `geocebada.features.area_weighted_climate` | Monthly precipitation timing, heat proxies and historical anomalies. | `src/geocebada/features/area_weighted_climate.py` |
 | `EmpiricalFeatureRecord` | class | `geocebada.features.empirical` | Machine-readable provenance for one deterministic empirical feature. | `src/geocebada/features/empirical.py` |
 | `build_empirical_feature_layer` | function | `geocebada.features.empirical` | Build deterministic target-free empirical features for all parcels. | `src/geocebada/features/empirical.py` |
 | `join_empirical_features` | function | `geocebada.features.empirical` | Join the empirical layer after exact parcel-coverage validation. | `src/geocebada/features/empirical.py` |
