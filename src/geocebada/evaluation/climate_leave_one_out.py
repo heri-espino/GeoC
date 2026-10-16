@@ -12,7 +12,12 @@ import pandas as pd
 from sklearn.metrics import r2_score
 
 from geocebada.evaluation.area_weighted_climate_comparison import (
-    BASE, TEMPORAL, TOUCHED, WEIGHTED, Features, predict_local,
+    BASE,
+    TEMPORAL,
+    TOUCHED,
+    WEIGHTED,
+    Features,
+    predict_local,
 )
 from geocebada.evaluation.checkpoint08_local import ID
 
