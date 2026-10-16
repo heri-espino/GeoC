@@ -121,3 +121,72 @@ from years of comparing model candidates against the same 138 labels. Paired
 parcel bootstraps ignore residual geographic dependence. This round evaluates
 only **pre-fixed** candidates; picking/tuning hyperparameters using the
 outer heldout labels and then reporting the same score would be biased.
+
+
+## Nested leave-one-parcel-out grid search of local Ridge hyperparameters
+
+After the frozen four-arm LOOCV, we can tune **k (neighbor count), alpha (Ridge
+penalty), and p (geographic inverse-distance exponent)**. To keep the original
+LOOCV score from becoming an optimistically selected minimum, the new comparison
+is **nested**, with identical outer held-out parcel IDs for all candidates:
+
+1. Outer LOOCV: 138 rounds, 137 known yields available, one known yield hidden.
+2. Within each outer training set, create the **same deterministic shuffled
+   fivefold partitions** for all four feature arms.
+3. Each candidate predicts **all 137 inner-validation parcels once**; rank by
+   pooled inner squared prediction error (equivalent to inner RMSE).
+4. For each feature arm independently, refit the selected parameters on the
+   full 137 labels and predict the untouched outer parcel.
+5. Also predict the same outer parcel using **untuned original
+   GeoPCA20_GeographicWeightedRidge (k=24, alpha=30, p=1)**. Compare
+   all four nested-tuned arms with that exact frozen reference.
+6. Aggregate the 138 held-out predictions into global RMSE, MAE and R²;
+   calculate paired parcel-bootstrap changes and tabulate parameter selections.
+
+The fixed incumbent is always a candidate in every grid. It is tested on the
+same 138 parcels and its outputs are **verified numerically against the previous
+frozen LOOCV predictions**, including the 0.485133 baseline RMSE. The new
+LOOCV scoring is separate from the earlier 16x41 / 97-training-label protocol.
+
+The default **focused** grid contains **60** candidates per feature arm:
+k = 12,20,24,36,48; alpha = 3,10,30,100; p = 0.5,1,2.
+The optional **wide** grid contains **168** candidates per arm:
+k = 8,12,16,20,24,32,48; alpha = 1,3,10,30,100,300;
+p = 0,0.5,1,2. Both include k=24, alpha=30, p=1.
+
+Run from the same repo root and conda environment used for LOOCV:
+
+```powershell
+git switch main
+git pull --ff-only origin main
+
+# Runs a small, non-promoting end-to-end test
+python tools/run_area_weighted_climate_nested_grid.py --smoke
+
+# Full focused nested run, safely resumable at each outer parcel
+python tools/run_area_weighted_climate_nested_grid.py --run
+python tools/run_area_weighted_climate_nested_grid.py --summary
+
+# Optional broader experiment, kept in a different provenance directory
+python tools/run_area_weighted_climate_nested_grid.py --smoke --wide
+python tools/run_area_weighted_climate_nested_grid.py --run --wide
+python tools/run_area_weighted_climate_nested_grid.py --summary --wide
+```
+
+You can run a segment with e.g.
+`--run --from-fold 1 --through-fold 30`
+and later fill in remaining fold ranges; the standalone `--summary`
+refuses incomplete coverage. An interrupted complete run can be resumed
+by rerunning `--run`.
+Both the default and wide run save per-fold prediction and selection CSVs,
+a complete matched score table, paired error differences, counts of selected
+hyperparameters, and SHA256 provenance. Outputs are private and ignored by Git.
+
+**Warnings:** Thousands/millions of small local Ridge fits are possible even
+though any individual fit is cheap; do not assume nested grid runtime equals
+ordinary LOOCV runtime. Outer LOOCV reports the performance of the *selection
+procedure*, not a single universally fixed best tuple. A final global tuple
+can subsequently be picked by inner CV on all 138 known labels, but evaluating
+that tuple again on the same labels would not constitute a new independent test.
+Geographic correlation and previous extensive model experimentation remain
+sources of optimism; parcel-bootstrap intervals do not fix this.

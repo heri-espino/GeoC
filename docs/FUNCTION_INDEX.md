@@ -252,6 +252,9 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `summarize` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Paired pooled RMSE/R2 and parcel-cluster bootstrap MSE differences. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
 | `leave_one_out_predictions` | function | `geocebada.evaluation.climate_leave_one_out` | Predict held-out parcels with 137 other observed labels per fit. | `src/geocebada/evaluation/climate_leave_one_out.py` |
 | `leave_one_out_summary` | function | `geocebada.evaluation.climate_leave_one_out` | Compute global RMSE/MAE/R2 and paired parcel-bootstrap error deltas. | `src/geocebada/evaluation/climate_leave_one_out.py` |
+| `grid_candidates` | function | `geocebada.evaluation.climate_nested_grid` | Return reproducible hyperparameter search including the exact incumbent. | `src/geocebada/evaluation/climate_nested_grid.py` |
+| `summarize_nested_grid` | function | `geocebada.evaluation.climate_nested_grid` | Validate paired full coverage and report unbiased-by-inner-tuning OOF scores. | `src/geocebada/evaluation/climate_nested_grid.py` |
+| `tune_one_outer_parcel` | function | `geocebada.evaluation.climate_nested_grid` | Select each model's hyperparameters solely on other observed yields. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
