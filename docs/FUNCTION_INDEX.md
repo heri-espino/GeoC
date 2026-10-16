@@ -250,6 +250,8 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `score_candidates` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Full inner CV for every candidate, not a 12-parcel holdout screen. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
 | `shortlist_candidates` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Shortlist per family, ALWAYS preserving Local04D as a finalist. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
 | `summarize` | function | `geocebada.evaluation.checkpoint14_focused_cv` | Paired pooled RMSE/R2 and parcel-cluster bootstrap MSE differences. | `src/geocebada/evaluation/checkpoint14_focused_cv.py` |
+| `leave_one_out_predictions` | function | `geocebada.evaluation.climate_leave_one_out` | Predict held-out parcels with 137 other observed labels per fit. | `src/geocebada/evaluation/climate_leave_one_out.py` |
+| `leave_one_out_summary` | function | `geocebada.evaluation.climate_leave_one_out` | Compute global RMSE/MAE/R2 and paired parcel-bootstrap error deltas. | `src/geocebada/evaluation/climate_leave_one_out.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
