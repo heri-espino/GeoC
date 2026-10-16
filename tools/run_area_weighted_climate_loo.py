@@ -69,10 +69,16 @@ def _fingerprint(source: Path, output: Path) -> None:
     official = {
         "source_climate_provenance": source / "run_spec.json",
         "historical_membership": MEMBERSHIPS,
-        "observed_yields": ROOT / "data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv",
+        "observed_yields": (
+            ROOT / "data/source/tabular/ID_area_rendimiento_70_30_Reto_AgroCebada.csv"
+        ),
         "base_features": ROOT / "data/processed/features_v1/parcel_features_all.csv",
-        "agronomic_features": ROOT / "data/processed/agronomic_features_v1/parcel_agronomic_features.csv",
-        "empirical_features": ROOT / "data/processed/empirical_features_v1/parcel_empirical_features.csv",
+        "agronomic_features": (
+            ROOT / "data/processed/agronomic_features_v1/parcel_agronomic_features.csv"
+        ),
+        "empirical_features": (
+            ROOT / "data/processed/empirical_features_v1/parcel_empirical_features.csv"
+        ),
         **{name: source / name for name in CLIMATE_FILES},
     }
     all_inputs = {**official, **{name: ROOT / name for name in IMPLEMENTATION}}
