@@ -115,7 +115,6 @@ robustness check.
 
 ## Running on the workstation (PowerShell)
 
-From your existing GeoC checkout (read-only against main; use branch/PR):
 From your existing GeoC checkout (use the experiment branch, not `main`):
 
 ~~~powershell
