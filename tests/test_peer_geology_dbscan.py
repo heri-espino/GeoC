@@ -38,8 +38,8 @@ def test_query_outside_training_cores_falls_back_to_global_weight():
     left, right, far = gate.weights(np.array([[-4., 0], [4., 0], [100., -100.]]))
     assert left > right
     assert abs(far - gate.global_) < 1e-12
-    assert np.all((np.array([left, right, far]) >= 0))
-    assert np.all((np.array([left, right, far]) <= 1))
+    assert np.all(np.array([left, right, far]) >= 0)
+    assert np.all(np.array([left, right, far]) <= 1)
     np.testing.assert_allclose(
         gate.predict(np.array([[100., -100.]]), [0.], [1.]),
         [gate.global_],
