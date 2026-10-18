@@ -265,6 +265,13 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `summarize_fixed_fold_scores` | function | `geocebada.evaluation.parcel_modeling` | Summarize fixed-fold benchmark scores without declaring a model winner. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `train_prediction_diagnostics` | function | `geocebada.evaluation.parcel_modeling` | Compare numeric feature support/distributions between train and prediction rows. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `validate_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Validate that a frozen fold file covers each training parcel exactly once. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `SpatialGPConfig` | class | `geocebada.evaluation.phenology_spatial_gp` | Fixed regularization and residual covariance of one GP candidate. | `src/geocebada/evaluation/phenology_spatial_gp.py` |
+| `SpatialGPData` | class | `geocebada.evaluation.phenology_spatial_gp` | Aligned all-197 transductive X, physical features and spatial distances. | `src/geocebada/evaluation/phenology_spatial_gp.py` |
+| `candidate_grid` | function | `geocebada.evaluation.phenology_spatial_gp` | Small predeclared, inner-CV-only grid; include Ridge-only ablations. | `src/geocebada/evaluation/phenology_spatial_gp.py` |
+| `evaluate_split` | function | `geocebada.evaluation.phenology_spatial_gp` | Pair an inner-selected GP with the unchanged frozen Local04D baseline. | `src/geocebada/evaluation/phenology_spatial_gp.py` |
+| `inner_select` | function | `geocebada.evaluation.phenology_spatial_gp` | Select exactly one configuration without seeing any outer query y. | `src/geocebada/evaluation/phenology_spatial_gp.py` |
+| `predict_spatial_gp` | function | `geocebada.evaluation.phenology_spatial_gp` | Predict query yields using strictly train-only y and fold-local scaling. | `src/geocebada/evaluation/phenology_spatial_gp.py` |
+| `summarize_matched` | function | `geocebada.evaluation.phenology_spatial_gp` | Summarize paired repeated pseudo-target outcomes without IID claims. | `src/geocebada/evaluation/phenology_spatial_gp.py` |
 | `benchmark_regressors` | function | `geocebada.evaluation.regression` | Compare regression baselines using identical shuffled K-fold splits. | `src/geocebada/evaluation/regression.py` |
 | `default_regressors` | function | `geocebada.evaluation.regression` | Return lightweight baseline regressors suitable for early comparison. | `src/geocebada/evaluation/regression.py` |
 | `summarize_benchmark` | function | `geocebada.evaluation.regression` | Summarize fold-level benchmark metrics as mean and standard deviation. | `src/geocebada/evaluation/regression.py` |
@@ -307,6 +314,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `merge_feature_blocks` | function | `geocebada.features.parcel` | Left-join unique one-row-per-parcel feature blocks. | `src/geocebada/features/parcel.py` |
 | `validate_parcel_feature_table` | function | `geocebada.features.parcel` | Validate one-row-per-parcel model-table invariants. | `src/geocebada/features/parcel.py` |
 | `zonal_stats_for_raster` | function | `geocebada.features.parcel` | Compute parcel zonal statistics for one raster. | `src/geocebada/features/parcel.py` |
+| `build_phenology_weather_features` | function | `geocebada.features.phenology_spatial` | Construct one X-only parcel row with phenology-conditioned 2025 weather. | `src/geocebada/features/phenology_spatial.py` |
 | `align_temporal_knn` | function | `geocebada.features.temporal` | Align irregular parcel observations to a common grid with temporal k-NN. | `src/geocebada/features/temporal.py` |
 | `aligned_to_wide` | function | `geocebada.features.temporal` | Pivot aligned temporal values to one modeling row per parcel. | `src/geocebada/features/temporal.py` |
 | `make_temporal_grid` | function | `geocebada.features.temporal` | Return an inclusive regular temporal grid between ``start`` and ``end``. | `src/geocebada/features/temporal.py` |

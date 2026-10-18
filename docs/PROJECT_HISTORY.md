@@ -1561,3 +1561,7 @@ Implemented a single 16-split, threefold-inner, target-matched exploration of 19
 ## 2026-10-12 — Comprehensive methodology and CV history publication
 
 Added a canonical narrative in `docs/METODOLOGIA_Y_RESULTADOS.md` covering all Checkpoints 02–08 with deeper technical details for 04B, 07 and 08: how target-matched masks were built; exact 16×(97/41) outer validation; separate inner Optuna/PCA tuning; frozen Local04D; 13 Checkpoint07 results; 3 Checkpoint08 results with paired parcel-bootstrap intervals; target-label and leakage boundaries; final 59-parcel artifact; and limitations. Also linked from READMEs and Sphinx. No model promotion or change in the 59 estimates.
+
+### 2026-10-18 — Stage-conditioned spatial Gaussian process (experimental)
+
+Added an isolated, nonpromoting experimental branch using compact HLS/SMAP time series, area-weighted 2025 climate and frozen C4 PCA20. The test explicitly compares a train-fold-local environmental Ridge plus Matérn spatial residual process against unchanged Local04D, with identical reused Checkpoint08 pseudo-targets and training-only threefold hyperparameter selection. All scores require actual VM execution; no known improvement, no replacement of the 59 frozen forecasts. See docs/PHENOLOGY_SPATIAL_GP.md.
