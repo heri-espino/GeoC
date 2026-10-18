@@ -106,8 +106,40 @@ def preview_clusters(peer: Path, bundle: Path, out: Path) -> pd.DataFrame:
         })
     summary = pd.DataFrame(rows)
     _write_fold(out / "geological_cluster_diagnostics.csv", summary)
+    # Independent coordinate-based diagnostic, NOT part of the Reference26 gate.
+    # Haversine BallTree requires radians, with epsilon given in angular units.
+    latlon = frame[["base_centroid_lat", "base_centroid_lon"]].to_numpy(float)
+    if not np.isfinite(latlon).all():
+        raise ValueError("Missing coordinates required for optional geographic audit.")
+    coordinates = np.radians(latlon)
+    geo_rows = []
+    earth_km = 6371.0088
+    for min_samples in (3, 5):
+        for radius_km in (0.5, 1.0, 2.0, 5.0, 10.0):
+            cluster = DBSCAN(
+                eps=radius_km / earth_km, min_samples=min_samples,
+                metric="haversine", algorithm="ball_tree",
+            ).fit_predict(coordinates)
+            valid = cluster[cluster >= 0]
+            groups = np.unique(valid, return_counts=True)[1]
+            geo_rows.append({
+                "min_samples": min_samples,
+                "radius_km": radius_km,
+                "n_clusters": int(len(groups)),
+                "noise_fraction": float(np.mean(cluster == -1)),
+                "smallest_cluster": int(groups.min()) if len(groups) else 0,
+                "largest_cluster": int(groups.max()) if len(groups) else 0,
+            })
+    geo_summary = pd.DataFrame(geo_rows)
+    _write_fold(out / "coordinate_cluster_diagnostics.csv", geo_summary)
     print("[GEOLOGY] Clusters from ten geological inputs only; no y used.")
     print(summary.to_string(index=False), flush=True)
+    print(
+        "[GEOGRAPHY] Coordinate-only DBSCAN diagnostics (haversine, km); "
+        "not used by the geological gate.",
+        flush=True,
+    )
+    print(geo_summary.to_string(index=False), flush=True)
     print(
         "[GEOLOGY] min_samples=3/5 and 4 relative radius factors are exploratory "
         "candidates; their effects on yield RMSE must be validated separately.",
