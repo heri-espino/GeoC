@@ -30,8 +30,10 @@ def test_alignment_reorders_without_changing_targets():
     wrong.loc[0, Y] += .2
     with pytest.raises(AssertionError):
         align_peer_targets(wrong, expected)
+    wrong_ids = peer.copy()
+    wrong_ids.loc[137, ID] = "FOREIGN"
     with pytest.raises(ValueError, match="IDs differ"):
-        align_peer_targets(peer.assign(ID=lambda d: [*d[ID].iloc[:-1], "FOREIGN"]), expected)
+        align_peer_targets(wrong_ids, expected)
 
 
 def test_each_outer_and_inner_split_excludes_current_target():
