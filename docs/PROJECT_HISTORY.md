@@ -1,3 +1,7 @@
+## 2026-10-18 — Geology KMeans versus DBSCAN sensitivity before full LOOCV
+
+Inspected Reference26: geographic coordinates select 24 labeled neighbors, but KMeans 4/8 operates on ten geological fractions to gate C-T3 versus local-seven expert. Added exploratory DBSCAN alternative with 8 prespecified relative density settings, train-only epsilon scaling, nearest-training-core assignments and global fallback for noise. Kept Compact14 and Local04D as unchanged controls. New script checks geology partitions and supports paired one/three-fold cold refits without using held-out labels for tuning; results ignored at reports/peer_geology_dbscan. See docs/PEER_GEOLOGICAL_DBSCAN_ABLATION.md. No local private data accessed, no results asserted, no change to canonical 59.
+
 ## 2026-10-18 — Private data_n routing for paired champion LOOCV
 
 On branch `experiment/nuria-champions-loocv`, updated the peer runner to resolve exported 26-feature champion bundles from ignored root `data_n/` (direct or nested common layouts), accept `--bundle` overrides, and fail clearly on absent/incomplete/ambiguous bundles. Added tests and workstation PowerShell instructions. No machine-local private folder was read and no cold-refit experiment was executed.
