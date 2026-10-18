@@ -1,3 +1,7 @@
+## 2026-10-18 — Peer Reference26/Compact14 LOOCV integration branch
+
+After inspecting public fork heri-espino/todoseboso (README, src/current_champions.py, reproduction guide and comparable 97/41 aggregates), prepared an additive, non-promoting LOOCV adapter and isolated tests on branch experiment/nuria-champions-loocv. It invokes original peer cold-refit methods using their private 26-feature bundle and four inner folds, pairs 138 leave-one-parcel-out observations against original GeoC Local04D, masks heldout labels and fingerprints inputs. Real refits not executed because the peer private bundle is absent from GitHub. Documentation: docs/PEER_CHAMPIONS_LOOCV.md. No canonical 59 forecasts changed.
+
 # Project History
 
 ## 2026-10-10 — Selected three-model autonomous Checkpoint 07 run
