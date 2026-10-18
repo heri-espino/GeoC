@@ -4,6 +4,8 @@ Pure helpers: importing this module does not import peer code or read private da
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import r2_score
@@ -131,3 +133,63 @@ def summarize_complete(
             "bootstrap_unit": "parcel (spatial dependence uncorrected)",
         })
     return pd.DataFrame(scores).sort_values("rmse").reset_index(drop=True), pd.DataFrame(paired)
+
+
+BUNDLE_FILES = (
+    "manifest.json", "train138.parquet", "groups.csv", "distance.npy",
+    "expected_oof.parquet", "splits.json",
+)
+
+
+def _candidate_bundle_directories(directory: Path) -> tuple[Path, ...]:
+    """Locate the frozen bundle in common unpacked data directory layouts."""
+    return tuple(directory / suffix for suffix in (
+        Path("."),
+        Path("v1"),
+        Path("current_champions/v1"),
+        Path("processed/current_champions/v1"),
+        Path("data/processed/current_champions/v1"),
+        Path("bundle"),
+    ))
+
+
+def resolve_peer_bundle(
+    project_root: Path, requested: Path | None, peer_repo: Path
+) -> Path:
+    """Prefer private GeoC/data_n; accept explicit roots or bundle leaves.
+
+    Never search unrelated folders or read any raw file content here. Reject
+    partial bundles rather than silently substituting other experiments' data.
+    """
+    locations = (
+        (requested,) if requested is not None else
+        (project_root / "data_n", peer_repo / "data/processed/current_champions/v1")
+    )
+    for location in locations:
+        directory = Path(location).resolve()
+        found = [path for path in _candidate_bundle_directories(directory)
+                 if (path / "manifest.json").is_file()]
+        if not found:
+            continue
+        if len(found) > 1:
+            raise ValueError(
+                "More than one champion bundle exists below "
+                f"{directory}. Pass --bundle with the precise bundle directory."
+            )
+        bundle = found[0]
+        missing = [name for name in BUNDLE_FILES if not (bundle / name).is_file()]
+        if missing:
+            raise FileNotFoundError(
+                f"Incomplete champion bundle at {bundle}. Missing: {', '.join(missing)}. "
+                "Use the complete current_champions/v1 export from todoseboso."
+            )
+        return bundle
+    paths = ", ".join(str(Path(path).resolve()) for path in locations)
+    raise FileNotFoundError(
+        "Could not find a complete current_champions/v1 export under: "
+        f"{paths}. Expected manifest.json, train138.parquet, groups.csv, "
+        "distance.npy, splits.json and expected_oof.parquet. "
+        "If data_n contains only original/raw data, obtain or generate the "
+        "frozen champion bundle; it cannot be reconstructed from raw files "
+        "by the LOOCV runner. Pass --bundle to choose a different directory."
+    )
