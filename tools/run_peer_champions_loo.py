@@ -27,8 +27,16 @@ import pandas as pd
 from geocebada.evaluation.checkpoint08_local import ID, atomic_json
 from geocebada.evaluation.checkpoint10_pca import FROZEN, inputs, load_pca_data, predict
 from geocebada.evaluation.peer_champions_loo import (
-    BASELINE, MODELS, PEER_MODELS, SEED, Y, align_peer_targets,
-    outer_record, resolve_peer_bundle, summarize_complete, validate_fold,
+    BASELINE,
+    MODELS,
+    PEER_MODELS,
+    SEED,
+    Y,
+    align_peer_targets,
+    outer_record,
+    resolve_peer_bundle,
+    summarize_complete,
+    validate_fold,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -153,6 +161,57 @@ def _summarize(output: Path) -> None:
           "spatial dependence prevent independent confirmation.", flush=True)
 
 
+def _smoke_report(output: Path, n_folds: int) -> None:
+    """Display and save a preliminary five-model comparison; never rank champions."""
+    paths = [output / f"fold_{i:03}.csv" for i in range(1, n_folds + 1)]
+    if any(not path.is_file() for path in paths):
+        raise RuntimeError("Incomplete smoke folds; cannot compare the models.")
+    predictions = pd.concat(
+        [pd.read_csv(path, dtype={ID: str}) for path in paths], ignore_index=True
+    )
+    if not predictions[ID].is_unique or len(predictions) != n_folds:
+        raise ValueError("Smoke fold IDs are not distinct.")
+    details = []
+    for row in predictions.to_dict("records"):
+        for model in MODELS:
+            error = float(row[model] - row["observed"])
+            details.append({
+                "heldout_parcel": row[ID],
+                "model": model,
+                "observed": float(row["observed"]),
+                "predicted": float(row[model]),
+                "error": error,
+                "absolute_error": abs(error),
+            })
+    table = pd.DataFrame(details)
+    by_model = (
+        table.groupby("model", as_index=False)
+        .agg(
+            n_heldout=("absolute_error", "size"),
+            mae=("absolute_error", "mean"),
+            mse=("error", lambda values: float(np.mean(np.square(values)))),
+        )
+    )
+    by_model["rmse"] = np.sqrt(by_model.pop("mse"))
+    # The smoke sample was not selected for population representativeness.
+    _write_fold(output / "smoke_predictions.csv", table)
+    _write_fold(output / "smoke_model_comparison.csv", by_model)
+    print(
+        f"\n[PEER SMOKE] Finished {n_folds} fold(s); "
+        "all five models produced finite held-out predictions.",
+        flush=True,
+    )
+    print("[PEER SMOKE] Individual held-out predictions:", flush=True)
+    print(table.to_string(index=False), flush=True)
+    print("[PEER SMOKE] Descriptive errors on ONLY these smoke parcels:", flush=True)
+    print(by_model.to_string(index=False), flush=True)
+    print(
+        "[PEER SMOKE] NOT a 138-fold LOOCV estimate; do not select a winner "
+        "or compare this table with published full-sample RMSE.",
+        flush=True,
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_mutually_exclusive_group(required=True)
@@ -164,9 +223,17 @@ def main() -> int:
         help="Explicit complete bundle or parent folder; default: GeoC/data_n/.",
     )
     parser.add_argument("--output", type=Path, default=DEFAULT_OUT)
+    parser.add_argument(
+        "--smoke-folds", type=int, default=1,
+        help="Number of outer held-out parcels in smoke (1–5); all five models per fold.",
+    )
     parser.add_argument("--from-fold", type=int, default=1)
     parser.add_argument("--through-fold", type=int, default=138)
     args = parser.parse_args()
+    if not 1 <= args.smoke_folds <= 5:
+        parser.error("--smoke-folds must be between 1 and 5.")
+    if not args.smoke and args.smoke_folds != 1:
+        parser.error("--smoke-folds is only supported together with --smoke.")
 
     if args.summary:
         _summarize(args.output.resolve())
@@ -189,7 +256,7 @@ def main() -> int:
     output = (args.output / "smoke" if args.smoke else args.output).resolve()
     _lock(output, spec)
     start = 1 if args.smoke else args.from_fold
-    stop = 1 if args.smoke else args.through_fold
+    stop = args.smoke_folds if args.smoke else args.through_fold
     if not 1 <= start <= stop <= 138:
         parser.error("Fold bounds must satisfy 1 <= from-fold <= through-fold <= 138.")
 
@@ -230,10 +297,12 @@ def main() -> int:
         validate_fold(result, expected_id=held_id, expected_y=held_y)
         _write_fold(path, result)
         print(f"[PEER LOO {fold}/138] saved {held_id}", flush=True)
-    if not args.smoke and len(list(output.glob("fold_*.csv"))) == 138:
+    if args.smoke:
+        _smoke_report(output, args.smoke_folds)
+    elif len(list(output.glob("fold_*.csv"))) == 138:
         _summarize(output)
     else:
-        print("[PEER LOO] Partial/smoke results only; no final score.", flush=True)
+        print("[PEER LOO] Partial results only; no final score.", flush=True)
     return 0
 
 
