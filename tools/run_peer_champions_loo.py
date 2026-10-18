@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Cold-refit CT3/Reference26/Compact14/B1 beside GeoC Local04D under paired LOOCV.
 
-Requires a trusted local checkout of heri-espino/todoseboso AND its separately
-exported private current_champions/v1 bundle. GitHub alone lacks that bundle.
+Requires a trusted local checkout of heri-espino/todoseboso for source code.
+The exported private bundle is resolved first from GeoC/data_n/ (including
+common nested layouts), then from the sibling checkout. Never commit data_n.
 
-  python tools/run_peer_champions_loo.py --peer-repo ../todoseboso --check
-  python tools/run_peer_champions_loo.py --peer-repo ../todoseboso --smoke
-  python tools/run_peer_champions_loo.py --peer-repo ../todoseboso --run
+  python tools/run_peer_champions_loo.py --check
+  python tools/run_peer_champions_loo.py --smoke
+  python tools/run_peer_champions_loo.py --run
   python tools/run_peer_champions_loo.py --summary
 
 Resumable, label-masked, no cached model replay, no official 59 predictions changed.
@@ -27,7 +28,7 @@ from geocebada.evaluation.checkpoint08_local import ID, atomic_json
 from geocebada.evaluation.checkpoint10_pca import FROZEN, inputs, load_pca_data, predict
 from geocebada.evaluation.peer_champions_loo import (
     BASELINE, MODELS, PEER_MODELS, SEED, Y, align_peer_targets,
-    outer_record, summarize_complete, validate_fold,
+    outer_record, resolve_peer_bundle, summarize_complete, validate_fold,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -158,7 +159,10 @@ def main() -> int:
     for command in ("check", "smoke", "run", "summary"):
         commands.add_argument(f"--{command}", action="store_true")
     parser.add_argument("--peer-repo", type=Path, default=ROOT.parent / "todoseboso")
-    parser.add_argument("--bundle", type=Path, default=None)
+    parser.add_argument(
+        "--bundle", type=Path, default=None,
+        help="Explicit complete bundle or parent folder; default: GeoC/data_n/.",
+    )
     parser.add_argument("--output", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--from-fold", type=int, default=1)
     parser.add_argument("--through-fold", type=int, default=138)
@@ -168,12 +172,17 @@ def main() -> int:
         _summarize(args.output.resolve())
         return 0
     peer = args.peer_repo.resolve()
-    bundle = (args.bundle or peer / "data/processed/current_champions/v1").resolve()
+    bundle = resolve_peer_bundle(ROOT, args.bundle, peer)
     (frame, groups, distance, manifest, ids, baseline,
      refit_fold, predict_saved) = _load(peer, bundle)
     spec = _spec(peer, bundle)
-    print(f"[PEER LOO] Input contract PASS: 138 aligned y; peer commit {spec['peer_commit'][:12]}; "
-          "GeoC 197-X PCA20; 26-feature peer bundle.", flush=True)
+    print(
+        f"[PEER LOO] Bundle: {bundle}\n"
+        f"[PEER LOO] Input contract PASS: 138 aligned y; "
+        f"peer commit {spec['peer_commit'][:12]}; "
+        "GeoC 197-X PCA20; 26-feature peer bundle.",
+        flush=True,
+    )
     if args.check:
         return 0
 
