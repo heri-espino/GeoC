@@ -80,7 +80,7 @@ if (!(Test-Path ..\todoseboso\src\current_champions.py)) {
 }
 python -m pip install pyarrow threadpoolctl
 
-# Only inspect geological clusters: KMeans 4/8 and DBSCAN 8 density settings.
+# Two X-only diagnostics: geological KMeans/DBSCAN and geographical DBSCAN.
 # No supervised fitting or use of parcel yield in the cluster diagnostics.
 python tools/run_peer_geology_dbscan.py --check
 
@@ -97,6 +97,10 @@ Output under ignored `reports/peer_geology_dbscan/`:
 
 - `geometry/geological_cluster_diagnostics.csv`: numbers/sizes of
   KMeans and DBSCAN clusters, DBSCAN noise fractions and actual radii.
+- `geometry/coordinate_cluster_diagnostics.csv`: a separate, target-free
+  **geographical** DBSCAN audit using haversine radii 0.5, 1, 2, 5, and
+  10 kilometers and min_samples 3/5. This does not alter Reference26 or
+  change its 24 nearest neighbors.
 - `smoke/fold_001.csv` and `smoke/preliminary_errors.csv`:
   all controls and both gates compared on the same one held-out parcel.
 - `fold_001.csv`.., `gate_001.json`, `preliminary_predictions.csv`,
