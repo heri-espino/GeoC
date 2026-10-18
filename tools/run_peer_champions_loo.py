@@ -62,8 +62,13 @@ def _load(peer: Path, bundle: Path):
             "does not contain the 26-feature inputs, groups and distances. "
             "Request the authorized bundle/export from the teammate."
         )
-    if _git(peer, "status", "--porcelain", "--", "src", "configs", "scripts/521_current_champions.py"):
-        raise RuntimeError("Peer modeling source/config has uncommitted changes; commit or clean it.")
+    if _git(
+        peer, "status", "--porcelain", "--",
+        "src", "configs", "scripts/521_current_champions.py",
+    ):
+        raise RuntimeError(
+            "Peer modeling source/config has uncommitted changes; commit or clean it."
+        )
     sys.path.insert(0, str(peer))
     from src.current_champions import load_bundle, predict_saved, refit_fold
 
@@ -164,7 +169,8 @@ def main() -> int:
         return 0
     peer = args.peer_repo.resolve()
     bundle = (args.bundle or peer / "data/processed/current_champions/v1").resolve()
-    frame, groups, distance, manifest, ids, baseline, refit_fold, predict_saved = _load(peer, bundle)
+    (frame, groups, distance, manifest, ids, baseline,
+     refit_fold, predict_saved) = _load(peer, bundle)
     spec = _spec(peer, bundle)
     print(f"[PEER LOO] Input contract PASS: 138 aligned y; peer commit {spec['peer_commit'][:12]}; "
           "GeoC 197-X PCA20; 26-feature peer bundle.", flush=True)
@@ -184,7 +190,10 @@ def main() -> int:
         held_y = float(frame.iloc[position][Y])
         path = output / f"fold_{fold:03}.csv"
         if path.is_file():
-            validate_fold(pd.read_csv(path, dtype={ID: str}), expected_id=held_id, expected_y=held_y)
+            validate_fold(
+                pd.read_csv(path, dtype={ID: str}),
+                expected_id=held_id, expected_y=held_y,
+            )
             print(f"[PEER LOO {fold}/138] cached {held_id}", flush=True)
             continue
         record = outer_record(position, n=len(ids))
