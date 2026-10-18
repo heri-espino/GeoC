@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from geocebada.evaluation.peer_champions_loo import (
-    BASELINE, ID, MODELS, SEED, Y,
+    BASELINE, ID, MODELS, Y,
     align_peer_targets, outer_record, summarize_complete, validate_fold,
 )
 
@@ -70,7 +70,10 @@ def test_cached_fold_must_match_id_label_and_all_predictions():
     with pytest.raises(ValueError, match="wrong ID"):
         validate_fold(fold, expected_id="P001", expected_y=float(fold.iloc[0].observed))
     with pytest.raises(ValueError, match="schema"):
-        validate_fold(fold.drop(columns=["CT3"]), expected_id="P000", expected_y=float(fold.iloc[0].observed))
+        validate_fold(
+            fold.drop(columns=["CT3"]),
+            expected_id="P000", expected_y=float(fold.iloc[0].observed),
+        )
     bad = fold.copy()
     bad.loc[0, "Reference26"] = np.nan
     with pytest.raises(ValueError, match="nonfinite"):
