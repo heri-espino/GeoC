@@ -124,3 +124,21 @@ def test_ambiguous_bundle_requires_explicit_path(tmp_path):
         (directory / "manifest.json").touch()
     with pytest.raises(ValueError, match="More than one"):
         resolve_peer_bundle(root, None, root.parent / "todoseboso")
+
+
+def test_populated_data_n_never_silently_falls_back(tmp_path):
+    root = tmp_path / "GeoC"
+    data_n = root / "data_n"
+    data_n.mkdir(parents=True)
+    (data_n / "raw_download.csv").touch()
+    old_bundle = tmp_path / "todoseboso/data/processed/current_champions/v1"
+    old_bundle.mkdir(parents=True)
+    from geocebada.evaluation.peer_champions_loo import BUNDLE_FILES
+
+    for name in BUNDLE_FILES:
+        (old_bundle / name).touch()
+    with pytest.raises(FileNotFoundError, match="Refusing to silently use"):
+        resolve_peer_bundle(root, None, tmp_path / "todoseboso")
+    assert resolve_peer_bundle(root, old_bundle, tmp_path / "todoseboso") == (
+        old_bundle.resolve()
+    )
