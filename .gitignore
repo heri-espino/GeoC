@@ -144,3 +144,6 @@ venv/
 # Nested LOOCV target-bearing folds, hyperparameters and diagnostics
 /reports/area_weighted_climate_nested_grid/
 /reports/area_weighted_climate_nested_grid_wide/
+
+# Peer champion LOOCV: private held-out yields, per-parcel predictions and caches
+/reports/peer_champions_loo/
