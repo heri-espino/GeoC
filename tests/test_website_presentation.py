@@ -160,7 +160,10 @@ def test_baseline_context_panel_matches_published_tables() -> None:
 
 
 def test_support_tiers_cover_exactly_the_published_59_estimates() -> None:
-    predictions = {r["ID_POLIGONO"]: float(r["RENDIMIENTO_T_HA"]) for r in read_rows("predictions.csv")}
+    predictions = {
+        r["ID_POLIGONO"]: float(r["RENDIMIENTO_T_HA"])
+        for r in read_rows("predictions.csv")
+    }
     diagnostics = read_rows("final_prediction_diagnostics.csv")
     assert {r["ID_POLIGONO"] for r in diagnostics} == set(predictions)
     assert len(diagnostics) == 59
@@ -190,7 +193,10 @@ def test_variable_evidence_tables_match_the_verified_schema() -> None:
     recurring = [k for k, v in pairs.items() if min(v.values()) >= 3]
     assert len(recurring) == 4
 
-    risk = [r for r in read_rows("checkpoint06_feature_family_error_risk.csv") if r["method"] == "Local04D"]
+    risk = [
+        r for r in read_rows("checkpoint06_feature_family_error_risk.csv")
+        if r["method"] == "Local04D"
+    ]
     assert risk and max(float(r["risk_r2_log"]) for r in risk) <= 0
 
 
