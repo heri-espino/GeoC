@@ -119,18 +119,25 @@ def _load(climate: Path) -> SpatialGPData:
     return data
 
 
-def _coverage(data: SpatialGPData) -> dict:
+def _coverage(data: SpatialGPData, climate: Path) -> dict:
     """Diagnostics only: no response/yield enters feature creation."""
     x = data.physical.drop(columns=ID)
-    climate_cols = ["prec_total", "temp_mean", "gdd5_monthly_proxy"]
+    climate_cols = [
+        f"area_climate__{name}__2025_m{m:02d}"
+        for name in ("prec", "tmin", "tmax") for m in range(4, 11)
+    ]
+    raw = pd.read_csv(climate, dtype={ID: str})
+    full_weather = raw.set_index(ID).reindex(data.baseline.ids)[climate_cols]
+    if full_weather.isna().any().any():
+        raise ValueError("Full 2025 21-variable monthly weather missing.")
     return {
         "rows": len(x), "columns": x.shape[1],
         "nonmissing_per_feature": x.notna().sum().astype(int).to_dict(),
         "complete_hls_ndvi_parcels": int(x["ndvi_n_days"].gt(0).sum()),
         "complete_smap_parcels": int(x["smap_n_days"].gt(0).sum()),
         "peak_month_observed_parcels": int(x["peak_month"].notna().sum()),
-        "unique_coarse_weather_profiles": int(
-            x[climate_cols].drop_duplicates().shape[0]
+        "unique_2025_monthly_weather_profiles_rounded_6dp": int(
+            full_weather.round(6).drop_duplicates().shape[0]
         ),
         "all_numeric_columns_finite_or_nan": bool(
             np.isfinite(x.to_numpy(float)[~np.isnan(x.to_numpy(float))]).all()
@@ -225,12 +232,13 @@ def main() -> int:
     output = args.output if args.output.is_absolute() else ROOT / args.output
     climate = args.climate if args.climate.is_absolute() else ROOT / args.climate
     if args.summary:
+        _lock_run(output, climate)
         _summary(output)
         return 0
     destination = output / "smoke" if args.smoke else output
     _lock_run(destination, climate)
     data = _load(climate)
-    report = _coverage(data)
+    report = _coverage(data, climate)
     atomic_json(destination / "x_only_coverage.json", report)
     if args.check:
         print(json.dumps(report, indent=2, sort_keys=True))
