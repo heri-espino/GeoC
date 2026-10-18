@@ -15,9 +15,13 @@ MONTHS = tuple(range(4, 11))
 DAYS = np.array([30, 31, 30, 31, 31, 30, 31], dtype=float)
 
 
-def _check_ids(frame: pd.DataFrame, ids: list[str], name: str) -> pd.DataFrame:
-    if ID not in frame or frame[ID].isna().any() or frame[ID].duplicated().any():
-        raise ValueError(f"{name} requires unique non-null parcel IDs.")
+def _check_ids(
+    frame: pd.DataFrame, ids: list[str], name: str, *, unique: bool = False,
+) -> pd.DataFrame:
+    if ID not in frame or frame[ID].isna().any():
+        raise ValueError(f"{name} requires non-null parcel IDs.")
+    if unique and frame[ID].duplicated().any():
+        raise ValueError(f"{name} requires exactly one row per parcel.")
     data = frame.copy()
     data[ID] = data[ID].astype(str)
     if not set(data[ID]).issubset(ids):
@@ -133,7 +137,7 @@ def build_phenology_weather_features(
     ordered_ids = list(map(str, ids))
     if len(ordered_ids) != len(set(ordered_ids)):
         raise ValueError("Requested parcel IDs must be unique.")
-    climate = _check_ids(weighted_monthly, ordered_ids, "Climate").set_index(ID)
+    climate = _check_ids(weighted_monthly, ordered_ids, "Climate", unique=True).set_index(ID)
     if set(climate.index) != set(ordered_ids):
         raise ValueError("Climate missing parcels.")
     h = _check_ids(hls, ordered_ids, "HLS")
