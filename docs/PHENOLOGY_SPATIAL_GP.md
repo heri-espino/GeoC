@@ -41,7 +41,11 @@ supervised training fold. SMAP is roughly 9 km and monthly weather roughly
 
 **AgERA5 and Sentinel-1 are not inputs in this first version**; they require
 verification of processing completeness and sensor QA before expansion.
-No additional SIAP 2025 columns enter the new physical block. However, the\nunchanged C4 PCA20 base representation **already includes** contemporaneous\nmunicipal SIAP 2025 outcome proxies by its Checkpoint04A feature policy.\nThis is explicitly competition-mode information, not clean prospective\nforecasting. A future ablation must distinguish its contribution.
+No additional SIAP 2025 columns enter the new physical block. However, the
+unchanged C4 PCA20 base representation **already includes** contemporaneous
+municipal SIAP 2025 outcome proxies by its Checkpoint04A feature policy.
+This is explicitly competition-mode information, not clean prospective
+forecasting. A future ablation must distinguish its contribution.
 
 ## Estimator
 
