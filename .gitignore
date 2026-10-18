@@ -150,3 +150,6 @@ venv/
 
 # Peer champion LOOCV: private held-out yields, per-parcel predictions and caches
 /reports/peer_champions_loo/
+
+# Exploratory geological KMeans vs DBSCAN: label-bearing fold outputs stay private
+/reports/peer_geology_dbscan/
