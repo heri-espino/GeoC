@@ -5,7 +5,7 @@ import pytest
 
 from geocebada.evaluation.peer_champions_loo import (
     BASELINE, ID, MODELS, Y,
-    align_peer_targets, outer_record, summarize_complete, validate_fold,
+    align_peer_targets, outer_record, resolve_peer_bundle, summarize_complete, validate_fold,
 )
 
 
@@ -80,3 +80,47 @@ def test_cached_fold_must_match_id_label_and_all_predictions():
         validate_fold(bad, expected_id="P000", expected_y=float(fold.iloc[0].observed))
     with pytest.raises(ValueError, match="138"):
         summarize_complete(full.iloc[:-1], bootstraps=100)
+
+
+@pytest.mark.parametrize("layout", [
+    ".", "v1", "current_champions/v1",
+    "processed/current_champions/v1",
+    "data/processed/current_champions/v1",
+])
+def test_data_n_bundle_layouts(tmp_path, layout):
+    root = tmp_path / "GeoC"
+    folder = root / "data_n" / layout
+    folder.mkdir(parents=True)
+    from geocebada.evaluation.peer_champions_loo import BUNDLE_FILES
+
+    for name in BUNDLE_FILES:
+        (folder / name).touch()
+    assert resolve_peer_bundle(root, None, root.parent / "todoseboso") == folder.resolve()
+    assert resolve_peer_bundle(root, root / "data_n", root.parent / "todoseboso") == (
+        folder.resolve()
+    )
+
+
+def test_explicit_bundle_override_and_missing_files(tmp_path):
+    root = tmp_path / "GeoC"
+    outside = tmp_path / "external" / "current_champions" / "v1"
+    outside.mkdir(parents=True)
+    (outside / "manifest.json").touch()
+    with pytest.raises(FileNotFoundError, match="Incomplete champion bundle"):
+        resolve_peer_bundle(root, outside, tmp_path / "todoseboso")
+    with pytest.raises(FileNotFoundError, match="Could not find"):
+        resolve_peer_bundle(root, root / "data_n", tmp_path / "todoseboso")
+    from geocebada.evaluation.peer_champions_loo import BUNDLE_FILES
+
+    for name in BUNDLE_FILES:
+        (outside / name).touch()
+    assert resolve_peer_bundle(root, outside, tmp_path / "todoseboso") == outside.resolve()
+
+
+def test_ambiguous_bundle_requires_explicit_path(tmp_path):
+    root = tmp_path / "GeoC"
+    for directory in (root / "data_n", root / "data_n" / "processed/current_champions/v1"):
+        directory.mkdir(parents=True)
+        (directory / "manifest.json").touch()
+    with pytest.raises(ValueError, match="More than one"):
+        resolve_peer_bundle(root, None, root.parent / "todoseboso")
