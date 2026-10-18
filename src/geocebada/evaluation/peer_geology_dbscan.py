@@ -59,9 +59,13 @@ class GeologicalDBSCANGate:
             raise ValueError("Inconsistent DBSCAN fit rows.")
         if not all(np.isfinite(a).all() for a in (z, y, ct, expert)):
             raise ValueError("DBSCAN gate requires finite training features and OOF.")
-        from src.conditional_local_phases import global_weight
-
-        self.global_ = global_weight(y, ct, expert)
+        # Identical formula to peer ExpertGate, without importing private code.
+        delta = expert - ct
+        energy = float(delta @ delta)
+        self.global_ = (
+            float(np.clip(delta @ (y - ct) / energy, 0, 1))
+            if energy > 1e-12 else 0.0
+        )
         self.eps_ = adaptive_radius(z, self.min_samples, self.radius_factor)
         self.model_ = DBSCAN(eps=self.eps_, min_samples=self.min_samples).fit(z)
         self.labels_ = self.model_.labels_.copy()
