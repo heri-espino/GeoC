@@ -170,6 +170,19 @@ def resolve_peer_bundle(
         found = [path for path in _candidate_bundle_directories(directory)
                  if (path / "manifest.json").is_file()]
         if not found:
+            if (
+                requested is None
+                and directory == (project_root / "data_n").resolve()
+                and directory.is_dir()
+                and any(directory.iterdir())
+            ):
+                raise FileNotFoundError(
+                    "GeoC/data_n is present but has no champion bundle manifest "
+                    "in the supported locations. Refusing to silently use a "
+                    "different bundle from the peer checkout. Verify you "
+                    "downloaded the exported current_champions/v1 bundle, "
+                    "not only raw data, or pass --bundle explicitly."
+                )
             continue
         if len(found) > 1:
             raise ValueError(
