@@ -83,13 +83,19 @@ def validate_fold(frame: pd.DataFrame, *, expected_id: str, expected_y: float) -
         raise ValueError("Cached peer LOOCV fold has nonfinite predictions.")
 
 
-def summarize_complete(frame: pd.DataFrame, *, bootstraps: int = 3000) -> tuple[pd.DataFrame, pd.DataFrame]:
+def summarize_complete(
+    frame: pd.DataFrame, *, bootstraps: int = 3000
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Compute paired pooled scores and descriptive parcel bootstrap differences.
 
     This bootstrap does NOT adjust for spatial correlation or previous model
     selection, and must not be interpreted as independent confirmation.
     """
-    if len(frame) != 138 or not frame[ID].is_unique or set(frame.columns) != {ID, "observed", *MODELS}:
+    if (
+        len(frame) != 138
+        or not frame[ID].is_unique
+        or set(frame.columns) != {ID, "observed", *MODELS}
+    ):
         raise ValueError("Exactly 138 unique held-out predictions are required.")
     y = frame["observed"].to_numpy(float)
     a = frame[list(MODELS)].to_numpy(float)
