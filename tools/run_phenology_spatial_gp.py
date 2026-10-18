@@ -22,11 +22,8 @@ import pandas as pd
 
 from geocebada.evaluation.checkpoint04a import haversine_distance_matrix
 from geocebada.evaluation.checkpoint08_local import ID, atomic_json, digest
-from geocebada.evaluation.checkpoint10_pca import (
-    inputs,
-    load_pca_data,
-    predict as predict_incumbent,
-)
+from geocebada.evaluation.checkpoint10_pca import inputs, load_pca_data
+from geocebada.evaluation.checkpoint10_pca import predict as predict_incumbent
 from geocebada.evaluation.phenology_spatial_gp import (
     CANDIDATE,
     SpatialGPData,
