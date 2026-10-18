@@ -50,6 +50,27 @@ research scripts into GeoC, replace peer's models with a four-feature proxy,
 load a model previously fit on all 138 labels, or use its saved 81 OOF folds
 as though they were 138 LOOCV folds.
 
+**Your local input location:** place the downloaded private files in
+`GeoC/data_n/`. The runner automatically looks for a frozen manifest and
+accompanying files in the following layouts (all relative to the GeoC root):
+
+- `data_n/manifest.json` (bundle files directly in `data_n/`)
+- `data_n/v1/manifest.json`
+- `data_n/current_champions/v1/manifest.json`
+- `data_n/processed/current_champions/v1/manifest.json`
+- `data_n/data/processed/current_champions/v1/manifest.json`
+
+It prefers `data_n/` over a bundle in an external peer checkout. If you
+extracted the downloaded folder elsewhere, pass `--bundle <directory>`;
+this accepts either the direct bundle or one of the parent layouts above.
+The folder `data_n/` is fully ignored by Git, as are local per-parcel
+`reports/peer_champions_loo/` outputs. **No private data should be staged.**
+If only raw inputs were downloaded, a valid `manifest.json`,
+`train138.parquet`, `groups.csv`, `distance.npy`, `splits.json`, and
+`expected_oof.parquet` must first be exported using the peer project's
+own supported process. Merely renaming raw inputs to `data_n/` does not
+construct the 26-feature champion bundle.
+
 **Why a private bundle is required:** the fork deliberately excludes
 data/processed/current_champions/v1. This bundle includes 26 engineered
 predictors for the 138 training IDs, group definitions and exactly aligned
@@ -95,6 +116,7 @@ robustness check.
 ## Running on the workstation (PowerShell)
 
 From your existing GeoC checkout (read-only against main; use branch/PR):
+From your existing GeoC checkout (use the experiment branch, not `main`):
 
 ~~~powershell
 cd C:\Users\175199\GeoC
@@ -103,31 +125,42 @@ git fetch origin
 git switch experiment/nuria-champions-loocv
 git pull --ff-only origin experiment/nuria-champions-loocv
 
-# Peer checkout lives outside GeoC, NOT copied into it:
-if (!(Test-Path ..\todoseboso)) {
+# Private data already lives under GeoC/data_n/ and is ignored.
+git check-ignore data_n/
+git status --short
+
+# Only the modeling source code is needed from the fork.
+# Clone beside GeoC if it is not already there (do NOT move the private files):
+if (!(Test-Path ..\todoseboso\src\current_champions.py)) {
     git clone https://github.com/heri-espino/todoseboso.git ..\todoseboso
 }
 
-# The following MUST already exist locally, provided securely by the teammate:
-# ..\todoseboso\data\processed\current_champions\v1\manifest.json
-# ..\todoseboso\data\processed\current_champions\v1\train138.parquet
-# ..\todoseboso\data\processed\current_champions\v1\groups.csv
-# ..\todoseboso\data\processed\current_champions\v1\distance.npy
-# ..\todoseboso\data\processed\current_champions\v1\expected_oof.parquet
-# ..\todoseboso\data\processed\current_champions\v1\splits.json
+# Parquet bundle loading requires pyarrow (or another parquet engine).
+python -m pip install pyarrow threadpoolctl
 
-# Ensure peer runtime dependencies are installed in this environment.
-# Peer recipe originally used scikit-learn 1.7.2, pyarrow, threadpoolctl, etc.
-
+# Validate peer bundle hashes, IDs, yields, 26 features, and GeoC C4 parity.
 python tools/run_peer_champions_loo.py --check
+
+# Fit one held-out parcel to catch runtime errors before the long run.
 python tools/run_peer_champions_loo.py --smoke
 
-# Heavy, resumable; writes a completed result after each parcel:
+# Full run: 138 independent held-out parcels. Resumes completed folds.
 python tools/run_peer_champions_loo.py --run
-
-# Full 138-fold score; refuses incomplete coverage:
 python tools/run_peer_champions_loo.py --summary
 ~~~
+
+The default `--bundle` resolves the first valid champion export inside
+`GeoC/data_n/`, so no path flag is needed for the standard layouts.
+If the actual bundle is under a different extracted folder, use
+`--bundle <path>` with `--check`, `--smoke`, and `--run`.
+A successful `--check` is required before training; it is not proof that
+all 138 model refits will succeed. The peer's model-selection code is
+computationally expensive and has not been executed in this change.
+
+If `git ls-files data_n/` returns anything, these files were tracked
+*before* the ignore rule; remove them from the index without deleting local
+copies: `git rm -r --cached -- data_n/`. Inspect the staged changes
+before committing; never push private datasets.
 
 To split work across multiple sessions without running concurrently, use
 --run --from-fold 1 --through-fold 20 and then 21..138. Rerunning the same
@@ -156,5 +189,7 @@ smoke writes its own non-promoting subdirectory.
 - Any actual replacement of 59 final forecasts requires separately
   constructed 197-row peer inputs and appropriate confirmation.
 
-**Next execution blocker:** obtain the trusted, private peer feature bundle.
-No data or model files have been merged into GeoC by this PR.
+**Next execution step:** run `--check` against your local `data_n/`
+copy and correct any missing bundle files. The workstation's private
+folder cannot be inspected from this GitHub branch. No refits or private
+data files have been committed or merged by this PR.
