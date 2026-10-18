@@ -140,13 +140,26 @@ python -m pip install pyarrow threadpoolctl
 # Validate peer bundle hashes, IDs, yields, 26 features, and GeoC C4 parity.
 python tools/run_peer_champions_loo.py --check
 
-# Fit one held-out parcel to catch runtime errors before the long run.
+# Fit ALL FIVE models on the SAME held-out parcel.
+# Prints observed yield, model prediction and absolute error for each model.
 python tools/run_peer_champions_loo.py --smoke
+
+# Optional: 3 held-out parcels, with descriptive small-sample RMSE/MAE.
+# More expensive, still NOT a representative LOOCV model ranking.
+# python tools/run_peer_champions_loo.py --smoke --smoke-folds 3
 
 # Full run: 138 independent held-out parcels. Resumes completed folds.
 python tools/run_peer_champions_loo.py --run
 python tools/run_peer_champions_loo.py --summary
 ~~~
+
+The default one-fold smoke runs all five methods in the identical 137/1
+split: frozen Local04D, CT3, Reference26, Compact14 and B1. It saves
+`reports/peer_champions_loo/smoke/smoke_predictions.csv` and
+`smoke_model_comparison.csv` and prints the paired outcomes. The optional
+`--smoke-folds 3` evaluates 3 different holdouts and prints **exploratory**
+MAE and RMSE over those three parcels. Neither smoke is the official 138-fold
+LOOCV result and it should never be used to select a winner.
 
 The default `--bundle` resolves the first valid champion export inside
 `GeoC/data_n/`, so no path flag is needed for the standard layouts.
