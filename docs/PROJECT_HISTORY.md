@@ -1,3 +1,7 @@
+## 2026-10-18 — Private data_n routing for paired champion LOOCV
+
+On branch `experiment/nuria-champions-loocv`, updated the peer runner to resolve exported 26-feature champion bundles from ignored root `data_n/` (direct or nested common layouts), accept `--bundle` overrides, and fail clearly on absent/incomplete/ambiguous bundles. Added tests and workstation PowerShell instructions. No machine-local private folder was read and no cold-refit experiment was executed.
+
 ## 2026-10-18 — Peer Reference26/Compact14 LOOCV integration branch
 
 After inspecting public fork heri-espino/todoseboso (README, src/current_champions.py, reproduction guide and comparable 97/41 aggregates), prepared an additive, non-promoting LOOCV adapter and isolated tests on branch experiment/nuria-champions-loocv. It invokes original peer cold-refit methods using their private 26-feature bundle and four inner folds, pairs 138 leave-one-parcel-out observations against original GeoC Local04D, masks heldout labels and fingerprints inputs. Real refits not executed because the peer private bundle is absent from GitHub. Documentation: docs/PEER_CHAMPIONS_LOOCV.md. No canonical 59 forecasts changed.
