@@ -40,6 +40,19 @@ Invariants:
 - Prefer stable internal links and document all new dependencies if introduced.
 - This static site is independent of `app/` Streamlit. Do not substitute the
   Checkpoint 03D generic global ONNX for the Local04D fixed-59 output.
+- Public naming: the site shows `Local04D` as **GeoRidge** (`Local07` as GeoRidge+,
+  `Prithvi07` as Prithvi-EO). CSV keys and the canonical report keep the repository names; the
+  equivalence must stay visible (Annex A, `resumen.html`). Do not rename CSV keys.
+- Equation: KaTeX is pre-rendered and vendored in `website/vendor/katex/`. No CDN, no runtime JS.
+- Eleven CSV snapshots are synchronized by `tools/sync_website_data.py`. The baseline panel
+  compares mean-per-split RMSE on the same 16 target-matched splits; never mix it with the
+  pooled RMSE of the 07/08 banks without saying so.
+- Support tiers in the explorer come from `x_support_tier` (Checkpoint 04F/05 diagnostics),
+  not from the 04A high/intermediate/extrapolation counts. They are not confidence intervals.
+- Tail-importance AUCs describe which families separate extreme yields, not what explains mean
+  yield. Family ablations use early baseline models (Ridge, ExtraTrees), not GeoRidge. Recurring
+  03B expressions are training associations, not new agronomic indices.
+- Keep the limitations annex (Annex E) consistent with `docs/METODOLOGIA_Y_RESULTADOS.md`.
 
 After modifications, run `python tools/sync_website_data.py --check` and
 `pytest -q tests/test_website_presentation.py`. Record material new AI-generated

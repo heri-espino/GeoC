@@ -18,6 +18,28 @@ SOURCES = {
         "website/data/checkpoint08_bootstrap.csv"
     ),
     "reports/checkpoint_05/final_predictions.csv": "website/data/predictions.csv",
+    # Contexto, soporte y variables (anexos y explorador).
+    "reports/checkpoint_02/baseline_summary.csv": (
+        "website/data/checkpoint02_baseline_summary.csv"
+    ),
+    "reports/checkpoint_03b/expression_stability.csv": (
+        "website/data/checkpoint03b_expression_stability.csv"
+    ),
+    "reports/checkpoint_04b/protocol_summary.csv": (
+        "website/data/checkpoint04b_protocol_summary.csv"
+    ),
+    "reports/checkpoint_05/protocol_summary.csv": (
+        "website/data/checkpoint05_protocol_summary.csv"
+    ),
+    "reports/checkpoint_04f/final_prediction_diagnostics.csv": (
+        "website/data/final_prediction_diagnostics.csv"
+    ),
+    "reports/checkpoint_06/feature_family_tail_importance.csv": (
+        "website/data/checkpoint06_feature_family_tail_importance.csv"
+    ),
+    "reports/checkpoint_06/feature_family_error_risk.csv": (
+        "website/data/checkpoint06_feature_family_error_risk.csv"
+    ),
 }
 
 

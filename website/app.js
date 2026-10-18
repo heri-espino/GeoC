@@ -52,25 +52,25 @@ function el(tag, className, content) {
 
 function name07(model) {
   const replacements = {
-    Local04D: "Local04D · seleccionado",
-    Local07: "Local07",
-    Prithvi07: "Prithvi07",
-    catboost: "CatBoost07"
+    Local04D: "GeoRidge · seleccionado",
+    Local07: "GeoRidge+",
+    Prithvi07: "Prithvi-EO",
+    catboost: "CatBoost"
   };
   if (replacements[model]) return replacements[model];
   const match = /^Local04D_plus_(Local07|Prithvi07|catboost)_w(0\.\d+)$/.exec(model);
   if (match) {
-    const names = { Local07: "Local07", Prithvi07: "Prithvi07", catboost: "CatBoost07" };
-    return "Local04D + " + Math.round(Number(match[2]) * 100) + " % " + names[match[1]];
+    const names = { Local07: "GeoRidge+", Prithvi07: "Prithvi-EO", catboost: "CatBoost" };
+    return "GeoRidge + " + Math.round(Number(match[2]) * 100) + " % " + names[match[1]];
   }
   return model;
 }
 
 function name08(model) {
   return ({
-    Local04D_frozen: "Local04D fijo · seleccionado",
-    Local04D_nested: "Local04D con ajuste interno",
-    Local07_nested: "Local07 con ajuste interno"
+    Local04D_frozen: "GeoRidge fijo · seleccionado",
+    Local04D_nested: "GeoRidge reajustado",
+    Local07_nested: "GeoRidge+ reajustado"
   })[model] || model;
 }
 
@@ -120,7 +120,7 @@ function drawBootstrap(rows) {
   box.replaceChildren();
   rows.forEach(row => {
     const wrapper = el("div", "bootstrap-row");
-    wrapper.append(el("span", "", name08(row.model).split(" con ")[0] + " (" + (row.model.includes("07") ? "nuevo" : "reajustado") + ")"));
+    wrapper.append(el("span", "", name08(row.model)));
     const right = el("div");
     const track = el("div", "ci-track");
     const range = el("span", "ci-range");
@@ -180,7 +180,123 @@ async function initResults() {
   }
 }
 
-function initPredictions(rows) {
+const BASE_LABELS = { GlobalMean: "Promedio global", StateMean: "Promedio por estado", PLS_C0: "Modelo global PLS", CatBoost_C1: "Modelo global CatBoost", GeoKNN_10: "Vecinos geográficos (k=10)", Graph04D: "Grafo espacial", Local04D: "GeoRidge · seleccionado" };
+const TIERS = { high: ["Alto", 3], mid: ["Medio", 2], low: ["Bajo", 1] };
+
+const FAMILY_STEPS = [["DummyMean", "Sin variables (promedio)"], ["A0_geometry_admin", "Ubicación y datos administrativos"], ["A1_static_environment", "+ suelo, relieve y elevación"], ["A2_static_plus_siap_history", "+ historial municipal SIAP"], ["A3_clean_plus_climate", "+ clima histórico"], ["A4_clean_plus_basic_history", "+ satélite histórico"], ["A6_competition_remote_weather", "+ satélite, clima y agua 2025"], ["A7_competition_full", "+ SIAP 2025"]];
+
+async function initFamilies() {
+  const body = $("#table-families");
+  if (!body) return;
+  try {
+    const rows = await loadCSV("checkpoint02_baseline_summary.csv");
+    const get = (ablation, protocol, model) => {
+      const row = rows.find(r => r.protocol === protocol && r.model === model && (model === "DummyMean" ? r.ablation === "A0_geometry_admin" : r.ablation === ablation));
+      if (!row) throw new Error("Falta " + ablation + " " + protocol + " " + model);
+      return { rmse: Number(row.rmse_mean), n: Number(row.n_features) };
+    };
+    if (fixed(get("A0_geometry_admin", "fold_state_stratified", "ExtraTrees").rmse, 4) !== "0.5095") throw new Error("Tabla distinta del esquema verificado.");
+    const cols = [["fold_state_stratified", "ExtraTrees"], ["fold_state_stratified", "Ridge"], ["fold_municipality_grouped", "ExtraTrees"], ["fold_municipality_grouped", "Ridge"]];
+    const data = FAMILY_STEPS.map(([ablation, label]) => ({ label, n: ablation === "DummyMean" ? 0 : get(ablation, cols[0][0], "ExtraTrees").n, vals: cols.map(([p, m]) => get(ablation, p, ablation === "DummyMean" ? "DummyMean" : m).rmse) }));
+    const best = cols.map((_, c) => Math.min(...data.slice(1).map(d => d.vals[c])));
+    body.replaceChildren();
+    data.forEach(d => {
+      const tr = el("tr");
+      tr.append(el("td", "", d.label), el("td", "", d.n ? String(d.n) : "—"));
+      d.vals.forEach((v, c) => tr.append(el("td", d.label.startsWith("Sin") ? "" : (v === best[c] ? "best" : ""), fixed(v, 3))));
+      body.append(tr);
+    });
+  } catch (error) {
+    console.error("Error al cargar ablaciones:", error);
+    const cell = el("td", "load-error", "No se pudieron cargar las ablaciones."); cell.colSpan = 6;
+    body.replaceChildren(el("tr", "", "")); body.firstChild.append(cell);
+  }
+}
+
+const VAR_NAMES = { siap_hist__yield_trend_recent: "Tendencia reciente del rendimiento municipal (SIAP)", siap_hist__yield_mean_recent: "Rendimiento municipal reciente medio (SIAP)", agro_thermal__2025__gdd_proxy_base5p0c: "Grados-día 2025 (base 5 °C)", clim_official_2025__prec__season_sum: "Precipitación de la temporada 2025", soilgrids__soc__depth_weighted_0_30cm: "Carbono orgánico del suelo (0–30 cm)" };
+const FAMILY_NAMES = { water_productivity: "Productividad del agua", thermal: "Térmica", water_timing: "Momento de la lluvia", cross_domain: "Interacciones cultivo–agua–clima", soil_interaction: "Suelo × clima", soil_profile: "Perfil del suelo", nonlinear_basis: "Transformaciones no lineales", sensor_agreement: "Concordancia entre sensores", phenology: "Fenología (curva del cultivo)", phenology_anomaly: "Anomalías fenológicas vs. histórico", all_agronomic: "Todas juntas" };
+
+async function initAnnexE() {
+  const tailBody = $("#table-tail"), comboBody = $("#table-combos");
+  if (!tailBody || !comboBody) return;
+  try {
+    const [tail, expr, risk] = await Promise.all([loadCSV("checkpoint06_feature_family_tail_importance.csv"), loadCSV("checkpoint03b_expression_stability.csv"), loadCSV("checkpoint06_feature_family_error_risk.csv")]);
+    const rowOf = (family, task) => tail.find(r => r.family === family && r.task === task);
+    const auc = (family, task) => Number(rowOf(family, task)?.mean_split_roc_auc);
+    if (fixed(auc("water_productivity", "low_vs_rest"), 3) !== "0.889") throw new Error("Tabla de extremos distinta del esquema verificado.");
+    const families = [...new Set(tail.map(r => r.family))].filter(f => f !== "all_agronomic").sort((a, b) => auc(b, "low_vs_rest") - auc(a, "low_vs_rest"));
+    const bestLow = Math.max(...families.map(f => auc(f, "low_vs_rest"))), bestHigh = Math.max(...families.map(f => auc(f, "high_vs_rest")));
+    tailBody.replaceChildren();
+    [...families, "all_agronomic"].forEach(f => {
+      const low = auc(f, "low_vs_rest"), high = auc(f, "high_vs_rest"), tr = el("tr");
+      tr.append(el("td", "", FAMILY_NAMES[f] || f), el("td", "", rowOf(f, "low_vs_rest").n_features),
+        el("td", low === bestLow ? "best" : "", fixed(low, 3)), el("td", high === bestHigh ? "best" : "", fixed(high, 3)));
+      tailBody.append(tr);
+    });
+    const bestR2 = Math.max(...risk.filter(r => r.method === "Local04D").map(r => Number(r.risk_r2_log)));
+    $("#risk-note").textContent = "Con estas mismas familias no fue posible anticipar en qué parcelas se equivocará más el modelo: el mejor R² al predecir el riesgo de error fue " + fmt(bestR2, 2) + " (un valor ≤ 0 no supera predecir el promedio).";
+
+    const pairs = new Map();
+    expr.forEach(r => {
+      const key = [r.left, r.right].sort().join("|");
+      const p = pairs.get(key) || { left: r.left, right: r.right, state: 0, grouped: 0, rho: 0 };
+      const folds = Number(r.selected_folds);
+      if (r.protocol === "fold_state_stratified") p.state = Math.max(p.state, folds); else p.grouped = Math.max(p.grouped, folds);
+      p.rho = Math.max(p.rho, Number(r.mean_abs_spearman_train));
+      pairs.set(key, p);
+    });
+    const motifs = Array.from(pairs.values()).filter(p => p.state >= 3 && p.grouped >= 3).sort((a, b) => (b.state + b.grouped) - (a.state + a.grouped) || b.rho - a.rho);
+    if (motifs.length !== 4) throw new Error("Las combinaciones recurrentes no coinciden con el esquema verificado.");
+    comboBody.replaceChildren();
+    motifs.forEach(p => {
+      const tr = el("tr");
+      tr.append(el("td", "", (VAR_NAMES[p.left] || p.left) + " ↔ " + (VAR_NAMES[p.right] || p.right)), el("td", "", p.state + " / 5"), el("td", "", p.grouped + " / 5"), el("td", "", fixed(p.rho, 2)));
+      comboBody.append(tr);
+    });
+  } catch (error) {
+    console.error("Error al cargar variables del anexo E:", error);
+    [[tailBody, 4], [comboBody, 4]].forEach(([body, span]) => {
+      const cell = el("td", "load-error", "No se pudieron cargar estas tablas. Consulta los CSV del repositorio."); cell.colSpan = span;
+      const tr = el("tr"); tr.append(cell); body.replaceChildren(tr);
+    });
+  }
+}
+
+async function initBaselines() {
+  const box = $("#chart-baselines");
+  if (!box) return;
+  try {
+    const [b04, b05] = await Promise.all([loadCSV("checkpoint04b_protocol_summary.csv"), loadCSV("checkpoint05_protocol_summary.csv")]);
+    const source = { GlobalMean: b04, StateMean: b04, GeoKNN_10: b04, PLS_C0: b05, CatBoost_C1: b05, Graph04D: b05, Local04D: b05 };
+    const rows = Object.keys(BASE_LABELS).map(model => {
+      const row = source[model].find(r => r.family === "target_matched" && r.method === model);
+      if (!row || !Number.isFinite(Number(row.rmse_mean))) throw new Error("Falta " + model);
+      return { model, rmse_pooled: row.rmse_mean };
+    });
+    const value = model => Number(rows.find(r => r.model === model).rmse_pooled);
+    if (fixed(value("GlobalMean")) !== "0.849973" || fixed(value("Local04D")) !== "0.487845") throw new Error("Tablas de referencia distintas del esquema verificado.");
+    drawChart("chart-baselines", rows, model => BASE_LABELS[model], "Local04D", Object.keys(BASE_LABELS));
+    const best = value("Local04D");
+    const gains = [["StateMean", "frente al promedio por estado"], ["CatBoost_C1", "frente a un modelo global (CatBoost)"], ["GeoKNN_10", "frente a vecinos geográficos simples"]];
+    $("#baseline-gains").replaceChildren(...gains.map(([model, text]) => {
+      const item = el("div", "gain");
+      item.append(el("strong", "", "−" + fmt(100 * (1 - best / value(model)), 1) + " %"), el("span", "", text));
+      return item;
+    }));
+  } catch (error) {
+    console.error("Error al cargar referencias:", error);
+    box.replaceChildren(el("p", "load-error", "No se pudieron cargar las referencias de comparación."));
+  }
+}
+
+function buildSupport(rows, records) {
+  if (!rows) return null;
+  const map = new Map(rows.map(r => [String(r.ID_POLIGONO).trim(), { tier: r.x_support_tier, diff: Number(r.local_graph_abs_disagreement), y: Number(r.predicted_final) }]));
+  const bad = map.size !== 59 || records.some(r => { const s = map.get(r.id); return !s || !TIERS[s.tier] || !Number.isFinite(s.diff) || Math.abs(s.y - r.y) > 1e-6; });
+  return bad ? null : map;
+}
+
+function initPredictions(rows, support) {
   const selector = $("#parcel-select"), input = $("#parcel-search");
   const value = $("#prediction-value"), id = $("#prediction-id"), status = $("#prediction-status");
   const records = rows.map(x => ({ id: String(x.ID_POLIGONO).trim(), y: Number(x.RENDIMIENTO_T_HA) }))
@@ -188,6 +304,20 @@ function initPredictions(rows) {
   const unique = new Set(records.map(x => x.id));
   if (records.length !== 59 || unique.size !== 59 || records.some(x => !/^AGC_\d+$/.test(x.id) || !Number.isFinite(x.y) || x.y < 0)) {
     throw new Error("Archivo de predicciones distinto del contrato de 59 consultas.");
+  }
+  const sup = buildSupport(support, records);
+  const showSupport = id => {
+    if (!sup) return;
+    const s = sup.get(id), [label, level] = TIERS[s.tier];
+    $("#support-label").textContent = label;
+    $$("#support-meter i").forEach((bar, i) => bar.classList.toggle("on", i < level));
+    $("#support-diff").textContent = fmt(s.diff, 2) + " t/ha";
+  };
+  if (sup) {
+    const n = tier => Array.from(sup.values()).filter(s => s.tier === tier).length;
+    $("#support-box").hidden = false;
+    $("#support-summary").hidden = false;
+    $("#support-summary").textContent = "Soporte de datos de las 59 consultas: Alto " + n("high") + " · Medio " + n("mid") + " · Bajo " + n("low");
   }
   selector.replaceChildren();
   records.forEach(row => {
@@ -217,7 +347,8 @@ function initPredictions(rows) {
     if (syncText) input.value = record.id;
     value.textContent = fmt(record.y, 3);
     id.textContent = "ID_POLIGONO: " + record.id;
-    status.textContent = "Estimación calculada y congelada en Checkpoint 05. El rendimiento real de esta parcela no está disponible.";
+    status.textContent = "Estimación calculada y congelada en la etapa 5. El rendimiento real de esta parcela no está disponible.";
+    showSupport(record.id);
     const active = Math.min(count - 1, Math.floor((record.y - min) / width));
     Array.from(histogram.children).forEach((bar, index) => {
       bar.style.opacity = index === active ? "1" : ".44";
@@ -239,8 +370,8 @@ function initPredictions(rows) {
 
 async function loadPredictions() {
   try {
-    const rows = await loadCSV("predictions.csv");
-    initPredictions(rows);
+    const [rows, support] = await Promise.all([loadCSV("predictions.csv"), loadCSV("final_prediction_diagnostics.csv").catch(() => null)]);
+    initPredictions(rows, support);
   } catch (error) {
     console.error("Error al cargar estimaciones:", error);
     $("#prediction-status").textContent = "No se pueden verificar las 59 estimaciones. Descarga el CSV desde el repositorio.";
@@ -282,5 +413,8 @@ function initChrome() {
 document.addEventListener("DOMContentLoaded", () => {
   initChrome();
   initResults();
+  initBaselines();
+  initFamilies();
+  initAnnexE();
   loadPredictions();
 });

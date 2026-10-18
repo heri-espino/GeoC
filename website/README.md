@@ -1,9 +1,11 @@
 # GeoCebada · sitio de presentación (2026)
 
 Sitio editorial **estático, sin dependencias de npm**. Presenta en español el reto, los datos,
-la metodología Local04D, una explicación visual de la validación cruzada 97/41 y los
-protocolos 04B/08, dos evaluaciones separadas (Checkpoints 07/08), un explorador de las
-59 predicciones congeladas y un anexo con los modelos descartados.
+la metodología (modelo GeoRidge, `Local04D` en el repositorio), una explicación visual de la
+validación cruzada 97/41 y los protocolos de las etapas 4B/7/8, dos evaluaciones separadas
+(etapas 7 y 8), referencias de comparación, un explorador de las 59 predicciones congeladas
+con su soporte de datos, y un anexo con los modelos descartados, las variables y las
+limitaciones.
 
 ## Abrir localmente
 
@@ -56,6 +58,13 @@ representan **sólo tamaños**, nunca identidades de parcelas. La página explic
 | `data/checkpoint08_summary.csv` | `reports/checkpoint_07/shared/checkpoint08_comparison_summary.csv` |
 | `data/checkpoint08_bootstrap.csv` | `reports/checkpoint_07/shared/checkpoint08_paired_cluster_bootstrap.csv` |
 | `data/predictions.csv` | `reports/checkpoint_05/final_predictions.csv` |
+| `data/checkpoint02_baseline_summary.csv` | `reports/checkpoint_02/baseline_summary.csv` |
+| `data/checkpoint03b_expression_stability.csv` | `reports/checkpoint_03b/expression_stability.csv` |
+| `data/checkpoint04b_protocol_summary.csv` | `reports/checkpoint_04b/protocol_summary.csv` |
+| `data/checkpoint05_protocol_summary.csv` | `reports/checkpoint_05/protocol_summary.csv` |
+| `data/final_prediction_diagnostics.csv` | `reports/checkpoint_04f/final_prediction_diagnostics.csv` |
+| `data/checkpoint06_feature_family_tail_importance.csv` | `reports/checkpoint_06/feature_family_tail_importance.csv` |
+| `data/checkpoint06_feature_family_error_risk.csv` | `reports/checkpoint_06/feature_family_error_risk.csv` |
 
 Revisar o actualizar después de cambiar los resultados **sólo si la decisión de selección está documentada**:
 
@@ -66,7 +75,7 @@ python tools/sync_website_data.py --check
 pytest -q tests/test_website_presentation.py
 ```
 
-`--write` únicamente sincroniza estas cuatro copias. Nunca vuelve a entrenar un modelo,
+`--write` únicamente sincroniza estas once copias. Nunca vuelve a entrenar un modelo,
 recalcula predicciones, ni accede a rendimientos ocultos.
 
 **Bancos diferentes**:
@@ -83,6 +92,34 @@ El explorador proporciona **consulta/demostración de 59 estimaciones previament
 no predicción arbitraria para una parcela nueva. Nunca mostrar el `y` reservado de las 59.
 La figura de campos en el hero y el diagrama de vecinos son ilustraciones, no coordenadas reales.
 
+## Nombres de presentación y dependencias
+
+| Nombre en el sitio | Nombre en el repositorio / informe |
+| --- | --- |
+| GeoRidge (formal: «GeoRidge Local — Configuración Geográfica (k=24, α=30, p=1)») | `Local04D` = `LocalRidge_C4_all_deterministic_Geo_k24_a30_p1` |
+| GeoRidge fijo / reajustado | `Local04D_frozen` / `Local04D_nested` |
+| GeoRidge+ | `Local07` |
+| Prithvi-EO, CatBoost | `Prithvi07`, `catboost` |
+
+Los nombres sólo cambian en el texto visible; las claves de los CSV y del informe canónico
+no se modifican. La equivalencia aparece en el Anexo A y en `resumen.html`. En el sitio los
+checkpoints se llaman «etapas».
+
+La ecuación del método está prerrenderizada con **KaTeX 0.16.11** y se sirve desde
+`website/vendor/katex/` (CSS y fuentes woff2 locales). No hay JavaScript de KaTeX en el
+navegador ni solicitudes a terceros. Para cambiar la fórmula hay que volver a renderizarla con
+`katex.renderToString(..., {displayMode: true, output: "htmlAndMathml"})`.
+
+Secciones añadidas, todas leídas de las copias CSV anteriores:
+
+- **Referencias de comparación** (Resultados): RMSE medio de 16 particiones similares al
+  destino frente a promedios, modelos globales y vecinos simples.
+- **Familias de información** (Resultados): ablaciones de la etapa 2 con modelos de referencia;
+  no son la importancia de variables de GeoRidge.
+- **Soporte de datos** (Explorador): nivel `x_support_tier` y diferencia con el modelo de grafo;
+  no es un intervalo de confianza ni la clasificación de 04A.
+- **Anexo D** (variables) y **Anexo E** (limitaciones).
+
 ## Publicación
 
 El workflow `.github/workflows/deploy_website.yml` sube **sólo `website/`** al artefacto de
@@ -92,7 +129,8 @@ ligero; **no** genera figuras, papers, datasets pesados, ni ejecuta GPU.
 
 Antes de publicar, confirmar en **Settings → Pages → Build and deployment → GitHub Actions**
 y revisar los permisos de redistribución de geometrías/datos/predicciones. Los CSV incluidos
-son copias de resultados ya versionados públicamente en este repositorio.
+son copias de resultados ya versionados públicamente en este repositorio. La carpeta
+`vendor/katex/` (licencia MIT) se despliega junto con el sitio.
 
 ## Diferencia respecto de Streamlit
 

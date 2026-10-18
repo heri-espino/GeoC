@@ -84,33 +84,33 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:"Aptos","Segoe UI",Ari
 <div class="rule"></div>
 <section class="section"><div class="section-label">02 / Datos</div><div>
 <h2>Observaciones satelitales, clima y contexto territorial</h2>
-<p>Se auditaron las series <strong>BASIC</strong> (107 666 registros Sentinel-2/Landsat, 2022–2025) y <strong>PRO</strong> (47 804 registros Planet, 2025), además de fuentes climáticas, edáficas, topográficas y espaciales. Checkpoint 07 evaluó nuevas representaciones HLS/SMAP y Prithvi. La descarga o evaluación de una fuente no implica que intervenga en el modelo seleccionado.</p>
+<p>Se auditaron las series <strong>BASIC</strong> (107 666 registros Sentinel-2/Landsat, 2022–2025) y <strong>PRO</strong> (47 804 registros Planet, 2025), además de fuentes climáticas, edáficas, topográficas y espaciales. La etapa 7 evaluó nuevas representaciones HLS/SMAP y Prithvi. La descarga o evaluación de una fuente no implica que intervenga en el modelo seleccionado.</p>
 </div></section>
 <div class="rule"></div>
 <section class="section"><div class="section-label">03 / Modelo</div><div>
-<h2>Local04D: una regresión para cada parcela objetivo</h2>
+<h2>GeoRidge: una regresión para cada parcela objetivo</h2>
 <p>Se usan componentes deterministas <strong>C4</strong> construidos a partir de información observable, los <strong>24 vecinos etiquetados</strong> más próximos geográficamente y una <strong>regresión Ridge ponderada</strong> por distancia, con regularización α = 30 y potencia de ponderación p = 1. Cada consulta recibe su propio ajuste local.</p>
-<span class="model-tag">LocalRidge_C4_all_deterministic_Geo_k24_a30_p1</span>
+<span class="model-tag">GeoRidge Local — Configuración Geográfica (k=24, α=30, p=1)</span>
 </div></section>
 <div class="rule"></div>
 <section class="section"><div class="section-label">04 / Validación</div><div>
 <h2>Simulaciones con respuesta oculta y confirmación anidada</h2>
 <div class="cv-flow" aria-label="138 parcelas conocidas; 97 de entrenamiento y 41 reservadas; 16 repeticiones"><div><b>138</b><small>etiquetadas</small></div><span class="arrow">→</span><div><b>97 + 41</b><small>entrenar / reservar y</small></div><span class="arrow">×</span><div><b>16</b><small>particiones</small></div></div>
-<p>En <strong>04B/07</strong> se generaron 16 particiones 97/41 parecidas al destino según perfiles observables, cuotas geográficas y diversidad entre máscaras. En <strong>08</strong> se crearon otras 16 particiones mediante estratos estado–municipio, minimizando superposición. Los rivales usaron <strong>Optuna y 3-fold interno</strong> sólo dentro de los 97 datos de entrenamiento; los 41 reservados se utilizaron exclusivamente para medir el error externo. Cada banco produce 656 evaluaciones <em>repetidas</em>, no 656 parcelas independientes.</p>
+<p>En las <strong>etapas 4B y 7</strong> se generaron 16 particiones 97/41 parecidas al destino según perfiles observables, cuotas geográficas y diversidad entre máscaras. En la <strong>etapa 8</strong> se crearon otras 16 particiones mediante estratos estado–municipio, minimizando superposición. Los rivales usaron <strong>Optuna y validación interna de 3 bloques</strong> sólo dentro de los 97 datos de entrenamiento; los 41 reservados se utilizaron exclusivamente para medir el error externo. Cada banco produce 656 evaluaciones <em>repetidas</em>, no 656 parcelas independientes.</p>
 </div></section>
 <div class="rule"></div>
 <section class="section"><div class="section-label">05 / Resultados</div><div>
-<h2>Local04D conservó el menor error de validación</h2>
+<h2>GeoRidge conservó el menor error de validación</h2>
 <div class="results">
-<article><span class="label">07 · DESARROLLO · 125 PARCELAS ÚNICAS</span><strong>0.495741</strong><small>RMSE pooled · t/ha · Local04D</small></article>
-<article><span class="label">08 · CONFIRMACIÓN · 132 PARCELAS ÚNICAS</span><strong>0.481936</strong><small>RMSE pooled · t/ha · Local04D fijo</small></article>
+<article><span class="label">ETAPA 7 · DESARROLLO · 125 PARCELAS ÚNICAS</span><strong>0.495741</strong><small>RMSE agrupado · t/ha · GeoRidge</small></article>
+<article><span class="label">ETAPA 8 · CONFIRMACIÓN · 132 PARCELAS ÚNICAS</span><strong>0.481936</strong><small>RMSE agrupado · t/ha · GeoRidge fijo</small></article>
 </div>
-<p>En el banco 08, <strong>Local04D reajustado</strong> obtuvo 0.493943 y <strong>Local07 reajustado</strong> 0.510070 t/ha. Las comparaciones bootstrap agrupadas por parcela favorecieron a Local04D fijo. Los RMSE de 07 y 08 <strong>no deben restarse como si midieran una mejora</strong>: utilizan particiones distintas.</p>
+<p>En la etapa 8, <strong>GeoRidge reajustado</strong> obtuvo 0.493943 y <strong>GeoRidge+ reajustado</strong> 0.510070 t/ha. Las comparaciones bootstrap agrupadas por parcela favorecieron a GeoRidge fijo. Los RMSE de las etapas 7 y 8 <strong>no deben restarse como si midieran una mejora</strong>: utilizan particiones distintas.</p>
 </div></section>
-<div class="conclusion"><p><strong>Entrega y alcance.</strong> Se conservaron 59 estimaciones congeladas de Local04D, consultables en el explorador web por ID y descargables como CSV. El RMSE real sobre las 59 parcelas ocultas es <strong>desconocido</strong>; la herramienta demuestra consulta de estimaciones existentes y no vuelve a entrenar el modelo en línea.</p></div>
+<div class="conclusion"><p><strong>Entrega y alcance.</strong> Se conservaron 59 estimaciones congeladas de GeoRidge, consultables en el explorador web por ID y descargables como CSV. El RMSE real sobre las 59 parcelas ocultas es <strong>desconocido</strong>; la herramienta demuestra consulta de estimaciones existentes y no vuelve a entrenar el modelo en línea.</p></div>
 </div>
 <footer class="foot">
-<div><strong>Documentación:</strong> <a href="https://github.com/heri-espino/GeoC/blob/main/docs/METODOLOGIA_Y_RESULTADOS.md">metodología y resultados 02–08</a><br><strong>Código:</strong> <a href="https://github.com/heri-espino/GeoC">github.com/heri-espino/GeoC</a></div>
+<div><strong>Equivalencia:</strong> GeoRidge = Local04D (repositorio)<br><strong>Documentación:</strong> <a href="https://github.com/heri-espino/GeoC/blob/main/docs/METODOLOGIA_Y_RESULTADOS.md">metodología y resultados 02–08</a><br><strong>Código:</strong> <a href="https://github.com/heri-espino/GeoC">github.com/heri-espino/GeoC</a></div>
 <div class="right">Resumen complementario del proyecto · 12 de octubre de 2026<br>Resultados de validación con rendimientos reportados; no constituye evaluación de las 59 referencias ocultas.</div>
 </footer>
 </main>
