@@ -144,3 +144,6 @@ venv/
 # Nested LOOCV target-bearing folds, hyperparameters and diagnostics
 /reports/area_weighted_climate_nested_grid/
 /reports/area_weighted_climate_nested_grid_wide/
+
+# Phenology-conditioned spatial GP: label-bearing per-fold and final candidate files
+/reports/phenology_spatial_gp/
