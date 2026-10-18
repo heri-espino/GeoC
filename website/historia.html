@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082b3c">
+  <meta name="description" content="La historia de GeoCebada: clima, satélites, vecinos geográficos y modelos interpretables para estimar rendimiento agrícola.">
+  <meta property="og:title" content="GeoCebada — La historia detrás de la predicción">
+  <meta property="og:description" content="De GeoRidge y el núcleo agroclimático C-T3 a Reference26 y Compact14: arquitectura, validación y límites.">
+  <title>La historia del modelo — GeoCebada</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./historia.css">
+  <script>document.documentElement.classList.replace("no-js","js");</script>
+  <script src="./historia.js" defer></script>
+</head>
+<body class="story">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="story-header">
+    <nav class="shell story-nav" aria-label="Navegación de la historia">
+      <a class="brand" href="./index.html" aria-label="GeoCebada, sitio principal"><span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span><span>Geo<span class="brand-accent">Cebada</span></span></a>
+      <div class="story-nav-links"><a href="#recorrido">Historia</a><a href="#arquitectura">Arquitectura</a><a href="#evidencia">Evidencia</a><a href="#limites">Límites</a><a class="story-back" href="./index.html">Volver al sitio <span aria-hidden="true">↗</span></a></div>
+    </nav>
+  </header>
+  <main id="contenido">
+    <section class="story-hero">
+      <div class="shell story-hero-layout">
+        <div>
+          <div class="story-eyebrow"><span></span> INVESTIGACIÓN AGROCEBADA · CICLO 2025</div>
+          <h1>No empezamos<br>con un <em>modelo.</em><br>Empezamos con<br>una pregunta.</h1>
+          <p class="story-hero-lead">¿Por qué dos parcelas de cebada pueden rendir distinto aunque compartan clima? La respuesta nos llevó a combinar señales agroclimáticas, cambios de vegetación, territorio y geología.</p>
+          <div class="story-hero-actions"><a href="#recorrido" class="story-primary">Descubrir el recorrido <span aria-hidden="true">↓</span></a><a href="#arquitectura" class="story-secondary">Explorar Reference26 <span aria-hidden="true">→</span></a></div>
+        </div>
+        <div class="story-illustration">
+          <svg viewBox="0 0 540 480" role="img" aria-label="Ilustración conceptual: las señales de lluvia y vegetación se unen con vecinos geográficos para construir una estimación. No es un mapa real.">
+            <defs>
+              <linearGradient id="storyGraph" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d7efac"/><stop offset="1" stop-color="#79b5a1"/></linearGradient>
+            </defs>
+            <rect x="18" y="16" width="504" height="448" rx="14" fill="#133d49" stroke="#517c75" stroke-opacity=".5"/>
+            <path d="M46 90H494 M46 185H494 M46 280H494 M46 375H494 M135 42V438 M255 42V438 M375 42V438" stroke="#9cbcb0" stroke-opacity=".12" stroke-width="1"/>
+            <text x="49" y="58" font-size="11" font-weight="700" fill="#bbd4bb" letter-spacing="2">DE LAS SEÑALES A LA ESTIMACIÓN</text>
+            <g transform="translate(52 91)">
+              <text x="0" y="0" fill="#bdd6cb" font-size="11">PRECIPITACIÓN · ABR–OCT</text>
+              <path d="M0 119H205" stroke="#557779" stroke-width="1.5"/>
+              <g fill="#bcd884"><rect x="8" y="67" width="17" height="52" rx="3"/><rect x="37" y="40" width="17" height="79" rx="3"/><rect x="66" y="82" width="17" height="37" rx="3"/><rect x="95" y="28" width="17" height="91" rx="3"/><rect x="124" y="58" width="17" height="61" rx="3"/><rect x="153" y="15" width="17" height="104" rx="3"/><rect x="182" y="74" width="17" height="45" rx="3"/></g>
+              <text x="0" y="143" fill="#96b6ac" font-size="9">A</text><text x="31" y="143" fill="#96b6ac" font-size="9">M</text><text x="61" y="143" fill="#96b6ac" font-size="9">J</text><text x="91" y="143" fill="#96b6ac" font-size="9">J</text><text x="122" y="143" fill="#96b6ac" font-size="9">A</text><text x="151" y="143" fill="#96b6ac" font-size="9">S</text><text x="181" y="143" fill="#96b6ac" font-size="9">O</text>
+              <path d="M6 211C38 191 52 226 84 194S143 190 166 171S191 173 204 153" fill="none" stroke="#d6bd77" stroke-width="3" stroke-linecap="round"/>
+              <text x="0" y="241" fill="#bdd6cb" font-size="11">TRAYECTORIA DE VEGETACIÓN</text>
+            </g>
+            <path d="M284 231H318" stroke="#bbd991" stroke-width="2" stroke-dasharray="4 7"/>
+            <g transform="translate(395 227)">
+              <circle r="110" fill="none" stroke="#759d90" stroke-opacity=".45" stroke-dasharray="3 8"/>
+              <circle r="77" fill="none" stroke="#759d90" stroke-opacity=".3"/>
+              <g stroke="#d7ebac" stroke-opacity=".25" stroke-width="1.3">
+                <path d="M0 0L-73 -29 M0 0L-35 -67 M0 0L51 -70 M0 0L78 -8 M0 0L68 62 M0 0L-41 63 M0 0L21 80 M0 0L-88 34 M0 0L23 -47"/>
+              </g>
+              <g fill="#86b5a1"><circle cx="-73" cy="-29" r="6"/><circle cx="-35" cy="-67" r="6"/><circle cx="51" cy="-70" r="6"/><circle cx="78" cy="-8" r="6"/><circle cx="68" cy="62" r="6"/><circle cx="-41" cy="63" r="6"/><circle cx="21" cy="80" r="6"/><circle cx="-88" cy="34" r="6"/><circle cx="23" cy="-47" r="6"/></g>
+              <circle r="15" fill="url(#storyGraph)" stroke="#d9efb6" stroke-width="2"/>
+              <circle r="4" fill="#0c3940"/>
+            </g>
+            <text x="322" y="393" fill="#d7ebc2" font-size="12">VECINOS GEOGRÁFICOS</text>
+            <text x="322" y="409" fill="#a2b9b5" font-size="10">Red esquemática</text>
+            <text x="48" y="441" fill="#8ca8a7" font-size="9" letter-spacing="1.2">ILUSTRACIÓN CONCEPTUAL · NO REPRESENTA MEDICIONES NI UBICACIONES REALES</text>
+          </svg>
+          <p>La figura ilustra conceptos. Los valores de lluvia y la ubicación de los puntos no son datos observados.</p>
+        </div>
+      </div>
+      <div class="story-counts shell" aria-label="Dimensiones del problema">
+        <div><strong>197</strong><span>parcelas estudiadas</span></div>
+        <div><strong>138</strong><span>rendimientos reportados</span></div>
+        <div><strong>59</strong><span>rendimientos ocultos</span></div>
+        <div><strong>26</strong><span>entradas de Reference26</span></div>
+      </div>
+    </section>
+
+    <section class="story-section story-intro" id="recorrido">
+      <div class="shell">
+        <p class="story-kicker">01 / EL RECORRIDO</p>
+        <div class="story-heading"><h2>Dos caminos de investigación.<br><em>Una historia compartida.</em></h2><p>La investigación original GeoC exploró representaciones de miles de variables y modelos locales. En paralelo, el trabajo de Nuria aisló un núcleo agroclimático compacto y construyó una arquitectura que aprovecha parte de las señales derivadas de GeoC. No fue una sustitución lineal de un modelo por otro.</p></div>
+        <div class="story-timeline">
+          <article><div class="story-timeline-index">01 <span>EL PROBLEMA</span></div><div><h3>Primero entendimos las parcelas.</h3><p>Unimos geometría, clima, índices satelitales y variables ambientales. Miles de observaciones temporales se resumieron por parcela, pero sólo teníamos 138 rendimientos para aprender.</p><span class="story-tag">197 parcelas · campaña 2025</span></div></article>
+          <article><div class="story-timeline-index">02 <span>GEOC · LOCAL04D</span></div><div><h3>La cercanía geográfica aportó estructura.</h3><p>GeoC reunió 2,082 características en 20 componentes principales. Local04D —mostrado como GeoRidge en el sitio principal— ajusta Ridge por consulta usando 24 vecinos cercanos. Funcionó mejor que numerosos rivales en los bancos de GeoC, pero sus componentes son difíciles de explicar agronómicamente uno a uno.</p><a href="https://github.com/heri-espino/GeoC/blob/main/docs/CHECKPOINT_04D1_FINDINGS.md">Evidencia de GeoC ↗</a></div></article>
+          <article><div class="story-timeline-index">03 <span>NÚCLEO C-T3</span></div><div><h3>Reducimos la pregunta agroclimática a cuatro señales.</h3><p>Precipitación total, proporción de lluvia temprana, concentración mensual de lluvia y NDVI de mayo. Un Elastic Net global permitió estudiar una base mucho más compacta y físicamente interpretable.</p><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/CT3/README.md">Historia del núcleo C-T3 ↗</a></div></article>
+          <article><div class="story-timeline-index">04 <span>CONVERGENCIA</span></div><div><h3>Clima global + experto local + contexto geológico.</h3><p>Reference26 reúne el núcleo C-T3, siete señales de vegetación y terreno derivadas de la ingeniería de GeoC, coordenadas para vecinos, composición geológica para modular la mezcla y tres indicadores para corregir residuos.</p><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md">Arquitectura documentada ↗</a></div></article>
+          <article><div class="story-timeline-index">05 <span>SIMPLIFICACIÓN</span></div><div><h3>También exploramos qué podía quitarse.</h3><p>Compact14 conserva el núcleo, cinco señales locales, coordenadas y corrección R3. Retira Planet y la compuerta geológica, y utiliza un peso global entre los expertos: una alternativa más simple con resultados próximos en varios protocolos.</p><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Compact14/README.md">Decisiones de simplificación ↗</a></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section story-architecture" id="arquitectura">
+      <div class="shell">
+        <p class="story-kicker">02 / EL MECANISMO</p>
+        <div class="story-heading"><h2>Reference26, <em>pieza por pieza.</em></h2><p>El número 26 cuenta <strong>entradas distintas</strong>, no 26 coeficientes ni 26 modelos. Cada grupo cumple una función diferente. Selecciona uno para examinarlo.</p></div>
+        <div class="story-layer-area">
+          <div class="story-layer-list" role="group" aria-label="Capas del modelo Reference26">
+            <button class="story-layer is-current" data-layer="clima" aria-pressed="true"><span class="story-layer-number">01</span><span><strong>Núcleo agroclimático</strong><small>Precipitación y NDVI de mayo</small></span><b>4</b></button>
+            <button class="story-layer" data-layer="local" aria-pressed="false"><span class="story-layer-number">02</span><span><strong>Señales del experto local</strong><small>Vegetación histórica y terreno</small></span><b>7</b></button>
+            <button class="story-layer" data-layer="vecinos" aria-pressed="false"><span class="story-layer-number">03</span><span><strong>Coordenadas geográficas</strong><small>Elegir 24 vecinos etiquetados</small></span><b>2</b></button>
+            <button class="story-layer" data-layer="geologia" aria-pressed="false"><span class="story-layer-number">04</span><span><strong>Composición geológica</strong><small>Regular cuánto confiar en cada experto</small></span><b>10</b></button>
+            <button class="story-layer" data-layer="residuos" aria-pressed="false"><span class="story-layer-number">05</span><span><strong>Corrector final R3</strong><small>Un ajuste residual limitado</small></span><b>3</b></button>
+            <div class="story-layer-total"><span>4 + 7 + 2 + 10 + 3</span><strong>26 entradas</strong></div>
+          </div>
+          <div class="story-layer-detail" id="layer-description" aria-live="polite" aria-atomic="true">
+            <p class="story-detail-tag" id="layer-tag">01 / BASE GLOBAL</p>
+            <h3 id="layer-title">¿Cuánta lluvia hubo y cómo se distribuyó?</h3>
+            <p id="layer-copy">El núcleo C-T3 representa el total de lluvia de abril a octubre de 2025, su fracción temprana, su concentración entre meses y el NDVI Sentinel-2 de mayo. Un Elastic Net produce la predicción base C(x).</p>
+            <ul id="layer-list"><li>Lluvia acumulada en el ciclo.</li><li>Proporción abril–junio y concentración mensual.</li><li>NDVI observado en mayo.</li></ul>
+            <div class="story-detail-insight"><span>INTERPRETACIÓN</span><p id="layer-insight">No basta con cuánto llueve: el momento y la distribución de la lluvia también pueden aportar información. Es una hipótesis predictiva, no un efecto causal demostrado.</p></div>
+            <div class="story-layer-pagination"><button id="layer-prev" type="button">← Anterior</button><span id="layer-progress">1 de 5</span><button id="layer-next" type="button">Siguiente →</button></div>
+          </div>
+        </div>
+        <div class="story-formula">
+          <span>ARQUITECTURA · EXPRESIÓN ESQUEMÁTICA FIEL A LA RECETA</span>
+          <p><strong>Reference26(x)</strong> = C(x) + g(x) · [E(x) − C(x)] + s · m(x) · δ<sub>R3</sub>(x)</p>
+          <div class="story-formula-grid">
+            <div><strong>C(x)</strong><span>Elastic Net de las cuatro entradas agroclimáticas.</span></div>
+            <div><strong>E(x)</strong><span>Ridge local de siete señales y corrección interna de sus residuos.</span></div>
+            <div><strong>g(x)</strong><span>Peso entre 0 y 1 guiado por grupos de composición geológica.</span></div>
+            <div><strong>s · m(x) · δ<sub>R3</sub>(x)</strong><span>Corrección final, sólo con soporte completo y acotada a ±0,25 t/ha.</span></div>
+          </div>
+        </div>
+        <p class="story-note">Las coordenadas <strong>no son siete u once regresores adicionales</strong>: seleccionan y ponderan las 24 observaciones de entrenamiento. Los diez atributos geológicos gobiernan la mezcla; no se suman como diez ajustes independientes.</p>
+      </div>
+    </section>
+
+    <section class="story-section story-compact" id="simplificacion">
+      <div class="shell story-compact-grid">
+        <div><p class="story-kicker">03 / DISEÑO MÁS SIMPLE</p><h2>¿Y si usamos <em>menos?</em></h2><p>Compact14 busca conservar la mayor parte de la utilidad de Reference26 sin todas sus fuentes. Prescinde de las dos entradas Planet, el corrector interno del experto y la compuerta geológica. Sustituye esta última por una mezcla de peso global aprendida con validación interna.</p><a class="story-text-link" href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Compact14/README.md">Ver las 14 variables y su procedencia ↗</a></div>
+        <div class="story-composition">
+          <p>COMPOSICIÓN DE ENTRADAS</p>
+          <div class="story-composition-head"><span>Reference26</span><strong>26</strong></div>
+          <div class="story-blocks" aria-label="Reference26: 4 clima, 7 local, 2 coordenadas, 10 geología y 3 corrector">
+            <span style="flex:4" class="b-climate"></span><span style="flex:7" class="b-local"></span><span style="flex:2" class="b-coord"></span><span style="flex:10" class="b-geology"></span><span style="flex:3" class="b-r3"></span>
+          </div>
+          <div class="story-composition-head"><span>Compact14</span><strong>14</strong></div>
+          <div class="story-blocks" aria-label="Compact14: 4 clima, 5 local, 2 coordenadas y 3 corrector">
+            <span style="flex:4" class="b-climate"></span><span style="flex:5" class="b-local"></span><span style="flex:2" class="b-coord"></span><span style="flex:3" class="b-r3"></span>
+          </div>
+          <div class="story-block-legend"><span><i class="b-climate"></i>Clima</span><span><i class="b-local"></i>Local</span><span><i class="b-coord"></i>Ubicación</span><span><i class="b-geology"></i>Geología</span><span><i class="b-r3"></i>R3</span></div>
+          <p class="story-mini">Bloques proporcionales al número de entradas; no indican importancia estadística ni contribución al RMSE.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section story-evidence" id="evidencia">
+      <div class="shell">
+        <p class="story-kicker">04 / EVIDENCIA</p>
+        <div class="story-heading"><h2>¿Qué mejoró <em>al validar?</em></h2><p>Los resultados publicados por el equipo de Nuria comparan los modelos con la misma partición <strong>dentro de cada protocolo</strong>. El selector permite ver qué ocurre cuando cambia la definición de una parcela difícil.</p></div>
+        <div class="story-protocol-bar"><label for="story-protocol">PROCEDIMIENTO DE VALIDACIÓN</label><select id="story-protocol"><option value="fresh_97_41">16 particiones · 97 entrenamiento / 41 evaluación</option><option value="random">Aleatoria · 10 repeticiones</option><option value="climate_profile">Perfil climático · 5 repeticiones</option><option value="municipality">Municipios excluidos · 5 particiones</option><option value="spatial">Bloques espaciales · 5 particiones</option></select></div>
+        <div class="story-results-layout">
+          <div class="story-metrics">
+            <div class="story-metric-head"><span>RMSE · TONELADAS POR HECTÁREA · MENOR ES MEJOR</span><span id="story-protocol-n">16 particiones</span></div>
+            <div id="story-chart" class="story-chart" aria-live="polite">
+              <div class="story-chart-row"><div><span>Reference26</span><strong>0,4625</strong></div><div class="story-chart-track"><span style="width:92.5%"></span></div></div>
+              <div class="story-chart-row"><div><span>Compact14</span><strong>0,4661</strong></div><div class="story-chart-track"><span style="width:93.2%"></span></div></div>
+              <div class="story-chart-row"><div><span>Local04D / L40</span><strong>0,4893</strong></div><div class="story-chart-track"><span style="width:97.9%"></span></div></div>
+              <div class="story-chart-row"><div><span>C-T3</span><strong>0,4918</strong></div><div class="story-chart-track"><span style="width:98.4%"></span></div></div>
+            </div>
+            <p id="story-eval-foot" class="story-mini">Media del RMSE de 16 particiones, no RMSE agrupado. Son 41 predicciones por partición, con parcelas reutilizadas.</p>
+          </div>
+          <div class="story-score-panel"><p>RESULTADO DESTACADO EN ESTE PROTOCOLO</p><strong id="story-best-name">Reference26</strong><div class="story-score"><span id="story-best-rmse">0,4625</span><small>t/ha de RMSE</small></div><p id="story-eval-insight">En este banco exploratorio de 97/41, Reference26 presenta menor RMSE promedio que Local04D; la diferencia no acredita superioridad independiente.</p><div class="story-r2"><span>R² reportado</span><strong id="story-best-r2">0,6971</strong></div></div>
+        </div>
+        <div class="story-sources"><span>DATOS Y CRITERIOS</span><a href="https://github.com/heri-espino/todoseboso/blob/main/results/comparison_97_41/v1/README.md">Comparación 97/41 ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/current_champions/v1/README.md">Evaluaciones territoriales ↗</a><a href="https://github.com/heri-espino/GeoC/blob/main/docs/METODOLOGIA_Y_RESULTADOS.md">Bancos históricos de GeoC ↗</a></div>
+        <p class="story-important">No se deben comparar directamente estos resultados con <strong>0,481936 t/ha</strong> del Checkpoint 08 de GeoC (otro banco, RMSE agrupado) ni con <strong>0,485133 t/ha</strong> del LOOCV de Local04D (137/1). El LOOCV conjunto de Reference26 y Local04D todavía no cuenta con resultados verificados.</p>
+      </div>
+    </section>
+
+    <section class="story-section story-interpret" id="interpretacion">
+      <div class="shell"><p class="story-kicker">05 / INTERPRETAR SIN EXAGERAR</p><h2>Qué nos dicen las señales.<br><em>Y qué no.</em></h2>
+        <div class="story-two-col">
+          <article><h3>Lo que sí podemos explicar</h3><p>La lluvia de una temporada puede resumirse por cantidad, momento y concentración; las señales de vegetación describen diferencias entre parcelas y fechas; la proximidad geográfica estructura el ajuste local; y la geología puede modificar la mezcla de expertos.</p><p>Son mecanismos identificables en el <strong>algoritmo</strong>, respaldados por trazabilidad de variables y resultados de validación exploratoria.</p></article>
+          <article><h3>Lo que no hemos demostrado</h3><p>Que una característica sea una causa del rendimiento, que la lluvia sea el indicador más importante en términos de contribución predictiva condicional, o que el modelo prediga con ese RMSE para nuevos años o las 59 parcelas ocultas.</p><p>Para sostener importancia de variables se necesitarían ablaciones anidadas específicas o análisis de permutación que respeten el agrupamiento espacial.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section story-limits" id="limites">
+      <div class="shell story-limits-layout">
+        <div><p class="story-kicker story-kicker-light">06 / TRANSPARENCIA</p><h2>Una buena historia<br><em>también muestra<br>sus límites.</em></h2><p>El rendimiento de las 59 parcelas objetivo permanece oculto. Las comparaciones reutilizan las 138 etiquetas reportadas y pueden conservar sesgo de selección tras muchas pruebas.</p><a class="story-primary" href="./index.html#explorar">Ver las estimaciones congeladas de GeoC <span aria-hidden="true">↗</span></a></div>
+        <div class="story-limit-list">
+          <details open><summary>¿Por qué no es una validación independiente?</summary><p>Porque los experimentos y modelos fueron elegidos a lo largo de una investigación que utilizó repetidamente estas mismas 138 etiquetas. Nuevas particiones no equivalen a nuevas cosechas.</p></details>
+          <details><summary>¿Qué significa “mejor” en la tabla?</summary><p>Menor RMSE dentro del mismo protocolo y agregación, no superioridad universal. La validación espacial o por municipio evalúa un problema de transferencia más difícil que el de una parcela próxima a ejemplos ya etiquetados.</p></details>
+          <details><summary>¿Se está publicando información privada?</summary><p>No. Esta página utiliza únicamente resultados agregados, metodología, y una ilustración esquemática. No presenta etiquetas individuales, vecinos verdaderos, geometrías o las predicciones nuevas de Reference26 para las 59 parcelas.</p></details>
+          <details><summary>¿Qué sigue pendiente?</summary><p>Una comparación pareada con LOOCV, entrenamiento íntegro por fold y auditoría de filtración; y, si se buscara adoptar oficialmente otro modelo, las entradas autorizadas para las 197 parcelas y pruebas adicionales. Ninguna estimación oficial de GeoC se cambia desde aquí.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="story-section story-reading"><div class="shell"><p class="story-kicker">LECTURAS Y REPRODUCIBILIDAD</p><h2>La documentación<br><em>detrás del relato.</em></h2><div class="story-reading-grid"><a href="https://github.com/heri-espino/GeoC/blob/main/docs/PROJECT_HISTORY.md"><strong>Historia de GeoC</strong><span>Datos, experimentos, Local04D y decisiones conservadas. ↗</span></a><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md"><strong>Referencia técnica 26</strong><span>Variables exactas, fórmula, correctores y límites. ↗</span></a><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/current_champions_reproduction.md"><strong>Reproducción del equipo</strong><span>Recetas congeladas, ajuste por partición y proveniencia. ↗</span></a><a href="https://github.com/heri-espino/GeoC/blob/main/docs/TRANSDUCTIVE_OBJECTIVE.md"><strong>Objetivo de predicción</strong><span>Qué información es observable y qué etiquetas siguen ocultas. ↗</span></a></div></div></section>
+  </main>
+  <footer class="story-footer"><div class="shell"><span>GEOCEBADA · INVESTIGACIÓN APLICADA 2026</span><span>Ilustraciones conceptuales · métricas agregadas · sin seguimiento externo</span><a href="./index.html">Sitio principal ↑</a></div></footer>
+</body>
+</html>
