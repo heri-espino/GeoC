@@ -19,7 +19,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler
 
-from geocebada.evaluation.checkpoint10_pca import PcaData, predict as predict_incumbent
+from geocebada.evaluation.checkpoint10_pca import PcaData
+from geocebada.evaluation.checkpoint10_pca import predict as predict_incumbent
 
 ID = "ID_POLIGONO"
 BASELINE = "GeoPCA20_GeographicWeightedRidge"
