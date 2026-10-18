@@ -4,8 +4,15 @@ import pandas as pd
 import pytest
 
 from geocebada.evaluation.peer_champions_loo import (
-    BASELINE, ID, MODELS, Y,
-    align_peer_targets, outer_record, resolve_peer_bundle, summarize_complete, validate_fold,
+    BASELINE,
+    ID,
+    MODELS,
+    Y,
+    align_peer_targets,
+    outer_record,
+    resolve_peer_bundle,
+    summarize_complete,
+    validate_fold,
 )
 
 
