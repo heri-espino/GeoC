@@ -21,6 +21,9 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
+# Nuria's private data bundle and any extracted raw inputs (local only)
+/data_n/
+
 # # Data: preserve directories, ignore contents
 # /data/raw/*
 # !/data/raw/.gitkeep
