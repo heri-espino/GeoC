@@ -1,3 +1,7 @@
+## 2026-10-18 — Local `data_n/` workflow update
+
+The peer LOOCV experiment branch now loads Nuria's private champion bundle from `GeoC/data_n/` by default. Supports direct `manifest.json` and nested `data/processed/current_champions/v1` or `processed/current_champions/v1` layouts; explicit `--bundle` still works. The root `data_n/` directory is ignored by Git. Synthetic tests cover resolution, incomplete inputs and ambiguous bundles. Documentation and updated commands are in docs/PEER_CHAMPIONS_LOOCV.md. No private data accessed from this GitHub session, no real refits or RMSE computed.
+
 ## 2026-10-18 — Peer champions paired LOOCV, CODE ONLY (not run)
 
 Fork heri-espino/todoseboso reports Reference26, Compact14, CT3 and B1 and a separate 16x97/41 benchmark; do not compare those RMSE directly to our Checkpoint08 or LOOCV. New experiment/nuria-champions-loocv branch adds tools/run_peer_champions_loo.py, reusable contracts/tests, docs/PEER_CHAMPIONS_LOOCV.md and ignored reports/peer_champions_loo. It calls peer's original cold-refit recipe from a clean external checkout, masks each held-out y, aligns all 138 IDs/labels with GeoC, pairs against original C4 Local04D across exactly 138 one-held-out folds, inner 4fold fitting on 137 labels, stores SHA256 fingerprints/cached results. The fork does NOT contain private 26-feature peer bundle required to run; no real LOOCV scores produced, no promotion, 59 final predictions unchanged.
