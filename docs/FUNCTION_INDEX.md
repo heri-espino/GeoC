@@ -255,6 +255,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `grid_candidates` | function | `geocebada.evaluation.climate_nested_grid` | Return reproducible hyperparameter search including the exact incumbent. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `summarize_nested_grid` | function | `geocebada.evaluation.climate_nested_grid` | Validate paired full coverage and report unbiased-by-inner-tuning OOF scores. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `tune_one_outer_parcel` | function | `geocebada.evaluation.climate_nested_grid` | Select each model's hyperparameters solely on other observed yields. | `src/geocebada/evaluation/climate_nested_grid.py` |
+| `grouped_bootstrap` | function | `geocebada.evaluation.inferential_sensitivity` | Cluster bootstrap of *paired* mean losses, holding predictions fixed. | `src/geocebada/evaluation/inferential_sensitivity.py` |
+| `influential_parcels` | function | `geocebada.evaluation.inferential_sensitivity` | Deletion diagnostics on frozen predictions; NEVER interpreted as new CV fits. | `src/geocebada/evaluation/inferential_sensitivity.py` |
+| `paired_advantage_fragility` | function | `geocebada.evaluation.inferential_sensitivity` | Check whether loss advantage survives deleting its most favorable rows. | `src/geocebada/evaluation/inferential_sensitivity.py` |
+| `spatial_grid_labels` | function | `geocebada.evaluation.inferential_sensitivity` | Fixed square bins in a local equirectangular projection, not a CRS substitute. | `src/geocebada/evaluation/inferential_sensitivity.py` |
+| `validate_predictions` | function | `geocebada.evaluation.inferential_sensitivity` | Reject incomplete, unpaired, nonfinite predictions. | `src/geocebada/evaluation/inferential_sensitivity.py` |
 | `adjust_spatial_tests` | function | `geocebada.evaluation.jury_residual_diagnostics` | Across ALL tested k, variables, models and spatial statistics. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
 | `conditional_error_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` | Prediction-dependent error scatter and robust Brown-Forsythe test. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
 | `interpret_tests` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
