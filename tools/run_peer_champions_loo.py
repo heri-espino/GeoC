@@ -82,7 +82,11 @@ def _load(peer: Path, bundle: Path):
     from src.current_champions import load_bundle, predict_saved, refit_fold
 
     frame, groups, distance, manifest = load_bundle(bundle, verify_saved_models=False)
-    baseline = load_pca_data(ROOT, MEMBERSHIPS, max_components=160)
+    # The frozen Local04D model uses a *20-component PCA fit*, not the
+    # first 20 axes of a separate 160-component decomposition. SVD sign
+    # conventions may differ between fits; the historical numerical parity
+    # guard in load_pca_data remains strict and is never bypassed.
+    baseline = load_pca_data(ROOT, MEMBERSHIPS, max_components=20)
     ids = align_peer_targets(frame, baseline.y)
     if set(groups.index.astype(str)) != set(ids):
         raise ValueError("Peer group IDs do not match the 138 training parcels.")
