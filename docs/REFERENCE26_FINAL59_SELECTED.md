@@ -198,3 +198,32 @@ datos privados y revisar esos campos; **no borrar los 138 resultados**.
 Los nuevos tests rechazan explícitamente alteraciones de fuentes,
 candidatos y umbrales. Aún no hay 59 predicciones ejecutadas
 en el entorno privado de la VM.
+
+## Segunda corrección de integridad: `top5` (2026-10-19)
+
+El usuario volvió a probar `--check` después de la primera
+corrección, y ocho pruebas unitarias pasaron, pero apareció
+`Nested run fingerprint mismatch in: top5`. Se identificó
+un defecto concreto de comparación de tipos: la receta
+`nested.provenance()` devuelve `top5` como **tupla de Python**
+(`tuple[dict]`), mientras `json.dump` del manifiesto
+anterior la almacena como **arreglo JSON**, que
+`json.load` recupera como `list[dict]`.
+A pesar de conservar el mismo orden y los cinco mismos
+diccionarios, la comparación directa de Python
+`tuple != list` producía un falso error.
+
+El código corregido serializa el manifiesto esperado con
+`json.dumps` y lo reconstruye con `json.loads` antes de
+compararlo contra la estructura que realmente se guarda
+en disco. **Mantiene estricta** la igualdad del orden,
+los cinco candidatos, sus valores k/blend/gate y todos
+los campos de datos y configuración. Los tests reproducen
+el falso positivo y comprueban que alterar el blend de
+un candidato o cambiar su orden sí provoca error.
+
+No es necesario volver a ejecutar los 552 fits anidados
+ni borrar `run_spec.json`. El nuevo `--check` debe
+continuar con la validación de los 138 folds y con el
+joblib Reference26 mean entrenado en 138 muestras.
+No se ha publicado ninguna predicción individual.
