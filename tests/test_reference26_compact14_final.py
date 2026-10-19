@@ -46,7 +46,7 @@ def test_frozen_ensemble_config_is_valid(monkeypatch):
 def test_multitest_bh_holm_expected_and_nan_handling():
     p = np.array([.01, .04, .03, np.nan])
     assert np.allclose(
-        multiplicity(p, "holm")[:3], [.04, .06, .06]
+        multiplicity(p, "holm")[:3], [.03, .06, .06]
     )
     assert np.allclose(
         multiplicity(p, "fdr_bh")[:3], [.03, .04, .04]
