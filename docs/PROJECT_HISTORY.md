@@ -1674,3 +1674,25 @@ numeric RMSE; none has been claimed. Selection of best correction on
 these repeatedly inspected 138 labels is post-hoc, not unbiased.
 Private parcel outputs are gitignored; 59 target results unchanged.
 Details in docs/REFERENCE26_ANALOG_TAIL_SCREEN.md.
+
+## 2026-10-19 — First exploratory RMSE reduction with real analogs
+
+The user executed the 31-recipe full 138-fold Reference26 analog/tail
+screen (PR #33) on the private VM. Original authentic Reference26 mean
+RMSE 0.468138127 t/ha, MAE 0.333786. Best evaluated direct correction
+`analog__robust26__k3__blend0.25__supported`: RMSE **0.462418**,
+MAE **0.332019**, average signed error -0.004103 t/ha.
+Reduction 0.005720 t/ha in RMSE (~1.22%). Of 138 original test
+parcels, 65 had lower squared error, 73 had higher squared error;
+the maximum absolute forecast change was 0.108689 t/ha.
+Two historically hardest parcels showed RMSE 2.065000 -> 2.063534;
+other 136 improved 0.399583 -> 0.392880. Direct tail-only
+corrections never beat Reference26. Candidate is selected from 31
+on previously inspected 138 folds, hence preliminary POST-HOC
+screening gain, not independently validated generalization.
+Do not alter 59 official predictions. Added
+tools/audit_reference26_analog_gain.py with matched bootstrap,
+delete-one-case stability, sign-flip maxT over 30 candidate corrections,
+and optional geographic block bootstrap. This audit must run in the
+VM; numerical audit results pending. Detailed study:
+docs/REFERENCE26_ANALOG_TAIL_SCREEN.md.
