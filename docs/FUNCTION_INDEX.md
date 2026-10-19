@@ -255,6 +255,19 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `grid_candidates` | function | `geocebada.evaluation.climate_nested_grid` | Return reproducible hyperparameter search including the exact incumbent. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `summarize_nested_grid` | function | `geocebada.evaluation.climate_nested_grid` | Validate paired full coverage and report unbiased-by-inner-tuning OOF scores. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `tune_one_outer_parcel` | function | `geocebada.evaluation.climate_nested_grid` | Select each model's hyperparameters solely on other observed yields. | `src/geocebada/evaluation/climate_nested_grid.py` |
+| `adjust_spatial_tests` | function | `geocebada.evaluation.jury_residual_diagnostics` | Across ALL tested k, variables, models and spatial statistics. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `conditional_error_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `interpret_tests` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `multiplicity` | function | `geocebada.evaluation.jury_residual_diagnostics` | Benjamini-Hochberg FDR or Holm FWER, finite p-values only. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `normality_and_distribution` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `paired_loss_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `md_table` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
+| `render_figures` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
+| `render_markdown` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
+| `all_metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` |  | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` | Report mathematical norms as TOTAL norms, alongside normalized errors. | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `paired_metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` | Pairs share all 138 observations; naive parcel bootstrap is descriptive. | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `validate_predictions` | function | `geocebada.evaluation.loocv_comprehensive_metrics` |  | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
@@ -284,10 +297,6 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `missing_numeric_inputs` | function | `geocebada.evaluation.peer_mean_imputation` | Descriptive X-only audit of the original 26 predictors; never y. | `src/geocebada/evaluation/peer_mean_imputation.py` |
 | `observed_means` | function | `geocebada.evaluation.peer_mean_imputation` | Replace missing numeric X using only the supplied fitting rows. | `src/geocebada/evaluation/peer_mean_imputation.py` |
 | `use_training_means` | function | `geocebada.evaluation.peer_mean_imputation` | Switch all five original numeric imputers to means for one worker. | `src/geocebada/evaluation/peer_mean_imputation.py` |
-| `validate_predictions` | function | `geocebada.evaluation.loocv_comprehensive_metrics` |  | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
-| `metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` | Report mathematical norms as TOTAL norms, alongside normalized errors. | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
-| `all_metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` |  | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
-| `paired_metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` | Pairs share all 138 observations; naive parcel bootstrap is descriptive. | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
 | `FixedGeologicalKMeansMixin` | class | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Replicate original SimplifiedBases.shares but fix k instead of tuning it. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
 | `fixed_geological_kmeans` | function | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Apply an isolated patch only while a single Reference26 fit executes. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
 | `gate_diagnostics` | function | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Record requested k and actual fitted clusters, never private yield rows. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
