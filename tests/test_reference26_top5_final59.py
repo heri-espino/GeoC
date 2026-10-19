@@ -1,5 +1,6 @@
 """Synthetic QA for private final 138-trained corrected Reference26 59 export."""
 import importlib.util
+import json
 from pathlib import Path
 
 import numpy as np
@@ -177,7 +178,7 @@ def test_nested_manifest_allows_only_code_sha_drift(monkeypatch):
     assert m.validate_nested_provenance(expected, expected) == ()
     # The nested runner writes tuple-valued TOP5 as a JSON list on disk.
     # Reproduce the actual saved-manifest versus freshly built situation.
-    from_disk = __import__("json").loads(__import__("json").dumps({
+    from_disk = json.loads(json.dumps({
         **expected, "top5": m.nested.TOP5,
     }))
     freshly_computed = {**expected, "top5": m.nested.TOP5}
