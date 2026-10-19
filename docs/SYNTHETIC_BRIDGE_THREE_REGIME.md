@@ -102,3 +102,85 @@ Private outputs (both gitignored):
 A PCA view cannot validate that mixtures of soil/climate/phenology
 features correspond to physically possible fields; it helps detect
 obviously misplaced synthetic clouds.
+
+## Updated primary experiment: learned classifier (2026-10-19)
+
+**Current preferred implementation:** tools/run_three_regime_classifier.py.
+The previous tools/run_two_bridge_three_regime.py remains as a geometric
+distance-gating control only. It is not a supervised classifier.
+
+Architecture: THREE real-yield regimes, as a **working hypothesis**:
+
+- Group A: two parcels found in the exact common top-2 absolute LOOCV
+  errors of the original three model families (2 original labels).
+- Group B: the other six parcels from the exact common top-10 intersection
+  (6 original labels). This is a **heuristic definition**, NOT proof
+  of one coherent yield regime or a separate physical cluster.
+- Group C: the other 130 original training parcels, predicted by the
+  existing frozen Reference26 with mean imputation.
+
+Regressors: a separate Ridge model is trained on the **Brownian-bridge
+synthetic examples** of group A and group B. Group A uses one segment
+between two original anchors. Group B uses a deterministic PCA-ordered
+five-segment chain through its six anchors. The default augmentation has
+**3 paths x 7 steps per bridge segment** = 21 synthetic rows for A and
+105 for B, only 126 total (vs 1,632 in the earlier larger proposal).
+The available real label count remains 138; no false claim of additional
+measured yields.
+
+The classifier is a random forest (80 trees, max depth 8, min leaf 3)
+trained on X-only feature representations. Real labeled training points
+carry labels A/B/C **determined from historical residual-based group
+selection**; bridge X points carry A or B group membership. The total
+sample weight of all synthetic copies of each group is bounded by the
+number of original available anchors, and real group counts enter
+inverse class-mass weighting. A forest outputs three probabilities
+for the query parcel. Group C predicts with **unmodified Reference26**.
+Groups A and B use their respective independently fitted Ridge experts
+only when they win the classifier and exceed the declared probability
+threshold. Each change is blended and clipped to a maximum magnitude.
+
+During each outer 137/1 fold:
+- Fit the classifier and two synthetic specialists from the allowed
+  training X and y only; all pseudo-y comes from training-only original
+  anchor yields; do not use the heldout yield to fit anything.
+- If a group has fewer than 2 remaining real anchors, skip its
+  specialist and do not permit that class in the fitted classifier.
+  Consequently the two-member A group cannot be learned from two
+  points when one is held out, and its own LOOCV recovery is limited.
+- Reuse the saved genuine Reference26 heldout forecast as group C
+  and as the default fallback. No expensive Reference26 retraining.
+- Report 138-parcel RMSE/MAE and separate A (2), B (6), C (130)
+  errors, how many parcels were routed to specialists, and how many
+  ordinary examples became worse.
+- The *group definitions themselves* were selected by looking at
+  the same 138 heldout residuals. Hence this is a POST-HOC screening
+  experiment, not unbiased validation of a supervised routing algorithm.
+
+Run on the VM:
+
+~~~powershell
+git fetch origin
+git switch experiment/synthetic-bridge-three-regime
+python -m pytest tests/test_three_regime_classifier.py tests/test_two_bridge_three_regime.py -q
+python tools/run_three_regime_classifier.py --check
+python tools/run_three_regime_classifier.py --smoke
+python tools/run_three_regime_classifier.py --run
+python tools/run_three_regime_classifier.py --summary
+~~~
+
+The private output location is
+reports/three_regime_classifier/, added to .gitignore. Candidate comparison
+for the 59 unknowns can be separately generated, without overwriting
+the original results:
+
+~~~powershell
+python tools/run_three_regime_classifier.py --predict59 --sigma 0.05 --min-prob 0.6 --blend 0.25
+~~~
+
+Default development grid: noise sigma 0 / 0.05 / 0.15, classifier
+minimum probability 0.4 / 0.6 / 0.8, blend 0.25 / 0.5, cap 0.35 t/ha.
+The best observed configuration must NOT be described as a verified gain
+without a separate selection-free confirmation protocol. In particular,
+Group B may include diverse cases and the gate may not meaningfully
+improve any of them.
