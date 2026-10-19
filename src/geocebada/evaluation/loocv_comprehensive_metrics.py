@@ -11,8 +11,6 @@ No individual labels, IDs or prediction vectors are exported from here.
 """
 from __future__ import annotations
 
-from itertools import combinations
-
 import numpy as np
 import pandas as pd
 
