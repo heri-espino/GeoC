@@ -265,6 +265,15 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `summarize_fixed_fold_scores` | function | `geocebada.evaluation.parcel_modeling` | Summarize fixed-fold benchmark scores without declaring a model winner. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `train_prediction_diagnostics` | function | `geocebada.evaluation.parcel_modeling` | Compare numeric feature support/distributions between train and prediction rows. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `validate_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Validate that a frozen fold file covers each training parcel exactly once. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `align_peer_targets` | function | `geocebada.evaluation.peer_champions_loo` | Validate that both projects have the identical 138 labeled parcels/yields. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `outer_record` | function | `geocebada.evaluation.peer_champions_loo` | Build peer-native indices with exactly one excluded label. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `resolve_peer_bundle` | function | `geocebada.evaluation.peer_champions_loo` | Prefer private GeoC/data_n; accept explicit roots or bundle leaves. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `summarize_complete` | function | `geocebada.evaluation.peer_champions_loo` | Compute paired pooled scores and descriptive parcel bootstrap differences. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `validate_fold` | function | `geocebada.evaluation.peer_champions_loo` | Refuse cached folds with shifted IDs, missing models or bad predictions. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `DBSCANShareMixin` | class | `geocebada.evaluation.peer_geology_dbscan` | Override only original SimplifiedBases.shares; retain all expert recipes. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
+| `GeologicalDBSCANGate` | class | `geocebada.evaluation.peer_geology_dbscan` | Shrink per-density-cluster mixing weights towards the global weight. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
+| `adaptive_radius` | function | `geocebada.evaluation.peer_geology_dbscan` | Scale radius by a training-only k-distance, never held-out coordinates. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
+| `dbscan_refit_mode` | function | `geocebada.evaluation.peer_geology_dbscan` | Use original refit_fold with a strictly local class override. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
 | `benchmark_regressors` | function | `geocebada.evaluation.regression` | Compare regression baselines using identical shuffled K-fold splits. | `src/geocebada/evaluation/regression.py` |
 | `default_regressors` | function | `geocebada.evaluation.regression` | Return lightweight baseline regressors suitable for early comparison. | `src/geocebada/evaluation/regression.py` |
 | `summarize_benchmark` | function | `geocebada.evaluation.regression` | Summarize fold-level benchmark metrics as mean and standard deviation. | `src/geocebada/evaluation/regression.py` |
