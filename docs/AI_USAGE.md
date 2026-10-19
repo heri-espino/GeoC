@@ -121,3 +121,16 @@ Los archivos `.ai_handoff` y `AGENTS.md` sirven para continuidad operativa entre
 | 2026-10-12 | ChatGPT (GitHub) | Publicación de métricas y cierre de Checkpoint 09 | Usuario proporcionó stdout de `--prepare`, `--smoke`, `--run`, `--summary` y pidió subir resultados y cerrar el trabajo | Publicadas versiones ligeras `reports/checkpoint_09/shared/development_summary.csv` y `decision.json`, más informe `docs/CHECKPOINT_09_FINDINGS.md` y estado de cierre | Comparación transcrita del stdout: Local04D RMSE 0.495741, LOO 3.0 0.498899, LOSO FAIL; métricas CSV redondeadas; no se publican observaciones por parcela ni se cambian las 59 predicciones |
 
 | 2026-10-18 | ChatGPT | Integración propuesta de los modelos de Nuria al benchmark GeoC LOOCV | Solicitud del usuario de incorporar Reference26/Compact14 del fork todoseboso | Rama aislada, contratos, runner, pruebas sintéticas y protocolo en docs/PEER_CHAMPIONS_LOOCV.md; sin entrenamientos ni datos privados | Pendiente de revisión humana y corrida local con bundle autorizado |
+
+## 2026-10-19 — Direct frozen Reference26 correction experiment
+
+An AI assistant created tools/run_reference26_analog_tail_screen.py,
+tests/test_reference26_analog_tail_screen.py and documentation
+docs/REFERENCE26_ANALOG_TAIL_SCREEN.md to test two cheap changes to
+the existing winner's original 138 true OOF forecasts, without
+retraining or replacing Reference26: blend with allowed training real
+X-neighbors' yields; and bounded expansion of tails away from
+fold-training y mean. X-only geometry includes 197 observable parcels
+but never any of their unknown y; synthetic or heldout y is never
+used in corrections. Outputs and 59-target candidate stay local.
+Results NOT YET COMPUTED; do not claim improvement or deploy.
