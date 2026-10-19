@@ -21,6 +21,7 @@ from scipy import stats
 import run_reference26_compact14_final as native
 import run_reference26_analog_tail_screen as analog
 import run_reference26_top5_nested as nested
+import run_reference26_top5_final59 as final59
 import report_reference26_compact14_final as jury
 from geocebada.evaluation.loocv_comprehensive_metrics import all_metrics
 from geocebada.evaluation.jury_residual_diagnostics import (
@@ -55,10 +56,14 @@ def read_verified(args):
     original = loo[BASE].to_numpy(float)
     screen = nested.read_screen(args.screen.resolve(), ids, y, original)
     specpath = args.nested_output.resolve() / "run_spec.json"
-    if not specpath.is_file() or json.loads(
-        specpath.read_text(encoding="utf-8")
-    ) != nested.provenance(args):
-        raise ValueError("Original nested experiment provenance mismatch.")
+    if not specpath.is_file():
+        raise FileNotFoundError("Original nested experiment run_spec.json missing.")
+    # Allow only code-formatting SHA drift; verify all 138 fold predictions next.
+    # Same strict provenance policy as the final59 runner itself.
+    final59.validate_nested_provenance(
+        json.loads(specpath.read_text(encoding="utf-8")),
+        nested.provenance(args),
+    )
     scores, counts = nested.summary_from_folds(
         args.nested_output.resolve(), ids, y, original, screen, save=False
     )
