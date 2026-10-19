@@ -39,10 +39,10 @@ def tuned_local_ridge(k: int, alpha: float):
     """Patch BOTH inner fitting and outer-query Ridge paths consistently."""
     settings(k, alpha)
 
-    import src.geoc_bridge as bridge
-    import src.geoc_signal_research as signals
     import src.conditional_local_phases as phases
     import src.current_champions as champions
+    import src.geoc_bridge as bridge
+    import src.geoc_signal_research as signals
     from src.geoc_local04d_snapshot import predict_weighted_local_ridge
     from src.local_ridge_sufficient_statistics import predict_local_ridge
 
