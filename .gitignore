@@ -162,3 +162,6 @@ venv/
 
 # Private full DBSCAN 138-fold predictions and tuning caches
 /reports/peer_dbscan_loo138/
+
+# Fixed geological KMeans k searches: private per-parcel observed targets/predictions
+/reports/reference26_kmeans_fixed_*/
