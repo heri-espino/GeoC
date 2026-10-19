@@ -183,3 +183,6 @@ venv/
 
 # Private 138-parcel LOOCV ensemble diagnostics and residual correlations
 /reports/loo_ensemble_screen/
+
+# Private staging of recovered LOOCV scoreboards/provenance
+/reports/loocv_comprehensive_metrics/
