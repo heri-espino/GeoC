@@ -158,3 +158,51 @@ def test_final_selector_chooses_based_only_on_four_inner_oof(monkeypatch):
     assert selected == m.nested.NAMES[0]
     assert len(combined) == 138
     assert losses[selected] < losses[m.nested.BASE]
+
+
+def test_nested_manifest_allows_only_code_sha_drift(monkeypatch):
+    m = loaded(monkeypatch)
+    expected = {
+        "schema": 1,
+        "source_sha": "new-script",
+        "screen_source_sha": "new-screen",
+        "screen_private_sha": "same-private-screen",
+        "native_run_spec_sha": "same-model-fits",
+        "peer_source_sha": "same-native-source",
+        "bundle_sha": "same-training-bundle",
+        "minimum_relative_inner_mse_gain": 0.01,
+        "max_delta": 0.5,
+        "top5": list(m.nested.TOP5),
+    }
+    assert m.validate_nested_provenance(expected, expected) == ()
+    old = dict(expected)
+    old["source_sha"] = "original-nested-run"
+    old["screen_source_sha"] = "original-analog-screen"
+    assert m.validate_nested_provenance(old, expected) == (
+        "screen_source_sha", "source_sha"
+    )
+    assert m.validate_nested_provenance(
+        {**old, "source_sha": "a"}, expected
+    )
+    for key, replacement in (
+        ("bundle_sha", "wrong-bundle"),
+        ("screen_private_sha", "wrong-screen-records"),
+        ("peer_source_sha", "different-native-training-code"),
+        ("native_run_spec_sha", "different-loocv-baseline"),
+        ("minimum_relative_inner_mse_gain", 0.05),
+        ("max_delta", 1.0),
+        ("top5", []),
+    ):
+        tampered = dict(old)
+        tampered[key] = replacement
+        with pytest.raises(ValueError, match=key):
+            m.validate_nested_provenance(tampered, expected)
+
+
+def test_nested_manifest_missing_fields_are_rejected(monkeypatch):
+    m = loaded(monkeypatch)
+    expected = {"source_sha": "new", "bundle_sha": "real"}
+    with pytest.raises(ValueError, match="bundle_sha"):
+        m.validate_nested_provenance({"source_sha": "old"}, expected)
+    with pytest.raises(ValueError, match="manifest must"):
+        m.validate_nested_provenance(None, expected)
