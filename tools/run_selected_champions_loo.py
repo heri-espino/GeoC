@@ -25,15 +25,11 @@ for _name in (
 ):
     os.environ[_name] = "1"
 
-import json  # noqa: E402
 from concurrent.futures import ProcessPoolExecutor, as_completed  # noqa: E402
 from pathlib import Path  # noqa: E402
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-from sklearn.metrics import r2_score  # noqa: E402
-from threadpoolctl import threadpool_limits  # noqa: E402
-
 from geocebada.evaluation.peer_champions_loo import (  # noqa: E402
     ID,
     Y,
@@ -49,6 +45,8 @@ from run_peer_champions_loo import (  # noqa: E402
     _write_fold,
     predict,
 )
+from sklearn.metrics import r2_score  # noqa: E402
+from threadpoolctl import threadpool_limits  # noqa: E402
 
 OUTPUT = ROOT / "reports/selected_champions_loo"
 LOCAL = "Local04D"
