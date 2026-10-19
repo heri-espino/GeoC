@@ -18,7 +18,6 @@ import json
 from pathlib import Path
 
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -26,6 +25,9 @@ from scipy.stats import binomtest, wilcoxon
 from sklearn.cluster import AgglomerativeClustering
 
 from geocebada.evaluation.loocv_comprehensive_metrics import all_metrics
+
+# Force a noninteractive backend on Windows VMs and headless CI workers.
+matplotlib.use("Agg")
 
 ROOT = Path(__file__).resolve().parents[1]
 ID = "ID_POLIGONO"
