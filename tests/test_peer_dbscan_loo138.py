@@ -79,13 +79,22 @@ def test_four_model_comparison_reuses_completed_original_folds(monkeypatch, tmp_
     original, dbscan, local = frames(module)
     destination = tmp_path / "dbscan"
     destination.mkdir()
-    (destination / "run_spec.json").write_text("{}")
+    (destination / "run_spec.json").write_text(json.dumps({
+        "bundle_manifest_sha256": "match-bundle",
+        "peer_code_sha256": "match-peer",
+    }))
     for pos, row in enumerate(dbscan.iloc[::-1].to_dict("records"), start=1):
         # Fold order is irrelevant for comparison, but filenames are exact.
         module.write_csv(destination / f"fold_{pos:03d}.csv", pd.DataFrame([row]))
     orig_file = tmp_path / "original.csv"
     local_file = tmp_path / "local.csv"
     module.write_csv(orig_file, original)
+    (tmp_path / "run_spec.json").write_text(json.dumps({
+        "protocol": "138x leave-one-parcel-out; 137 train, 1 test",
+        "inner": "4-fold shuffled KFold, seed=20261018, 137 outer-train rows",
+        "manifest_sha256": "match-bundle",
+        "peer_model_source_sha256": "match-peer",
+    }))
     module.write_csv(local_file, local)
     module.compare(destination, orig_file, local_file)
     scores = pd.read_csv(destination / "four_model_summary.csv")
