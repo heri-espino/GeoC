@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-19. **Primary model:** Reference26 with training-fold arithmetic-mean imputation (local k=24, Ridge alpha=30). Compact14 and the outcome-selected blend remain historical secondary comparisons, not confirmed improvements.
 
-**Evidence status:** The actual 138-fold residual diagnostics have already been transcribed and interpreted in [the statistical interpretation report](../results/peer_models/REFERENCE26_COMPACT14_STATISTICAL_INTERPRETATION_138_2026-10-19.md). The additional cluster-bootstrap and parcel-influence analysis introduced here **has not yet been executed on confidential VM data**. No new test statistic or interval is asserted as observed.
+**Evidence status:** The actual 138-fold residual diagnostics have already been transcribed and interpreted in [the statistical interpretation report](https://github.com/heri-espino/GeoC/blob/experiment/nuria-champions-loocv/results/peer_models/REFERENCE26_COMPACT14_STATISTICAL_INTERPRETATION_138_2026-10-19.md). The additional cluster-bootstrap and parcel-influence analysis introduced here **has not yet been executed on confidential VM data**. No new test statistic or interval is asserted as observed.
 
 ## 1. Scope and notation
 
