@@ -195,7 +195,6 @@ def fit_one(pos: int, conf: tuple, output: Path):
     if _WORKER is None:
         raise RuntimeError("The worker has no private 138-parcel bundle.")
     frame, groups, distances, data, ids, ColdExperts, predict_saved = _WORKER
-    target = float(frame.iloc[pos][TARGET])
     tr, inner = fold_record(pos)
     masked = frame.copy(deep=True)
     masked.loc[masked.index[pos], TARGET] = np.nan
