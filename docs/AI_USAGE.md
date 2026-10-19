@@ -162,3 +162,17 @@ reading historic Reference26 OOF error rankings that may contain information
 about the current heldout y. Synthetic responses are inherited from real
 centers. No independent observations are invented. All numeric results are
 pending local user-run; no promotion or public individual-y data.
+
+## 2026-10-19 — Weighting and uniform augmentation ablation
+
+The user requested direct sample weights for observations with large
+training prediction errors or unusual observable features, and
+Gaussian X augmentation of ALL real training observations rather than
+only rare anchors. AI assistant authored the separate experimental
+runner, synthetic unit tests and docs. Sample hardness comes solely
+from each outer fold's 137 training labels (auxiliary Ridge PRESS) or
+X feature rarity, never the current outer heldout y. Every original
+real parcel receives equal synthetic replicas, with total fake-label
+mass kept fixed or allowed to dominate; counts 274, 1370 and
+optional 6850 per real fold. Original Reference26 remains unchanged.
+No actual VM results yet and all individual labels remain private.

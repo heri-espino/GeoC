@@ -954,3 +954,20 @@ ExtraTrees*, NOT Reference26 with direct synthetic rows. The user's
 original 59 predictions are unchanged; no promotion. User-sent
 aggregate logs, no private results CSV committed. See updated
 docs/GLOBAL_SYNTHETIC_AUGMENTATION.md for full interpretation.
+
+2026-10-19 — Following negative global rare-sample augmentation
+(PR #31, Reference26 0.468138 RMSE remains superior), new separate
+experiment/weighted-balanced-augmentation branch implements
+tools/run_weighted_balanced_augmentation.py with synthetic unit tests
+tests/test_weighted_balanced_augmentation.py and documentation
+docs/WEIGHTED_BALANCED_AUGMENTATION.md. Two hypotheses: (a) real hard
+TRAINING parcels receive higher supervised loss weights (training-only
+auxiliary Ridge PRESS or feature-isolation scores), (b) ALL 137 real
+training parcels get equal numbers of Gaussian synthetic X neighbors
+(r=2,10; optional r=50), inheriting real training y and normalized
+synthetic block sample weights ('equal' or 'full'). Compare Ridge
+and ExtraTrees against their own no-augmentation controls and genuine
+previously saved Reference26 mean 138-fold OOF. No native Reference26
+retrain, no classifier or 59-target modifications. All y-dependent
+selection inside each 137-label outer fold; outcomes NOT YET RUN on VM.
+All per-parcel reports gitignored.

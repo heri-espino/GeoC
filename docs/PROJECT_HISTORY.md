@@ -1752,3 +1752,27 @@ global o el control del mismo algoritmo. Estos globales son Ridge/ExtraTrees
 **distintos** de Reference26; no es un refit sintético de Reference26.
 No publicar CSV privados ni cambiar las 59 predicciones oficiales.
 Análisis detallado: docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+
+## 2026-10-19 — Hard-sample weighting and balanced Gaussian augmentation
+
+After the full 138-fold evaluation found all 40 global rare-case
+augmentation candidates inferior to plain Ridge/ExtraTrees and
+Reference26 mean (0.468138), the user asked to try (1) stronger
+weights for observations far away or badly predicted, (2) synthetic
+data generated equally for EVERY real training observation, and
+(3) far larger augmentation counts. Implemented independently on
+experiment/weighted-balanced-augmentation (draft PR pending),
+tools/run_weighted_balanced_augmentation.py and tests, documented
+in docs/WEIGHTED_BALANCED_AUGMENTATION.md.
+
+Inside each 137-real-label outer training fold, difficult samples
+selected by auxiliary Ridge PRESS abs-error or feature-space nearest-
+neighbor isolation receive sample weights 2x/5x; all weights normalized
+to total real count 137. Alternative uniform Gaussian noise around
+every real training parcel creates 2/10 (optional 50) synthetic X per
+real sample; total fit rows 411/1507/6987, with 1 heldout real test
+and same authentic 138 folds. Pseudo-y repeats its own real center's
+training yield; synthetic relative mass 'equal' or 'full'. Paired
+reference includes same global learner without augmentation and
+the unchanged Reference26 mean OOF. VM has not run this yet;
+no 59 prediction changes.
