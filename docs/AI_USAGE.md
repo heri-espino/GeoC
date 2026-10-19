@@ -121,3 +121,14 @@ Los archivos `.ai_handoff` y `AGENTS.md` sirven para continuidad operativa entre
 | 2026-10-12 | ChatGPT (GitHub) | Publicación de métricas y cierre de Checkpoint 09 | Usuario proporcionó stdout de `--prepare`, `--smoke`, `--run`, `--summary` y pidió subir resultados y cerrar el trabajo | Publicadas versiones ligeras `reports/checkpoint_09/shared/development_summary.csv` y `decision.json`, más informe `docs/CHECKPOINT_09_FINDINGS.md` y estado de cierre | Comparación transcrita del stdout: Local04D RMSE 0.495741, LOO 3.0 0.498899, LOSO FAIL; métricas CSV redondeadas; no se publican observaciones por parcela ni se cambian las 59 predicciones |
 
 | 2026-10-18 | ChatGPT | Integración propuesta de los modelos de Nuria al benchmark GeoC LOOCV | Solicitud del usuario de incorporar Reference26/Compact14 del fork todoseboso | Rama aislada, contratos, runner, pruebas sintéticas y protocolo en docs/PEER_CHAMPIONS_LOOCV.md; sin entrenamientos ni datos privados | Pendiente de revisión humana y corrida local con bundle autorizado |
+## 2026-10-19 — Experimental synthetic bridge mixture of experts
+
+An AI assistant implemented a separate, non-promoted, three-route forecasting
+experiment. The two synthetic Ridge experts use Brownian-bridge perturbations
+and interpolated pseudo-labels from two real difficult cases; a feature-only
+gate preserves Reference26 predictions outside synthetic support. The runner
+reuses authentic saved Reference26 mean heldout predictions and disables the
+augmented experts whenever a target anchor is withheld, preventing direct
+synthetic pseudo-label leakage. All model selection is post hoc to inspected
+LOOCV cases, so scores are exploratory. No private data or trained artifacts
+have been published; a user VM run and tests are pending.
