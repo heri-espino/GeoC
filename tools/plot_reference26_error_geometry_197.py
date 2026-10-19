@@ -91,7 +91,6 @@ def neighbor_diagnostics(z, spatial, ids, error):
     top = np.argsort(-abs(error), kind="stable")[:10]
     k = min(5, n-1)
     local_mean = np.sort(dx, axis=1)[:, :k].mean(axis=1)
-    lof = -LocalOutlierFactor(n_neighbors=min(20,n-1)).fit_predict(z)
     # Use the actual LOF factor rather than the {-1,1} classification.
     lof_object = LocalOutlierFactor(n_neighbors=min(20,n-1))
     lof_object.fit_predict(z)
