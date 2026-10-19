@@ -33,7 +33,8 @@ def test_real_neighbor_y_is_train_only(monkeypatch):
     z,y=example()
     train=np.arange(1,138)
     p,d,s=m.neighborhood(z,y,train,np.array([0]),k=3)
-    altered=y.copy();altered[0]=1e9
+    altered=y.copy()
+    altered[0]=1e9
     p2,d2,s2=m.neighborhood(z,altered,train,np.array([0]),k=3)
     np.testing.assert_array_equal(p,p2)
     np.testing.assert_array_equal(d,d2)
@@ -80,7 +81,8 @@ def test_tail_expansion_follows_train_only_y(monkeypatch):
         np.array([2.,4.,6.]),y[1:],
         gain=.2,threshold_sd=.5,max_delta=.5,
     )
-    y2=y.copy();y2[0]=1e9
+    y2=y.copy()
+    y2[0]=1e9
     revised=m.tail_correction(
         np.array([2.,4.,6.]),y2[1:],
         gain=.2,threshold_sd=.5,max_delta=.5,
@@ -99,7 +101,8 @@ def test_full_screen_fold_prediction_ignores_heldout_y(monkeypatch):
     spaces={"robust26":x,"pca8":x[:,:8]}
     baseline=np.full(138,4.,dtype=float)
     first=m.evaluate_folds(y,spaces,baseline,[0],max_delta=.5)
-    y2=y.copy();y2[0]=-1000.
+    y2=y.copy()
+    y2[0]=-1000.
     replay=m.evaluate_folds(y2,spaces,baseline,[0],max_delta=.5)
     assert first.keys()==replay.keys()
     for key in first:
