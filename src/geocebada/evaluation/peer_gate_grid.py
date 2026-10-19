@@ -11,7 +11,6 @@ from __future__ import annotations
 from contextlib import contextmanager
 
 import numpy as np
-from sklearn.cluster import KMeans
 
 from geocebada.evaluation.peer_geology_dbscan import GeologicalDBSCANGate
 
