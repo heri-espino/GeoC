@@ -54,7 +54,7 @@ def test_mean_batch_applies_override_to_native_fit_and_preserves_137_labels(
             frame, None, None, None, ids, None, None,
         ),
     )
-    from contextlib import contextmanager, nullcontext
+    from contextlib import contextmanager
 
     @contextmanager
     def mean_patch():
