@@ -325,12 +325,20 @@ def final_refit(
     names = ("reference26_mean_train138.joblib",
              "compact14_original_train138.joblib")
     complete = out / "final_manifest.json"
-    if complete.exists() or any((out / n).exists() for n in names):
-        raise ValueError(
-            "Final fits already exist; do not silently reuse/overwrite "
-            "serialized fitted models. Use a new --output folder."
-        )
     full, d197 = prepare_197(peer, frame, distance)
+    if complete.is_file():
+        prior = json.loads(complete.read_text(encoding="utf-8"))
+        if (prior["weights"] != {
+            "Reference26_mean": weights[0],
+            "Compact14": weights[1],
+        } or prior["n_train"] != N or prior["n_unknown"] != 59
+                or any(not (out / name).is_file()
+                       or sha(out / name) != prior["trained_models"][name]
+                       for name in names)):
+            raise ValueError("Completed refit manifest or file hashes changed.")
+        print("[FINAL REFIT] Both final models already complete and "
+              "sha256-verified; no retraining.", flush=True)
+        return
     train = np.arange(N)
     from sklearn.model_selection import KFold
     inner = list(KFold(
@@ -339,28 +347,42 @@ def final_refit(
     packs = []
     for name, mean in zip(names, (True, False), strict=True):
         start = time.perf_counter()
-        pack, _ = build_fresh_fit(
-            frame, groups, distance, manifest, train, inner,
-            ColdExperts, out / ("cache_mean" if mean else "cache_compact"),
-            mean=mean,
-        )
+        path = out / name
         name_key = "Reference26" if mean else "Compact14"
+        label = "Reference26_mean" if mean else "Compact14"
+        if path.is_file():
+            pack = joblib.load(path)
+            if (pack.get("imputation") != (
+                "arithmetic_train_means" if mean else "original_medians"
+            ) or pack.get("model_name") != label
+                    or not np.array_equal(
+                        pack.get("train_positions"), train
+                    )):
+                raise ValueError(
+                    f"Invalid cached final model {name}; abort, do not overwrite."
+                )
+            print(f"[FINAL REFIT] Resuming trusted existing {name}.",
+                  flush=True)
+        else:
+            pack, _ = build_fresh_fit(
+                frame, groups, distance, manifest, train, inner,
+                ColdExperts, out / ("cache_mean" if mean else "cache_compact"),
+                mean=mean,
+            )
+            pack["prediction_positions"] = np.arange(N, 197)
+            pack["model_name"] = label
+            joblib.dump(pack, path, compress=3)
+        trusted = joblib.load(path)
         q = np.arange(N, 197)
         estimates = predict_model(
-            predict_saved, pack, q, full, d197, name_key
+            predict_saved, trusted, q, full, d197, name_key
         )
-        pack["prediction_positions"] = q
-        pack["model_name"] = (
-            "Reference26_mean" if mean else "Compact14"
-        )
-        joblib.dump(pack, out / name, compress=3)
-        trusted = joblib.load(out / name)
         repeated = predict_model(
             predict_saved, trusted, q, full, d197, name_key
         )
-        np.testing.assert_allclose(estimates, repeated, atol=1e-12, rtol=0)
+        np.testing.assert_array_equal(estimates, repeated)
         packs.append(estimates)
-        print(f"[FINAL REFIT] {pack['model_name']}: 138 labels, "
+        print(f"[FINAL REFIT] {label}: 138 labels, "
               f"59 finite predictions, {time.perf_counter()-start:.1f}s.",
               flush=True)
     combined = weights[0]*packs[0]+weights[1]*packs[1]
