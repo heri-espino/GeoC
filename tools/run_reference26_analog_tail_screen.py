@@ -22,7 +22,8 @@ confirmation. The frozen original final 59 are NEVER overwritten.
   python tools/run_reference26_analog_tail_screen.py --smoke
   python tools/run_reference26_analog_tail_screen.py --run
   python tools/run_reference26_analog_tail_screen.py --summary
-  python tools/run_reference26_analog_tail_screen.py --predict59 --method analog --geometry robust26 --k 8 --blend 0.1 --gate supported
+  python tools/run_reference26_analog_tail_screen.py --predict59 \
+    --method analog --geometry robust26 --k 8 --blend 0.1 --gate supported
 """
 from __future__ import annotations
 
@@ -33,10 +34,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import run_reference26_compact14_final as native
 from sklearn.decomposition import PCA
 from sklearn.metrics import pairwise_distances
-
-import run_reference26_compact14_final as native
 
 ROOT, N, ID, TARGET = native.ROOT, native.N, native.ID, native.TARGET
 OUT = ROOT / "reports/reference26_analog_tail_screen"
@@ -258,7 +258,10 @@ def aggregate(y, reference, predictions, folds):
 def get_spec(args):
     return {
         "schema":1,
-        "protocol":"Original Reference26 mean 138 real parcel 137/1 LOOCV + fixed feature-only analog or training-only tail adjustment",
+        "protocol": (
+            "Original Reference26 mean 138 real parcel 137/1 LOOCV "
+            "+ fixed feature-only analog or training-only tail adjustment"
+        ),
         "screen_is_posthoc_model_selection":True,
         "native_reference26_never_refitted":True,
         "grid":model_grid(args),
@@ -276,7 +279,9 @@ def candidate_on_59(args, full, y, spaces, ref):
     csv=original/"predictions59_private.csv"
     manifest=original/"final_manifest.json"
     if not csv.is_file() or not manifest.is_file():
-        raise FileNotFoundError("Need native Reference26 original final fit and 59 saved predictions.")
+        raise FileNotFoundError(
+            "Need native Reference26 original final fit and 59 saved predictions."
+        )
     manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
     if manifest_data.get("n_train") != N or manifest_data.get("n_unknown") != 59:
         raise ValueError("Final model manifest does not identify 138/59 parcels.")
@@ -350,7 +355,10 @@ def main():
     y=frame[TARGET].to_numpy(float)
     if args.check:
         print("[CHECK] 197 X-only rows, 138 true historical Reference26 OOF predictions.")
-        print(f"[CHECK] {len(model_grid(args))} fixed candidate recipes, 137 labeled training rows / 1 real test.")
+        print(
+            f"[CHECK] {len(model_grid(args))} fixed candidate recipes, "
+            "137 labeled training rows / 1 real test."
+        )
         print(f"[CHECK] Reference26 RMSE={np.sqrt(np.mean((baseline-y)**2)):.9f} t/ha.")
         return
     if args.predict59:
@@ -377,7 +385,10 @@ def main():
     raw=pd.DataFrame({ID:frame[ID].astype(str),"observed":y,
                       "Reference26_mean":baseline,**preds})
     raw.to_csv(out/"private_heldout_predictions.csv",index=False)
-    print("[FULL] 138 genuine Reference26 OOF predictions; 137 TRAINING-only analog labels per fold.")
+    print(
+        "[FULL] 138 genuine Reference26 OOF predictions; "
+        "137 TRAINING-only analog labels per fold."
+    )
     print(result.head(15).to_string(index=False))
     print("[CAUTION] This is exploratory parameter screening on already-studied 138 labels.")
     print(f"[PRIVATE] {out}; original 59 final predictions unchanged.")
