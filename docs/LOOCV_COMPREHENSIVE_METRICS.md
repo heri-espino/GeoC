@@ -35,6 +35,28 @@ join this table only if they truly have **138 independently fitted
 137-train/1-heldout predictions** and matching parcel IDs and observed
 yields. Similar names and equal row counts are insufficient proof.
 
+### Metrics derivable from historical summaries (approximate)
+
+Because all these historical reports use n = 138, the identities
+`L1 = 138 × MAE`, `L2 = sqrt(138) × RMSE`, and
+`MSE = RMSE²` allow the following **derived rounded** values,
+even before recovering per-parcel forecasts:
+
+| Model | Total L1 (t/ha) | Total L2 (t/ha) | MSE ((t/ha)²) |
+|---|---:|---:|---:|
+| Reference26 mean | 46.062468 | 5.499376 | 0.219153 |
+| Reference26 median | 46.046875 | 5.499934 | 0.219198 |
+| Reference26 DBSCAN | 46.322184 | 5.512733 | 0.220219 |
+| Compact14 | 45.960097 | 5.517408 | 0.220593 |
+| Local04D | 48.454836 | 5.699022 | 0.235354 |
+
+These are **not independently recomputed** from the raw LOOCV
+predictions; rounding of historical RMSE and MAE propagates.
+The full reporting script will recompute their exact values
+from the saved 138 predictions when run on the local workstation.
+There is **no mathematical way** to recover L∞, MedAE or upper
+absolute-error quantiles from RMSE and MAE alone.
+
 ## 2. Mathematical metric definitions
 
 Let \(n=138\), \(y_i\) be observed yield, \(\widehat y_i\) be
