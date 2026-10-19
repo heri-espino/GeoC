@@ -190,3 +190,6 @@ venv/
 # Private full re-train on 138 parcel yields, OOF diagnostics and serialized models
 /reports/reference26_compact14_fresh138/
 /reports/reference26_compact14_fresh138_smoke/
+
+# Direct Reference26 analog/tail screening: actual heldout y + candidate59.
+/reports/reference26_analog_tail_screen/
