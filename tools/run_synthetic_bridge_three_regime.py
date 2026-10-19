@@ -32,7 +32,7 @@ ID = native.ID
 TARGET = native.TARGET
 N = 138
 OUT = ROOT / "reports/synthetic_bridge_three_regime"
-ANCHOR_IDS = ("AGC_015", "AGC_171")
+ANCHOR_SOURCE = ROOT / "reports/loocv_hard_parcels/diagnostic_manifest_private.json"
 SEED = 20261019
 
 
@@ -211,14 +211,23 @@ def verified_inputs(args):
         args.bundle.resolve(), args.peer_repo.resolve()
     )
     full, _ = native.prepare_197(args.peer_repo.resolve(), frame, distance)
-    if not set(ANCHOR_IDS).issubset(ids):
-        raise ValueError("Required two rare cases not found among 138 labeled IDs.")
+    anchor_file = args.anchor_file.resolve()
+    if not anchor_file.is_file():
+        raise FileNotFoundError(
+            f"Missing private hard-parcel diagnostic: {anchor_file}; "
+            "run tools/analyze_loocv_hard_parcels.py --run first."
+        )
+    anchor_data = json.loads(anchor_file.read_text(encoding="utf-8"))
+    anchor_ids = anchor_data.get("two_highest_consensus_private", [])
+    if (not isinstance(anchor_ids, list) or len(anchor_ids) != 2 or
+        len(set(anchor_ids)) != 2 or not set(anchor_ids).issubset(ids)):
+        raise ValueError("Private manifest must contain two distinct known parcel IDs.")
     y = frame[TARGET].to_numpy(float)
     weights = native.frozen_weights(args.config.resolve())
     loo = native.read_completed(args.fresh_fold_dir.resolve(), ids, y, weights)
     assert np.array_equal(loo[ID].astype(str).to_numpy(), np.asarray(ids))
     z, root, selected = representation(full, list(manifest["features"]))
-    indices = tuple(ids.index(i) for i in ANCHOR_IDS)
+    indices = tuple(ids.index(i) for i in anchor_ids)
     return frame, full, z, root, indices, y, loo, selected
 
 
@@ -227,6 +236,7 @@ def main():
     mode = p.add_mutually_exclusive_group(required=True)
     for key in ("check", "smoke", "run", "summary", "predict59"):
         mode.add_argument("--"+key, action="store_true")
+    p.add_argument("--anchor-file", type=Path, default=ANCHOR_SOURCE)
     p.add_argument("--bundle", type=Path, default=native.BUNDLE)
     p.add_argument("--peer-repo", type=Path, default=native.PEER_REPO)
     p.add_argument("--config", type=Path, default=native.CONFIG)
@@ -322,6 +332,7 @@ def main():
         "blends": blends, "radius": args.radius,
         "training_labels_only_in_synthetic_bridge": True,
         "anchor_selection_from_prior_all_138_LOOCV_is_posthoc": True,
+        "anchor_selection_manifest_sha": sha(args.anchor_file.resolve()),
         "input_bundle_sha": sha(args.bundle.resolve()/"manifest.json"),
         "original_LOOCV_run_spec_sha": sha(args.fresh_fold_dir.resolve()/"run_spec.json"),
         "synthetic_runner_sha": sha(Path(__file__).resolve()),
