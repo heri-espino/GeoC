@@ -1,7 +1,6 @@
 """Leakage and selection QA for preselected-five nested Reference26 analog CV."""
 import importlib.util
 from pathlib import Path
-from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
