@@ -129,9 +129,100 @@ def test_reject_invalid_grid(monkeypatch):
     args = SimpleNamespace(
         methods="local,bridge", sizes="256,1024", masses="32,full",
         models="ridge,extra_trees", sigma=.12, local_neighbors=20,
-        ridge_alpha=30, trees=64, leaf=3, jobs=2
+        ridge_alpha=30, hard_centers=8, trees=64, leaf=3, jobs=2
     )
     assert m.parse_settings(args)[1] == (256, 1024)
     args.methods = "local,imaginary"
     with pytest.raises(ValueError, match="Invalid"):
         m.parse_settings(args)
+
+
+def test_fold_local_press_selects_only_training_observations(monkeypatch):
+    m = load(monkeypatch)
+    z, y, anchors = data()
+    train = np.delete(np.arange(138), 1)
+    centers, scores = m.fold_hard_centers(
+        z, y, train, count=8, alpha=30.
+    )
+    assert len(centers) == 8 and len(np.unique(centers)) == 8
+    assert 1 not in centers
+    assert np.isfinite(scores).all()
+    # Replace the HELD-OUT y with an arbitrary value; selection is invariant.
+    changed = y.copy()
+    changed[1] = 99999.
+    repeat, repeated_scores = m.fold_hard_centers(
+        z, changed, train, count=8, alpha=30.
+    )
+    np.testing.assert_array_equal(centers, repeat)
+    np.testing.assert_array_equal(scores, repeated_scores)
+
+
+def test_fold_local_press_matches_bruteforce_ridge_leave_one_out(monkeypatch):
+    m = load(monkeypatch)
+    rng = np.random.default_rng(123)
+    z = rng.normal(size=(197, 4))
+    y = rng.normal(size=138)
+    train = np.arange(20)
+    alpha = 10.
+    centers, residual = m.fold_hard_centers(
+        z, y, train, count=20, alpha=alpha
+    )
+    from sklearn.linear_model import Ridge
+    brute = {}
+    for position in train:
+        others = train[train != position]
+        reg = Ridge(alpha=alpha).fit(z[others], y[others])
+        brute[int(position)] = y[position] - reg.predict(z[[position]])[0]
+    np.testing.assert_allclose(
+        residual, [brute[int(v)] for v in centers], atol=1e-10
+    )
+
+
+def test_gaussian_hard_centers_can_be_8_and_heldout_y_never_enters(monkeypatch):
+    m = load(monkeypatch)
+    z, y, anchors = data()
+    train = np.delete(np.arange(138), 0)
+    centers, press = m.fold_hard_centers(
+        z, y, train, count=8, alpha=30.
+    )
+    cov_roots = m.local_roots(z, tuple(map(int, centers)), neighbors=20)
+    kwargs = dict(
+        mode="gaussian_hard", count=1024, sigma=0.15,
+        seed=20261019, hard_positions=centers, hard_roots=cov_roots,
+    )
+    global_cov = np.eye(z.shape[1])
+    regular_roots = m.local_roots(z, anchors, neighbors=20)
+    a = m.augmented(
+        z, y, train, anchors, global_cov, regular_roots, **kwargs
+    )
+    assert a[0].shape == (1024, z.shape[1])
+    assert a[1].shape == (1024,)
+    assert set(np.unique(a[1])).issubset(set(y[centers]))
+    assert np.isfinite(a[0]).all()
+    tampered = y.copy()
+    tampered[0] = 1e9
+    b = m.augmented(
+        z, tampered, train, anchors, global_cov, regular_roots, **kwargs
+    )
+    np.testing.assert_array_equal(a[0], b[0])
+    np.testing.assert_array_equal(a[1], b[1])
+    # At sigma=0, every generated X must exactly match some hard real X.
+    zero = m.augmented(
+        z, y, train, anchors, global_cov, regular_roots,
+        mode="gaussian_hard", count=256, sigma=0.,
+        seed=20261019, hard_positions=centers, hard_roots=cov_roots,
+    )
+    for vector in zero[0]:
+        assert any(np.allclose(vector, z[v]) for v in centers)
+
+
+def test_hard_center_generator_rejects_a_heldout_center(monkeypatch):
+    m = load(monkeypatch)
+    z, y, anchors = data()
+    train = np.arange(1, 138)
+    with pytest.raises(ValueError, match="training labels"):
+        m.gaussian_hard_samples(
+            z, y, train, positions=np.array([0, 3]),
+            roots={0: np.eye(z.shape[1]), 3: np.eye(z.shape[1])},
+            count=100, sigma=0.1, seed=42,
+        )
