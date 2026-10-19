@@ -196,3 +196,6 @@ venv/
 
 # 138 real-fold nested top-five corrected Reference26 private predictions and caches.
 /reports/reference26_top5_nested/
+
+# Final 59 candidate yields + all 138 private 4-fold selection labels.
+/reports/reference26_top5_final59/
