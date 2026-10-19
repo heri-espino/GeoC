@@ -156,3 +156,6 @@ venv/
 
 # Private results for selected Reference26/Compact14 parallel LOOCV
 /reports/selected_champions_loo/
+
+# Private first-46 geological gate-grid experiments and label-level outputs
+/reports/peer_gate_grid_loo46/
