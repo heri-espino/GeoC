@@ -142,17 +142,19 @@ def predict_compact_kmeans(pack, query, frame, distance):
     outer = pack["outer_experts"]
     compact = outer["raw"]["compact"]
     q = np.asarray(query, dtype=int)
-    if "geology_gate" not in compact:
-        return np.asarray(
-            peer.predict_saved(pack, q, frame, distance)["Compact14"], float
-        )
-
-    gate = compact["geology_gate"]
     ct = compact["ct3"].predict(frame.iloc[q])
-    local = peer.raw_local(compact["local"], q, frame, distance)
-    predicted = gate["gate"].predict(
-        gate["space"].transform(frame.iloc[q]), ct, local
-    )
+    if compact["local"] is None:
+        predicted = ct.copy()
+    else:
+        local = peer.raw_local(compact["local"], q, frame, distance)
+        if "geology_gate" in compact:
+            saved = compact["geology_gate"]
+            predicted = saved["gate"].predict(
+                saved["space"].transform(frame.iloc[q]), ct, local
+            )
+        else:
+            # Exact original Compact14 mixture when geological gate disabled.
+            predicted = ct + compact["weight"] * (local - ct)
     correction = outer["correctors"][0]
     if correction is not None:
         complete = np.isfinite(
