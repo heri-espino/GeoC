@@ -18,11 +18,13 @@ def runner():
 def predictions(module):
     ids = [f"PARCEL_{i:03d}" for i in range(138)]
     y = np.linspace(2, 5, 138)
+    error = 0.2 + 0.05 * np.sin(np.arange(138))
     anchor = pd.DataFrame({
-        module.ID: ids, "observed": y, module.ANCHOR: y + 0.2,
+        module.ID: ids, "observed": y, module.ANCHOR: y + error,
     })
     local = pd.DataFrame({
-        module.ID: ids[::-1], "observed": y[::-1], "Local04D": y[::-1] - 0.2,
+        module.ID: ids[::-1], "observed": y[::-1],
+        "Local04D": y[::-1] - error[::-1],
     })
     return anchor, local
 
