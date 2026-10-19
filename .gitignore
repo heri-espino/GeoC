@@ -190,3 +190,4 @@ venv/
 # Private full re-train on 138 parcel yields, OOF diagnostics and serialized models
 /reports/reference26_compact14_fresh138/
 /reports/reference26_compact14_fresh138_smoke/
+/reports/synthetic_bridge_three_regime/
