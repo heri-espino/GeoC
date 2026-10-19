@@ -171,3 +171,8 @@ exports private tabular candidates without changing
 original joblib, predictions or online deployments.
 No actual 59 numeric results can be asserted until
 the user executes it with private data.
+
+## 2026-10-19 — New selected-analog correction statistical audit (implementation; VM execution pending)
+
+Added a separate reproducible statistical audit on branch analysis/selected-analog-spatial-inference-20261019 for the **globally selected final59 analog-corrected Reference26**. The implementation is tools/report_reference26_top5_statistics.py; technical guide docs/REFERENCE26_SELECTED_TAIL_STATISTICAL_ANALYSIS.md; synthetic tests tests/test_reference26_top5_statistics.py and reused inferential_sensitivity tests. The script verifies all 138 native true 137/1 heldouts, the full nested top-five results, the exact winner in the private final_selection_manifest, and parity of selected neighbor corrections. It separately reports Reference26_mean, fixed SelectedFinalRule, and NestedSelection, which is **not** the same estimator. Analyses include full Lp/robust/r2 metrics, observed/predicted and error Moran/Geary at k4/8/12/24 with all-test multiplicity, normality, variance/calibration, upper/lower tails, paired loss, spatial blocks and influential parcels, plus private diagnostic plots. The new /reports/reference26_top5_statistics/ is gitignored. **No new statistical numbers or 59-label validation can be asserted until the user's original private VM outputs are run**. The top-five candidates were historically shortlisted on the same 138 labels, so even nested-selection metrics are conditional/exploratory. No old joblibs/predictions overwritten.
+
