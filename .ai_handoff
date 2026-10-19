@@ -985,3 +985,20 @@ and rejects changes to model/inputs/five candidates.
 If user sees new error naming a critical field, do NOT bypass:
 investigate exact field in run_spec. Original final 59
 remain untouched, user must pull and rerun locally.
+
+2026-10-19 — SECOND actual VM blocker to final 59: after first
+source-SHA-only drift fix user ran 8 tests (all pass), then
+--check failed "Nested run fingerprint mismatch in: top5".
+Cause proven from source: nested.provenance() returns top5=TOP5
+(Python tuple of dicts) but stored run_spec.json contains a JSON
+array loaded as list of dicts; Python tuple != list even if
+all 5 candidates/order/parameters are IDENTICAL.
+tools/run_reference26_top5_final59.py now normalizes EXPECTED
+dict by json.loads(json.dumps(expected,allow_nan=False)) and
+compares this canonical on-disk representation. Keeps strict
+comparison of top5 order/dict values and all other data/model
+fingerprints; code-only drift rule remains. Regression tests
+simulate real saved JSON vs freshly computed tuples, assert
+identical accepted and altered blend/ordering rejected.
+No old nested outputs should be deleted or regenerated.
+User must git pull and run --check again. CI check pending.
