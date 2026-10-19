@@ -153,3 +153,6 @@ venv/
 
 # Exploratory geological KMeans vs DBSCAN: label-bearing fold outputs stay private
 /reports/peer_geology_dbscan/
+
+# Private results for selected Reference26/Compact14 parallel LOOCV
+/reports/selected_champions_loo/
