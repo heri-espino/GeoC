@@ -102,6 +102,46 @@ def require_original_final(folder, peer, frame, full, d197, weights, predict_sav
     }
 
 
+def validate_nested_provenance(recorded, expected):
+    """Distinguish executable-only drift from changes to the CV experiment.
+
+    The 138 completed nested fold records are verified separately by
+    nested.summary_from_folds(), including ID, real y, native OOF
+    prediction, and fixed-candidate parity. Formatting/refactoring after
+    the original VM run can change a script's SHA without changing those
+    verified numeric records. This is NOT permission to silently ignore
+    different input datasets, model sources, CV thresholds, or candidates.
+    """
+    if not isinstance(recorded, dict):
+        raise ValueError("Nested run manifest must be a JSON object.")
+    changed = sorted(
+        key for key in set(recorded) | set(expected)
+        if recorded.get(key) != expected.get(key)
+        or (key in recorded) != (key in expected)
+    )
+    if not changed:
+        return ()
+    code_only = {"source_sha", "screen_source_sha"}
+    critical = sorted(set(changed) - code_only)
+    if critical:
+        raise ValueError(
+            "Nested run fingerprint mismatch in: "
+            + ", ".join(critical)
+            + ". Preserve original nested results and original Reference26 "
+              "artifacts; do not overwrite or retrain. "
+              "Inspect the changed keys in the private run_spec.json."
+        )
+    print(
+        "[NESTED PROVENANCE] Only script hashes changed: "
+        + ", ".join(changed)
+        + ". All data/model/fold/recipe fingerprints match; "
+          "verifying each of 138 nested folds and all five numeric "
+          "candidate predictions before accepting the original run.",
+        flush=True,
+    )
+    return tuple(changed)
+
+
 def validated_inputs(args):
     (frame, groups, distance, champion_manifest, ids,
      ColdExperts, predict_saved) = native.load_inputs(
@@ -130,11 +170,7 @@ def validated_inputs(args):
         )
     recorded = json.loads(nested_manifest.read_text(encoding="utf-8"))
     expected_nested = nested.provenance(args)
-    if recorded != expected_nested:
-        raise ValueError(
-            "Nested run fingerprint does not match current original "
-            "138 screen, candidate family or training source."
-        )
+    validate_nested_provenance(recorded, expected_nested)
     # Strictly verify all 138 native outer-fold choices and fixed-model
     # predictions. This step never runs expensive models again.
     report, counts = nested.summary_from_folds(
