@@ -1751,3 +1751,19 @@ It documents original / five corrected / nested-selected
 Actual unknown-parcel numeric estimates remain pending
 execution on user's VM; no official deployment or model
 artifact was replaced. See docs/REFERENCE26_FINAL59_SELECTED.md.
+
+## 2026-10-19 — Final59 export preflight: top5 tuple vs JSON list
+
+First user check failed due to overstrict source hashes.
+Once source-only drift allowance was committed, user's local
+eight tests passed, but --check failed on key `top5`.
+Investigation of actual saved schema code confirmed that
+nested.provenance stores top5 as Python tuple; JSON manifest
+round-trips it as a list. Python structural equality between
+tuple and list is false even if the five settings match.
+Updated final59 exporter to canonicalize freshly constructed
+manifest through JSON serialization before comparing with
+actual stored JSON. Reject mismatching model parameters,
+candidate order or training fingerprints as before; preserve
+all 138 completed inner-fold results, no retraining required.
+New regression tests test real JSON roundtrip and tampering.
