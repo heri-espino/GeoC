@@ -455,8 +455,25 @@ def main():
     print(f"[FRESH] Frozen weights={weights}, 138 train labels. "
           "Reference26: MEAN only; Compact14: ORIGINAL imputation.")
     if args.check:
-        print("[CHECK] Peer bundle, feature schema, source files and weights OK.")
-        print("[CHECK] Each outer fold will fit two NEW native model recipes.")
+        spec = provenance(
+            args.bundle.resolve(), args.peer_repo.resolve(),
+            args.config.resolve(),
+        )
+        full, geo = prepare_197(args.peer_repo.resolve(), frame, distance)
+        coordinates = frame[
+            ["base_centroid_lat", "base_centroid_lon"]
+        ].to_numpy(float)
+        if (not np.isfinite(coordinates).all()
+                or np.any(abs(coordinates[:, 0]) > 90)
+                or np.any(abs(coordinates[:, 1]) > 180)):
+            raise ValueError("Invalid geographic centroids for Moran diagnostics.")
+        print(f"[CHECK] Peer source hashes: {len(spec['peer_source_sha'])}; "
+              f"138 training IDs, 59 unknown IDs, 197 features "
+              f"and {geo.shape[0]}x{geo.shape[1]} distances verified.")
+        print(f"[CHECK] Original {len(manifest['features'])} model features "
+              f"present; Reference26 train-only MEAN, Compact14 MEDIAN.")
+        print("[CHECK] Each outer fold fits both native recipes from scratch; "
+              "final refit creates two new SHA-verified joblibs.")
         return 0
     out = args.output.resolve()
     if args.smoke:
