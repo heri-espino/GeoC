@@ -25,6 +25,7 @@ import numpy as np
 import pandas as pd
 from sklearn.cluster import DBSCAN, KMeans
 
+from geocebada.evaluation.checkpoint08_local import predict_old
 from geocebada.evaluation.peer_geology_dbscan import (
     DBSCAN_GRID,
     adaptive_radius,
@@ -43,7 +44,6 @@ from run_peer_champions_loo import (  # noqa: E402
     _lock,
     _spec,
     _write_fold,
-    predict,
     resolve_peer_bundle,
 )
 
@@ -209,8 +209,9 @@ def _fold_result(
             )
     known = [pid for pid in baseline.y.index.astype(str) if pid != held_id]
     local04d = float(
-        predict(baseline, known, [held_id], components=20, k=24,
-                alpha=30.0, power=1.0)[0]
+        predict_old(baseline, known, [held_id], {
+            "k": 24, "alpha": 30.0, "power": 1.0,
+        })[0]
     )
     row = {
         ID: held_id,
