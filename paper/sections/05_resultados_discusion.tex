@@ -1,0 +1,38 @@
+\subsection*{Imputación, regularización y vecinos}
+La imputación mediante media aritmética produjo un RMSE de 0.468138 toneladas por hectárea, frente a 0.4681855 para la mediana del Reference26 original. La ganancia absoluta fue apenas 0.000048 toneladas por hectárea, aproximadamente, y favoreció exclusivamente el criterio de error cuadrático. El MAE aumentó de 0.333673 con mediana a 0.333786 con media. La elección de la media fue, por tanto, una decisión operacional basada en el mínimo RMSE observado, sin evidencia de una superioridad estadística robusta. Se implementaron procedimientos de imputación espacial, temporal y espaciotemporal, pero no se dispone en la documentación pública consultada de sus cuatro RMSE completos y auditados: sería incorrecto declarar que todas las variantes interpoladas fueron peores.
+
+Una búsqueda reducida contrastó 25 pares de números de vecinos y valores de penalización Ridge sobre las primeras 12 parcelas retenidas; después se compararon ocho configuraciones sobre las primeras 46 y tres sobre las 138 parcelas. En la última etapa, 24 vecinos y penalización 30 obtuvieron RMSE de 0.468138, frente a 0.470112 para 20 vecinos y penalización 30, y 0.474493 para 12 vecinos y penalización 3.2. El orden relativo cambió conforme creció el número de exclusiones. Este resultado muestra el peligro de convertir una ventaja preliminar sobre pocas parcelas en una selección definitiva.
+
+\subsection*{Agrupamiento geológico: límites de la comparación}
+La compuerta geológica retenida utiliza K-means para aprender pesos de mezcla entre el predictor climático global y el experto local. La alternativa DBSCAN fue examinada sustituyendo únicamente la regla de agrupamiento, conservando las diez variables geológicas y el resto de la arquitectura \parencite{MacQueen1967,Ester1996DBSCAN}. En las primeras 46 parcelas del estudio de compuertas, DBSCAN obtuvo RMSE de 0.545343, mientras el K-means original registró 0.547536. En ese subconjunto \emph{DBSCAN fue mejor en RMSE}. Las 46 parcelas son una selección fija y no equivalen a una confirmación completa sobre 138 exclusiones. Por ello se retuvo la arquitectura Reference26 con K-means previamente validada y se dejó DBSCAN como comparación exploratoria pendiente de confirmación completa. Esta justificación se refiere a la continuidad y trazabilidad de la arquitectura, no a que K-means haya ganado esa prueba.
+
+\subsection*{Comparación de arquitecturas y selección de la corrección}
+Reference26 con media obtuvo RMSE de 0.468138, MAE de 0.333786 y coeficiente de determinación predictivo de 0.695292, sobre 138 exclusiones genuinas. Compact14, arquitectura de 14 entradas y sin compuerta geológica, produjo RMSE de 0.469673 y MAE de 0.333044. Una mezcla global aproximada de 70.5\% Reference26 con 29.5\% Compact14 alcanzó RMSE de 0.467811. Su mejora frente al primero fue de solo 0.000327 toneladas por hectárea y la ventaja desapareció al excluir la parcela con mayor contribución favorable. El ensamble no se promovió como una ganancia robusta.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Resultados de 138 exclusiones reales: errores en t/ha; el R\textsuperscript{2} es predictivo.}
+\label{tab:resultados}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Modelo & RMSE & MAE & R\textsuperscript{2}\\
+\midrule
+Reference26 original, mediana & 0.468186 & 0.333673 & aprox.\ 0.6952\\
+Reference26, media & 0.468138 & 0.333786 & 0.695292\\
+Compact14 & 0.469673 & 0.333044 & 0.693291\\
+Mezcla Reference26--Compact14 & 0.467811 & 0.332489 & 0.695717\\
+Análogos, receta fija elegida & \textbf{0.462418} & 0.332019 & \textbf{0.702693}\\
+Selección anidada entre finalistas & 0.462892 & \textbf{0.331956} & 0.702083\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La corrección fija por análogos robustos de 26 entradas y tres vecinos, con mezcla 0.25 y compuerta de soporte, obtuvo el menor RMSE observado: 0.462418, una reducción de 0.005720 toneladas por hectárea, aproximadamente 1.22\% respecto a Reference26 con media. Alteró las 138 predicciones, mejoró el error cuadrático de 65 y lo empeoró en 73; el mayor cambio absoluto de predicción fue de 0.108689 toneladas por hectárea. Este resultado muestra una mejora agregada pequeña, sin mejora individual uniforme. La política de selección mediante cuatro particiones internas eligió esa receta en 128 de las 138 exclusiones, una alternativa PCA de ocho componentes en cinco y ninguna corrección en cinco. Su RMSE fue 0.462892, con MAE de 0.331956 y R\textsuperscript{2} de 0.702083.
+
+\subsection*{Residuos, dependencia espacial e incertidumbre}
+El modelo corregido fijo presentó sesgo medio de -0.004103 toneladas por hectárea, error absoluto mediano de 0.244838, percentil 90 del error absoluto de 0.638737 y mayor error absoluto de 2.115301. La correlación de Pearson entre observado y predicho fue 0.838282. Los dos casos más difíciles continuaron siendo influyentes; por ello el valor agregado de RMSE no describe de forma exhaustiva el riesgo de errores extremos.
+
+El índice de Moran de los residuos firmados fue -0.065382 para cuatro vecinos geográficos y -0.079994 para ocho, con valores bilaterales nominales 0.2715 y 0.0580, respectivamente. Para doce vecinos se observó un valor nominal de 0.0470, que no sobrevivió la corrección de Holm sobre la familia completa de contrastes espaciales: el valor ajustado fue 1.0. En consecuencia, no hay fundamento para afirmar dependencia residual significativa después del ajuste múltiple, pero tampoco para demostrar independencia geográfica \parencite{Moran1950,Geary1954,Holm1979,BenjaminiHochberg1995}.
+
+Las pruebas de normalidad, heterocedasticidad y calibración, junto con el remuestreo por grupos territoriales, se interpretaron como diagnósticos condicionados a pronósticos previamente obtenidos \parencite{BreuschPagan1979,White1980,EfronTibshirani1993,Tobler1970}. No se asignó un R\textsuperscript{2} ajustado convencional ni valores de significación a inexistentes coeficientes globales del predictor compuesto. Finalmente, las variantes se eligieron después de muchas exploraciones usando las mismas 138 etiquetas; el anidamiento posterior protege cada exclusión frente a su selección interna, pero no deshace el sesgo de búsqueda histórica. El RMSE de las 59 parcelas con rendimiento oculto sigue siendo desconocido.

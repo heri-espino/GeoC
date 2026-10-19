@@ -1,0 +1,17 @@
+\small
+\subsection*{A. Matriz resumida de decisiones}
+\begin{tabularx}{\linewidth}{@{}p{0.25\linewidth}X@{}}
+\toprule
+Decisión & Evidencia / límite\\
+\midrule
+Media frente a mediana & RMSE 0.468138 frente a 0.468186; el MAE con media aumentó ligeramente.\\
+Imputación espacial o temporal & Alternativas estudiadas; sin clasificación global de RMSE verificada para 138 exclusiones, no se afirma derrota numérica.\\
+Ridge: 24 vecinos, penalización 30 & Mejor de tres finalistas con media sobre las 138 exclusiones; cribado previo adaptativo.\\
+K-means geológico & Parte de Reference26 completo; DBSCAN obtuvo menor RMSE en las 46 parcelas comparadas.\\
+Compact14 y mezcla global & RMSE 0.469673 y 0.467811, respectivamente; mejora de la mezcla frágil ante la exclusión de un caso.\\
+Corrección por tres análogos & RMSE fijo 0.462418; política de elección interna 0.462892; ambas sujetas a búsqueda previa.\\
+\bottomrule
+\end{tabularx}
+\subsection*{B. Procedencia y reproducibilidad}
+Repositorio: \url{https://github.com/heri-espino/GeoC}. Arquitectura original: \url{https://github.com/heri-espino/todoseboso}. Documentos de auditoría: \texttt{docs/REFERENCE26\_IMPUTATION\_LOOCV.md}; \texttt{docs/PEER\_LOOCV\_RECORDED\_RESULTS.md}; \texttt{docs/REFERENCE26\_TOP5\_NESTED\_LOOCV.md}; \texttt{docs/REFERENCE26\_FINAL59\_SELECTED.md}; \texttt{docs/REFERENCE26\_SELECTED\_TAIL\_STATISTICAL\_ANALYSIS.md}. Se documentan 138 exclusiones con 137 rendimientos de entrenamiento por ajuste. Los archivos privados por parcela y los 59 rendimientos de referencia no se publican. La selección definitiva de 59 objetivos debe verificarse contra el manifiesto generado en el entorno de cómputo y las bases oficiales.
+\normalsize
