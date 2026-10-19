@@ -1652,3 +1652,46 @@ Added a canonical narrative in `docs/METODOLOGIA_Y_RESULTADOS.md` covering all C
 
 The user reported a 5.556 maximal numerical mismatch in checkpoint10_pca's historical 20-PC parity check during --check. Root cause in our bridge: unnecessarily requesting PCA160 then comparing its prefix with the frozen PCA20 reference. Corrected the shared bridge to request a 20-component fit, retaining the exact historical reference check. Added synthetic regression test to assert requested dimension. No changes to checkpoint10_pca, GeoC main, existing frozen models, or the 59 competition forecasts; not run locally.
 
+## 2026-10-19 — Synthetic Gaussian-bridge three-regime hypothesis (experimental)
+
+After finding that two anonymized, repeatedly difficult parcels contribute
+~27–28% of SSE across 13 full-138 LOOCV configurations, the user proposed
+augmenting the feature line segment between two real difficult observations
+with a Brownian-bridge process (noise vanishes at endpoints, peaks at midpoint),
+training two separate Ridge specialists on the first/second half of the
+synthetic bridge, and routing only sufficiently near-support parcels away
+from the existing Reference26 mean-imputation baseline. Implemented on
+separate draft PR #30: tools/run_synthetic_bridge_three_regime.py,
+tools/plot_synthetic_bridge.py, synthetic tests and methodology
+in docs/SYNTHETIC_BRIDGE_THREE_REGIME.md. The source reads the two anchor
+IDs from a PRIVATE local diagnostic manifest rather than publishing
+per-parcel yields. Existing actual 138-fold Reference26 LOOCV values are
+reused. Every heldout fold masks target y from all augmentation; when
+an anchor is excluded, both specialists are disabled. The gate uses only
+X and defaults to exact baseline outside synthetic support. Real VM results
+not yet available; no promotion, no changes to the 59 predictions, no claims
+of independently verified improvement. This intentionally probes a
+post-hoc hackathon hypothesis, not proof of missing-data manipulation.
+
+## 2026-10-19 — Refined synthetic specialists: classified three-regime routing
+
+The first two-point synthetic gating run was received from the user's VM:
+138-fold Reference26 mean baseline RMSE 0.468138; conservative geometric
+gating that made no changes equaled baseline; any configuration changing
+predictions worsened RMSE, with as few as two altered parcels producing
+~0.491128 RMSE. At the 59 unknown targets, the original geometric model
+routed 2/59 under sigma 0.15, ratio 1.0 and blend 1.0; those unknown
+yields are unavailable.
+
+Based on this result and the user's clarified three-group intention, the
+new preferred experiment in PR #30 is
+tools/run_three_regime_classifier.py. Train two **separate** synthetic
+Ridge regressors for the two-member hardest group and the other six-member
+top-ten intersection group; **train a three-class random forest on real
+and synthetic X** to select A, B, or existing Reference26 mean as class C.
+Reduce default synthesis to 21+105=126 generated X positions across six
+bridge segments, not independent measured yields. The 138 heldout
+Reference26 baseline is reused and all pseudo-labels and group-router
+training X are fold-local. Outputs include per-class A2/B6/C130 errors
+and unchanged/worsened parcel counts. Method selection remains
+post-hoc; the revised classifier's real VM test is **not yet run**.

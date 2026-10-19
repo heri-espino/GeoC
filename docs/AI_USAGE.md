@@ -121,3 +121,28 @@ Los archivos `.ai_handoff` y `AGENTS.md` sirven para continuidad operativa entre
 | 2026-10-12 | ChatGPT (GitHub) | Publicación de métricas y cierre de Checkpoint 09 | Usuario proporcionó stdout de `--prepare`, `--smoke`, `--run`, `--summary` y pidió subir resultados y cerrar el trabajo | Publicadas versiones ligeras `reports/checkpoint_09/shared/development_summary.csv` y `decision.json`, más informe `docs/CHECKPOINT_09_FINDINGS.md` y estado de cierre | Comparación transcrita del stdout: Local04D RMSE 0.495741, LOO 3.0 0.498899, LOSO FAIL; métricas CSV redondeadas; no se publican observaciones por parcela ni se cambian las 59 predicciones |
 
 | 2026-10-18 | ChatGPT | Integración propuesta de los modelos de Nuria al benchmark GeoC LOOCV | Solicitud del usuario de incorporar Reference26/Compact14 del fork todoseboso | Rama aislada, contratos, runner, pruebas sintéticas y protocolo en docs/PEER_CHAMPIONS_LOOCV.md; sin entrenamientos ni datos privados | Pendiente de revisión humana y corrida local con bundle autorizado |
+## 2026-10-19 — Experimental synthetic bridge mixture of experts
+
+An AI assistant implemented a separate, non-promoted, three-route forecasting
+experiment. The two synthetic Ridge experts use Brownian-bridge perturbations
+and interpolated pseudo-labels from two real difficult cases; a feature-only
+gate preserves Reference26 predictions outside synthetic support. The runner
+reuses authentic saved Reference26 mean heldout predictions and disables the
+augmented experts whenever a target anchor is withheld, preventing direct
+synthetic pseudo-label leakage. All model selection is post hoc to inspected
+LOOCV cases, so scores are exploratory. No private data or trained artifacts
+have been published; a user VM run and tests are pending.
+
+## 2026-10-19 — User-directed three-class synthetic specialist classifier
+
+The user clarified that the final proposed three-group experiment must use a
+**trained classification model** to select between two separately fitted
+Brownian-bridge Ridge specialists and frozen Reference26 (not just a geometric
+distance gate), and requested substantially less augmentation. An assistant
+implemented tools/run_three_regime_classifier.py using a fold-fitted
+80-tree RandomForestClassifier and two synthetic regressors. Default
+augmentation 21 + 105 = 126 positions, with synthetic sample weights capped
+relative to actual anchors, 138 real heldout Reference26 predictions reused.
+New synthetic unit tests verify three classes, complete heldout-y isolation,
+and exact unchanged fallback when classifier chooses ordinary group.
+Performance on actual private VM records **not yet run**.
