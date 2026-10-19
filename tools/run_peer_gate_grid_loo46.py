@@ -28,15 +28,8 @@ from pathlib import Path  # noqa: E402
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-from sklearn.metrics import r2_score  # noqa: E402
-from threadpoolctl import threadpool_limits  # noqa: E402
 
-from geocebada.evaluation.peer_gate_grid import (  # noqa: E402
-    GATE_GRIDS,
-    VARIANTS,
-    configured_gate,
-    native_reference_gate,
-)
+
 from run_selected_champions_loo import (  # noqa: E402
     BUNDLE,
     ID,
@@ -47,6 +40,15 @@ from run_selected_champions_loo import (  # noqa: E402
     fold_record,
     load_inputs,
     write_csv,
+)
+from sklearn.metrics import r2_score  # noqa: E402
+from threadpoolctl import threadpool_limits  # noqa: E402
+
+from geocebada.evaluation.peer_gate_grid import (  # noqa: E402
+    GATE_GRIDS,
+    VARIANTS,
+    configured_gate,
+    native_reference_gate,
 )
 
 COUNT = 46
