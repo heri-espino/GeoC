@@ -387,7 +387,7 @@ def main():
     elif args.check:
         frame, full, z, root, y, loo, features, a, b = inputs(args)
         print(f"[CHECK] Two REAL special regimes: A={len(a)} labels, "
-              f"B={len(b)} labels, ordinary={N-len(a)-len(b} labels.")
+              f"B={len(b)} labels, ordinary={N-len(a)-len(b)} labels.")
         print(f"[CHECK] Default synthetic counts A={args.paths*args.steps}, "
               f"B={5*args.paths*args.steps} = "
               f"{6*args.paths*args.steps} positions total; "
