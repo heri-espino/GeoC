@@ -1,3 +1,7 @@
+## 2026-10-18 — Trim peer experiment to the two actual selected champions
+
+After user clarification, added `tools/run_selected_champions_loo.py` to compare only original Reference26 and Compact14 against frozen GeoC Local04D in identical 138 outer 137+1 folds. The source calls teammate's `ColdExperts.full_fit` retaining nested recipe and R3, but skips additional B1 ensemble selection refits. ProcessPoolExecutor parallelizes independent outer folds with restricted numerical threads; GPU/CatBoost irrelevant to selected candidates. Private outputs ignored under `reports/selected_champions_loo`, synthetic tests in `tests/test_selected_champions_loo.py`, execution in `docs/SELECTED_CHAMPIONS_PARALLEL_LOOCV.md`. No local data or real refit used here.
+
 ## 2026-10-18 — Geology KMeans versus DBSCAN sensitivity before full LOOCV
 
 Inspected Reference26: geographic coordinates select 24 labeled neighbors, but KMeans 4/8 operates on ten geological fractions to gate C-T3 versus local-seven expert. Added exploratory DBSCAN alternative with 8 prespecified relative density settings, train-only epsilon scaling, nearest-training-core assignments and global fallback for noise. Kept Compact14 and Local04D as unchanged controls. New script checks geology partitions and supports paired one/three-fold cold refits without using held-out labels for tuning; results ignored at reports/peer_geology_dbscan. See docs/PEER_GEOLOGICAL_DBSCAN_ABLATION.md. No local private data accessed, no results asserted, no change to canonical 59.
