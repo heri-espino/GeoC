@@ -1,0 +1,191 @@
+# Experimento: un modelo global con muchas observaciones sinteticas
+
+**2026-10-19 — implementado en rama experimental; ejecucion real pendiente.**
+Competencia AgroCebada; 197 parcelas X observables, 138 rendimientos
+observados y 59 rendimientos ocultos. No se cambian modelos publicados,
+predicciones oficiales ni el repositorio de Todoseboso.
+
+## Por que es diferente del experimento de tres especialistas
+
+La ejecucion anterior con dos Ridge sinteticos + Random Forest clasificador
+NO supero Reference26 mean (RMSE LOOCV **0.468138** t/ha):
+el clasificador conservador no cambio observaciones y las configuraciones
+que si cambiaron empeoraron el RMSE. Eso NO prueba que una aumentacion
+directa de datos a un unico modelo global sea inutil.
+
+**Nueva hipotesis:** dos observaciones extremadamente dificiles tal vez
+representan una region de la distribucion de X,y poco muestreada. Evaluar
+un solo regresor global con TODAS las observaciones reales permitidas en
+cada fold MAS puntos sinteticos derivados exclusivamente de dos anclas
+extremas presentes en entrenamiento. No hay clasificador ni gating.
+Tambien entrenar EL MISMO regresor sin aumentacion en los mismos folds.
+
+Se comparan dos familias de modelo global (Ridge y ExtraTrees). Ninguna
+es el Reference26 nativo: el original Reference26 se conserva como
+TERCER control, con sus 138 predicciones OOF autenticas y sin refit.
+Por tanto, toda mejora sobre Reference26 y sobre el control homologo
+debe interpretarse separadamente.
+
+## Generacion sintetica
+
+Las dos anclas reales se recuperan de la lista privada, seleccionada
+previamente por la interseccion top-2 entre modelos, en
+`reports/loocv_hard_parcels/diagnostic_manifest_private.json`.
+No se incorporan rendimientos de las 59 parcelas desconocidas.
+
+Primero transformar las 26 covariables numericas originales de las
+197 parcelas a una representacion X-only robustamente estandarizada.
+El ruido esta en **este espacio de caracteristicas**, no en latitud/longitud.
+
+4 metodos, manteniendo disponible al menos una ancla real:
+
+1. **repeat**: muestreo con reemplazo de las anclas reales, X e y
+   exactamente repetidos. Control de simple reponderacion.
+2. **local**: X artificial cerca de cada ancla con perturbacion gaussiana
+   cuya matriz de covarianza es estimada a partir de 20 vecinos X-only
+   de las 197 parcelas (65% local, 35% identidad). Su pseudo-y es el
+   rendimiento real de su ancla. No se asigna rendimiento real nuevo.
+3. **bridge**: si ambas anclas permanecen en entrenamiento, usar un
+   puente browniano multivariante entre z_a y z_b, con ruido nulo en
+   t=0,1 y covarianza maxima en t=.5. Se interpola pseudo-y
+   linealmente: y(t)=(1-t)y_a+t*y_b. Si una ancla es heldout,
+   **retroceder a local alrededor del ancla restante**. Nunca leer
+   el y del heldout para generar otra observacion.
+4. **mixed**: mitad de filas `local`, mitad `bridge`;
+   tambien sigue el fallback sin filtracion.
+
+Los *datos sinteticos no son mediciones independientes*. Aumentar de
+137 a 1161 filas artificialmente NO equivale a tener 1161 etiquetas
+reales. Los metodos solo codifican supuestos sobre la vecindad o la
+interpolacion del rendimiento.
+
+Dos tamanos iniciales: **256** y **1,024** filas por entrenamiento.
+Dos pesos totales del conjunto sintetico:
+
+- **32**: cada fila recibe peso 32/N_syn, limitando la fuerza total
+  de puntos redundantes;
+- **full**: cada fila recibe peso 1 y su masa total es N_syn,
+  para probar la version mas agresiva solicitada por el usuario.
+
+Las 137 filas reales tienen peso 1. Para `--predict59` son 138.
+
+## Evaluacion
+
+El script usa las 138 predicciones LOOCV genuinas de Reference26 mean
+(137/1) ya calculadas y verifica paridad del bundle de 26 covariables.
+
+En cada uno de 138 folds:
+
+1. Retirar el rendimiento real de la parcela heldout de TODOS los
+   ajustes y generadores de pseudoy.
+2. Ajustar Ridge y ExtraTrees globales en las 137 etiquetas reales
+   (controles **plain**).
+3. Por cada metodo, tamaño y masa sintetica, generar SOLO a partir
+   de las anclas que quedan en esas 137 observaciones y ajustar el
+   mismo regresor global con filas reales + artificiales.
+4. Predecir la parcela real heldout, almacenar exclusivamente en
+   resultados locales privados.
+
+El grid estandar es 4 metodos x 2 tamanos x 2 masas x 2 modelos =
+32 candidatos aumentados, mas dos modelos reales sin aumentacion
+(34 series predictivas x 138 folds). La carga es mayor que en el
+experimento de expertos; el procesamiento usa varios workers,
+cache por fold y huella SHA de fuente/datos/parametros.
+
+Metricas: RMSE/MAE de los 138, RMSE de las dos anclas problematicas,
+RMSE de las otras 136, delta-MSE vs Reference26 original y vs
+**el mismo regresor sin sinteticos**, casos que empeoran y maxima
+diferencia de prediccion. El analisis de errores firmados se ilustra
+sobre las 197 X en PCA y versus rendimiento observado, sin fijar
+grupos imaginarios ni usar K-Means.
+
+**Limite de inferencia:** las anclas se escogieron a posteriori mirando
+los propios residuos LOOCV. Aunque no se filtre el y heldout a la
+generacion en cada fold, la seleccion global de anclas es post-hoc.
+Un resultado positivo seria exploratorio, no una confirmacion
+independiente de precision FIRA.
+
+## Instrucciones de VM
+
+~~~powershell
+cd C:\Users\175199\GeoC
+conda activate geocebada
+
+git fetch origin
+git switch experiment/global-synthetic-augmentation
+git pull --ff-only
+
+python -m pytest tests/test_global_synthetic_augmentation.py -q
+python -m py_compile tools/run_global_synthetic_augmentation.py
+
+python tools/run_global_synthetic_augmentation.py --check
+python tools/run_global_synthetic_augmentation.py --plot
+python tools/run_global_synthetic_augmentation.py --smoke
+python tools/run_global_synthetic_augmentation.py --run --jobs 4
+python tools/run_global_synthetic_augmentation.py --summary
+~~~
+
+Si una primera comparacion rapida es preferible a las 34 series,
+ejecutar solo Ridge en **otra carpeta** para no confundir caches:
+
+~~~powershell
+python tools/run_global_synthetic_augmentation.py --run --jobs 4 --models ridge --output reports/global_synthetic_augmentation_ridge_only
+~~~
+
+El directorio `global_synthetic_augmentation_ridge_only` tambien
+debe permanecer privado y gitignored. No mezclar estos resultados
+con los del experimento completo.
+
+Para una variante muy agresiva (4096 sinteticos por fold, masa
+completa), **usar otro output** y limitar primero a Ridge:
+
+~~~powershell
+python tools/run_global_synthetic_augmentation.py --run --models ridge --sizes 4096 --masses full --output reports/global_synthetic_augmentation_4096
+~~~
+
+### Predicciones candidatas para las 59 parcelas (solo despues del CV)
+
+Se exige un `final_manifest.json` original 138/59 y su CSV
+verificado de predicciones Reference26 mean. No se sustituye nada:
+
+~~~powershell
+python tools/run_global_synthetic_augmentation.py --predict59 --predict-model ridge --predict-method local --predict-size 1024 --predict-mass 32
+~~~
+
+Los flags elegidos deben estar presentes en el grid del script;
+si se usa un grid alternativo, pasarlo tambien en la llamada.
+El archivo `candidate59_private.csv` no se sobreescribe y no se
+publica. Elegir parametros con la misma CV solo da comparacion
+post-hoc, no garantiza mejor desempeno en 59.
+
+### Archivos privados
+
+- `reports/global_synthetic_augmentation/comparison_aggregate.csv`
+- `reports/global_synthetic_augmentation/private_fold_predictions.csv`
+- `reports/global_synthetic_augmentation/fold_001.csv` ... `fold_138.csv`
+- `reports/global_synthetic_augmentation/run_spec.json`
+- `reports/global_synthetic_augmentation/signed_residual_pca_private.png`
+- `reports/global_synthetic_augmentation/signed_residual_vs_y_private.png`
+- `reports/global_synthetic_augmentation/candidate59_private.csv` (opcional)
+
+No subir archivos por parcela ni rendimientos observados al GitHub
+publico. Si se desea incorporar metricas agregadas, revisarlas
+primero y copiarlas explicitamente a results/.
+
+## Interpretacion esperada
+
+- Si `repeat` y `local` dan ganancias similares, el efecto
+  principal sera **reponderar los dos y extremos**.
+- Si `local` gana a `repeat` dentro del mismo algoritmo,
+  hay evidencia exploratoria de que la continuidad local en X
+  aporta regularizacion util.
+- Si `bridge` gana al resto, la interpolacion entre anclas
+  puede ser compatible con los casos restantes, aunque NO prueba
+  una distribucion generadora real entre ellas.
+- Si los modelos globales empeoran el centro al mejorar las colas,
+  el tradeoff contradice el objetivo de no perjudicar predicciones
+  ordinarias. Medirlo explicitamente.
+- Si ninguna combinacion supera el modelo sin aumento y Reference26,
+  conservar Reference26 mean. No crear etiquetas sinteticas con
+  rendimientos desconocidos ni inferir que FIRA elimino parcelas
+  intencionalmente.
