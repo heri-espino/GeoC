@@ -1695,3 +1695,21 @@ Reference26 baseline is reused and all pseudo-labels and group-router
 training X are fold-local. Outputs include per-class A2/B6/C130 errors
 and unchanged/worsened parcel counts. Method selection remains
 post-hoc; the revised classifier's real VM test is **not yet run**.
+
+## 2026-10-19 — Large synthetic augmentation of a single global regressor
+
+The user rejected K-Means and declined further small gated specialist
+variants after full 138-fold three-class classifier LOOCV found no improvement:
+baseline Reference26_mean 0.468138 t/ha, 18 configurations; conservative
+routing leaves baseline unchanged, interventions consistently worsened global
+RMSE. They hypothesized the two most difficult observations could represent
+an otherwise underrepresented population, and requested generating many
+artificial X/y neighbors BEFORE training one global regressor on all available
+real + synthetic rows. Implemented in new experimental branch using Ridge
+and ExtraTrees (each with its own unsynthesized control), 256/1024 generated
+points, two weighting masses, 4 generation strategies including duplication
+control, fold-local generation with genuine 137/1 heldouts, and private
+197-parcel PCA plus signed-residual diagnostic figures. Reference26 native
+saved LOOCV remains a benchmark, NOT a model modified to take synthetic
+rows. No results available until run on user's machine. Methodology:
+docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
