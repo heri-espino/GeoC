@@ -291,3 +291,69 @@ JavaScript. Eso último necesitará un desarrollo aparte con
 paridad numérica de ambos modelos o un servicio que cargue
 los dos artefactos.
 
+
+## Recuperación de artefactos de 197 parcelas para el ajuste final (2026-10-19)
+
+En la VM, las **138 predicciones LOOCV, el informe estadístico y las
+18 figuras ya se ejecutaron**, pero `--train-final` falló antes de
+crear los nuevos `joblib` por ausencia de los archivos
+`features197.parquet` y `distance197.npy` en la copia local de
+`../todoseboso/deployment/model_artifacts/`. El intento de
+`export_reference26_compact14_predictions59.py --check` falló
+porque todavía no existe `final_manifest.json`.
+
+Los archivos **sí figuran en el árbol `main` de
+`heri-espino/todoseboso`**, con tamaños publicados de 48,970 bytes
+y 310,600 bytes, respectivamente. Se pueden recuperar sin modificar
+el código ni crear datos ficticios.
+
+Ejecutar en PowerShell desde la raíz de GeoC:
+
+~~~powershell
+$peer = (Resolve-Path "..\todoseboso").Path
+git -C $peer status --short
+git -C $peer fetch origin main
+
+# Restaurar SOLO los dos archivos ausentes desde origin/main.
+# Si ya existen modificaciones locales en ellos, revisarlas ANTES.
+git -C $peer restore --source=origin/main --worktree -- \
+  deployment/model_artifacts/features197.parquet \
+  deployment/model_artifacts/distance197.npy
+
+Get-Item "$peer/deployment/model_artifacts/features197.parquet",
+         "$peer/deployment/model_artifacts/distance197.npy" |
+  Select-Object Name,Length
+
+python tools/run_reference26_compact14_final.py --check
+python tools/run_reference26_compact14_final.py --train-final --jobs 1
+python tools/export_reference26_compact14_predictions59.py --check
+~~~
+
+**En PowerShell, NO copiar literalmente la continuación de línea
+de Bash con barra inversa**. La forma portable en una sola línea:
+
+~~~powershell
+git -C $peer restore --source=origin/main --worktree -- deployment/model_artifacts/features197.parquet deployment/model_artifacts/distance197.npy
+~~~
+
+Los archivos se validan contra las 138 parcelas, orden de IDs,
+valores/variables de X, submatriz de distancias y los 59 rendimientos
+desconocidos. Si `--check` revela una discrepancia, **no silenciar
+la comparación ni reutilizar una geometría inventada**: examinar
+la procedencia de los dos bundles.
+
+No volver a ejecutar los 138 folds ni borrar
+`reports/reference26_compact14_fresh138/`. El directorio
+`final_artifacts/` vacío puede existir, porque se crea antes
+de comprobar las dos fuentes.
+
+**Muy importante:** no cambiar
+`tools/run_reference26_compact14_final.py` hasta que la VM
+termine: `run_spec.json` conserva el SHA del ejecutor, y
+cambiarlo puede invalidar el análisis ya calculado.
+
+La versión del sitio actual también incluye
+`final_train138.joblib`, pero ese archivo antiguo utiliza
+la receta con mediana y **no es** un sustituto de
+`reference26_mean_train138.joblib`.
+
