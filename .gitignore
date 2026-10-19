@@ -168,3 +168,6 @@ venv/
 
 # Private 138-fold × 250 Reference26 Ridge grid results and per-parcel yields
 /reports/reference26_ridge250_loo/
+
+# Reference26 LOOCV imputation X audits, private labeled predictions and native model caches
+/reports/reference26_imputation_loo138/
