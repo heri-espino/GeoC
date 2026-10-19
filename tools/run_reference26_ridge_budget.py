@@ -20,7 +20,6 @@ for key in ("OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "OMP_NUM_THREADS",
 
 import argparse  # noqa: E402
 import json  # noqa: E402
-import shutil  # noqa: E402
 from concurrent.futures import ProcessPoolExecutor, as_completed  # noqa: E402
 from pathlib import Path  # noqa: E402
 
@@ -108,7 +107,7 @@ def selected_pairs(out, name):
     previous = selection_file(out, predecessor)
     if not previous.is_file():
         raise ValueError(f"Complete --{predecessor} before --{name}.")
-    saved = json.loads(previous.read_text(encoding="utf-8"))
+    json.loads(previous.read_text(encoding="utf-8"))
     if not (out / f"{predecessor}_scores.csv").is_file():
         raise ValueError(f"Missing {predecessor} results.")
     ranking = pd.read_csv(out / f"{predecessor}_scores.csv")
