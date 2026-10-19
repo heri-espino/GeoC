@@ -177,7 +177,7 @@ def keys(grid):
     for model in models:
         for mode in modes:
             for factor in factors:
-                answer.append(f"weighted__{model}__{mode}__top{SETTINGS_TOP_PLACEHOLDER}__w{factor:g}")
+                answer.append(f"weighted__{model}__{mode}__topSETTINGS_TOP_PLACEHOLDER__w{factor:g}")
         for count in replicas:
             for sigma in sigmas:
                 for mass in masses:
