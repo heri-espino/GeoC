@@ -1720,3 +1720,34 @@ The original top-five were selected after observing same historical
 the choice but NOT broader study selection bias. Workstation results
 PENDING; no model promoted and no 59 predictions changed.
 See docs/REFERENCE26_TOP5_NESTED_LOOCV.md.
+
+## 2026-10-19 — Full nested 138-fold correction selection succeeded; final 59 prepared
+
+User executed 552 native inner Reference26 fits in
+experiment/reference26-top5-nested-loocv and finished all
+138 real outer heldouts. Unchanged Reference26 mean
+RMSE .468138, MAE .333786, R2 .695292.
+Best post-hoc fixed robust26 k3/blend.25/supported
+RMSE .462418, MAE .332019, R2 .702693;
+4-fold inner-selected policy RMSE **.462892**, MAE **.331956**,
+bias -.005062, R2 **.702083**. Per-fold chosen:
+robust26 k3 .25 supported 128, PCA8 k3 .25 supported 5,
+no correction 5. The five fixed candidates were previously
+screened on same real labels, so even nested candidate
+choice is not independent confirmation of the entire
+historical model search.
+
+To prepare competition 59 target predictions, new
+experiment/reference26-top5-final59 branch implements
+tools/run_reference26_top5_final59.py. It performs native
+SHA/ID/replay checks on the ORIGINAL full 138-label
+Reference26 MEAN fit and the original 59 predictions,
+selects among five/fallback with 4 new native 4-fold
+fits using only all 138 real y, and applies that single
+chosen recipe with 138 real neighbor labels to 59 unknown.
+All individual outputs are private gitignored files.
+It documents original / five corrected / nested-selected
+59 forecasts and a two-column submission CANDIDATE.
+Actual unknown-parcel numeric estimates remain pending
+execution on user's VM; no official deployment or model
+artifact was replaced. See docs/REFERENCE26_FINAL59_SELECTED.md.
