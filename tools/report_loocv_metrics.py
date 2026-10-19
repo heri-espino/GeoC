@@ -21,7 +21,6 @@ import json
 import shutil
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 import run_loo_ensemble_screen as loader
