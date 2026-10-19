@@ -71,7 +71,7 @@ def test_nonexistent_hidden_y_cannot_be_used_for_59(monkeypatch):
     # target feature vectors changes analog predictions but no hidden labels
     # exist to be read.
     y_altered = y.copy()
-    y_altered[0] += .1
+    y_altered += .1
     second = m.corrected_targets(
         y_altered, spaces, ids, base, m.nested.NAMES[1], .5
     )
