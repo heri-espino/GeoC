@@ -89,3 +89,23 @@ studied 138 labels.
   independent confirmation: her champion recipes were previously
   selected using the same 138 observed labels.
 - Actual package versions and a successful local smoke remain necessary.
+
+## 2026-10-18 PCA parity repair
+
+The first workstation `--check` correctly stopped with
+`20-PC numerical parity failure (5.556)`. This was traced to the
+peer bridge requesting 160 PCA axes even though Local04D originally
+fits **exactly 20**. Separate PCA fits can have different SVD signs,
+and the prefix is not the frozen representation used in Checkpoint 04A.
+The peer bridge now calls `load_pca_data(..., max_components=20)`.
+The strict historical 20-PC parity and explained-variance checks
+remain intact; there is **no tolerance relaxation, model modification
+or replacement with unverified PCA**. Synthetic contract test:
+`tests/test_peer_local04d_pca20.py`.
+
+After pulling the updated branch, run
+`python tools/run_selected_champions_loo.py --check` again before
+the smoke. Pandas DataFrame fragmentation warnings were from repeatedly
+constructing 160 PCA columns and should be reduced by the 20-PC fit.
+If strict parity still fails, share the new error before training.
+
