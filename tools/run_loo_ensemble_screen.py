@@ -309,6 +309,16 @@ def describe_files(mean: Path, local: Path, dbscan: Path) -> None:
         "138-parcel 137/1 LOOCV predictions. Historical 16x41 or other "
         "split outcomes cannot be combined with these 138 forecasts."
     )
+    possible = sorted(
+        path for path in (ROOT / "reports").rglob("*.csv")
+        if "predictions" in path.name.lower()
+        and path not in {BASELINE_FILE, local, PEER_FILE, dbscan}
+        and "fold_" not in str(path.relative_to(ROOT / "reports"))
+    )
+    print(f"[AUDIT] Other saved prediction tables: {len(possible)} "
+          "(showing up to 35 paths; not yet certified as 138-fold LOOCV)")
+    for path in possible[:35]:
+        print("  " + str(path.relative_to(ROOT)))
 
 
 def main() -> int:
