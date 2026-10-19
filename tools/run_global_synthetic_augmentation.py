@@ -385,10 +385,72 @@ def make_plot(frame, full, z, loo, anchors, folder):
     print(f"[PLOT] Saved two private diagnostic plots in {folder}")
 
 
+def predict59(args, frame, full, z, root, anchors, y, ids):
+    """One explicitly chosen global 138-real-plus-synthetic candidate, private."""
+    methods, sizes, masses, models = parse_settings(args)
+    method = args.predict_method
+    size = args.predict_size
+    mass = args.predict_mass
+    model = args.predict_model
+    if (method not in methods or size not in sizes or mass not in masses
+            or model not in models):
+        raise ValueError(
+            "The prediction recipe must be one of the candidate CV settings."
+        )
+    final = args.fresh_fold_dir.resolve()/"final_artifacts"
+    path = final/"predictions59_private.csv"
+    manifest = final/"final_manifest.json"
+    if not path.is_file() or not manifest.is_file():
+        raise FileNotFoundError(
+            "Need existing original audited final Reference26 59 predictions."
+        )
+    provenance = json.loads(manifest.read_text(encoding="utf-8"))
+    if provenance.get("n_train") != N or provenance.get("n_unknown") != 59:
+        raise ValueError("Original Reference26 final fit record mismatches 138/59.")
+    saved = pd.read_csv(path, dtype={ID:str})
+    expected = full.iloc[N:][ID].astype(str).to_numpy()
+    if (len(saved) != 59 or saved[ID].duplicated().any()
+            or not np.array_equal(saved[ID].to_numpy(), expected)):
+        raise ValueError("Original 59 target IDs/order do not match 197 features.")
+    baseline = saved["Reference26_mean_t_ha"].to_numpy(float)
+    if not np.isfinite(baseline).all():
+        raise ValueError("Original Reference26 target predictions are not finite.")
+    roots = local_roots(z, anchors, args.local_neighbors)
+    synthetic = augmented(
+        z, y, np.arange(N), anchors, root, roots,
+        mode=method, count=size, sigma=args.sigma,
+        seed=args.seed+size*10+methods.index(method)*100000,
+    )
+    estimates = train_predict(
+        z, y, np.arange(N), np.arange(N,197),
+        kind=model, alpha=args.ridge_alpha,
+        trees=args.trees, leaf=args.leaf, seed=args.seed,
+        synthetic=synthetic[:2], mass=mass,
+    )
+    output = args.output.resolve()/"candidate59_private.csv"
+    if output.exists():
+        raise FileExistsError(
+            f"Refusing to replace previous private 59 predictions: {output}"
+        )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame({
+        ID:expected,
+        "Reference26_mean_t_ha":baseline,
+        "GlobalSynthetic_t_ha":estimates,
+        "difference_t_ha":estimates-baseline,
+        "model":model,
+        "method":method, "synthetic_count":size,
+        "synthetic_total_weight":size if mass=="full" else int(mass),
+        "sigma":args.sigma,
+    }).to_csv(output, index=False)
+    print(f"[59] Saved private candidate global predictions: {output}")
+    print("[59] This does NOT alter Reference26/joblib/website/final submission.")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     action = p.add_mutually_exclusive_group(required=True)
-    for arg in ("check", "smoke", "run", "summary", "plot"):
+    for arg in ("check", "smoke", "run", "summary", "plot", "predict59"):
         action.add_argument("--"+arg, action="store_true")
     p.add_argument("--anchor-file", type=Path, default=historic.ANCHOR_SOURCE)
     p.add_argument("--bundle", type=Path, default=historic.native.BUNDLE)
@@ -407,6 +469,10 @@ def main():
     p.add_argument("--leaf", type=int, default=3)
     p.add_argument("--seed", type=int, default=SEED)
     p.add_argument("--jobs", type=int, default=4)
+    p.add_argument("--predict-method", default="local")
+    p.add_argument("--predict-size", type=int, default=1024)
+    p.add_argument("--predict-mass", default="32")
+    p.add_argument("--predict-model", default="ridge")
     args = p.parse_args()
     settings = parse_settings(args)
     if args.summary:
@@ -429,6 +495,9 @@ def main():
     folder = args.output.resolve()
     if args.plot:
         make_plot(frame, full, z, loo, anchors, folder)
+        return
+    if args.predict59:
+        predict59(args, frame, full, z, root, anchors, y, ids)
         return
     spec = spec_for(args, settings)
     destination = folder/"smoke" if args.smoke else folder
