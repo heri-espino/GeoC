@@ -429,7 +429,7 @@ def spec_for(args, settings):
     }
 
 
-def make_plot(frame, full, z, loo, anchors, folder):
+def make_plot(frame, full, z, loo, anchors, folder, *, hard_centers=8, alpha=30.):
     """Private: 197 X in PCA, 138 authentic signed residuals; 59 X no y."""
     import matplotlib
     matplotlib.use("Agg")
@@ -439,6 +439,9 @@ def make_plot(frame, full, z, loo, anchors, folder):
     y = frame[TARGET].to_numpy(float)
     residual = loo["Reference26_mean"].to_numpy(float)-y
     limit = max(float(np.quantile(abs(residual), .95)), 1e-6)
+    hard_indices, press_residuals = fold_hard_centers(
+        z, y, np.arange(N), count=hard_centers, alpha=alpha,
+    )
     fig, ax = plt.subplots(figsize=(11, 7))
     pts = ax.scatter(
         coords[:N, 0], coords[:N, 1], s=37, c=residual,
@@ -448,7 +451,10 @@ def make_plot(frame, full, z, loo, anchors, folder):
                s=48, c="black", alpha=.55, label="59 unknown X")
     ax.scatter(coords[list(anchors), 0], coords[list(anchors), 1],
                s=270, facecolors="none", edgecolors="black",
-               linewidths=2.2, label="2 rare training anchors")
+               linewidths=2.2, label="2 historic Reference26 hard anchors")
+    ax.scatter(coords[hard_indices, 0], coords[hard_indices, 1],
+               s=160, marker="s", facecolors="none", edgecolors="darkgreen",
+               linewidths=1.6, label=f"{len(hard_indices)} fold-local Ridge PRESS centers")
     plt.colorbar(pts, ax=ax, label="Reference26 OOF signed residual yhat - y (t/ha)")
     ax.set_xlabel(f"PC1 ({fold.explained_variance_ratio_[0]:.1%} X variance)")
     ax.set_ylabel(f"PC2 ({fold.explained_variance_ratio_[1]:.1%} X variance)")
@@ -471,7 +477,16 @@ def make_plot(frame, full, z, loo, anchors, folder):
     fig.tight_layout()
     fig.savefig(folder/"signed_residual_vs_y_private.png", dpi=170)
     plt.close(fig)
-    print(f"[PLOT] Saved two private diagnostic plots in {folder}")
+    # This is a FINAL-138 exploratory visualization, not outer-CV
+    # ranking. Per-outer-fold selections are independently recomputed.
+    pd.DataFrame({
+        ID: frame.iloc[hard_indices][ID].astype(str).to_numpy(),
+        "observed": y[hard_indices],
+        "ridge_press_residual_signed": press_residuals,
+        "reference26_oof_residual_signed": residual[hard_indices],
+    }).to_csv(folder/"hard_centers_full138_private.csv", index=False)
+    print(f"[PLOT] Saved private diagnostics and {len(hard_indices)} "
+          f"Gaussian-centre candidates in {folder}")
 
 
 def predict59(args, frame, full, z, root, anchors, y, ids):
@@ -596,7 +611,10 @@ def main():
         return
     folder = args.output.resolve()
     if args.plot:
-        make_plot(frame, full, z, loo, anchors, folder)
+        make_plot(
+            frame, full, z, loo, anchors, folder,
+            hard_centers=args.hard_centers, alpha=args.ridge_alpha,
+        )
         return
     if args.predict59:
         predict59(args, frame, full, z, root, anchors, y, ids)
