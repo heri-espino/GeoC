@@ -884,3 +884,24 @@ is opt-in only and never changes official targets. Synthetic QA and
 docs/REFERENCE26_ANALOG_TAIL_SCREEN.md included. NO REAL VM SCORE
 OR PERFORMANCE GAIN HAS BEEN OBSERVED YET. Hyperparameter choice on
 previously examined 138 LOOCV labels is exploratory/post-hoc.
+
+2026-10-19 — User ran full 138-fold direct Reference26 analog correction.
+Original Reference26 mean RMSE 0.468138127 t/ha (MAE 0.333786);
+best exploratory 3 real-neighbor correction with original robust26 X,
+blend 0.25, gate 'supported': RMSE 0.462418, MAE 0.332019,
+bias -0.004103, best within 31 prescribed variants.
+Gain -0.005720 (~1.22%) in RMSE. Changed all 138 (tiny updates
+possible), lowered squared error for 65 / raised for 73, max absolute
+prediction delta 0.108689. Two historically worst parcels largely
+unchanged (RMSE 2.065000 -> 2.063534), other 136 improved
+0.399583 -> 0.392880. User did not transfer per-parcel labels.
+DO NOT automatically promote: 31 recipes compared against the
+same 138 folds studied many times earlier; selection bias persists.
+New tools/audit_reference26_analog_gain.py with
+tests/test_audit_reference26_analog_gain.py computes paired bootstrap
+RMSE confidence sensitivity, 138 leave-one-deletion gains, approximate
+maxT sign flip over 30 candidate corrections and optional
+10 geographic block bootstrap using existing 197x197 distance.
+Needs --check/--run on user's VM, then human review. Private
+reports/reference26_analog_tail_screen/ and 59 target outputs remain
+unchanged/ignored. In PR #33.
