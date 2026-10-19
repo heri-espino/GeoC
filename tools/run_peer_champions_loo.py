@@ -26,7 +26,6 @@ import pandas as pd
 
 from geocebada.evaluation.checkpoint08_local import ID, atomic_json, predict_old
 from geocebada.evaluation.checkpoint10_pca import FROZEN, inputs
-from geocebada.evaluation.peer_frozen_local04d import load_frozen_local04d
 from geocebada.evaluation.peer_champions_loo import (
     BASELINE,
     MODELS,
@@ -39,6 +38,7 @@ from geocebada.evaluation.peer_champions_loo import (
     summarize_complete,
     validate_fold,
 )
+from geocebada.evaluation.peer_frozen_local04d import load_frozen_local04d
 
 ROOT = Path(__file__).resolve().parents[1]
 MEMBERSHIPS = ROOT / "reports/checkpoint_08/confirmation_membership.csv"
