@@ -353,7 +353,7 @@ def main():
         print(f"[CHECK] {len(expected_columns(grid,args.top_k))} global "
               f"candidate fits per heldout, plus frozen original Reference26.")
         print(f"[CHECK] 137 true train + 1 true test per fold. "
-              f"Balanced synthetic counts={[(N-1)*r for r in grid[3]}.")
+              f"Balanced synthetic counts={[(N-1)*r for r in grid[3]]}.")
         print("[CHECK] Difficult-training weights selected only inside each outer fold.")
         return
     dest = folder/"smoke" if args.smoke else folder
