@@ -155,3 +155,46 @@ La predicción de los 59 casos es un ajuste con 138 etiquetas reales,
 más una corrección determinista basada en vecinos reales.
 No debe decirse que se entrenó Reference26 sobre 197 rendimientos
 observados ni que se crearon 59 rendimientos reales nuevos.
+
+## 2026-10-19 — Corregido: choque de huella del LOOCV anidado
+
+El primer intento del usuario en la rama de predicción final
+falló en `--check`, `--smoke` y `--run` antes de hacer ningún
+ajuste o generar una predicción. Mensaje:
+`Nested run fingerprint does not match current original 138 screen,
+candidate family or training source.` La causa técnica está en que
+el exportador exigía igualdad **byte por byte** del manifiesto
+generado previamente por `run_reference26_top5_nested.py`, lo cual
+incluye el SHA del código Python. Es posible que cambios posteriores
+del script (formato/mantenimiento) alteren ese SHA aunque los folds
+guardados sean exactamente los mismos.
+
+La revisión del exportador permite divergencia de SHA **solo** en
+`source_sha` (script anidado) y `screen_source_sha` (script de
+correcciones). Mantiene coincidencia **estricta** de huellas de
+datos y modelos (`screen_private_sha`, `native_run_spec_sha`,
+`peer_source_sha`, `bundle_sha` y `frozen_weights_sha`),
+los cinco candidatos, límites de corrección y umbral de selección.
+Después verifica individualmente los 138 folds, identificadores,
+etiquetas conocidas y predicciones de los cinco modelos contra el
+screen original antes de aceptar los resultados.
+
+Si persiste alguna diferencia importante, el nuevo error identifica
+los campos exactos que difieren. Nunca eliminar la verificación de
+fuentes para evitar el error. El fallo de `--summary` simplemente
+indica que `--run` no llegó a producir el manifiesto final.
+
+```powershell
+git pull --ff-only
+python -m pytest tests/test_reference26_top5_final59.py -q
+python tools/run_reference26_top5_final59.py --check
+python tools/run_reference26_top5_final59.py --smoke
+python tools/run_reference26_top5_final59.py --run
+python tools/run_reference26_top5_final59.py --summary
+```
+
+Si la nueva salida menciona campos incompatibles, preservar los
+datos privados y revisar esos campos; **no borrar los 138 resultados**.
+Los nuevos tests rechazan explícitamente alteraciones de fuentes,
+candidatos y umbrales. Aún no hay 59 predicciones ejecutadas
+en el entorno privado de la VM.
