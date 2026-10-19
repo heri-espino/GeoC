@@ -199,3 +199,6 @@ venv/
 
 # Final 59 candidate yields + all 138 private 4-fold selection labels.
 /reports/reference26_top5_final59/
+
+# Seven-model nested Reference26 full metric audits (aggregate figures and reports).
+/reports/reference26_top5_full_metrics/
