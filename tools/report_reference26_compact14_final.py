@@ -386,7 +386,10 @@ def sanitize_number(value):
 def export_public(
     primary: pd.DataFrame, extended: pd.DataFrame,
     spatial: pd.DataFrame, weights: tuple[float, float],
-    out: Path,
+    out: Path, *, normality: pd.DataFrame | None = None,
+    variance: pd.DataFrame | None = None,
+    paired: pd.DataFrame | None = None,
+    semivariogram: pd.DataFrame | None = None,
 ):
     """Only model-level aggregate allowlisted values; never IDs, y or coords."""
     permitted = set(NAMES)
@@ -426,8 +429,30 @@ def export_public(
                 "p_two_sided_holm_all", "p_two_sided_fdr_bh_all",
             )
         })
+    diagnostics = {}
+    for title, dataset in (
+        ("normality", normality),
+        ("conditional_error", variance),
+        ("paired_losses", paired),
+        ("semivariogram", semivariogram),
+    ):
+        if dataset is None:
+            continue
+        forbidden = {ID, TARGET, "RENDIMIENTO_T_HA",
+                     "base_centroid_lat", "base_centroid_lon"}
+        if forbidden.intersection(dataset.columns):
+            raise ValueError("Private parcel-level diagnostic columns.")
+        if "model" not in dataset or not set(dataset["model"]).issubset(permitted):
+            raise ValueError("Unrecognized diagnostic model.")
+        if len(dataset) > 50:
+            raise ValueError("Unexpected number of diagnostic summary rows.")
+        diagnostics[title] = [{
+            key: sanitize_number(value)
+            for key, value in row.items()
+        } for row in dataset.to_dict("records")]
     data = {
         "schema_version": 1,
+        "diagnostics": diagnostics,
         "source": "fresh_138_outer_LOOCV_137_train_fixed_historical_weights",
         "exploratory": True,
         "n_labeled": N, "n_unknown": 59,
@@ -502,8 +527,12 @@ def run_report(args):
                         float_format="%.16g")
     regions.to_csv(out / "private_regional_errors.csv", index=False,
                    float_format="%.16g")
-    export_public(primary, aux, spatial, weights, JSON_STAGING if out == OUT
-                  else out / JSON_STAGING.name)
+    export_public(
+        primary, aux, spatial, weights,
+        JSON_STAGING if out == OUT else out / JSON_STAGING.name,
+        normality=normality, variance=heteroscedasticity,
+        paired=paired, semivariogram=semivariogram,
+    )
     coordinates = frame[
         ["base_centroid_lat", "base_centroid_lon"]
     ].to_numpy(float)
