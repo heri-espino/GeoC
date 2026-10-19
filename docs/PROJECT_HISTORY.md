@@ -1652,3 +1652,25 @@ Added a canonical narrative in `docs/METODOLOGIA_Y_RESULTADOS.md` covering all C
 
 The user reported a 5.556 maximal numerical mismatch in checkpoint10_pca's historical 20-PC parity check during --check. Root cause in our bridge: unnecessarily requesting PCA160 then comparing its prefix with the frozen PCA20 reference. Corrected the shared bridge to request a 20-component fit, retaining the exact historical reference check. Added synthetic regression test to assert requested dimension. No changes to checkpoint10_pca, GeoC main, existing frozen models, or the 59 competition forecasts; not run locally.
 
+## 2026-10-19 — Reference26 direct analog/tail experiment
+
+Previous synthetic-model experiments failed to beat native Reference26
+mean RMSE 0.468138 t/ha. Most recent actual 138-fold VM weighted/
+balanced test (PR #32) attained best modified ExtraTrees 0.487998
+(r=2, sigma=0, equal synthetic mass), still worse than Reference26.
+
+The user explicitly requested pivot to improving the model. New
+experimental branch experiment/reference26-analog-tail-correction
+uses 138 authentic saved Reference26 heldout predictions as fixed
+baseline, and screens fold-valid, bounded corrections: blending with
+the observed yields of the closest ORIGINAL real parcel X analogs
+among the other 137 labels (robust26 vs PCA8 X-only,
+k=3/8/16, optional support gate), and low-complexity tail
+de-shrink centered on training-only mean to investigate previously
+observed tail-compression. No synthetic rows or new global regressor.
+For each heldout correction, no label from that parcel enters the
+calculation. User must run real VM --check/--smoke/--run to obtain
+numeric RMSE; none has been claimed. Selection of best correction on
+these repeatedly inspected 138 labels is post-hoc, not unbiased.
+Private parcel outputs are gitignored; 59 target results unchanged.
+Details in docs/REFERENCE26_ANALOG_TAIL_SCREEN.md.
