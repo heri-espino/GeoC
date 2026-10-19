@@ -1,5 +1,27 @@
 # Búsqueda masiva de combinaciones convexas con Reference26
 
+## Resultado final del usuario (2026-10-19)
+
+La búsqueda completa ya se ejecutó en la VM sobre los mismos cinco
+modelos y las mismas 138 parcelas.
+
+**Hallazgo:** óptimo discreto 70% Reference26_mean + 30% Compact14,
+RMSE **0.467812**, frente a Reference26_mean **0.468138**.
+La optimización convexa continua encontró 70.494625% / 29.505375%,
+RMSE **0.467811**, sin asignar peso apreciable a los otros tres
+modelos. El beneficio relativo es ~0.07% y es **muy inestable**:
+únicamente 77/138 parcelas ganan, intervalo bootstrap ingenuo
+ΔMSE [-0.002755, +0.002347] y quitar la parcela con mayor mejora
+hace que ΔMSE pase a +0.000082.
+
+**Decisión:** cerrar más barridos convexos con estos cinco modelos;
+Reference26_mean sigue siendo referencia y la mezcla se conserva
+solo como experimento exploratorio. Priorizar familias predictivas
+distintas (CatBoost, proyecciones gaussianas, etc.) y comparar
+primeramente en protocolos idénticos. No promover a las 59 parcelas
+ocultas. Informe detallado:
+`results/peer_models/REFERENCE26_MASSIVE_ENSEMBLE_138_2026-10-19.md`.
+
 **Estado:** código añadido para ejecución local; no es una nueva validación
 independiente. Se emplean **únicamente** las predicciones LOOCV ya
 calculadas de las mismas 138 parcelas. No se ajusta ningún modelo base.
