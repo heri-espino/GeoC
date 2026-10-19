@@ -1,3 +1,7 @@
+## 2026-10-18 — Simplified peer LOOCV to two teammate champions only
+
+User clarified that the task is ONLY teammate Reference26 versus Compact14 LOOCV. Replaced `tools/run_selected_champions_loo.py` with a standalone Python runner depending on teammate's `src/current_champions.py` and original bundle in local ignored `GeoC/data_n/processed/current_champions/v1/`. Uses `ColdExperts.full_fit` from her source directly for 137/1 outer folds, four train-only inner folds, yield masked before fitting, native `predict_saved`, no B1 selection or GeoC PCA/Local04D. Parallel outer folds supported. New two-model synthetic tests and simplified documentation. Earlier Local04D PCA numerical parity failure was irrelevant to her models, so removed the baseline from this run. No locally computed LOOCV RMSE was asserted.
+
 ## 2026-10-18 — Reject re-fitted C4 PCA, require saved-embedding forecast parity
 
 Second workstation --check proved PCA20 refit still differs from frozen reference by 5.556. Implemented a new source-of-truth bridge using the 197×20 saved Checkpoint04A C4 PCA20 table, validated original manifest/IDs/targets and demonstrated exact historical 41-prediction Local04D parity via checkpoint08.verify_original_control at 1e-7. Selected champion comparison uses original predict_old on saved axes, and all peer comparison scripts share this loader. No tolerance relaxation, arbitrary sign alignment or current model promotion. Local runtime remains untested here.
