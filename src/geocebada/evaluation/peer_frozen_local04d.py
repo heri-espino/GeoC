@@ -21,8 +21,8 @@ from geocebada.evaluation.checkpoint04a import haversine_distance_matrix
 from geocebada.evaluation.checkpoint04b import normalized_distance_matrix
 from geocebada.evaluation.checkpoint08_local import (
     ID,
-    Y,
     Inputs,
+    Y,
     input_paths,
     validate_memberships,
     verify_original_control,
