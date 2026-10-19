@@ -193,3 +193,6 @@ venv/
 
 # Direct Reference26 analog/tail screening: actual heldout y + candidate59.
 /reports/reference26_analog_tail_screen/
+
+# 138 real-fold nested top-five corrected Reference26 private predictions and caches.
+/reports/reference26_top5_nested/
