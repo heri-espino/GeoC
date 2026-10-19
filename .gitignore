@@ -171,3 +171,6 @@ venv/
 
 # Reference26 LOOCV imputation X audits, private labeled predictions and native model caches
 /reports/reference26_imputation_loo138/
+
+# Budgeted 25->8->3 Reference26 local Ridge search and private fold-level predictions
+/reports/reference26_ridge_budget/
