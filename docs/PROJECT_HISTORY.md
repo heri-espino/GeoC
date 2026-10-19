@@ -1672,3 +1672,26 @@ X and defaults to exact baseline outside synthetic support. Real VM results
 not yet available; no promotion, no changes to the 59 predictions, no claims
 of independently verified improvement. This intentionally probes a
 post-hoc hackathon hypothesis, not proof of missing-data manipulation.
+
+## 2026-10-19 — Refined synthetic specialists: classified three-regime routing
+
+The first two-point synthetic gating run was received from the user's VM:
+138-fold Reference26 mean baseline RMSE 0.468138; conservative geometric
+gating that made no changes equaled baseline; any configuration changing
+predictions worsened RMSE, with as few as two altered parcels producing
+~0.491128 RMSE. At the 59 unknown targets, the original geometric model
+routed 2/59 under sigma 0.15, ratio 1.0 and blend 1.0; those unknown
+yields are unavailable.
+
+Based on this result and the user's clarified three-group intention, the
+new preferred experiment in PR #30 is
+tools/run_three_regime_classifier.py. Train two **separate** synthetic
+Ridge regressors for the two-member hardest group and the other six-member
+top-ten intersection group; **train a three-class random forest on real
+and synthetic X** to select A, B, or existing Reference26 mean as class C.
+Reduce default synthesis to 21+105=126 generated X positions across six
+bridge segments, not independent measured yields. The 138 heldout
+Reference26 baseline is reused and all pseudo-labels and group-router
+training X are fold-local. Outputs include per-class A2/B6/C130 errors
+and unchanged/worsened parcel counts. Method selection remains
+post-hoc; the revised classifier's real VM test is **not yet run**.
