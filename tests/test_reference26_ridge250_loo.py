@@ -143,6 +143,7 @@ def test_shared_climate_cache_uses_train_positions_only(monkeypatch):
     parent.__path__ = []
     monkeypatch.setitem(sys.modules, "src", parent)
     monkeypatch.setitem(sys.modules, "src.current_champions", fake)
+    parent.current_champions = fake
     with share_climate_fits_between_grid_candidates():
         one = ColdBases().ct3([0, 1, 2])
         two = ColdBases().ct3([0, 1, 2])
