@@ -112,12 +112,17 @@ def validate_nested_provenance(recorded, expected):
     verified numeric records. This is NOT permission to silently ignore
     different input datasets, model sources, CV thresholds, or candidates.
     """
-    if not isinstance(recorded, dict):
+    if not isinstance(recorded, dict) or not isinstance(expected, dict):
         raise ValueError("Nested run manifest must be a JSON object.")
+    # nested.provenance() has a Python tuple of five config dictionaries,
+    # while JSON stores that same ordered family as a list. Compare the
+    # on-disk JSON representations, not the Python container types.
+    # This does not permit any changed candidate, order, threshold or data.
+    normalized_expected = json.loads(json.dumps(expected, allow_nan=False))
     changed = sorted(
-        key for key in set(recorded) | set(expected)
-        if recorded.get(key) != expected.get(key)
-        or (key in recorded) != (key in expected)
+        key for key in set(recorded) | set(normalized_expected)
+        if recorded.get(key) != normalized_expected.get(key)
+        or (key in recorded) != (key in normalized_expected)
     )
     if not changed:
         return ()
