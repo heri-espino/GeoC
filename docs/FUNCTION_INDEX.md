@@ -255,6 +255,19 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `grid_candidates` | function | `geocebada.evaluation.climate_nested_grid` | Return reproducible hyperparameter search including the exact incumbent. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `summarize_nested_grid` | function | `geocebada.evaluation.climate_nested_grid` | Validate paired full coverage and report unbiased-by-inner-tuning OOF scores. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `tune_one_outer_parcel` | function | `geocebada.evaluation.climate_nested_grid` | Select each model's hyperparameters solely on other observed yields. | `src/geocebada/evaluation/climate_nested_grid.py` |
+| `adjust_spatial_tests` | function | `geocebada.evaluation.jury_residual_diagnostics` | Across ALL tested k, variables, models and spatial statistics. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `conditional_error_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` | Prediction-dependent error scatter and robust Brown-Forsythe test. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `interpret_tests` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `multiplicity` | function | `geocebada.evaluation.jury_residual_diagnostics` | Benjamini-Hochberg FDR or Holm FWER, finite p-values only. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `normality_and_distribution` | function | `geocebada.evaluation.jury_residual_diagnostics` | Shapiro-Wilk, D'Agostino K2, Anderson-Darling, moments and bias. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `paired_loss_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` | Per-model paired loss comparisons with multiplicity correction. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `md_table` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
+| `render_figures` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
+| `render_markdown` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
+| `all_metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` |  | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` | Report mathematical norms as TOTAL norms, alongside normalized errors. | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `paired_metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` | Pairs share all 138 observations; naive parcel bootstrap is descriptive. | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `validate_predictions` | function | `geocebada.evaluation.loocv_comprehensive_metrics` |  | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
 | `build_feature_catalog` | function | `geocebada.evaluation.parcel_modeling` | Annotate every manifest feature with family, mode, dtype and basic availability. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `build_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Create deterministic state-stratified and municipality-grouped training folds. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `classify_feature_family` | function | `geocebada.evaluation.parcel_modeling` | Map one feature-manifest record to a stable modeling family. | `src/geocebada/evaluation/parcel_modeling.py` |
@@ -265,6 +278,39 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `summarize_fixed_fold_scores` | function | `geocebada.evaluation.parcel_modeling` | Summarize fixed-fold benchmark scores without declaring a model winner. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `train_prediction_diagnostics` | function | `geocebada.evaluation.parcel_modeling` | Compare numeric feature support/distributions between train and prediction rows. | `src/geocebada/evaluation/parcel_modeling.py` |
 | `validate_fixed_fold_assignments` | function | `geocebada.evaluation.parcel_modeling` | Validate that a frozen fold file covers each training parcel exactly once. | `src/geocebada/evaluation/parcel_modeling.py` |
+| `align_peer_targets` | function | `geocebada.evaluation.peer_champions_loo` | Validate that both projects have the identical 138 labeled parcels/yields. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `outer_record` | function | `geocebada.evaluation.peer_champions_loo` | Build peer-native indices with exactly one excluded label. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `resolve_peer_bundle` | function | `geocebada.evaluation.peer_champions_loo` | Prefer private GeoC/data_n; accept explicit roots or bundle leaves. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `summarize_complete` | function | `geocebada.evaluation.peer_champions_loo` | Compute paired pooled scores and descriptive parcel bootstrap differences. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `validate_fold` | function | `geocebada.evaluation.peer_champions_loo` | Refuse cached folds with shifted IDs, missing models or bad predictions. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `reuse_verified_loo46` | function | `geocebada.evaluation.peer_dbscan_reuse` | Reuse prior first-46 DBSCAN outer predictions with strict protocol matching. | `src/geocebada/evaluation/peer_dbscan_reuse.py` |
+| `load_frozen_local04d` | function | `geocebada.evaluation.peer_frozen_local04d` | Read canonical PCA20 (not refit), validate it via original 04D predictions. | `src/geocebada/evaluation/peer_frozen_local04d.py` |
+| `GridShareMixin` | class | `geocebada.evaluation.peer_gate_grid` | Fit her complete geology gate, replacing only its candidate family. | `src/geocebada/evaluation/peer_gate_grid.py` |
+| `configured_gate` | function | `geocebada.evaluation.peer_gate_grid` | Temporarily override ColdBases in this single isolated worker process. | `src/geocebada/evaluation/peer_gate_grid.py` |
+| `gate_for` | function | `geocebada.evaluation.peer_gate_grid` |  | `src/geocebada/evaluation/peer_gate_grid.py` |
+| `native_reference_gate` | function | `geocebada.evaluation.peer_gate_grid` | Serialisable training-only diagnostics for the original/tuned gate. | `src/geocebada/evaluation/peer_gate_grid.py` |
+| `DBSCANShareMixin` | class | `geocebada.evaluation.peer_geology_dbscan` | Override only original SimplifiedBases.shares; retain all expert recipes. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
+| `GeologicalDBSCANGate` | class | `geocebada.evaluation.peer_geology_dbscan` | Shrink per-density-cluster mixing weights towards the global weight. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
+| `adaptive_radius` | function | `geocebada.evaluation.peer_geology_dbscan` | Scale radius by a training-only k-distance, never held-out coordinates. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
+| `dbscan_refit_mode` | function | `geocebada.evaluation.peer_geology_dbscan` | Use original refit_fold with a strictly local class override. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
+| `mean_fit` | function | `geocebada.evaluation.peer_mean_imputation` | A generic sklearn-compatible train-only numerical fit override. | `src/geocebada/evaluation/peer_mean_imputation.py` |
+| `missing_numeric_inputs` | function | `geocebada.evaluation.peer_mean_imputation` | Descriptive X-only audit of the original 26 predictors; never y. | `src/geocebada/evaluation/peer_mean_imputation.py` |
+| `observed_means` | function | `geocebada.evaluation.peer_mean_imputation` | Replace missing numeric X using only the supplied fitting rows. | `src/geocebada/evaluation/peer_mean_imputation.py` |
+| `use_training_means` | function | `geocebada.evaluation.peer_mean_imputation` | Switch all five original numeric imputers to means for one worker. | `src/geocebada/evaluation/peer_mean_imputation.py` |
+| `FixedGeologicalKMeansMixin` | class | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Replicate original SimplifiedBases.shares but fix k instead of tuning it. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
+| `fixed_geological_kmeans` | function | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Apply an isolated patch only while a single Reference26 fit executes. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
+| `gate_diagnostics` | function | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Record requested k and actual fitted clusters, never private yield rows. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
+| `settings` | function | `geocebada.evaluation.peer_reference26_ridge_grid` |  | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
+| `share_climate_fits_between_grid_candidates` | function | `geocebada.evaluation.peer_reference26_ridge_grid` | Reuse only invariant C-T3 climate fits within one outer-fold *batch*. | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
+| `tuned_local_ridge` | function | `geocebada.evaluation.peer_reference26_ridge_grid` | Patch BOTH inner fitting and outer-query Ridge paths consistently. | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
+| `Reconstruction` | class | `geocebada.evaluation.peer_x_imputation` |  | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `audit_imputations` | function | `geocebada.evaluation.peer_x_imputation` |  | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `candidate_neighbors` | function | `geocebada.evaluation.peer_x_imputation` | Same municipality first, then same state, then nearest other parcels. | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `donor_columns` | function | `geocebada.evaluation.peer_x_imputation` | Only numeric, nongraph, noncomposition feature fields can be X-imputed. | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `prepare` | function | `geocebada.evaluation.peer_x_imputation` |  | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `read_satellite_source` | function | `geocebada.evaluation.peer_x_imputation` |  | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `spatial_fill` | function | `geocebada.evaluation.peer_x_imputation` | Donors have observed X; do not let newly imputed values propagate. | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `temporal_fill` | function | `geocebada.evaluation.peer_x_imputation` | Fill only supported missing features, using actual dated observations. | `src/geocebada/evaluation/peer_x_imputation.py` |
 | `benchmark_regressors` | function | `geocebada.evaluation.regression` | Compare regression baselines using identical shuffled K-fold splits. | `src/geocebada/evaluation/regression.py` |
 | `default_regressors` | function | `geocebada.evaluation.regression` | Return lightweight baseline regressors suitable for early comparison. | `src/geocebada/evaluation/regression.py` |
 | `summarize_benchmark` | function | `geocebada.evaluation.regression` | Summarize fold-level benchmark metrics as mean and standard deviation. | `src/geocebada/evaluation/regression.py` |

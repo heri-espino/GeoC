@@ -21,6 +21,9 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
+# Nuria's private data bundle and any extracted raw inputs (local only)
+/data_n/
+
 # # Data: preserve directories, ignore contents
 # /data/raw/*
 # !/data/raw/.gitkeep
@@ -144,3 +147,46 @@ venv/
 # Nested LOOCV target-bearing folds, hyperparameters and diagnostics
 /reports/area_weighted_climate_nested_grid/
 /reports/area_weighted_climate_nested_grid_wide/
+
+# Peer champion LOOCV: private held-out yields, per-parcel predictions and caches
+/reports/peer_champions_loo/
+
+# Exploratory geological KMeans vs DBSCAN: label-bearing fold outputs stay private
+/reports/peer_geology_dbscan/
+
+# Private results for selected Reference26/Compact14 parallel LOOCV
+/reports/selected_champions_loo/
+
+# Private first-46 geological gate-grid experiments and label-level outputs
+/reports/peer_gate_grid_loo46/
+
+# Private full DBSCAN 138-fold predictions and tuning caches
+/reports/peer_dbscan_loo138/
+
+# Fixed geological KMeans k searches: private per-parcel observed targets/predictions
+/reports/reference26_kmeans_fixed_*/
+
+# Private 138-fold × 250 Reference26 Ridge grid results and per-parcel yields
+/reports/reference26_ridge250_loo/
+
+# Reference26 LOOCV imputation X audits, private labeled predictions and native model caches
+/reports/reference26_imputation_loo138/
+
+# Budgeted 25->8->3 Reference26 local Ridge search and private fold-level predictions
+/reports/reference26_ridge_budget/
+
+# Private individual parcel LOOCV mean-imputation predictions and model caches
+/reports/reference26_mean_imputation_loo138/
+
+# Separate train-fold-only mean-imputation Reference26 Ridge search
+/reports/reference26_ridge_budget_mean/
+
+# Private 138-parcel LOOCV ensemble diagnostics and residual correlations
+/reports/loo_ensemble_screen/
+
+# Private staging of recovered LOOCV scoreboards/provenance
+/reports/loocv_comprehensive_metrics/
+
+# Private full re-train on 138 parcel yields, OOF diagnostics and serialized models
+/reports/reference26_compact14_fresh138/
+/reports/reference26_compact14_fresh138_smoke/
