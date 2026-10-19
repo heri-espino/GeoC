@@ -92,7 +92,8 @@ def test_original_138_fold_baseline_alignment(monkeypatch, tmp_path):
 
 
 def test_local_ridge_patch_changes_both_training_and_prediction(monkeypatch):
-    original = lambda *a: np.array([-99.0])
+    def original(*args):
+        return np.array([-99.0])
     fake = {}
     parent = types.ModuleType("src")
     parent.__path__ = []
