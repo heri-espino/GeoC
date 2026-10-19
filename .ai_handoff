@@ -954,3 +954,35 @@ ExtraTrees*, NOT Reference26 with direct synthetic rows. The user's
 original 59 predictions are unchanged; no promotion. User-sent
 aggregate logs, no private results CSV committed. See updated
 docs/GLOBAL_SYNTHETIC_AUGMENTATION.md for full interpretation.
+
+## 2026-10-19 — 100x 70/30 INTENTIONALLY LEAKY split study and X-only geometry
+
+User explicitly requested, in a NEW branch, 100 random 70/30 splits of the
+138 REAL labeled parcels, means/medians/SD/P5-P25-P50-P75-P95 of RMSE by
+model, and INTENTIONALLY contaminated test samples generated from heldout
+original parcels and their true labels. This is NOT scientifically valid
+CV and MUST NOT be reported as generalization. Branch:
+analysis/intentionally-leaky-70-30-and-x-geometry, base experiment/global-synthetic-augmentation.
+Scripts: tools/run_intentionally_leaky_7030.py and
+ tools/plot_reference26_error_geometry_197.py.
+The first distinguishes (1) clean 96-real-training/42-real-test,
+(2) clean TRAIN-only hard-center augmentation,
+(3) expanded pseudo-test with 512 children of the true heldout test labels,
+(4) leaky training with synthetic samples created from heldout X AND y,
+(5) combined leaky training/expanded synthetic test, and
+(6) exact heldout-X/y copies injected into training. Ridge and ExtraTrees
+are fitted per split; historical Reference26 138-fold LOOCV (137/1) is
+NOT treated as a comparable 96/42 baseline. Scores, 4200 repeated real
+holdout appearances per model and fake child outputs saved only privately
+under gitignored reports/intentionally_leaky_70_30/; 100 splits need
+user's VM run. No 59 hidden y accessed, and no final model changed.
+
+Geometry script uses exact genuine 138 saved Reference26 mean signed LOOCV
+errors and original 197 X. PCA, UMAP (if installed), t-SNE; signed/absolute
+color and X crosses for top-ten; remaining 59 unlabeled are neutral gray.
+Feature NN distance, mean five NN, Mahalanobis, LOF, IsolationForest,
+spatial-distance nearest-neighbor mismatch, scatter/error correlations;
+if real lon/lat is not verified, plots spatial-distance MDS with explicit
+warning it is not a map. Read docs/INTENTIONAL_LEAKAGE_7030_AND_GEOMETRY.md
+before running/revising. Private figures & per-parcel tables ignored.
+Real workstation tests and experimental results are pending.

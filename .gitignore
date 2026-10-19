@@ -201,3 +201,7 @@ venv/
 # target predictions, and all alternative parameter grids.
 /reports/global_synthetic_augmentation*/
 /reports/global_synthetic_augmentation/
+
+# Deliberately contaminated test-origin synthetic CV: do not publish copied
+# held-out yield labels, parent IDs, individual scores or plots.
+/reports/intentionally_leaky_70_30/

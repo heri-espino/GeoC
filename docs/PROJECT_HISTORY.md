@@ -1752,3 +1752,22 @@ global o el control del mismo algoritmo. Estos globales son Ridge/ExtraTrees
 **distintos** de Reference26; no es un refit sintético de Reference26.
 No publicar CSV privados ni cambiar las 59 predicciones oficiales.
 Análisis detallado: docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+
+## 2026-10-19 — Exploratory 100 random 70/30 splits with intentional leakage; geometry diagnostics
+
+After 138-fold LOOCV showed all 40 globally synthetic-augmented Ridge and
+ExtraTrees variants worse than Reference26 mean (0.468138 t/ha), the user
+requested a separate intentionally leaky scenario: fake rows generated
+from the genuine test parents and their REAL y, added to the heldout test
+score and even to training to inspect the magnitude of apparent RMSE
+contamination. Added branch analysis/intentionally-leaky-70-30-and-x-geometry.
+Two scripts perform (a) 100 seeded shuffled partitions, 96 real train
+and 42 real test, paired Ridge/ExtraTrees no-leak and clearly named
+leakage cases; metrics mean/median/SD/P5-P25-P50-P75-P95 RMSE and paired
+deltas; and (b) real 197 X PCA/UMAP/t-SNE colored by authentic Reference26
+signed and absolute LOOCV residual, top10 crossed, X-neighbor distances,
+LOF, IsolationForest, Mahalanobis, spatial-neighbor mismatch, geographic
+coordinates if verified or spatial-distance MDS otherwise. These visuals
+are diagnostic, the leaked scores MUST NEVER be represented as honest
+validation, and no new real labels are added by synthetic reproduction.
+Scripts are committed, but real private VM results have not been computed.
