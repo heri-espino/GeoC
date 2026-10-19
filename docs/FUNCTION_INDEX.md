@@ -270,6 +270,7 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `resolve_peer_bundle` | function | `geocebada.evaluation.peer_champions_loo` | Prefer private GeoC/data_n; accept explicit roots or bundle leaves. | `src/geocebada/evaluation/peer_champions_loo.py` |
 | `summarize_complete` | function | `geocebada.evaluation.peer_champions_loo` | Compute paired pooled scores and descriptive parcel bootstrap differences. | `src/geocebada/evaluation/peer_champions_loo.py` |
 | `validate_fold` | function | `geocebada.evaluation.peer_champions_loo` | Refuse cached folds with shifted IDs, missing models or bad predictions. | `src/geocebada/evaluation/peer_champions_loo.py` |
+| `reuse_verified_loo46` | function | `geocebada.evaluation.peer_dbscan_reuse` | Reuse prior first-46 DBSCAN outer predictions with strict protocol matching. | `src/geocebada/evaluation/peer_dbscan_reuse.py` |
 | `load_frozen_local04d` | function | `geocebada.evaluation.peer_frozen_local04d` | Read canonical PCA20 (not refit), validate it via original 04D predictions. | `src/geocebada/evaluation/peer_frozen_local04d.py` |
 | `GridShareMixin` | class | `geocebada.evaluation.peer_gate_grid` | Fit her complete geology gate, replacing only its candidate family. | `src/geocebada/evaluation/peer_gate_grid.py` |
 | `configured_gate` | function | `geocebada.evaluation.peer_gate_grid` | Temporarily override ColdBases in this single isolated worker process. | `src/geocebada/evaluation/peer_gate_grid.py` |
