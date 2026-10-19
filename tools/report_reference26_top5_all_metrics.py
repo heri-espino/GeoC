@@ -273,7 +273,6 @@ def paired_tests(table, *, draws, seed):
     max_mae = np.max(perm_mae, axis=1)
     rows = []
     for j, name in enumerate(MODELS[1:]):
-        sq = gains[:, j]
         ab = abs_gains[:, j]
         n_wins = int(np.sum(ab > 1e-12))
         n_losses = int(np.sum(ab < -1e-12))
