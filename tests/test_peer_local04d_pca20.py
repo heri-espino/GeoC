@@ -1,4 +1,4 @@
-"""Regression: the selected-model bridge must reconstruct frozen PCA20, not PCA160."""
+"""Regression: peer bridge loads the *saved* original C4 PCA20 representation."""
 import importlib.util
 import sys
 import types
@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-def test_peer_bridge_uses_exact_frozen_20_components(tmp_path, monkeypatch):
+def test_peer_bridge_loads_frozen_pca20_reference(tmp_path, monkeypatch):
     tools = Path(__file__).resolve().parents[1] / "tools"
     monkeypatch.syspath_prepend(str(tools))
     spec = importlib.util.spec_from_file_location(
@@ -43,14 +43,13 @@ def test_peer_bridge_uses_exact_frozen_20_components(tmp_path, monkeypatch):
 
     called = []
 
-    def original_geoc_pca(_root, _memberships, *, max_components):
-        called.append(max_components)
+    def frozen_original(_root, _memberships):
+        called.append(True)
         return types.SimpleNamespace(y=pd.Series(labels, index=ids))
 
-    monkeypatch.setattr(module, "load_pca_data", original_geoc_pca)
+    monkeypatch.setattr(module, "load_frozen_local04d", frozen_original)
     module._load(peer, bundle)
-
-    assert called == [20], (
-        "Local04D must use the original 20-component PCA fit; "
-        "a PCA160 prefix is not an exact parity-safe replacement."
+    assert called == [True], (
+        "Local04D must read the stored frozen C4 PCA20 and validate historical "
+        "41-prediction parity, not fit PCA again."
     )
