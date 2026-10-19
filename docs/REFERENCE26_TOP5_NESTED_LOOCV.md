@@ -129,21 +129,16 @@ python tools/run_reference26_top5_nested.py --summary
 Optional partial batches on a reboot-prone Windows workstation:
 
 ```powershell
-python tools/run_reference26_top5_nested.py --run --jobs 4 \
-  --from-fold 1 --through-fold 46
+python tools/run_reference26_top5_nested.py --run --jobs 4 --from-fold 1 --through-fold 46
 
-python tools/run_reference26_top5_nested.py --run --jobs 4 \
-  --from-fold 47 --through-fold 92
+python tools/run_reference26_top5_nested.py --run --jobs 4 --from-fold 47 --through-fold 92
 
-python tools/run_reference26_top5_nested.py --run --jobs 4 \
-  --from-fold 93 --through-fold 138
+python tools/run_reference26_top5_nested.py --run --jobs 4 --from-fold 93 --through-fold 138
 
 python tools/run_reference26_top5_nested.py --summary
 ```
 
-Note: PowerShell multiline continuation uses a trailing backtick,
-not a backslash. For simplicity put each of those commands on one
-line if copying directly into PowerShell.
+All commands above are single-line PowerShell commands.
 
 Private outputs, not committed to Git:
 
