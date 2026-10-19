@@ -44,7 +44,11 @@ from run_selected_champions_loo import (  # noqa: E402
 from sklearn.metrics import r2_score  # noqa: E402
 from threadpoolctl import threadpool_limits  # noqa: E402
 
-from geocebada.evaluation.peer_gate_grid import configured_gate, native_reference_gate  # noqa: E402
+from geocebada.evaluation.peer_dbscan_reuse import reuse_verified_loo46  # noqa: E402
+from geocebada.evaluation.peer_gate_grid import (  # noqa: E402
+    configured_gate,
+    native_reference_gate,
+)
 
 N = 138
 MODEL = "Reference26_DBSCAN"
@@ -181,6 +185,19 @@ def score(values: pd.DataFrame, cols: tuple[str, ...]) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("rmse", kind="stable").reset_index(drop=True)
 
 
+def _align_local04d(expected: pd.DataFrame, existing: pd.DataFrame) -> np.ndarray:
+    verify_rows(existing, {ID, "observed", "Local04D"})
+    aligned = existing.set_index(ID).reindex(expected[ID].astype(str))
+    if aligned.isna().any().any():
+        raise ValueError("Local04D file has mismatched/missing parcel IDs.")
+    if not np.allclose(
+        aligned["observed"].to_numpy(float),
+        expected["observed"].to_numpy(float), atol=1e-9, rtol=0,
+    ):
+        raise ValueError("Local04D file has different observed yields.")
+    return aligned["Local04D"].to_numpy(float)
+
+
 def local04d_predictions(expected: pd.DataFrame, source: Path | None) -> np.ndarray:
     if source is not None:
         existing = pd.read_csv(source, dtype={ID: str})
@@ -190,19 +207,30 @@ def local04d_predictions(expected: pd.DataFrame, source: Path | None) -> np.ndar
                 "External Local04D predictions must contain exactly "
                 "ID_POLIGONO,observed,Local04D (138 rows)."
             )
-        verify_rows(existing, {ID, "observed", "Local04D"})
-        aligned = existing.set_index(ID).reindex(expected[ID].astype(str))
-        if aligned.isna().any().any():
-            raise ValueError("Local04D file has mismatched/missing parcel IDs.")
-        if not np.allclose(
-            aligned["observed"].to_numpy(float),
-            expected["observed"].to_numpy(float), atol=1e-9, rtol=0,
-        ):
-            raise ValueError("Local04D file has different observed yields.")
-        return aligned["Local04D"].to_numpy(float)
+        return _align_local04d(expected, existing)
 
-    # Refit the *original Local04D*, not another PCA. This requires
-    # Checkpoint 04A saved C4 PCA and a strict 41-historical-forecast parity pass.
+    # The previously completed original Local04D 138-fold LOOCV is stored in
+    # *long* format, four model rows per parcel. Reuse it by exact ID/y parity.
+    previous_loo = ROOT / "reports/area_weighted_climate_loo/loo_predictions.csv"
+    if previous_loo.is_file():
+        from geocebada.evaluation.area_weighted_climate_comparison import BASE
+
+        prior = pd.read_csv(previous_loo, dtype={ID: str})
+        required = {ID, "model", "observed", "predicted", "outer_train", "outer_heldout"}
+        if not required.issubset(prior.columns):
+            raise ValueError("Previous Local04D LOOCV schema is incomplete.")
+        historical = prior.loc[prior["model"].eq(BASE)]
+        if (len(historical) != N or historical[ID].duplicated().any()
+                or not historical["outer_train"].eq(137).all()
+                or not historical["outer_heldout"].eq(1).all()):
+            raise ValueError("Prior Local04D is not the exact 138-fold 137+1 LOOCV.")
+        formatted = historical[[ID, "observed", "predicted"]].rename(
+            columns={"predicted": "Local04D"}
+        )
+        return _align_local04d(expected, formatted)
+
+    # If absent, refit the original Local04D using frozen C4 PCA and strict
+    # historical prediction parity, never bypassing the guard.
     from geocebada.evaluation.checkpoint08_local import FROZEN, predict_old
     from geocebada.evaluation.peer_frozen_local04d import load_frozen_local04d
 
@@ -268,12 +296,15 @@ def compare(output: Path, originals: Path, local_path: Path | None) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
-    for name in ("check", "smoke", "run", "summary", "compare"):
+    for name in ("check", "smoke", "run", "summary", "compare", "reuse-loo46"):
         mode.add_argument(f"--{name}", action="store_true")
     parser.add_argument("--bundle", type=Path, default=BUNDLE)
     parser.add_argument("--peer-repo", type=Path, default=PEER_REPO)
     parser.add_argument("--output", type=Path, default=OUTPUT)
     parser.add_argument("--original-results", type=Path, default=ORIGINAL)
+    parser.add_argument(
+        "--loo46-dir", type=Path, default=ROOT / "reports/peer_gate_grid_loo46",
+    )
     parser.add_argument("--local04d-file", type=Path, default=None)
     parser.add_argument("--jobs", type=int, default=2)
     args = parser.parse_args()
@@ -309,7 +340,18 @@ def main() -> int:
     )
     if args.check:
         return 0
-    lock(out, provenance(bundle, peer))
+    run_spec = provenance(bundle, peer)
+    lock(out, run_spec)
+    if args.reuse_loo46:
+        count = reuse_verified_loo46(
+            out, args.loo46_dir.resolve(), frame, ids, TARGET, ID, MODEL, run_spec,
+        )
+        print(
+            f"[DBSCAN] Imported {count} verified folds from the existing "
+            "46-fold experiment; --run will train only missing outer folds.",
+            flush=True,
+        )
+        return 0
     number = 1 if args.smoke else N
     missing = []
     for i in range(number):
