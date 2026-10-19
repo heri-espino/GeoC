@@ -39,7 +39,6 @@ from geocebada.evaluation.jury_residual_diagnostics import (
 from geocebada.evaluation.jury_statistical_report import render_figures
 from geocebada.evaluation.loocv_comprehensive_metrics import all_metrics
 
-
 ID, N = native.ID, native.N
 BASE, FIXED, POLICY = "Reference26_mean", "SelectedFinalRule", "NestedSelection"
 OUT = native.ROOT / "reports/reference26_top5_statistics"
