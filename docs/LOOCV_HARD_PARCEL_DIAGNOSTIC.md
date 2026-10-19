@@ -144,3 +144,46 @@ published website metrics, or existing LOOCV outputs. Run the script
 on the workstation with original private reports, inspect the candidate
 IDs **locally**, and communicate sanitized aggregate summaries before
 any decisions about a final model.
+
+
+## Real workstation results — 2026-10-19 (aggregate, verified from pushed CSV)
+
+The user completed the read-only local run and pushed aggregate files to
+\`results/peer_models/loocv_hard_parcels/\`. **This addendum deliberately
+does not publish the two private parcel IDs or their observed yields.**
+
+The authentic strict-aligned 138-fold results contain 13 model configurations,
+including a historically selected convex ensemble; only **three distinct
+representative families** (Reference26, Compact14, GeoPCA20/Local04D) count
+toward cross-family agreement. All 13 configurations identify the **same
+two distinct parcels** as their **two highest absolute errors**, and all
+three representatives have the exact same top-2 intersection. Eight distinct
+parcels appear in the top-ten lists of all three family representatives.
+This is compelling evidence of shared prediction difficulty, **not** label
+invalidity or harm from their inclusion in training.
+
+| Existing held-out model | RMSE all 138 | RMSE after discarding same 2 held-out errors (136, NO REFIT) | Top-2 fraction of SSE |
+|---|---:|---:|---:|
+| Reference26 mean | 0.4681381271 | 0.3995834974 | 28.19959683% |
+| Compact14 | 0.4696729969 | 0.4013515064 | 28.03548002% |
+| Local04D / GeoPCA20 | 0.4851334574 | 0.4173457406 | 27.06611650% |
+| Fixed ensemble | 0.4678114890 | 0.3991788172 | 28.24485788% |
+
+All RMSE are t/ha. **Post-hoc removal of the worst two evaluation errors
+does not estimate the performance of a model newly trained on 136 labels.**
+For Reference26 mean, the curve after including its easiest 136, 137 and
+138 heldout cases reaches respectively **0.399583**, **0.432812** and
+**0.468138 t/ha**. The two final jumps are visibly large; the two
+hardest cases contribute ≈28.20% of the sum of squared errors.
+The corresponding worst-ten SSE share is ≈51.69%.
+
+**Conclusion:** Investigate the labels and measured agronomic features
+of the two top-ranked hard cases privately. Distinguish residual
+outlyingness from train-set influence by comparing a frozen 138-label fit
+against three refits dropping A, B and both, preferably reporting how the
+59 fixed-target predictions change. If there is a material shift or
+independently verified quality issue, proceed to paired same-136-fold
+retraining and external/structurally independent checks. Do not infer a
+14–15% predictive improvement from the post-hoc trimmed curve; do not
+remove two labels, change the selected model, or claim recovered 59-target
+accuracy until a proper influence/refit experiment supports it.
