@@ -963,3 +963,25 @@ Does NOT overwrite native joblib, original 59 CSV, 138 OOF,
 or public GitHub site. Real 59 predictions NOT YET computed
 and cannot be predicted remotely without user's private bundle.
 Local run instructions in docs/REFERENCE26_FINAL59_SELECTED.md.
+
+2026-10-19 — Corrected first final59 exporter blocker on
+experiment/reference26-top5-final59 PR #36. User's local
+--check/--smoke/--run all failed at preflight with generic
+"Nested run fingerprint does not match..." --summary then failed
+because no candidate output was generated. Final exporter called
+nested.provenance(args) and compared ALL JSON keys including
+source_sha (nested script SHA) and screen_source_sha (analog script
+SHA) bytewise; historically completed nested fold run can have
+different script SHA after revisions without changed fitted data.
+Now validate_nested_provenance accepts mismatch ONLY for
+source_sha/screen_source_sha, logs it, and still requires ALL
+other fields (observed training bundle, native fit source hash,
+prior baseline manifest, prior screen private predictions, chosen
+family/thresholds/seed) to match strictly. Calls
+nested.summary_from_folds(save=False) to fully validate all
+138 per-fold ID/y, genuine Reference26 OOF and all five corrected
+candidate predictions. New QA asserts script-only SHA allowance
+and rejects changes to model/inputs/five candidates.
+If user sees new error naming a critical field, do NOT bypass:
+investigate exact field in run_spec. Original final 59
+remain untouched, user must pull and rerun locally.
