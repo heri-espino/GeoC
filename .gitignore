@@ -165,3 +165,6 @@ venv/
 
 # Fixed geological KMeans k searches: private per-parcel observed targets/predictions
 /reports/reference26_kmeans_fixed_*/
+
+# Private 138-fold × 250 Reference26 Ridge grid results and per-parcel yields
+/reports/reference26_ridge250_loo/
