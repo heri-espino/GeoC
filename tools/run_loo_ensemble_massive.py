@@ -33,8 +33,6 @@ for _key in (
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-from scipy.optimize import minimize  # noqa: E402
-
 from run_loo_ensemble_screen import (  # noqa: E402
     ANCHOR,
     BASELINE_FILE,
@@ -51,6 +49,7 @@ from run_loo_ensemble_screen import (  # noqa: E402
     read_dbscan,
     read_local,
 )
+from scipy.optimize import minimize  # noqa: E402
 
 DEFAULT_OUTPUT = OUTPUT / "massive"
 DEFAULT_MODELS = 5
