@@ -174,3 +174,6 @@ venv/
 
 # Budgeted 25->8->3 Reference26 local Ridge search and private fold-level predictions
 /reports/reference26_ridge_budget/
+
+# Private individual parcel LOOCV mean-imputation predictions and model caches
+/reports/reference26_mean_imputation_loo138/
