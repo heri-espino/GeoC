@@ -286,6 +286,14 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `settings` | function | `geocebada.evaluation.peer_reference26_ridge_grid` |  | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
 | `share_climate_fits_between_grid_candidates` | function | `geocebada.evaluation.peer_reference26_ridge_grid` | Reuse only invariant C-T3 climate fits within one outer-fold *batch*. | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
 | `tuned_local_ridge` | function | `geocebada.evaluation.peer_reference26_ridge_grid` | Patch BOTH inner fitting and outer-query Ridge paths consistently. | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
+| `Reconstruction` | class | `geocebada.evaluation.peer_x_imputation` |  | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `audit_imputations` | function | `geocebada.evaluation.peer_x_imputation` |  | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `candidate_neighbors` | function | `geocebada.evaluation.peer_x_imputation` | Same municipality first, then same state, then nearest other parcels. | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `donor_columns` | function | `geocebada.evaluation.peer_x_imputation` | Only numeric, nongraph, noncomposition feature fields can be X-imputed. | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `prepare` | function | `geocebada.evaluation.peer_x_imputation` |  | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `read_satellite_source` | function | `geocebada.evaluation.peer_x_imputation` |  | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `spatial_fill` | function | `geocebada.evaluation.peer_x_imputation` | Donors have observed X; do not let newly imputed values propagate. | `src/geocebada/evaluation/peer_x_imputation.py` |
+| `temporal_fill` | function | `geocebada.evaluation.peer_x_imputation` | Fill only supported missing features, using actual dated observations. | `src/geocebada/evaluation/peer_x_imputation.py` |
 | `benchmark_regressors` | function | `geocebada.evaluation.regression` | Compare regression baselines using identical shuffled K-fold splits. | `src/geocebada/evaluation/regression.py` |
 | `default_regressors` | function | `geocebada.evaluation.regression` | Return lightweight baseline regressors suitable for early comparison. | `src/geocebada/evaluation/regression.py` |
 | `summarize_benchmark` | function | `geocebada.evaluation.regression` | Summarize fold-level benchmark metrics as mean and standard deviation. | `src/geocebada/evaluation/regression.py` |
