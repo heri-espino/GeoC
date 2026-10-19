@@ -864,3 +864,15 @@ clustering and partially pooled regime correction. Promotion requires target-
 matched development, LOSO and a new fresh confirmation bank.
 
 No 06 model/result exists yet and no final prediction changed.
+2026-10-19 — NEW separate draft synthetic three-regime experiment:
+tools/run_synthetic_bridge_three_regime.py (check/smoke/run/summary/predict59),
+tests/test_synthetic_bridge_three_regime.py and docs/SYNTHETIC_BRIDGE_THREE_REGIME.md.
+Two correlated Brownian-bridge-generated specialist Ridge heads fitted on
+interpolation between the two private hard-case anchor observations; feature-only
+selective gate falls back to ORIGINAL Reference26 mean predictions. Reuses the
+138 genuine saved Reference26 heldouts; no Reference26 training or deployment
+change. Fold-safe pseudo-labels: if one of two anchors is held out, BOTH
+specialists disabled. Evaluation with post-hoc anchor selection is exploratory.
+All predicted rows / identifiers remain private under gitignored
+reports/synthetic_bridge_three_regime/. REAL VM RUN NOT YET EXECUTED;
+no winner or 59-target accuracy improvement claimed.
