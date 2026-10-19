@@ -892,3 +892,24 @@ OOF, fold-specific synthetic generation/router, report A2/B6/C130
 and changes to baseline. Post-hoc group definition means CV is exploratory.
 The original geometric route runners remain archived controls. REAL VM
 EXECUTION NOT YET DONE; no promotion or deployment.
+
+2026-10-19 — User explicitly rejected K-Means/recycled 3-route classifiers and
+asked for ONE GLOBAL REGRESSOR fitted on all real training labels PLUS many
+synthetically generated examples around the two anomalous Reference26 cases.
+Separate branch/PR: experiment/global-synthetic-augmentation,
+tools/run_global_synthetic_augmentation.py,
+tests/test_global_synthetic_augmentation.py, docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+This is a different experiment from the negative classified specialists
+(138 LOOCV baseline 0.468138, no positive routed configuration).
+Four augmentations: anchor duplication; X-only locally Gaussian-jittered
+anchor neighborhoods; Brownian bridge with interpolated pseudo-y; 50/50 mixture.
+Default 256/1024 synthetic rows per fold, mass 32 or full; 2 global learners
+Ridge and ExtraTrees, each with real-only native plain learner control,
+plus authentic saved Reference26 mean holdout benchmark. 138 fold-local refits
+of new global learners, 137 real + artificial, no heldout-y synthetic leakage.
+When an anchor is held out, Brownian bridge falls back to local generation
+around the remaining training anchor. Post-hoc anchor selection persists,
+so CV is exploratory and not independent model selection. Explicit optional
+--predict59 writes only new private candidate forecasts, never replaces
+Reference26 final outputs or website. Real VM run/tests PENDING; do not claim
+gains until terminal scores from user are received. No K-Means experiment.
