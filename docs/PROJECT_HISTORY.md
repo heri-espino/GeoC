@@ -1,3 +1,5 @@
+# Project History
+
 ## 2026-10-18 — Geological gate ablation with first 46 fixed parcel holdouts
 
 Prepared a **separate** first-third experiment without altering the original Reference26/Compact14 LOOCV runner. Uses the exact first 46 original teammate bundle rows as common heldouts, each with 137 labeled training parcels and native nested cold refit. Compares Reference26 KMeans4/8 with expanded KMeans2/4/6/8/12, DBSCAN density radius grid, continuously decaying geological support gate and global mixing weight; original Compact14 is held invariant. Inner CV chooses gate hyperparameters using only outer training labels. Includes resume-safe private outputs, per-fold diagnostics, unlimited positive --jobs for outer parallelism (memory caveat), and 46-fold paired descriptive RMSE. No actual training/results run in this environment. `docs/PEER_GATE_GRID_LOO46.md`.
