@@ -50,6 +50,7 @@ def manifest(bundle, peer, source):
     info = original_grid.manifest(bundle, peer, original_grid.GRID)
     return {
         "version": 1,
+        "budget_runner_sha256": original_grid.digest(Path(__file__).resolve()),
         "strategy": "same first 12 then 46 then all 138; top 7+anchor, top 2+anchor",
         "initial_pairs": [[k, a] for k, a in SCREEN],
         "source_250": str(source.resolve()),
