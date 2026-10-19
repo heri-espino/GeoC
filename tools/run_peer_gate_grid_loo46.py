@@ -28,8 +28,6 @@ from pathlib import Path  # noqa: E402
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-
-
 from run_selected_champions_loo import (  # noqa: E402
     BUNDLE,
     ID,
