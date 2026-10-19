@@ -180,3 +180,6 @@ venv/
 
 # Separate train-fold-only mean-imputation Reference26 Ridge search
 /reports/reference26_ridge_budget_mean/
+
+# Private 138-parcel LOOCV ensemble diagnostics and residual correlations
+/reports/loo_ensemble_screen/
