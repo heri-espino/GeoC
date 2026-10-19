@@ -25,9 +25,7 @@ import pandas as pd
 from scipy.stats import binomtest, wilcoxon
 from sklearn.cluster import AgglomerativeClustering
 
-from geocebada.evaluation.loocv_comprehensive_metrics import (
-    MAIN_FIELDS, OTHER_FIELDS, all_metrics, paired_metrics,
-)
+from geocebada.evaluation.loocv_comprehensive_metrics import all_metrics
 
 ROOT = Path(__file__).resolve().parents[1]
 ID = "ID_POLIGONO"
@@ -490,8 +488,8 @@ def make_plots(table, metrics, paired, ci, subgroups, out):
         m = metrics.set_index("model").loc[name]
         row = ci.set_index("model").loc[name]
         ax.errorbar(m["rmse_t_ha"], j, xerr=[
-            [m["rmse_t_ha"]-row["rmse_ci95_low"]],
-            [row["rmse_ci95_high"]-m["rmse_t_ha"]]
+            [max(0., m["rmse_t_ha"]-row["rmse_ci95_low"])],
+            [max(0., row["rmse_ci95_high"]-m["rmse_t_ha"])]
         ], fmt="o", capsize=3)
     ax.set_yticks(range(len(order)), [ALIASES[n] for n in order])
     ax.invert_yaxis()
@@ -528,7 +526,7 @@ def make_plots(table, metrics, paired, ci, subgroups, out):
     lows = comparators["bootstrap_delta_rmse_ci95_low"].to_numpy()
     highs = comparators["bootstrap_delta_rmse_ci95_high"].to_numpy()
     ys = np.arange(len(x))
-    ax.errorbar(x, ys, xerr=[x-lows, highs-x], fmt="o", capsize=3)
+    ax.errorbar(x, ys, xerr=[np.maximum(x-lows, 0), np.maximum(highs-x, 0)], fmt="o", capsize=3)
     ax.axvline(0, linewidth=1, linestyle="--", color="grey")
     ax.set_yticks(ys, [ALIASES[k] for k in comparators["model"]])
     ax.invert_yaxis()
