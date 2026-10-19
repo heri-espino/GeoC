@@ -16,11 +16,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import run_reference26_compact14_final as runner
 
 from geocebada.evaluation.jury_residual_diagnostics import (
     adjust_spatial_tests,
@@ -32,8 +32,6 @@ from geocebada.evaluation.jury_residual_diagnostics import (
 from geocebada.evaluation.loocv_comprehensive_metrics import (
     all_metrics,
 )
-
-import run_reference26_compact14_final as runner
 
 ROOT = runner.ROOT
 ID = runner.ID
