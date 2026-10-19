@@ -930,3 +930,36 @@ CONDITIONALLY ON preselected candidates, not independent unbiased
 study-wide validation. Full VM evaluation pending; no promoted model,
 no modification of 59 official target forecasts. Private reports
 under reports/reference26_top5_nested/ are gitignored.
+
+2026-10-19 — USER VM RUN COMPLETED 138/138 outer nested top-five
+Reference26 correction folds (552 native inner fits).
+True 138-outer RMSE: native Reference26 mean 0.468138,
+fixed robust26 k3 blend .25 supported 0.462418,
+nested selected correction 0.462892 (MAE 0.331956,
+bias -0.005062, CV R2 0.702083). Policy nested
+chose fixed robust26 k3 blend .25 supported in 128 folds,
+PCA8 k3 blend .25 supported in 5 folds, unchanged
+Reference26 in 5 folds. Remaining three chosen 0 times.
+The 5 fixed top models had unchanged earlier authentic
+138x137/1 OOF RMSE: 0.462418,0.464956,0.465506,
+0.465538,0.466518. Improvement of nested policy over
+Reference26 0.005246 t/ha (~1.12%). Top-five family was
+PRESELECTED POSTHOC using the same 138 labels, so not a
+fully unbiased study-wide test; report accurately.
+New experiment/reference26-top5-final59 branch adds
+tools/run_reference26_top5_final59.py +
+tests/test_reference26_top5_final59.py,
+docs/REFERENCE26_FINAL59_SELECTED.md.
+This verifies frozen original MEAN train138 joblib/59 CSV
+SHA and native replay, verifies prior 138 nested folds +
+top-five private screen, runs 4 new native inner folds ON ALL
+138 labeled to choose between five and unchanged Reference26
+using 1% min relative MSE gain (same policy as nested study),
+applies the selected strategy via REAL 138 neighbors to the
+original train138 Reference26 predictions for all 59 unknown.
+Creates ONLY ignored private 59 comparison CSV, 2-column
+submission CANDIDATE CSV, final aggregate provenance JSON.
+Does NOT overwrite native joblib, original 59 CSV, 138 OOF,
+or public GitHub site. Real 59 predictions NOT YET computed
+and cannot be predicted remotely without user's private bundle.
+Local run instructions in docs/REFERENCE26_FINAL59_SELECTED.md.
