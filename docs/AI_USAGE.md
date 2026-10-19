@@ -146,3 +146,19 @@ relative to actual anchors, 138 real heldout Reference26 predictions reused.
 New synthetic unit tests verify three classes, complete heldout-y isolation,
 and exact unchanged fallback when classifier chooses ordinary group.
 Performance on actual private VM records **not yet run**.
+
+## 2026-10-19 — Global synthetic augmentation experiment
+
+Following negative three-regime LOOCV, the user requested testing a
+single global regression model trained with real + many synthetic cases.
+The assistant implemented a resumable 138-fold Ridge and ExtraTrees
+evaluation with real-label-only controls, 256/1024 generated samples,
+and repeat/local Brownian bridge/mixed alternatives.
+The subsequently requested gaussian_hard treatment creates a separate
+Gaussian X cloud centered on each of eight high-error training parcels.
+The centers are selected within each outer training fold via an exact
+Ridge PRESS calculation (validated in synthetic unit tests) rather than
+reading historic Reference26 OOF error rankings that may contain information
+about the current heldout y. Synthetic responses are inherited from real
+centers. No independent observations are invented. All numeric results are
+pending local user-run; no promotion or public individual-y data.

@@ -892,3 +892,65 @@ OOF, fold-specific synthetic generation/router, report A2/B6/C130
 and changes to baseline. Post-hoc group definition means CV is exploratory.
 The original geometric route runners remain archived controls. REAL VM
 EXECUTION NOT YET DONE; no promotion or deployment.
+
+2026-10-19 — User explicitly rejected K-Means/recycled 3-route classifiers and
+asked for ONE GLOBAL REGRESSOR fitted on all real training labels PLUS many
+synthetically generated examples around the two anomalous Reference26 cases.
+Separate branch/PR: experiment/global-synthetic-augmentation,
+tools/run_global_synthetic_augmentation.py,
+tests/test_global_synthetic_augmentation.py, docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+This is a different experiment from the negative classified specialists
+(138 LOOCV baseline 0.468138, no positive routed configuration).
+Four augmentations: anchor duplication; X-only locally Gaussian-jittered
+anchor neighborhoods; Brownian bridge with interpolated pseudo-y; 50/50 mixture.
+Default 256/1024 synthetic rows per fold, mass 32 or full; 2 global learners
+Ridge and ExtraTrees, each with real-only native plain learner control,
+plus authentic saved Reference26 mean holdout benchmark. 138 fold-local refits
+of new global learners, 137 real + artificial, no heldout-y synthetic leakage.
+When an anchor is held out, Brownian bridge falls back to local generation
+around the remaining training anchor. Post-hoc anchor selection persists,
+so CV is exploratory and not independent model selection. Explicit optional
+--predict59 writes only new private candidate forecasts, never replaces
+Reference26 final outputs or website. Real VM run/tests PENDING; do not claim
+gains until terminal scores from user are received. No K-Means experiment.
+
+2026-10-19 — New BRANCH experiment/global-synthetic-augmentation and draft
+global-augmentation experiment built after user requested a SINGLE GLOBAL
+model trained on real + many synthetic rows instead of 2 specialists and
+a 3-class classifier. Key code:
+tools/run_global_synthetic_augmentation.py,
+tests/test_global_synthetic_augmentation.py,
+docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+This compares 138 authentic 137/1 Reference26 mean heldout predictions
+(reused only as a frozen reference) with two separate globally refitted
+learners (Ridge and ExtraTrees) trained each fold on 137 REAL observations
+plus 256 or 1024 SYNTHETIC observations. Generators: repeat hard-2,
+Gaussian local around hard-2, Brownian bridge between hard-2,
+mixed local+bridge, and **gaussian_hard** (independent X Gaussian clouds
+around top-8 LARGE TRAIN-ONLY Ridge PRESS residual centers). The hard-8
+selection is recalculated INSIDE EACH OUTER TRAINING FOLD; never use
+previous 138 global Reference26 residual ranks to select centers in CV,
+as those historical fits may include outer heldout y. Synthetic rows
+inherit/interpolate only training labels. The model-specific no-augmentation
+control is fitted on exactly the SAME folds; alternative artificial total
+weights: 32 and Nsynthetic ('full'). Full grid 40 augmented + 2 controls.
+Use --plot for private signed-residual PCA, target X and Gaussian hard
+centers. All local reports under reports/global_synthetic_augmentation*/
+are gitignored. Real VM test/run not yet executed. No model promotion,
+59-target yield inspection, or website changes.
+
+
+2026-10-19 — REAL VM outcome for experiment/global-synthetic-augmentation
+(PR #31): full 138 x (137/1) CV completed; all 40 synthetic global
+Ridge/ExtraTrees variants were inferior to their same-learner no-augmentation
+controls and to original Reference26 mean. Actual aggregate RMSE:
+Reference26 mean 0.468138; plain Ridge 0.492732; plain ExtraTrees
+0.496662; best synthetic ExtraTrees repeat n256/full 0.506404;
+ExtraTrees gaussian_hard n256/m32 0.538480; Ridge gaussian_hard
+n256/m32 0.563545. Gaussian Ridge did improve descriptive hardest-2 RMSE
+≈2.065 -> 1.767889 but worsened other136 0.399583 -> 0.525634.
+Crucial distinction: these candidate models are *global Ridge and
+ExtraTrees*, NOT Reference26 with direct synthetic rows. The user's
+original 59 predictions are unchanged; no promotion. User-sent
+aggregate logs, no private results CSV committed. See updated
+docs/GLOBAL_SYNTHETIC_AUGMENTATION.md for full interpretation.

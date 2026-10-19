@@ -1695,3 +1695,60 @@ Reference26 baseline is reused and all pseudo-labels and group-router
 training X are fold-local. Outputs include per-class A2/B6/C130 errors
 and unchanged/worsened parcel counts. Method selection remains
 post-hoc; the revised classifier's real VM test is **not yet run**.
+
+## 2026-10-19 — Large synthetic augmentation of a single global regressor
+
+The user rejected K-Means and declined further small gated specialist
+variants after full 138-fold three-class classifier LOOCV found no improvement:
+baseline Reference26_mean 0.468138 t/ha, 18 configurations; conservative
+routing leaves baseline unchanged, interventions consistently worsened global
+RMSE. They hypothesized the two most difficult observations could represent
+an otherwise underrepresented population, and requested generating many
+artificial X/y neighbors BEFORE training one global regressor on all available
+real + synthetic rows. Implemented in new experimental branch using Ridge
+and ExtraTrees (each with its own unsynthesized control), 256/1024 generated
+points, two weighting masses, 4 generation strategies including duplication
+control, fold-local generation with genuine 137/1 heldouts, and private
+197-parcel PCA plus signed-residual diagnostic figures. Reference26 native
+saved LOOCV remains a benchmark, NOT a model modified to take synthetic
+rows. No results available until run on user's machine. Methodology:
+docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+
+## 2026-10-19 — One global learner with many synthetic high-error-centered points
+
+After the negative Reference26 + 2-class synthetic-expert routing
+experiment (full LOOCV 0.468138 t/ha baseline was not beaten), user
+proposed generating much MORE synthetic training data and training
+one global model directly on all real plus synthetic rows. Separate
+branch experiment/global-synthetic-augmentation implements Ridge and
+ExtraTrees LOOCV paired against their identical no-augmentation recipes
+and Reference26, with repeat, local Gaussian, Brownian bridge, mixed
+augmentations and gaussian_hard. The latter recenters Gaussian clouds
+on eight difficult real training observations, defined by an exact
+Ridge LOOCV PRESS ranking recalculated solely within the outer 137
+training labels, not the globally chosen Reference26 hard-2 list.
+The previous two historically hard parcels still serve as anchors
+for other methods. 256 and 1024 synthetic rows and two sample weights
+(32 effective total or 1 per fake point) are explored. Private plots
+visualize 197 X parcels (including 59 y-unknown), signed genuine
+Reference26 LOOCV errors, and selected hard centers. Test and real
+VM results have NOT yet been run; no promotion or target edits.
+Full spec docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+
+
+## 2026-10-19 — Resultados VM reales de augmentación global: negativos
+
+El usuario ejecutó el full 138-fold LOOCV y resumen del experimento
+`experiment/global-synthetic-augmentation` (PR #31). Reference26
+mean siguió mejor, RMSE 0.468138 t/ha. Los controles globales sin
+augmentación quedaron Ridge 0.492732, ExtraTrees 0.496662;
+el mejor candidato aumentado (ExtraTrees, simple repetición de las dos
+anclas, n=256, masa full) obtuvo 0.506404; la gaussiana hard-8 con
+ExtraTrees (n=256, masa=32) obtuvo 0.538480; la misma variante con
+Ridge 0.563545. El último redujo el RMSE de dos históricos casos
+difíciles a 1.767889 desde ≈2.065, pero empeoró las otras 136 a
+0.525634 desde ≈0.399583. Ninguna receta sintética mejoró el RMSE
+global o el control del mismo algoritmo. Estos globales son Ridge/ExtraTrees
+**distintos** de Reference26; no es un refit sintético de Reference26.
+No publicar CSV privados ni cambiar las 59 predicciones oficiales.
+Análisis detallado: docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
