@@ -240,3 +240,68 @@ promovida. Mantener siempre el RMSE de Reference26 como comparacion.
 Tests unitarios comprueban identidad exacta del PRESS frente al
 LOOCV Ridge bruto, invariancia al modificar el rendimiento heldout,
 ausencia de centros excluidos y recuento exacto de filas.
+
+
+## Resultados auténticos comunicados desde VM — 2026-10-19
+
+**Estado actualizado:** ejecución real `--run` de 138 folds completada en la
+máquina del usuario; `--summary` reprodujo la tabla. La agente de GitHub
+NO pudo inspeccionar los CSV privados, por lo que los valores siguientes son
+los números agregados copiados del log enviado por el usuario. No se subieron
+etiquetas individuales ni archivos de predicciones por parcela.
+
+El experimento ajustó dos familias globales diferentes de Reference26,
+**Ridge** y **ExtraTrees**, con sus correspondientes versiones sin
+augmentación, y 40 recetas sintéticas (cinco métodos × dos tamaños
+× dos masas × dos regresores). Se conservaron las 138 predicciones
+LOOCV auténticas de Reference26 con imputación media como comparador
+**sin reentrenarlo con los datos sintéticos**.
+
+| Receta y familia | RMSE (t/ha) | MAE (t/ha) | RMSE del mismo regresor sin augmentación |
+|---|---:|---:|---:|
+| Reference26 mean (control histórico, no reentrenado) | **0.468138** | **0.333786** | n/a |
+| Ridge global sin augmentación | 0.492732 | 0.361595 | 0.492732 |
+| ExtraTrees global sin augmentación | 0.496662 | 0.368799 | 0.496662 |
+| ExtraTrees + repeat 256, masa full (mejor receta sintética) | 0.506404 | 0.374848 | 0.496662 |
+| ExtraTrees + gaussian_hard 256, masa 32 | 0.538480 | 0.395175 | 0.496662 |
+| ExtraTrees + gaussian_hard 1024, masa 32 | 0.542316 | 0.393803 | 0.496662 |
+| Ridge + gaussian_hard 256, masa 32 | 0.563545 | 0.455681 | 0.492732 |
+
+Las salidas están ordenadas por RMSE; incluso el mejor modelo
+**aumentado** (`repeat` con ExtraTrees) fue peor tanto que
+Reference26 (+0.038266 t/ha de RMSE, ≈+8.2%) como que su ExtraTrees
+sin augmentación (+0.009742 t/ha). Las gaussianas centradas en
+parcelas con gran residuo PRESS tampoco mejoraron sus controles.
+No se logró mejora LOOCV global dentro del grid examinado.
+
+### Evidencia de intercambio entre extremos y parcelas ordinarias
+
+El candidato `aug__ridge__gaussian_hard__n256__m32` bajó el RMSE
+descriptivo en las dos históricamente más difíciles de 2.065
+(Reference26) a **1.767889 t/ha**, pero elevó el RMSE en las otras
+136 de 0.399583 a **0.525634 t/ha**. La ganancia en dos observaciones
+no compensó el deterioro de la población ordinaria; el RMSE global
+fue 0.563545 t/ha. La selección histórica de estos dos casos a partir
+de los mismos residuos hace esa reducción exploratoria y susceptible
+a sesgo de selección.
+
+### Lo que estos resultados demuestran, y lo que no
+
+1. Bajo estos hiperparámetros, aumentar agresivamente datos alrededor
+   de puntos con errores elevados **perjudicó** tanto a Ridge como a
+   ExtraTrees. El conjunto sintético de 256/1024 ejemplos no aporta
+   observaciones de rendimiento nuevas, sino hipótesis locales sobre
+   la relación X→y; puede distorsionar el compromiso global de errores.
+2. No se ha probado **Reference26 nativo entrenado directamente con
+   filas sintéticas**: su receta original combina múltiples componentes
+   y requiere geometría, índices y distancias de parcelas reales, no
+   admite simplemente concatenar filas al dataframe del Ridge global.
+   Por ello el resultado NO descarta toda augmentación posible de
+   Reference26, pero sí rechaza la promoción de estos dos regresores.
+3. `gaussian_hard` seleccionó centros vía Ridge PRESS *dentro del fold*,
+   no según los residuos de Reference26; las dos poblaciones pueden
+   diferir. No se confirmó que las dos parcelas extremas constituyan
+   un mismo régimen agronómico ausente de los datos.
+4. **Decisión:** no modificar las 59 predicciones ni reemplazar
+   Reference26 mean (RMSE 0.468138). Conservar el experimento como
+   resultado negativo documentado, sin cambiar ninguna etiqueta.
