@@ -634,6 +634,8 @@ def main():
     payload = (
         z, y, anchors, root, roots, {
             "sigma": args.sigma, "ridge_alpha": args.ridge_alpha,
+            "hard_centers": args.hard_centers,
+            "local_neighbors": args.local_neighbors,
             "trees": args.trees, "leaf": args.leaf,
             "seed": args.seed,
         }, settings, ids, loo["Reference26_mean"].to_numpy(float)
