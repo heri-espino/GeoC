@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "source": "User-provided full console output of report_reference26_top5_all_metrics.py --run --bootstrap 10000 and --summary",
+  "run_date": "2026-10-19",
+  "results_are_rounded_to_six_decimals": true,
+  "protocol": {
+    "n_genuine_holdouts": 138,
+    "n_real_training_per_fold": 137,
+    "n_original_models": 7,
+    "n_bootstrap_draws": 10000,
+    "no_new_native_refits": true,
+    "n_unobserved_target_y": 59,
+    "spatial_bootstrap_not_requested": true
+  },
+  "units": {
+    "errors": "t/ha",
+    "mse": "(t/ha)^2",
+    "huber": "Huber loss for residual in t/ha, delta=0.5 t/ha",
+    "wape": "percent"
+  },
+  "main_scores": [
+    {
+      "model": "analog__robust26__k3__blend0.25__supported",
+      "l1_t_ha": 45.818556,
+      "l2_t_ha": 5.432182,
+      "linf_t_ha": 2.115301,
+      "mse_t_ha2": 0.21383,
+      "rmse_t_ha": 0.462418,
+      "mae_t_ha": 0.332019,
+      "p95_ae_t_ha": 0.782014,
+      "p99_ae_t_ha": 1.687373,
+      "r2_cv": 0.702693,
+      "bias_t_ha": -0.004103,
+      "wape_pct": 8.394137,
+      "huber_mean_delta_0p5": 0.082456
+    },
+    {
+      "model": "NestedSelection",
+      "l1_t_ha": 45.809975,
+      "l2_t_ha": 5.437752,
+      "linf_t_ha": 2.119565,
+      "mse_t_ha2": 0.214269,
+      "rmse_t_ha": 0.462892,
+      "mae_t_ha": 0.331956,
+      "p95_ae_t_ha": 0.782014,
+      "p99_ae_t_ha": 1.687373,
+      "r2_cv": 0.702083,
+      "bias_t_ha": -0.005062,
+      "wape_pct": 8.392565,
+      "huber_mean_delta_0p5": 0.082625
+    },
+    {
+      "model": "analog__pca8__k3__blend0.25__supported",
+      "l1_t_ha": 46.104595,
+      "l2_t_ha": 5.461993,
+      "linf_t_ha": 2.119565,
+      "mse_t_ha2": 0.216184,
+      "rmse_t_ha": 0.464956,
+      "mae_t_ha": 0.334091,
+      "p95_ae_t_ha": 0.780898,
+      "p99_ae_t_ha": 1.679991,
+      "r2_cv": 0.699421,
+      "bias_t_ha": -0.000414,
+      "wape_pct": 8.44654,
+      "huber_mean_delta_0p5": 0.083315
+    },
+    {
+      "model": "analog__pca8__k8__blend0.25__supported",
+      "l1_t_ha": 46.152519,
+      "l2_t_ha": 5.46846,
+      "linf_t_ha": 2.145922,
+      "mse_t_ha2": 0.216696,
+      "rmse_t_ha": 0.465506,
+      "mae_t_ha": 0.334439,
+      "p95_ae_t_ha": 0.776294,
+      "p99_ae_t_ha": 1.6703,
+      "r2_cv": 0.698709,
+      "bias_t_ha": -0.004101,
+      "wape_pct": 8.45532,
+      "huber_mean_delta_0p5": 0.083645
+    },
+    {
+      "model": "analog__robust26__k3__blend0.1__supported",
+      "l1_t_ha": 45.950069,
+      "l2_t_ha": 5.46883,
+      "linf_t_ha": 2.130095,
+      "mse_t_ha2": 0.216725,
+      "rmse_t_ha": 0.465538,
+      "mae_t_ha": 0.332972,
+      "p95_ae_t_ha": 0.778215,
+      "p99_ae_t_ha": 1.684437,
+      "r2_cv": 0.698668,
+      "bias_t_ha": -0.000762,
+      "wape_pct": 8.41823,
+      "huber_mean_delta_0p5": 0.083545
+    },
+    {
+      "model": "analog__robust26__k3__blend0.1__none",
+      "l1_t_ha": 46.36236,
+      "l2_t_ha": 5.480351,
+      "linf_t_ha": 2.122114,
+      "mse_t_ha2": 0.217639,
+      "rmse_t_ha": 0.466518,
+      "mae_t_ha": 0.335959,
+      "p95_ae_t_ha": 0.785315,
+      "p99_ae_t_ha": 1.691648,
+      "r2_cv": 0.697397,
+      "bias_t_ha": -0.004757,
+      "wape_pct": 8.493764,
+      "huber_mean_delta_0p5": 0.084122
+    },
+    {
+      "model": "Reference26_mean_unchanged",
+      "l1_t_ha": 46.062466,
+      "l2_t_ha": 5.499378,
+      "linf_t_ha": 2.139958,
+      "mse_t_ha2": 0.219153,
+      "rmse_t_ha": 0.468138,
+      "mae_t_ha": 0.333786,
+      "p95_ae_t_ha": 0.779618,
+      "p99_ae_t_ha": 1.682479,
+      "r2_cv": 0.695292,
+      "bias_t_ha": 0.001466,
+      "wape_pct": 8.438822,
+      "huber_mean_delta_0p5": 0.084447
+    }
+  ],
+  "paired_comparisons": [
+    {
+      "model": "analog__robust26__k3__blend0.25__supported",
+      "delta_rmse_candidate_minus_baseline_t_ha": -0.00572,
+      "signflip_mse_maxT_six_one_sided_p": 0.033697,
+      "bootstrap_delta_rmse_ci95_low": -0.011681,
+      "bootstrap_delta_rmse_ci95_high": -0.000058
+    },
+    {
+      "model": "NestedSelection",
+      "delta_rmse_candidate_minus_baseline_t_ha": -0.005246,
+      "signflip_mse_maxT_six_one_sided_p": 0.052895,
+      "bootstrap_delta_rmse_ci95_low": -0.011068,
+      "bootstrap_delta_rmse_ci95_high": 0.000282
+    },
+    {
+      "model": "analog__pca8__k3__blend0.25__supported",
+      "delta_rmse_candidate_minus_baseline_t_ha": -0.003182,
+      "signflip_mse_maxT_six_one_sided_p": 0.218278,
+      "bootstrap_delta_rmse_ci95_low": -0.008113,
+      "bootstrap_delta_rmse_ci95_high": 0.001711
+    },
+    {
+      "model": "analog__pca8__k8__blend0.25__supported",
+      "delta_rmse_candidate_minus_baseline_t_ha": -0.002632,
+      "signflip_mse_maxT_six_one_sided_p": 0.29977,
+      "bootstrap_delta_rmse_ci95_low": -0.005942,
+      "bootstrap_delta_rmse_ci95_high": 0.000471
+    },
+    {
+      "model": "analog__robust26__k3__blend0.1__supported",
+      "delta_rmse_candidate_minus_baseline_t_ha": -0.0026,
+      "signflip_mse_maxT_six_one_sided_p": 0.30447,
+      "bootstrap_delta_rmse_ci95_low": -0.005028,
+      "bootstrap_delta_rmse_ci95_high": -0.000313
+    },
+    {
+      "model": "analog__robust26__k3__blend0.1__none",
+      "delta_rmse_candidate_minus_baseline_t_ha": -0.00162,
+      "signflip_mse_maxT_six_one_sided_p": 0.470453,
+      "bootstrap_delta_rmse_ci95_low": -0.006318,
+      "bootstrap_delta_rmse_ci95_high": 0.003481
+    }
+  ],
+  "inference_limitations": [
+    "The five correction rules were selected post-hoc after viewing related 138 heldouts.",
+    "The bootstrap uses iid parcel resampling; parcels may have spatial dependence.",
+    "Six-way maxT corrects within this final family only, not previous studies.",
+    "No 59 hidden-y error metrics can be reported."
+  ],
+  "not_in_pasted_summary": [
+    "median AE",
+    "P25/P50/P75",
+    "Huber delta .25 or 1",
+    "MAPE/sMAPE/RMSPE",
+    "calibration slope",
+    "Pearson/Spearman",
+    "influence aggregates",
+    "full bootstrap 95% intervals for all metrics",
+    "per yield-tertile errors",
+    "all other columns in metrics_complete_7.csv"
+  ]
+}
