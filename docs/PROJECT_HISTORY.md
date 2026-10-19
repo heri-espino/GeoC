@@ -1713,3 +1713,24 @@ control, fold-local generation with genuine 137/1 heldouts, and private
 saved LOOCV remains a benchmark, NOT a model modified to take synthetic
 rows. No results available until run on user's machine. Methodology:
 docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+
+## 2026-10-19 — One global learner with many synthetic high-error-centered points
+
+After the negative Reference26 + 2-class synthetic-expert routing
+experiment (full LOOCV 0.468138 t/ha baseline was not beaten), user
+proposed generating much MORE synthetic training data and training
+one global model directly on all real plus synthetic rows. Separate
+branch experiment/global-synthetic-augmentation implements Ridge and
+ExtraTrees LOOCV paired against their identical no-augmentation recipes
+and Reference26, with repeat, local Gaussian, Brownian bridge, mixed
+augmentations and gaussian_hard. The latter recenters Gaussian clouds
+on eight difficult real training observations, defined by an exact
+Ridge LOOCV PRESS ranking recalculated solely within the outer 137
+training labels, not the globally chosen Reference26 hard-2 list.
+The previous two historically hard parcels still serve as anchors
+for other methods. 256 and 1024 synthetic rows and two sample weights
+(32 effective total or 1 per fake point) are explored. Private plots
+visualize 197 X parcels (including 59 y-unknown), signed genuine
+Reference26 LOOCV errors, and selected hard centers. Test and real
+VM results have NOT yet been run; no promotion or target edits.
+Full spec docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
