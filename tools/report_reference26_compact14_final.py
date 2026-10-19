@@ -22,6 +22,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from geocebada.evaluation.jury_residual_diagnostics import (
+    adjust_spatial_tests,
+    conditional_error_diagnostics,
+    interpret_tests,
+    normality_and_distribution,
+    paired_loss_diagnostics,
+)
 from geocebada.evaluation.loocv_comprehensive_metrics import (
     all_metrics,
 )
@@ -425,7 +432,10 @@ def export_public(
         "models": safe_stats,
         "spatial": geo,
         "weights": dict(zip(NAMES[:2], weights, strict=True)),
-        "interpretation": interpret_metric_family(),
+        "interpretation": {
+            **interpret_metric_family(),
+            "statistical_tests": interpret_tests(),
+        },
     }
     out.write_text(
         json.dumps(data, ensure_ascii=False, indent=2,
@@ -460,10 +470,13 @@ def run_report(args):
         frame["base_centroid_lat"].to_numpy(float),
         frame["base_centroid_lon"].to_numpy(float),
     )
-    spatial = spatial_metrics(
+    spatial = adjust_spatial_tests(spatial_metrics(
         y, arrays, distance,
         permutations=args.permutations, seed=args.seed,
-    )
+    ))
+    normality = normality_and_distribution(y, arrays)
+    heteroscedasticity = conditional_error_diagnostics(y, arrays)
+    paired = paired_loss_diagnostics(y, arrays)
     semivariogram = distance_semivariogram(y, arrays, distance)
     regions = by_region(frame, completed)
     out = args.output.resolve()
@@ -474,6 +487,14 @@ def run_report(args):
                float_format="%.16g")
     spatial.to_csv(out / "global_spatial_autocorrelation.csv", index=False,
                    float_format="%.16g")
+    normality.to_csv(out / "normality_and_distribution.csv", index=False,
+                     float_format="%.16g")
+    heteroscedasticity.to_csv(
+        out / "heteroscedasticity_and_calibration.csv", index=False,
+        float_format="%.16g",
+    )
+    paired.to_csv(out / "paired_loss_tests.csv", index=False,
+                  float_format="%.16g")
     semivariogram.to_csv(out / "residual_semivariogram.csv", index=False,
                         float_format="%.16g")
     regions.to_csv(out / "private_regional_errors.csv", index=False,
@@ -493,6 +514,16 @@ def run_report(args):
           + moran_rows[["model", "knn", "estimate",
                         "p_two_sided", "p_right"]].to_string(index=False),
           flush=True)
+    print("[NORMALITY] Exploratory 138 residual diagnostics:\n"
+          + normality[["model", "shapiro_w", "shapiro_p_exploratory",
+                       "dagostino_pearson_p_exploratory",
+                       "anderson_reject_at_5pct"]].to_string(index=False),
+          flush=True)
+    print("[PAIRED LOSS] Difference vs Reference26 with media:\n"
+          + paired[["model", "loss", "mean_loss_difference",
+                    "fraction_improved", "wilcoxon_p_exploratory",
+                    "wilcoxon_p_exploratory_holm_all"]].to_string(index=False),
+          flush=True)
     print("[GEO] n<5 regional groups suppressed; "
           "not a geographically blocked cross-validation.")
     print("[CAUTION] No independent validation of selected mixture weights; "
@@ -503,6 +534,9 @@ def run_report(args):
 def summary(args):
     directory = args.output.resolve()
     for file in ("primary_metrics.csv", "specialized_metrics.csv",
+                 "normality_and_distribution.csv",
+                 "heteroscedasticity_and_calibration.csv",
+                 "paired_loss_tests.csv",
                  "global_spatial_autocorrelation.csv"):
         path = directory / file
         if not path.is_file():
