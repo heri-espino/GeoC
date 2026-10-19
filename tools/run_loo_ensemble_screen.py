@@ -270,13 +270,13 @@ def screen(table: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFram
                 {ANCHOR: round(1-w, 3), model: w},
             ))
     for left, right in itertools.combinations(features[1:], 2):
-        l = table[left].to_numpy(float)
-        r = table[right].to_numpy(float)
+        left_pred = table[left].to_numpy(float)
+        right_pred = table[right].to_numpy(float)
         for w_l, w_r in itertools.product((0.10, 0.20, 0.30), repeat=2):
             if w_l+w_r > 0.50:
                 continue
             w_anchor = round(1-w_l-w_r, 3)
-            pred = w_anchor*base+w_l*l+w_r*r
+            pred = w_anchor*base+w_l*left_pred+w_r*right_pred
             rows.append(metrics(y, pred, base_mse, "anchor_plus_two", {
                 ANCHOR: w_anchor, left: w_l, right: w_r,
             }))
