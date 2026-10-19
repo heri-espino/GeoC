@@ -132,3 +132,17 @@ augmented experts whenever a target anchor is withheld, preventing direct
 synthetic pseudo-label leakage. All model selection is post hoc to inspected
 LOOCV cases, so scores are exploratory. No private data or trained artifacts
 have been published; a user VM run and tests are pending.
+
+## 2026-10-19 — User-directed three-class synthetic specialist classifier
+
+The user clarified that the final proposed three-group experiment must use a
+**trained classification model** to select between two separately fitted
+Brownian-bridge Ridge specialists and frozen Reference26 (not just a geometric
+distance gate), and requested substantially less augmentation. An assistant
+implemented tools/run_three_regime_classifier.py using a fold-fitted
+80-tree RandomForestClassifier and two synthetic regressors. Default
+augmentation 21 + 105 = 126 positions, with synthetic sample weights capped
+relative to actual anchors, 138 real heldout Reference26 predictions reused.
+New synthetic unit tests verify three classes, complete heldout-y isolation,
+and exact unchanged fallback when classifier chooses ordinary group.
+Performance on actual private VM records **not yet run**.
