@@ -43,14 +43,13 @@ def _stub_peer_classes(monkeypatch):
                 if i > 1:
                     setattr(modules[".".join(parts[:i-1])], parts[-1], node)
 
-    classes = {}
-    for module_name, class_name, field_name, median_name in ATTRIBUTES:
+    def make_class(name, fields_name, imputed_name):
         class FakeRepresentation:
             def __init__(self, cols):
-                setattr(self, field_name, list(cols))
+                setattr(self, fields_name, list(cols))
 
             def fit(self, X, y=None):
-                cols = list(getattr(self, field_name))
+                cols = list(getattr(self, fields_name))
                 self.seen_y = y
                 numeric = [c for c in cols if pd.api.types.is_numeric_dtype(X[c])]
                 self.training_matrix = X[numeric].to_numpy(float)
@@ -59,18 +58,22 @@ def _stub_peer_classes(monkeypatch):
                     a = pd.to_numeric(X[c], errors="coerce").to_numpy(float)
                     good = a[np.isfinite(a)]
                     out.append(float(np.median(good)) if len(good) else 0.)
-                if median_name == "fields_":
+                if imputed_name == "fields_":
                     self.fields_ = {
                         c: {"numeric": c in numeric, "median": out[numeric.index(c)]}
                         if c in numeric else {"numeric": False}
                         for c in cols
                     }
                 else:
-                    setattr(self, median_name, np.asarray(out))
+                    setattr(self, imputed_name, np.asarray(out))
                 return self
 
-        FakeRepresentation.__name__ = class_name
-        cls = FakeRepresentation
+        FakeRepresentation.__name__ = name
+        return FakeRepresentation
+
+    classes = {}
+    for module_name, class_name, field_name, median_name in ATTRIBUTES:
+        cls = make_class(class_name, field_name, median_name)
         setattr(modules[module_name], class_name, cls)
         classes[class_name] = cls
     return classes
