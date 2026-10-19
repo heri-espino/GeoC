@@ -201,3 +201,6 @@ venv/
 # target predictions, and all alternative parameter grids.
 /reports/global_synthetic_augmentation*/
 /reports/global_synthetic_augmentation/
+
+# Weighting and balanced Gaussian augmentation: private folds and labels
+/reports/weighted_balanced_augmentation*/
