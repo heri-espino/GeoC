@@ -91,7 +91,11 @@ def run_fold_batch(pos: int, pairs: tuple, output_name: str):
         share_climate_fits_between_grid_candidates,
     )
 
-    with threadpool_limits(limits=1), use_training_means(), share_climate_fits_between_grid_candidates():
+    with (
+        threadpool_limits(limits=1),
+        use_training_means(),
+        share_climate_fits_between_grid_candidates(),
+    ):
         for pair in pairs:
             path = fold_path(output, pos, pair)
             if path.is_file():
