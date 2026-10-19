@@ -37,7 +37,7 @@ Primero transformar las 26 covariables numericas originales de las
 197 parcelas a una representacion X-only robustamente estandarizada.
 El ruido esta en **este espacio de caracteristicas**, no en latitud/longitud.
 
-4 metodos, manteniendo disponible al menos una ancla real:
+5 metodos, manteniendo disponible al menos una ancla real para las variantes iniciales:
 
 1. **repeat**: muestreo con reemplazo de las anclas reales, X e y
    exactamente repetidos. Control de simple reponderacion.
@@ -53,6 +53,27 @@ El ruido esta en **este espacio de caracteristicas**, no en latitud/longitud.
    el y del heldout para generar otra observacion.
 4. **mixed**: mitad de filas `local`, mitad `bridge`;
    tambien sigue el fallback sin filtracion.
+
+5. **gaussian_hard (nuevo, preferente para la nueva hipotesis):**
+   identificar dentro de las 137 etiquetas de entrenamiento los **8
+   puntos con mayor residuo LOOCV absoluto de un Ridge auxiliar**
+   mediante el calculo exacto y eficiente PRESS. Cada punto se
+   convierte en el centro de una distribucion normal multivariante de
+   X, con covarianza local estimada usando vecinos X observables.
+   Generar 256 o 1,024 filas desde esas ocho normales; cada fila
+   sintetica hereda el y real de su propio centro, sin agregar ruido
+   ficticio al rendimiento. El numero de centros es configurable con
+   `--hard-centers 8`.
+
+   Esta seleccion se **recalcula dentro de cada fold**. No se
+   reutilizan las listas de residuos de Reference26 calculadas
+   usando las 138 etiquetas, porque esas predicciones historicas de
+   otras parcelas podrian haber sido ajustadas con el rendimiento
+   del fold externo que estamos evaluando. El ranking Ridge PRESS
+   es un indicador auxiliar de dificultad, **no exactamente el
+   ranking residual de Reference26**. Esta separacion permite
+   investigar la hipotesis sin filtracion directa del y heldout
+   a la eleccion de los centros.
 
 Los *datos sinteticos no son mediciones independientes*. Aumentar de
 137 a 1161 filas artificialmente NO equivale a tener 1161 etiquetas
@@ -86,9 +107,10 @@ En cada uno de 138 folds:
 4. Predecir la parcela real heldout, almacenar exclusivamente en
    resultados locales privados.
 
-El grid estandar es 4 metodos x 2 tamanos x 2 masas x 2 modelos =
-32 candidatos aumentados, mas dos modelos reales sin aumentacion
-(34 series predictivas x 138 folds). La carga es mayor que en el
+El grid estandar es **5 metodos x 2 tamanos x 2 masas x 2 modelos = 40**
+candidatos aumentados, mas dos modelos reales sin aumentacion
+(**42 series predictivas x 138 folds**). Los 8 centros gaussianos
+cambian en cada fold de 137 etiquetas reales. La carga es mayor que en el
 experimento de expertos; el procesamiento usa varios workers,
 cache por fold y huella SHA de fuente/datos/parametros.
 
@@ -140,7 +162,7 @@ Para una variante muy agresiva (4096 sinteticos por fold, masa
 completa), **usar otro output** y limitar primero a Ridge:
 
 ~~~powershell
-python tools/run_global_synthetic_augmentation.py --run --models ridge --sizes 4096 --masses full --output reports/global_synthetic_augmentation_4096
+python tools/run_global_synthetic_augmentation.py --run --models ridge --methods gaussian_hard --sizes 4096 --masses full --hard-centers 8 --output reports/global_synthetic_augmentation_4096
 ~~~
 
 ### Predicciones candidatas para las 59 parcelas (solo despues del CV)
@@ -149,7 +171,7 @@ Se exige un `final_manifest.json` original 138/59 y su CSV
 verificado de predicciones Reference26 mean. No se sustituye nada:
 
 ~~~powershell
-python tools/run_global_synthetic_augmentation.py --predict59 --predict-model ridge --predict-method local --predict-size 1024 --predict-mass 32
+python tools/run_global_synthetic_augmentation.py --predict59 --predict-model ridge --predict-method gaussian_hard --predict-size 1024 --predict-mass 32
 ~~~
 
 Los flags elegidos deben estar presentes en el grid del script;
@@ -189,3 +211,32 @@ primero y copiarlas explicitamente a results/.
   conservar Reference26 mean. No crear etiquetas sinteticas con
   rendimientos desconocidos ni inferir que FIRA elimino parcelas
   intencionalmente.
+
+## Como interpretar la nueva variante normal centrada en casos dificiles
+
+Para cada fold externo, el generador Ridge PRESS auxiliar encuentra los
+indices de hasta 8 mayores errores internos usando SOLO entrenamiento.
+Una nube centrada en cada caso se define como
+
+\[
+\widetilde x\mid c \sim \mathcal N(x_c,\sigma^2\widehat\Sigma_c),
+\qquad
+\widetilde y=y_c.
+\]
+
+El estimador \(\widehat\Sigma_c\) proviene de 20 vecinos de X
+(representacion estandarizada sobre 197 covariables visibles) y su
+matriz esta regularizada hacia la identidad. Los valores X
+sinteticos se truncan a [-9,9] unidades estandarizadas. Cuando
+sigma=0 todos los X son simples repeticiones de sus centros.
+
+Importante: los puntos seleccionados como dificiles pueden ser
+rendimientos *reales pero extremos*, *ruidosos* o simplemente mal
+explicados por el auxiliar Ridge; la normal centrada en ellos es
+un supuesto generativo. Si los resultados no mejoran frente a
+los controles del MISMO regresor, la nueva aumentacion no sera
+promovida. Mantener siempre el RMSE de Reference26 como comparacion.
+
+Tests unitarios comprueban identidad exacta del PRESS frente al
+LOOCV Ridge bruto, invariancia al modificar el rendimiento heldout,
+ausencia de centros excluidos y recuento exacto de filas.
