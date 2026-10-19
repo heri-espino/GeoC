@@ -162,3 +162,17 @@ reading historic Reference26 OOF error rankings that may contain information
 about the current heldout y. Synthetic responses are inherited from real
 centers. No independent observations are invented. All numeric results are
 pending local user-run; no promotion or public individual-y data.
+
+## 2026-10-19 — Requested intentional target leakage stress test
+
+On its own branch, an AI assistant created a 100-times-repeated random
+96-real-train/42-real-test experiment, with explicit control comparisons
+where synthetic test children inherit true heldout yields and are either
+added ONLY to evaluation, used to contaminate model training, or both.
+Such scores are intrinsically invalid for genuine model evaluation.
+Paired clean splits and models are recorded with mean/median/sd/percentiles.
+A second utility renders 197 original feature vectors using PCA, UMAP,
+t-SNE and stored spatial distances, coloring the original 138 authentic
+Reference26 LOOCV signed/absolute errors and marking the ten worst
+cases. User VM execution is pending; no claimed score change or final
+model promotion. Source docs/INTENTIONAL_LEAKAGE_7030_AND_GEOMETRY.md.
