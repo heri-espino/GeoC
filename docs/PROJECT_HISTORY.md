@@ -1,3 +1,7 @@
+## 2026-10-18 — Reject re-fitted C4 PCA, require saved-embedding forecast parity
+
+Second workstation --check proved PCA20 refit still differs from frozen reference by 5.556. Implemented a new source-of-truth bridge using the 197×20 saved Checkpoint04A C4 PCA20 table, validated original manifest/IDs/targets and demonstrated exact historical 41-prediction Local04D parity via checkpoint08.verify_original_control at 1e-7. Selected champion comparison uses original predict_old on saved axes, and all peer comparison scripts share this loader. No tolerance relaxation, arbitrary sign alignment or current model promotion. Local runtime remains untested here.
+
 ## 2026-10-18 — Trim peer experiment to the two actual selected champions
 
 After user clarification, added `tools/run_selected_champions_loo.py` to compare only original Reference26 and Compact14 against frozen GeoC Local04D in identical 138 outer 137+1 folds. The source calls teammate's `ColdExperts.full_fit` retaining nested recipe and R3, but skips additional B1 ensemble selection refits. ProcessPoolExecutor parallelizes independent outer folds with restricted numerical threads; GPU/CatBoost irrelevant to selected candidates. Private outputs ignored under `reports/selected_champions_loo`, synthetic tests in `tests/test_selected_champions_loo.py`, execution in `docs/SELECTED_CHAMPIONS_PARALLEL_LOOCV.md`. No local data or real refit used here.
