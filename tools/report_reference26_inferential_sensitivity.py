@@ -27,7 +27,7 @@ OUTPUT = runner.OUTPUT / "inferential_sensitivity"
 
 
 def load_verified(bundle: Path, peer: Path, config: Path, input_dir: Path):
-    frame, groups, dist, manifest, ids, c, pred = runner.load_inputs(
+    frame, _, _, _, ids, _, _ = runner.load_inputs(
         bundle, peer
     )
     expected = runner.provenance(bundle, peer, config)
