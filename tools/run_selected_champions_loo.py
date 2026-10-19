@@ -30,12 +30,6 @@ from pathlib import Path  # noqa: E402
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-from geocebada.evaluation.peer_champions_loo import (  # noqa: E402
-    ID,
-    Y,
-    outer_record,
-    resolve_peer_bundle,
-)
 from run_peer_champions_loo import (  # noqa: E402
     ROOT,
     _hash,
@@ -47,6 +41,13 @@ from run_peer_champions_loo import (  # noqa: E402
 )
 from sklearn.metrics import r2_score  # noqa: E402
 from threadpoolctl import threadpool_limits  # noqa: E402
+
+from geocebada.evaluation.peer_champions_loo import (  # noqa: E402
+    ID,
+    Y,
+    outer_record,
+    resolve_peer_bundle,
+)
 
 OUTPUT = ROOT / "reports/selected_champions_loo"
 LOCAL = "Local04D"
