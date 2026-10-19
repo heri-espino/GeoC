@@ -227,8 +227,12 @@ def _estimate_at(
     neighbors: np.ndarray, distance: np.ndarray, *,
     time_days: float = 14.0, max_lag: int = 35,
     radius: float = 0.05,
+    season: str = "crop2025",
 ) -> float:
     t = float((when - pd.Timestamp("1970-01-01")).days)
+    year = when.year if season == "hist" else 2025
+    start = float((pd.Timestamp(f"{year}-04-01") - pd.Timestamp("1970-01-01")).days)
+    end = float((pd.Timestamp(f"{year}-10-31") - pd.Timestamp("1970-01-01")).days)
     numerator = 0.
     denominator = 0.
     for j in neighbors:
@@ -236,7 +240,7 @@ def _estimate_at(
         if obs is None or not len(obs):
             continue
         lag = abs(obs[:, 0] - t)
-        valid = lag <= max_lag
+        valid = (lag <= max_lag) & (obs[:, 0] >= start) & (obs[:, 0] <= end)
         if not valid.any():
             continue
         local = obs[valid]
@@ -281,7 +285,9 @@ def temporal_fill(
                 if spatiotemporal else np.asarray([i], int)
             )
             values = np.asarray([
-                _estimate_at(when, i, raw, neigh, distance, radius=radius)
+                _estimate_at(
+                    when, i, raw, neigh, distance, radius=radius, season=season
+                )
                 for when in times
             ], dtype=float)
             finite = values[np.isfinite(values)]
