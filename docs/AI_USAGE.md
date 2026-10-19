@@ -148,3 +148,26 @@ Candidates themselves were chosen post-hoc from previously seen
 138-fold scores; this is nested selection conditional on those
 models, not fully independent validation. Code and tests in
 experiment/reference26-top5-nested-loocv; no VM results yet.
+
+## 2026-10-19 — Complete nested top-five result and final prediction pipeline
+
+The user independently ran the 138x(137/1) full nested
+correction-selection experiment using 552 genuine inner
+Reference26 fits. Observed nested-selected RMSE 0.462892
+(vs original mean Reference26 0.468138), MAE 0.331956,
+CV R2 0.702083; 128 folds selected the best previously
+post-hoc robust26 k3 .25 supported, 5 chose PCA8,
+and 5 no correction. The five candidate configurations
+had been selected after many prior evaluations of these
+same 138 labels; an independent test claim is NOT made.
+
+The AI assistant authored a separate 59-target final
+prediction script and unit tests and documented original
+model/inputs provenance. Final decision repeats an
+inner 4-fold selection over ALL 138 known y, applies
+the selected correction to prefit Reference26 mean
+138-label model predictions for 59 unknown X, and
+exports private tabular candidates without changing
+original joblib, predictions or online deployments.
+No actual 59 numeric results can be asserted until
+the user executes it with private data.
