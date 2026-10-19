@@ -90,22 +90,42 @@ studied 138 labels.
   selected using the same 138 observed labels.
 - Actual package versions and a successful local smoke remain necessary.
 
-## 2026-10-18 PCA parity repair
+## 2026-10-18: use frozen historical PCA20, not a new PCA fit
 
-The first workstation `--check` correctly stopped with
-`20-PC numerical parity failure (5.556)`. This was traced to the
-peer bridge requesting 160 PCA axes even though Local04D originally
-fits **exactly 20**. Separate PCA fits can have different SVD signs,
-and the prefix is not the frozen representation used in Checkpoint 04A.
-The peer bridge now calls `load_pca_data(..., max_components=20)`.
-The strict historical 20-PC parity and explained-variance checks
-remain intact; there is **no tolerance relaxation, model modification
-or replacement with unverified PCA**. Synthetic contract test:
-`tests/test_peer_local04d_pca20.py`.
+The user retried with exactly 20 PCA components and the discrepancy
+remained **5.556**. Thus simply requesting fewer axes did not repair
+historical numerical parity; the earlier diagnosis was incomplete.
 
-After pulling the updated branch, run
-`python tools/run_selected_champions_loo.py --check` again before
-the smoke. Pandas DataFrame fragmentation warnings were from repeatedly
-constructing 160 PCA columns and should be reduced by the 20-PC fit.
-If strict parity still fails, share the new error before training.
+We now load the *actual, saved* C4 all-deterministic PCA20 coordinates
+from `reports/checkpoint_04a/transductive_embeddings.csv`, using exactly
+the same loading, standardization and geographic distance normalization
+as the frozen Checkpoint 08 Local04D source. No PCA refit is performed
+in the comparison runner. The loader validates:
+
+- 197 unique parcel IDs and training/prediction role equality across
+  saved C4 X, original feature metadata and official target table
+- 138 finite training yields, 59 strictly missing prediction yields
+- Frozen Checkpoint04A manifest: 2,082 features and exactly 20 PCs
+- **Numerical predictions on 41 historical 97/41 held-out parcels**
+  must equal saved Local04D forecasts to `1e-7` t/ha or the job fails
+
+This is stricter about the final baseline behavior than accepting a
+different PCA basis with relaxed tolerances. The original
+`checkpoint10_pca.load_pca_data` implementation is left unchanged for
+its separate experiments; only the comparison bridge changes.
+Regression tests check frozen-X preservation and deliberate historical
+prediction corruption.
+
+After updating your branch, run:
+
+~~~powershell
+python tools/run_selected_champions_loo.py --check
+python tools/run_selected_champions_loo.py --smoke --jobs 1
+~~~
+
+If a **historical Local04D mismatch** is reported, do not run full
+LOOCV and share the exact value; the historic baseline has not been
+validated on your local data. The 5.556 reconstructed-PCA difference
+alone is not evidence that saved historical Local04D predictions are
+invalid.
 
