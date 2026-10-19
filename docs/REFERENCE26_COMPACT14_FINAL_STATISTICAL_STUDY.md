@@ -12,7 +12,7 @@ métrica más conveniente.
 Los pesos seleccionados anteriormente con el conjunto completo conocido
 están en `configs/reference26_compact14_ensemble.json`:
 
-```math
+```{math}
 \widehat y_{\mathrm{ens}} =
 0.7049462505599942\widehat y_{\mathrm{Reference26,mean}}+
 0.29505374944000595\widehat y_{\mathrm{Compact14}}.
