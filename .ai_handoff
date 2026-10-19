@@ -913,3 +913,28 @@ so CV is exploratory and not independent model selection. Explicit optional
 --predict59 writes only new private candidate forecasts, never replaces
 Reference26 final outputs or website. Real VM run/tests PENDING; do not claim
 gains until terminal scores from user are received. No K-Means experiment.
+
+2026-10-19 — New BRANCH experiment/global-synthetic-augmentation and draft
+global-augmentation experiment built after user requested a SINGLE GLOBAL
+model trained on real + many synthetic rows instead of 2 specialists and
+a 3-class classifier. Key code:
+tools/run_global_synthetic_augmentation.py,
+tests/test_global_synthetic_augmentation.py,
+docs/GLOBAL_SYNTHETIC_AUGMENTATION.md.
+This compares 138 authentic 137/1 Reference26 mean heldout predictions
+(reused only as a frozen reference) with two separate globally refitted
+learners (Ridge and ExtraTrees) trained each fold on 137 REAL observations
+plus 256 or 1024 SYNTHETIC observations. Generators: repeat hard-2,
+Gaussian local around hard-2, Brownian bridge between hard-2,
+mixed local+bridge, and **gaussian_hard** (independent X Gaussian clouds
+around top-8 LARGE TRAIN-ONLY Ridge PRESS residual centers). The hard-8
+selection is recalculated INSIDE EACH OUTER TRAINING FOLD; never use
+previous 138 global Reference26 residual ranks to select centers in CV,
+as those historical fits may include outer heldout y. Synthetic rows
+inherit/interpolate only training labels. The model-specific no-augmentation
+control is fitted on exactly the SAME folds; alternative artificial total
+weights: 32 and Nsynthetic ('full'). Full grid 40 augmented + 2 controls.
+Use --plot for private signed-residual PCA, target X and Gaussian hard
+centers. All local reports under reports/global_synthetic_augmentation*/
+are gitignored. Real VM test/run not yet executed. No model promotion,
+59-target yield inspection, or website changes.
