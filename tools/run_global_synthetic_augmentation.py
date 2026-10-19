@@ -69,7 +69,7 @@ def parse_settings(args):
     sizes = tuple(int(v) for v in args.sizes.split(","))
     masses = tuple(v.strip() for v in args.masses.split(","))
     models = tuple(v.strip() for v in args.models.split(","))
-    if (not methods or set(methods) - {"repeat", "local", "bridge", "mixed"}
+    if (not methods or set(methods) - {"repeat", "local", "bridge", "mixed", "gaussian_hard"}
             or len(set(methods)) != len(methods)
             or not sizes or len(set(sizes)) != len(sizes)
             or min(sizes) < 1
@@ -78,7 +78,7 @@ def parse_settings(args):
             or not models or set(models) - {"ridge", "extra_trees"}
             or len(set(models)) != len(models)
             or args.sigma < 0 or args.local_neighbors < 3
-            or args.ridge_alpha <= 0 or args.trees < 4
+            or args.ridge_alpha <= 0 or args.hard_centers < 2 or args.trees < 4
             or args.leaf < 1 or args.jobs < 1):
         raise ValueError("Invalid methods/sizes/masses/models/hyperparameters.")
     return methods, sizes, masses, models
@@ -98,10 +98,75 @@ def local_roots(z: np.ndarray, anchors: tuple[int, int], neighbors: int):
     return roots
 
 
+def fold_hard_centers(
+    z: np.ndarray, y: np.ndarray, train: np.ndarray, *,
+    count: int, alpha: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Select difficult TRAINING points by training-only Ridge PRESS residuals.
+
+    A naive lookup of the saved 138 Reference26 LOOCV error ranking would
+    contaminate each outer fold: those OTHER historic fits include its heldout
+    label. Instead, PRESS computes exact leave-one-out Ridge residuals on
+    only the 137 allowed training labels, with no outer heldout y access.
+    This is a cheap surrogate hardness score, NOT Reference26's residual.
+    """
+    train = np.asarray(train, int)
+    if (count < 2 or alpha <= 0 or len(train) < 3
+            or np.unique(train).size != len(train)):
+        raise ValueError("Require >=3 unique training indices, >=2 centers, alpha>0.")
+    if not np.isfinite(y[train]).all():
+        raise ValueError("Non-finite training labels.")
+    x = z[train]
+    x_c = x-x.mean(axis=0, keepdims=True)
+    response = y[train]
+    y_c = response-response.mean()
+    matrix = x_c.T@x_c + alpha*np.eye(x.shape[1])
+    cross = np.linalg.solve(matrix, x_c.T)
+    estimate = response.mean() + x_c @ (cross@y_c)
+    leverage = 1./len(train) + np.sum(x_c*cross.T, axis=1)
+    denominator = 1.-leverage
+    if not np.isfinite(denominator).all() or np.min(denominator) <= 1e-8:
+        raise ValueError("Degenerate PRESS leverage values.")
+    residual = (response-estimate)/denominator
+    # Reproducible tie-breaking by global index.
+    order = np.lexsort((train, -np.abs(residual)))
+    selected = order[:min(count, len(train))]
+    return train[selected], residual[selected]
+
+
+def gaussian_hard_samples(
+    z: np.ndarray, y: np.ndarray, train: np.ndarray,
+    positions: np.ndarray, roots: dict[int, np.ndarray],
+    *, count: int, sigma: float, seed: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Gaussian X clouds centered at fold-local high-PRESS-error REAL points."""
+    train_set = set(np.asarray(train, int).tolist())
+    centers = np.asarray(positions, int)
+    if (not len(centers) or not set(centers).issubset(train_set)
+            or len(np.unique(centers)) != len(centers)
+            or count <= 0 or sigma < 0):
+        raise ValueError("Gaussian centers must be unique training labels.")
+    if any(int(i) not in roots for i in centers):
+        raise ValueError("Missing X-only neighborhood covariance for center.")
+    rng = np.random.default_rng(seed)
+    assigned = rng.choice(centers, size=count, replace=True)
+    noise = rng.normal(size=(count, z.shape[1]))
+    synthetic = np.empty((count, z.shape[1]), float)
+    for index in centers:
+        mask = assigned == index
+        synthetic[mask] = (
+            z[index] + sigma*(noise[mask]@roots[int(index)].T)
+        )
+    synthetic = np.clip(synthetic, -9., 9.)
+    return synthetic, y[assigned].copy()
+
+
 def augmented(
     z: np.ndarray, y: np.ndarray, train: np.ndarray, anchors: tuple[int, int],
     root: np.ndarray, roots: dict, *, mode: str, count: int,
     sigma: float, seed: int,
+    hard_positions: np.ndarray | None = None,
+    hard_roots: dict | None = None,
 ):
     """Return exactly count synthetic X/pseudo-y; never read heldout y."""
     train = np.asarray(train, dtype=int)
@@ -146,7 +211,15 @@ def augmented(
         choice = rng.permutation(len(y_all))[:n]
         return (np.clip(x_all[choice], -9., 9.), y_all[choice]), "bridge"
 
-    if mode == "repeat":
+    if mode == "gaussian_hard":
+        if hard_positions is None or hard_roots is None:
+            raise ValueError("gaussian_hard requires fold-local PRESS centers.")
+        x, ys = gaussian_hard_samples(
+            z, y, train, hard_positions, hard_roots,
+            count=count, sigma=sigma, seed=seed,
+        )
+        recipe = "gaussian_around_fold_local_hard_training_points"
+    elif mode == "repeat":
         x, ys = repeat(count)
         recipe = "repeated_rare_anchor_labels"
     elif mode == "local":
@@ -239,11 +312,23 @@ def one_fold(pos: int):
             leaf=args_dict["leaf"], seed=args_dict["seed"]+pos,
         )[0])
     for mode in methods:
+        if mode == "gaussian_hard":
+            positions, press_errors = fold_hard_centers(
+                z, y, train, count=args_dict["hard_centers"],
+                alpha=args_dict["ridge_alpha"],
+            )
+            hard_roots = local_roots(
+                z, tuple(int(v) for v in positions),
+                args_dict["local_neighbors"],
+            )
+        else:
+            positions, hard_roots = None, None
         for count in sizes:
             x, pseudo, recipe = augmented(
                 z, y, train, anchors, root, roots, mode=mode,
                 count=count, sigma=args_dict["sigma"],
                 seed=args_dict["seed"]+pos+count*10+methods.index(mode)*100000,
+                hard_positions=positions, hard_roots=hard_roots,
             )
             for mass in masses:
                 for model in models:
@@ -325,7 +410,11 @@ def spec_for(args, settings):
             "masses": settings[2], "models": settings[3],
             "sigma": args.sigma, "ridge_alpha": args.ridge_alpha,
             "trees": args.trees, "leaf": args.leaf,
-            "local_neighbors": args.local_neighbors, "seed": args.seed,
+            "local_neighbors": args.local_neighbors,
+            "hard_centers": args.hard_centers,
+            "hard_centers_selected_inside_each_outer_training_fold": True,
+            "hardness_method": "Ridge_PRESS_137_training_labels_only",
+            "seed": args.seed,
         },
         "anchor_source_sha256": digest(args.anchor_file.resolve()),
         "champion_bundle_sha256": digest(args.bundle.resolve()/"manifest.json"),
@@ -416,10 +505,21 @@ def predict59(args, frame, full, z, root, anchors, y, ids):
     if not np.isfinite(baseline).all():
         raise ValueError("Original Reference26 target predictions are not finite.")
     roots = local_roots(z, anchors, args.local_neighbors)
+    hard_positions, hard_roots = None, None
+    if method == "gaussian_hard":
+        hard_positions, press_residuals = fold_hard_centers(
+            z, y, np.arange(N), count=args.hard_centers,
+            alpha=args.ridge_alpha,
+        )
+        hard_roots = local_roots(
+            z, tuple(int(v) for v in hard_positions),
+            args.local_neighbors,
+        )
     synthetic = augmented(
         z, y, np.arange(N), anchors, root, roots,
         mode=method, count=size, sigma=args.sigma,
         seed=args.seed+size*10+methods.index(method)*100000,
+        hard_positions=hard_positions, hard_roots=hard_roots,
     )
     estimates = train_predict(
         z, y, np.arange(N), np.arange(N,197),
@@ -458,18 +558,20 @@ def main():
     p.add_argument("--config", type=Path, default=historic.native.CONFIG)
     p.add_argument("--fresh-fold-dir", type=Path, default=historic.native.OUTPUT)
     p.add_argument("--output", type=Path, default=OUTPUT)
-    p.add_argument("--methods", default="repeat,local,bridge,mixed")
+    p.add_argument("--methods", default="repeat,local,bridge,mixed,gaussian_hard")
     p.add_argument("--sizes", default="256,1024")
     p.add_argument("--masses", default="32,full")
     p.add_argument("--models", default="ridge,extra_trees")
     p.add_argument("--sigma", type=float, default=0.12)
     p.add_argument("--local-neighbors", type=int, default=20)
+    p.add_argument("--hard-centers", type=int, default=8,
+                   help="Number of hard real training centers, selected by fold-local Ridge PRESS")
     p.add_argument("--ridge-alpha", type=float, default=30.)
     p.add_argument("--trees", type=int, default=64)
     p.add_argument("--leaf", type=int, default=3)
     p.add_argument("--seed", type=int, default=SEED)
     p.add_argument("--jobs", type=int, default=4)
-    p.add_argument("--predict-method", default="local")
+    p.add_argument("--predict-method", default="gaussian_hard")
     p.add_argument("--predict-size", type=int, default=1024)
     p.add_argument("--predict-mass", default="32")
     p.add_argument("--predict-model", default="ridge")
