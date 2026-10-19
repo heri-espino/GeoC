@@ -17,22 +17,28 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy import stats
-import run_reference26_compact14_final as native
-import run_reference26_analog_tail_screen as analog
-import run_reference26_top5_nested as nested
-import run_reference26_top5_final59 as final59
 import report_reference26_compact14_final as jury
-from geocebada.evaluation.loocv_comprehensive_metrics import all_metrics
-from geocebada.evaluation.jury_residual_diagnostics import (
-    adjust_spatial_tests, normality_and_distribution,
-    conditional_error_diagnostics, paired_loss_diagnostics,
-)
-from geocebada.evaluation.jury_statistical_report import render_figures
+import run_reference26_analog_tail_screen as analog
+import run_reference26_compact14_final as native
+import run_reference26_top5_final59 as final59
+import run_reference26_top5_nested as nested
+from scipy import stats
+
 from geocebada.evaluation.inferential_sensitivity import (
-    grouped_bootstrap, influential_parcels, paired_advantage_fragility,
+    grouped_bootstrap,
+    influential_parcels,
+    paired_advantage_fragility,
     spatial_grid_labels,
 )
+from geocebada.evaluation.jury_residual_diagnostics import (
+    adjust_spatial_tests,
+    conditional_error_diagnostics,
+    normality_and_distribution,
+    paired_loss_diagnostics,
+)
+from geocebada.evaluation.jury_statistical_report import render_figures
+from geocebada.evaluation.loocv_comprehensive_metrics import all_metrics
+
 
 ID, N = native.ID, native.N
 BASE, FIXED, POLICY = "Reference26_mean", "SelectedFinalRule", "NestedSelection"
@@ -281,7 +287,8 @@ def run(args):
                 spatial_grid_labels(location[:,0],location[:,1],
                                     width_km=width,offset_fraction=shift)
             ))
-    bootstrap=[]; audit=[]
+    bootstrap=[]
+    audit=[]
     for i,(name,group) in enumerate(partitions):
         n=len(np.unique(group))
         if n<args.min_groups:
