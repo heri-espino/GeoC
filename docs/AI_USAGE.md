@@ -134,3 +134,17 @@ fold-training y mean. X-only geometry includes 197 observable parcels
 but never any of their unknown y; synthetic or heldout y is never
 used in corrections. Outputs and 59-target candidate stay local.
 Results NOT YET COMPUTED; do not claim improvement or deploy.
+
+## 2026-10-19 — New top-five Reference26 nested correction selector
+
+AI-assisted implementation of resumable 138 outer × 4 native inner
+Reference26 training evaluations to compare true LOOCV with fixed
+top-five analog corrections and select among five plus unchanged
+native Reference26 using ONLY 137 outer-training yields. Reuses the
+existing audited outer OOF native predictions and tests exact
+matching against previous 138 correction records. No synthetic
+labels and no hidden-target outcomes are introduced.
+Candidates themselves were chosen post-hoc from previously seen
+138-fold scores; this is nested selection conditional on those
+models, not fully independent validation. Code and tests in
+experiment/reference26-top5-nested-loocv; no VM results yet.

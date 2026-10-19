@@ -20,9 +20,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.cluster import AgglomerativeClustering
-
 import run_reference26_analog_tail_screen as analog
+from sklearn.cluster import AgglomerativeClustering
 
 OUT = analog.ROOT / "reports/reference26_analog_tail_screen"
 WINNER = "analog__robust26__k3__blend0.25__supported"

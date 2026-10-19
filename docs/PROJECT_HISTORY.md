@@ -1696,3 +1696,27 @@ delete-one-case stability, sign-flip maxT over 30 candidate corrections,
 and optional geographic block bootstrap. This audit must run in the
 VM; numerical audit results pending. Detailed study:
 docs/REFERENCE26_ANALOG_TAIL_SCREEN.md.
+
+## 2026-10-19 — Top five Reference26 corrections: nested LOOCV selection
+
+The user asked for a LOOCV of the five best corrected Reference26
+models. Earlier screening had ALREADY correctly computed fixed
+138x137/1 OOF performance: analog robust26/k3/blend.25/supported
+0.462418, PCA8/k3/.25/supported 0.464956, PCA8/k8/.25/supported
+0.465506, robust26/k3/.1/supported 0.465538,
+robust26/k3/.1/none 0.466518, unchanged Reference26 0.468138.
+The new question is whether the correction choice can be selected
+within each outer training set (rather than from observed outer
+RMSE). Implemented experimental branch
+experiment/reference26-top5-nested-loocv with four inner native
+Reference26 refits per outer fold (552 additional full fits).
+Inner y exclusion includes outer heldout and current inner validation
+fold; choose one of five corrections or no correction from 137 inner
+OOF predictions with 1% minimum MSE gain. Fixed five outer corrected
+predictions are checked against earlier 138-fold screen. Report
+NestedSelection 138-fold RMSE separately from individual fixed scores.
+The original top-five were selected after observing same historical
+138 errors, so nested selection removes direct outer-y use during
+the choice but NOT broader study selection bias. Workstation results
+PENDING; no model promoted and no 59 predictions changed.
+See docs/REFERENCE26_TOP5_NESTED_LOOCV.md.
