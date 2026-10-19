@@ -1577,3 +1577,8 @@ Implemented a single 16-split, threefold-inner, target-matched exploration of 19
 ## 2026-10-12 — Comprehensive methodology and CV history publication
 
 Added a canonical narrative in `docs/METODOLOGIA_Y_RESULTADOS.md` covering all Checkpoints 02–08 with deeper technical details for 04B, 07 and 08: how target-matched masks were built; exact 16×(97/41) outer validation; separate inner Optuna/PCA tuning; frozen Local04D; 13 Checkpoint07 results; 3 Checkpoint08 results with paired parcel-bootstrap intervals; target-label and leakage boundaries; final 59-parcel artifact; and limitations. Also linked from READMEs and Sphinx. No model promotion or change in the 59 estimates.
+
+## 2026-10-18 — Local04D baseline PCA parity regression guard
+
+The user reported a 5.556 maximal numerical mismatch in checkpoint10_pca's historical 20-PC parity check during --check. Root cause in our bridge: unnecessarily requesting PCA160 then comparing its prefix with the frozen PCA20 reference. Corrected the shared bridge to request a 20-component fit, retaining the exact historical reference check. Added synthetic regression test to assert requested dimension. No changes to checkpoint10_pca, GeoC main, existing frozen models, or the 59 competition forecasts; not run locally.
+
