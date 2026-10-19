@@ -34,12 +34,11 @@ from pathlib import Path
 for _name in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ[_name] = "1"
 
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import KFold
-
-import run_reference26_analog_tail_screen as analog
-import run_reference26_compact14_final as native
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import run_reference26_analog_tail_screen as analog  # noqa: E402
+import run_reference26_compact14_final as native  # noqa: E402
+from sklearn.model_selection import KFold  # noqa: E402
 
 ROOT, N, ID, TARGET = native.ROOT, native.N, native.ID, native.TARGET
 OUT = ROOT / "reports/reference26_top5_nested"
