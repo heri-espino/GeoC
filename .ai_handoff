@@ -1002,3 +1002,26 @@ simulate real saved JSON vs freshly computed tuples, assert
 identical accepted and altered blend/ordering rejected.
 No old nested outputs should be deleted or regenerated.
 User must git pull and run --check again. CI check pending.
+
+2026-10-19 — Dedicated branch analysis/reference26-nested-full-metrics-20261019
+implements the requested long-form metrics for 7 *genuine 138-fold*
+predictors: original Reference26 mean, 5 fixed feature-analog
+corrections, and nested selection. Script:
+tools/report_reference26_top5_all_metrics.py; test:
+tests/test_reference26_top5_all_metrics.py; documentation:
+docs/REFERENCE26_TOP5_FULL_METRICS.md. Requires only precomputed
+reports/reference26_top5_nested/private_nested_predictions.csv
+(contains 138 real yields/IDs and is NEVER tracked). Computes original
+core L1/L2/Linf/SSE/MSE/RMSE/MAE/MedAE/P90/P95/max/bias/R2,
+plus P25/P50/P75/P99, robust/trimmed/Huber/logcosh, guarded
+relative losses, observed calibration, stratified diagnostics,
+bootstrap 95% RMSE/MAE/bias/R2, paired MAE/MSE sign tests,
+Wilcoxon and 6-way maxT sign flips, RMSE deletion influence,
+optional geographic-block resampling (verified row order required),
+and 4 aggregate PNG plots. Output under ignored
+reports/reference26_top5_full_metrics/ with seven-model CSVs and
+aggregate metric definitions only. Requires user's VM run; NO new
+numbers for P99/max/etc available at development time.
+No retrain; no 59 target labels; original five configs chosen
+POST-HOC and IID/spatial caveats mean p-values nonconfirmatory.
+Do not misreport adjusted R2 or interval coverage.
