@@ -24,6 +24,7 @@ def reuse_verified_loo46(
     model: str,
     full_spec: dict,
 ) -> int:
+    """Reuse prior first-46 DBSCAN outer predictions with strict protocol matching."""
     old_path = previous / "run_spec.json"
     if not old_path.is_file():
         raise FileNotFoundError(f"LOO46 manifest missing: {old_path}")
