@@ -196,3 +196,8 @@ venv/
 
 # Global large synthetic augmentation: private observed y, folds and candidate 59 outputs
 /reports/global_synthetic_augmentation*/
+
+# Global 138-fold synthetic augmentation: private heldout labels, high-error centers,
+# target predictions, and all alternative parameter grids.
+/reports/global_synthetic_augmentation*/
+/reports/global_synthetic_augmentation/
