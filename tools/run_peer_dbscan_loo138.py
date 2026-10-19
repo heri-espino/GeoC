@@ -264,6 +264,30 @@ def compare(output: Path, originals: Path, local_path: Path | None) -> None:
             f"Need original 138-fold Reference26+Compact14 results: {originals}. "
             "Run python tools/run_selected_champions_loo.py --run --jobs 2 first."
         )
+    # Scores alone cannot establish a fair paired comparison. Verify that
+    # the original saved LOOCV used this exact peer source and bundle.
+    prior_spec_path = originals.parent / "run_spec.json"
+    if not prior_spec_path.is_file():
+        raise ValueError(
+            "Missing Reference26/Compact14 LOOCV provenance manifest: "
+            f"{prior_spec_path}"
+        )
+    new_spec = json.loads(
+        (output / "run_spec.json").read_text(encoding="utf-8")
+    )
+    old_spec = json.loads(prior_spec_path.read_text(encoding="utf-8"))
+    if (
+        new_spec.get("bundle_manifest_sha256") != old_spec.get("manifest_sha256")
+        or new_spec.get("peer_code_sha256")
+        != old_spec.get("peer_model_source_sha256")
+        or old_spec.get("protocol") != "138x leave-one-parcel-out; 137 train, 1 test"
+        or old_spec.get("inner")
+        != "4-fold shuffled KFold, seed=20261018, 137 outer-train rows"
+    ):
+        raise ValueError(
+            "Original Reference26/Compact14 inputs or CV protocol do not "
+            "match DBSCAN. Cannot publish them as paired 138-fold results."
+        )
     original = pd.read_csv(originals, dtype={ID: str})
     verify_rows(original, {ID, "observed", "Reference26", "Compact14"})
     if set(dbscan[ID]) != set(original[ID]):
