@@ -37,11 +37,11 @@ from run_peer_champions_loo import (  # noqa: E402
     _lock,
     _spec,
     _write_fold,
-    predict,
 )
 from sklearn.metrics import r2_score  # noqa: E402
 from threadpoolctl import threadpool_limits  # noqa: E402
 
+from geocebada.evaluation.checkpoint08_local import predict_old  # noqa: E402
 from geocebada.evaluation.peer_champions_loo import (  # noqa: E402
     ID,
     Y,
@@ -147,9 +147,9 @@ def _compute_one(position: int, output_dir: str) -> tuple[int, str]:
         )
         known = [parcel for parcel in baseline.y.index.astype(str) if parcel != held_id]
         local = float(
-            predict(
-                baseline, known, [held_id], components=20,
-                k=24, alpha=30.0, power=1.0,
+            predict_old(
+                baseline, known, [held_id],
+                {"k": 24, "alpha": 30.0, "power": 1.0},
             )[0]
         )
 
