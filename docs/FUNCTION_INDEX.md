@@ -271,6 +271,10 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `summarize_complete` | function | `geocebada.evaluation.peer_champions_loo` | Compute paired pooled scores and descriptive parcel bootstrap differences. | `src/geocebada/evaluation/peer_champions_loo.py` |
 | `validate_fold` | function | `geocebada.evaluation.peer_champions_loo` | Refuse cached folds with shifted IDs, missing models or bad predictions. | `src/geocebada/evaluation/peer_champions_loo.py` |
 | `load_frozen_local04d` | function | `geocebada.evaluation.peer_frozen_local04d` | Read canonical PCA20 (not refit), validate it via original 04D predictions. | `src/geocebada/evaluation/peer_frozen_local04d.py` |
+| `GridShareMixin` | class | `geocebada.evaluation.peer_gate_grid` | Fit her complete geology gate, replacing only its candidate family. | `src/geocebada/evaluation/peer_gate_grid.py` |
+| `configured_gate` | function | `geocebada.evaluation.peer_gate_grid` | Temporarily override ColdBases in this single isolated worker process. | `src/geocebada/evaluation/peer_gate_grid.py` |
+| `gate_for` | function | `geocebada.evaluation.peer_gate_grid` |  | `src/geocebada/evaluation/peer_gate_grid.py` |
+| `native_reference_gate` | function | `geocebada.evaluation.peer_gate_grid` | Serialisable training-only diagnostics for the original/tuned gate. | `src/geocebada/evaluation/peer_gate_grid.py` |
 | `DBSCANShareMixin` | class | `geocebada.evaluation.peer_geology_dbscan` | Override only original SimplifiedBases.shares; retain all expert recipes. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
 | `GeologicalDBSCANGate` | class | `geocebada.evaluation.peer_geology_dbscan` | Shrink per-density-cluster mixing weights towards the global weight. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
 | `adaptive_radius` | function | `geocebada.evaluation.peer_geology_dbscan` | Scale radius by a training-only k-distance, never held-out coordinates. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
