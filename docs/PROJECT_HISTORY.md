@@ -1767,3 +1767,26 @@ actual stored JSON. Reject mismatching model parameters,
 candidate order or training fingerprints as before; preserve
 all 138 completed inner-fold results, no retraining required.
 New regression tests test real JSON roundtrip and tampering.
+
+## 2026-10-19 — Complete statistical metrics for seven corrected Reference26 candidates
+
+User requested **all** additional error metrics, not only L1/L2/RMSE,
+for Reference26 mean original, five fixed analog corrections and the
+nested selector. New `analysis/reference26-nested-full-metrics-20261019`
+branch implements `tools/report_reference26_top5_all_metrics.py`,
+unit tests and `docs/REFERENCE26_TOP5_FULL_METRICS.md`.
+Reads existing 138 genuine 137/1 nested OOF yhat/y CSV, refuses
+incomplete/misaligned folds, and reuses the repo's established
+`loocv_comprehensive_metrics.py` definitions. Extends to quantiles
+P25/P50/P75/P99, signed error dispersion and extremes, Huber/logcosh,
+trimmed losses, guarded MAPE/sMAPE/RMSPE, calibration slope/intercept,
+error threshold fractions, bootstrap CIs (RMSE/MAE/bias/R2),
+six-way paired signflip maxT, sign test/Wilcoxon, influence,
+observed-yield tertiles, optional aligned geographic-distance
+block bootstrap, plus four charts. All outputs aggregate,
+gitignored; NO model retrain or unknown 59 y.
+Existing Reference26 RMSE 0.468138 vs nested RMSE 0.462892 still
+the only known run results. All NEW extended metrics are pending
+the user's local VM execution; do not invent/publish.
+Adjusted R2 and prediction-interval coverage cannot be justified.
+Multiple-testing and spatial-dependence caveats documented.
