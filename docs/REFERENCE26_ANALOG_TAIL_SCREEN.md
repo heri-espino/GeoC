@@ -192,3 +192,49 @@ Un diagnóstico agregado y protegido de archivos privados se añadirá
 a `tools/audit_reference26_analog_gain.py`: bootstrap pareado,
 estabilidad al eliminar cada observación, corrección por la búsqueda
 entre recetas y sensibilidad por bloques de distancia geográfica.
+
+## Auditoría de estabilidad pareada — código disponible; resultados pendientes
+
+El script `tools/audit_reference26_analog_gain.py` lee **solo**
+`reports/reference26_analog_tail_screen/private_heldout_predictions.csv`
+de la VM y verifica que existen exactamente 138 yields y 30
+correcciones, que cada ID está presente una sola vez y que el RMSE
+de la predicción base coincide con 0.4681381271 t/ha.
+
+Calcula sin reentrenar y sin publicar etiquetas:
+
+- Diferencia observada de RMSE y MAE, signo de la diferencia cuadrática
+  por parcela, y cambio máximo en predicción.
+- Bootstrap pareado de las 138 parcelas para dar un intervalo de
+  variación del **beneficio de RMSE**, **condicionado a haber elegido**
+  la configuración ganadora.
+- Recalcula la ventaja excluyendo alternativamente cada una de las
+  138 parcelas: comprueba si una sola decisión concentra la ganancia.
+- Diagnóstico exploratorio **maxT** por cambios aleatorios simultáneos
+  de signo de las mejoras cuadráticas de las 30 recetas. Conserva
+  correlación entre recetas y contempla seleccionar la mejor de
+  esta malla fija, pero NO corrige el sesgo acumulado de experimentos
+  anteriores ni garantiza validez ante dependencia espacial.
+- Bootstrap por grupos geográficos de 10 bloques obtenidos por
+  enlace promedio sobre la matriz geográfica de distancias 138×138
+  (extraída de `distance197.npy`). El número de grupos es una
+  sensibilidad, no una partición geográfica validada; no se
+  interpreta como intervalo de confianza confirmatorio.
+
+Ejecutar:
+
+```powershell
+python -m py_compile tools/audit_reference26_analog_gain.py
+python -m pytest tests/test_audit_reference26_analog_gain.py -q
+python tools/audit_reference26_analog_gain.py --check
+python tools/audit_reference26_analog_gain.py --run
+python tools/audit_reference26_analog_gain.py --summary
+```
+
+El único nuevo archivo es
+`reports/reference26_analog_tail_screen/stability_aggregate.json`,
+dentro de la carpeta excluida por `.gitignore`. Contiene
+**solo métricas agregadas**, sin nombres, identificadores,
+respuestas individuales ni predicciones de las 59 parcelas.
+**No promover automáticamente Reference26+analog** hasta examinar
+estas sensibilidades y reconocer el carácter post-hoc del estudio.
