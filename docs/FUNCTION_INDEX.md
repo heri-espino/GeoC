@@ -284,6 +284,10 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `missing_numeric_inputs` | function | `geocebada.evaluation.peer_mean_imputation` | Descriptive X-only audit of the original 26 predictors; never y. | `src/geocebada/evaluation/peer_mean_imputation.py` |
 | `observed_means` | function | `geocebada.evaluation.peer_mean_imputation` | Replace missing numeric X using only the supplied fitting rows. | `src/geocebada/evaluation/peer_mean_imputation.py` |
 | `use_training_means` | function | `geocebada.evaluation.peer_mean_imputation` | Switch all five original numeric imputers to means for one worker. | `src/geocebada/evaluation/peer_mean_imputation.py` |
+| `validate_predictions` | function | `geocebada.evaluation.loocv_comprehensive_metrics` |  | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` | Report mathematical norms as TOTAL norms, alongside normalized errors. | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `all_metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` |  | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
+| `paired_metrics` | function | `geocebada.evaluation.loocv_comprehensive_metrics` | Pairs share all 138 observations; naive parcel bootstrap is descriptive. | `src/geocebada/evaluation/loocv_comprehensive_metrics.py` |
 | `FixedGeologicalKMeansMixin` | class | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Replicate original SimplifiedBases.shares but fix k instead of tuning it. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
 | `fixed_geological_kmeans` | function | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Apply an isolated patch only while a single Reference26 fit executes. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
 | `gate_diagnostics` | function | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Record requested k and actual fitted clusters, never private yield rows. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
