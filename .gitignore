@@ -199,3 +199,6 @@ venv/
 
 # Final 59 candidate yields + all 138 private 4-fold selection labels.
 /reports/reference26_top5_final59/
+
+# Final analog correction diagnostics include private observed yields/coordinates
+/reports/reference26_top5_statistics/
