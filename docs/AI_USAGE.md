@@ -171,3 +171,16 @@ exports private tabular candidates without changing
 original joblib, predictions or online deployments.
 No actual 59 numeric results can be asserted until
 the user executes it with private data.
+
+## 2026-10-19 — Extended diagnostics of the seven corrected Reference26 LOOCVs
+
+AI authored a new evaluation-only report on original 138 genuine
+heldouts with 7 predictors (native Reference26 mean, 5 analog
+corrections, fold-specific nested chooser), leveraging existing
+metric definitions, plus P99/error tails, near-zero safeguarded
+relative losses, Huber/logcosh/trimmed scores, bootstrap CI,
+influence, spatial block sensitivity and exploratory paired
+tests with six-way maxT correction. Outputs are locally
+ignored aggregates and figures; raw real parcel y/IDs remain
+private. Run on VM to get actual extended metrics. No claims
+of significance independent of earlier posthoc selection.
