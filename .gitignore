@@ -177,3 +177,6 @@ venv/
 
 # Private individual parcel LOOCV mean-imputation predictions and model caches
 /reports/reference26_mean_imputation_loo138/
+
+# Separate train-fold-only mean-imputation Reference26 Ridge search
+/reports/reference26_ridge_budget_mean/
