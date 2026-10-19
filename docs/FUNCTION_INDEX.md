@@ -280,6 +280,12 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `GeologicalDBSCANGate` | class | `geocebada.evaluation.peer_geology_dbscan` | Shrink per-density-cluster mixing weights towards the global weight. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
 | `adaptive_radius` | function | `geocebada.evaluation.peer_geology_dbscan` | Scale radius by a training-only k-distance, never held-out coordinates. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
 | `dbscan_refit_mode` | function | `geocebada.evaluation.peer_geology_dbscan` | Use original refit_fold with a strictly local class override. | `src/geocebada/evaluation/peer_geology_dbscan.py` |
+| `FixedGeologicalKMeansMixin` | class | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Replicate original SimplifiedBases.shares but fix k instead of tuning it. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
+| `fixed_geological_kmeans` | function | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Apply an isolated patch only while a single Reference26 fit executes. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
+| `gate_diagnostics` | function | `geocebada.evaluation.peer_reference26_fixed_kmeans` | Record requested k and actual fitted clusters, never private yield rows. | `src/geocebada/evaluation/peer_reference26_fixed_kmeans.py` |
+| `settings` | function | `geocebada.evaluation.peer_reference26_ridge_grid` |  | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
+| `share_climate_fits_between_grid_candidates` | function | `geocebada.evaluation.peer_reference26_ridge_grid` | Reuse only invariant C-T3 climate fits within one outer-fold *batch*. | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
+| `tuned_local_ridge` | function | `geocebada.evaluation.peer_reference26_ridge_grid` | Patch BOTH inner fitting and outer-query Ridge paths consistently. | `src/geocebada/evaluation/peer_reference26_ridge_grid.py` |
 | `benchmark_regressors` | function | `geocebada.evaluation.regression` | Compare regression baselines using identical shuffled K-fold splits. | `src/geocebada/evaluation/regression.py` |
 | `default_regressors` | function | `geocebada.evaluation.regression` | Return lightweight baseline regressors suitable for early comparison. | `src/geocebada/evaluation/regression.py` |
 | `summarize_benchmark` | function | `geocebada.evaluation.regression` | Summarize fold-level benchmark metrics as mean and standard deviation. | `src/geocebada/evaluation/regression.py` |
