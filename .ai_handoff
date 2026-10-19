@@ -864,3 +864,23 @@ clustering and partially pooled regime correction. Promotion requires target-
 matched development, LOSO and a new fresh confirmation bank.
 
 No 06 model/result exists yet and no final prediction changed.
+
+2026-10-19 — User requested effort on improving ACTUAL winner Reference26
+after real VM results of prior weighted/balanced synthetic global models
+(PR #32): best ExtraTrees balanced no-noise 0.487998 LOOCV, while original
+Reference26 mean remains 0.468138 (138 genuine OOF heldouts).
+Created separate branch experiment/reference26-analog-tail-correction
+off experiment/nuria-champions-loocv. Runner
+tools/run_reference26_analog_tail_screen.py reuses the exact frozen
+138 Reference26 mean OOF predictions; directly screens (a) bounded
+blending with labels from k=3/8/16 nearest real feature analogs among
+137 outer training only, 2 X-only representations, optional support
+gate and two blend weights; (b) conservative tail de-shrink around
+137-only train-y mean, testing known tail compression; untouched
+Reference26 is mandatory control. 31 candidate rows, no native refits,
+synthetic targets, classifiers or y leakage. Private output reports/
+reference26_analog_tail_screen/ is gitignored. 59 prediction export
+is opt-in only and never changes official targets. Synthetic QA and
+docs/REFERENCE26_ANALOG_TAIL_SCREEN.md included. NO REAL VM SCORE
+OR PERFORMANCE GAIN HAS BEEN OBSERVED YET. Hyperparameter choice on
+previously examined 138 LOOCV labels is exploratory/post-hoc.
