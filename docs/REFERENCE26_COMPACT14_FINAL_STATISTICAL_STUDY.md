@@ -316,9 +316,7 @@ git -C $peer fetch origin main
 
 # Restaurar SOLO los dos archivos ausentes desde origin/main.
 # Si ya existen modificaciones locales en ellos, revisarlas ANTES.
-git -C $peer restore --source=origin/main --worktree -- \
-  deployment/model_artifacts/features197.parquet \
-  deployment/model_artifacts/distance197.npy
+git -C $peer restore --source=origin/main --worktree -- deployment/model_artifacts/features197.parquet deployment/model_artifacts/distance197.npy
 
 Get-Item "$peer/deployment/model_artifacts/features197.parquet",
          "$peer/deployment/model_artifacts/distance197.npy" |
@@ -327,13 +325,6 @@ Get-Item "$peer/deployment/model_artifacts/features197.parquet",
 python tools/run_reference26_compact14_final.py --check
 python tools/run_reference26_compact14_final.py --train-final --jobs 1
 python tools/export_reference26_compact14_predictions59.py --check
-~~~
-
-**En PowerShell, NO copiar literalmente la continuación de línea
-de Bash con barra inversa**. La forma portable en una sola línea:
-
-~~~powershell
-git -C $peer restore --source=origin/main --worktree -- deployment/model_artifacts/features197.parquet deployment/model_artifacts/distance197.npy
 ~~~
 
 Los archivos se validan contra las 138 parcelas, orden de IDs,
