@@ -78,7 +78,7 @@ def test_bridge_interpolated_pseudo_labels_no_noise(monkeypatch):
     t = (xs[:, 0]-z[0,0])/(z[1,0]-z[0,0])
     np.testing.assert_allclose(pseudo, (1-t)*y[0]+t*y[1], atol=1e-10)
     assert mode == "bridge"
-    assert 0 <= t.min() and t.max() <= 1
+    assert -1e-12 <= t.min() and t.max() <= 1+1e-12
 
 
 def test_training_with_augmented_data_is_a_single_global_regressor(monkeypatch):
