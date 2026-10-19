@@ -193,3 +193,6 @@ venv/
 /reports/synthetic_bridge_three_regime/
 
 /reports/three_regime_classifier/
+
+# Global large synthetic augmentation: private observed y, folds and candidate 59 outputs
+/reports/global_synthetic_augmentation*/
