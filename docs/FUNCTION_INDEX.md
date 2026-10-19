@@ -256,11 +256,11 @@ to avoid duplicating functionality that already exists in `src/geocebada/`.
 | `summarize_nested_grid` | function | `geocebada.evaluation.climate_nested_grid` | Validate paired full coverage and report unbiased-by-inner-tuning OOF scores. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `tune_one_outer_parcel` | function | `geocebada.evaluation.climate_nested_grid` | Select each model's hyperparameters solely on other observed yields. | `src/geocebada/evaluation/climate_nested_grid.py` |
 | `adjust_spatial_tests` | function | `geocebada.evaluation.jury_residual_diagnostics` | Across ALL tested k, variables, models and spatial statistics. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
-| `conditional_error_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `conditional_error_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` | Prediction-dependent error scatter and robust Brown-Forsythe test. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
 | `interpret_tests` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
 | `multiplicity` | function | `geocebada.evaluation.jury_residual_diagnostics` | Benjamini-Hochberg FDR or Holm FWER, finite p-values only. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
-| `normality_and_distribution` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
-| `paired_loss_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` |  | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `normality_and_distribution` | function | `geocebada.evaluation.jury_residual_diagnostics` | Shapiro-Wilk, D'Agostino K2, Anderson-Darling, moments and bias. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
+| `paired_loss_diagnostics` | function | `geocebada.evaluation.jury_residual_diagnostics` | Per-model paired loss comparisons with multiplicity correction. | `src/geocebada/evaluation/jury_residual_diagnostics.py` |
 | `md_table` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
 | `render_figures` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
 | `render_markdown` | function | `geocebada.evaluation.jury_statistical_report` |  | `src/geocebada/evaluation/jury_statistical_report.py` |
