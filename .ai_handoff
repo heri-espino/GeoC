@@ -864,3 +864,15 @@ clustering and partially pooled regime correction. Promotion requires target-
 matched development, LOSO and a new fresh confirmation bank.
 
 No 06 model/result exists yet and no final prediction changed.
+
+2026-10-19 — Draft PR #28 (analysis/loocv-hard-parcel-consensus) adds a READ-ONLY
+138-parcel cross-model hard-case analysis. Script:
+tools/analyze_loocv_hard_parcels.py --audit/--run/--summary.
+Reuse private saved LOOCV 137/1 predictions with strict matched parcel IDs and
+y; ranked cumulative RMSE, SSE share worst 1/2/10, broad-family consensus and
+top-2 intersection. Output reports/loocv_hard_parcels/ is Git-ignored and
+contains PRIVATE per-parcel diagnostics. See
+docs/LOOCV_HARD_PARCEL_DIAGNOSTIC.md. Local real data not yet analyzed;
+no evidence yet that the same two parcels dominate all models, and
+outliers have not been shown to be mislabeled or influential in training.
+No model promotion/retraining/59 forecast modification.
