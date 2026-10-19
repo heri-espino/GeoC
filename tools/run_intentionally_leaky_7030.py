@@ -297,7 +297,7 @@ def summarize(folder: Path, *, expected_reps: int, models: tuple):
         for kind, scene in ordered
     ]
     short_labels = [
-        kind + "\\n" + scene.replace("leaky_test_", "LEAK ").replace(
+        kind + chr(10) + scene.replace("leaky_test_", "LEAK ").replace(
             "clean_", "clean "
         ).replace("_", " ") for kind, scene in ordered
     ]
