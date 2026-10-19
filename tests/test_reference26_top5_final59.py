@@ -142,7 +142,7 @@ def test_final_selector_chooses_based_only_on_four_inner_oof(monkeypatch):
     m = loaded(monkeypatch)
     rng = np.random.default_rng(45)
     data = []
-    for fold, (_fit, val) in enumerate(m.inner_splits()):
+    for _fit, val in m.inner_splits():
         truth = rng.normal(size=len(val))
         row = {
             m.ID: [f"T_{i:03d}" for i in val],
