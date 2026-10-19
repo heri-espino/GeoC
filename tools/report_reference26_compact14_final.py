@@ -29,6 +29,10 @@ from geocebada.evaluation.jury_residual_diagnostics import (
     normality_and_distribution,
     paired_loss_diagnostics,
 )
+from geocebada.evaluation.jury_statistical_report import (
+    render_figures,
+    render_markdown,
+)
 from geocebada.evaluation.loocv_comprehensive_metrics import (
     all_metrics,
 )
@@ -419,6 +423,7 @@ def export_public(
                 "model", "knn", "spatial_variable", "statistic",
                 "estimate", "expected_permutation", "p_two_sided",
                 "p_right", "p_left", "permutations",
+                "p_two_sided_holm_all", "p_two_sided_fdr_bh_all",
             )
         })
     data = {
@@ -499,6 +504,26 @@ def run_report(args):
                    float_format="%.16g")
     export_public(primary, aux, spatial, weights, JSON_STAGING if out == OUT
                   else out / JSON_STAGING.name)
+    coordinates = frame[
+        ["base_centroid_lat", "base_centroid_lon"]
+    ].to_numpy(float)
+    plot_files = render_figures(
+        y, arrays, coordinates, spatial, semivariogram, out,
+    )
+    academic = render_markdown(
+        out, {
+            "primary_metrics.csv": primary,
+            "specialized_metrics.csv": aux,
+            "normality_and_distribution.csv": normality,
+            "heteroscedasticity_and_calibration.csv": heteroscedasticity,
+            "paired_loss_tests.csv": paired,
+            "global_spatial_autocorrelation.csv": spatial,
+            "residual_semivariogram.csv": semivariogram,
+            "private_regional_errors.csv": regions,
+        }, plot_files, weights,
+    )
+    print(f"[ACADEMIC] Private report and {len(plot_files)} "
+          f"diagnostic figures: {academic}", flush=True)
     print("[JURY] Fresh 138 LOOCV extended model metrics:\n"
           + primary[["model", "rmse_t_ha", "mae_t_ha",
                      "l1_t_ha", "l2_t_ha", "linf_t_ha",
