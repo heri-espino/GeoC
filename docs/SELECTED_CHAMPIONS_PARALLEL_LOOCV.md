@@ -1,131 +1,74 @@
-# Selected-model LOOCV: Reference26, Compact14, Local04D
+# LOOCV for teammate's two champions
 
-**Goal:** Compare only the teammate's two selected champions with GeoC Local04D
-under exactly the same 138-parcel leave-one-parcel-out folds.
+**Only Reference26 and Compact14.** No GeoC model, Local04D, PCA,
+DBSCAN, CatBoost, B1 weight selection or new feature engineering.
 
-**Status:** Runner and synthetic QA prepared. Real data are local only, and
-no CPU/GPU speedup or RMSE has been measured in this GitHub session.
+## Inputs
 
-## Why this runner is faster than the earlier scripts
+- Her original source code: `../todoseboso/src/current_champions.py`
+  (from `heri-espino/todoseboso`).
+- Her original private exported inputs:
+  `GeoC/data_n/processed/current_champions/v1/` (the manifest, 138-row
+  Parquet table, groups and precomputed geographical distances).
+- Output: `reports/selected_champions_loo/`, ignored by Git.
 
-Use `tools/run_selected_champions_loo.py` instead of either
-`run_peer_geology_dbscan.py` or `run_peer_champions_loo.py` for the user's
-current goal. The original peer `refit_fold` does four extra fully nested
-outer-training fits to select the secondary B1 ensemble. We do not need B1.
+The script verifies the bundle's original file hashes using her own
+`load_bundle(..., verify_saved_models=False)`; no saved model is reused.
+This experiment does **not** load any GeoC baseline data, PCA, or original
+target tables; it simply calls her `ColdExperts.full_fit` for each fold,
+then her `predict_saved` for the two selected models.
 
-This new runner calls **the original**
-`src.current_champions.ColdExperts.full_fit`, retaining the train-only
-CT3 global basis, seven-/five-feature local experts, geological gate for
-Reference26, and R3 residual correction, with its original nested tuning.
-It predicts Reference26 and Compact14 only and separately refits the frozen
-Local04D reference on the same 137 labels. It skips the additional B1
-model-selection fits rather than approximating the selected models.
-
-Reference26/Compact14 use scikit-learn's Ridge, Elastic Net, KMeans and
-related numeric operations; **neither selected candidate trains CatBoost
-or XGBoost**. No CUDA/GPU code is used here. The practical acceleration is
-parallelizing independent outer parcels on CPU, without oversubscribing BLAS.
-
-## Run on Windows
-
-Data bundle is under ignored root
-`data_n/processed/current_champions/v1`; model source in the sibling
-`../todoseboso` checkout. The peer import chain may require its recorded
-research dependencies (including `exactextract` and `seaborn`).
-Only execute trusted team `joblib` data, never arbitrary pickle sources.
+## Commands (PowerShell, from GeoC)
 
 ~~~powershell
-cd C:\Users\175199\GeoC
-conda activate geocebada
-git fetch origin
-git switch experiment/nuria-champions-loocv
 git pull --ff-only origin experiment/nuria-champions-loocv
 
-# Fast input alignment test; no refits
+# Check the 138-row bundle and original model imports.
 python tools/run_selected_champions_loo.py --check
 
-# One held-out parcel, all THREE models; checks that nested refitting works
+# One held-out parcel to verify cold training.
 python tools/run_selected_champions_loo.py --smoke --jobs 1
 
-# Full 138-fold LOOCV. Start with 2 workers; use 4 if RAM permits.
+# 138 held-out parcels, two workers; raise to 4 if RAM permits.
 python tools/run_selected_champions_loo.py --run --jobs 2
 
-# Once all 138 folds are complete
+# After 138 fold CSV files are present.
 python tools/run_selected_champions_loo.py --summary
 ~~~
 
-If `--run` is interrupted, run it again and it will skip completed
-fold CSVs. For isolated subranges use `--from-fold 1 --through-fold 30`
-etc. Outer processes write distinct per-fold cache directories and atomic
-CSV files. `--jobs 4` increases memory pressure because separate workers
-load the peer feature bundle and the GeoC C4 representation; benchmark
-`--jobs 2` first. Numeric-library thread counts are set to 1 per process.
-On Windows, spawned Python workers can have nontrivial startup cost.
-Use CPU/task-manager measurements to decide between 2 and 4 workers.
-This cannot accelerate an individual outer fold as though it were 4 folds.
+## Exactly what changes from her original refit
 
-Output path (ignored by Git):
-`reports/selected_champions_loo/`. A separate `smoke/` subfolder keeps
-the one-fold smoke out of the 138-fold results. Each completed fold emits
-`fold_001.csv` and its own `peer_cache/fold_001` work directory. A full
-run writes `loo_predictions.csv` and `loo_summary.csv`. No official
-59-parcel predictions are touched.
+1. For each outer parcel, hold out its row and **mask its yield to NaN**
+   before any fitting. All other 137 yields remain available.
+2. Four deterministic shuffled inner folds are defined on those 137
+   training positions (seed `20261018`).
+3. Fit **her original complete Reference26 and Compact14 recipes** through
+   `ColdExperts.full_fit`. This includes climate modeling, local Ridge,
+   geological gate and R3 strength selection as originally implemented.
+   B1's extra nested calibration fits in `refit_fold` are not executed.
+4. Predict the one masked parcel through her original `predict_saved`.
+   Save exactly two predictions alongside its observed yield, *after*
+   fitting. Only this held-out observation is used for scoring.
 
-The runner refuses a changed model/data fingerprint in the same output
-folder. Use `--output reports/selected_champions_loo_v2` for changed
-code/bundle/protocol and add that output to `.gitignore` locally before
-running. Do not merge or promote based only on smoke or the repeatedly
-studied 138 labels.
+Each fold has a distinct private cache and atomic CSV output; completed
+folds are verified and resumed. Use `--jobs 2` or `--jobs 4` to process
+**independent outer folds** concurrently on CPU; per-fold numerical
+libraries are capped at one thread.
 
-## Validation and interpretation
+Files: `fold_001.csv`...`fold_138.csv`, `loo_summary.csv`,
+`loo_predictions.csv`. The one-fold smoke lives under
+`reports/selected_champions_loo/smoke/` and does not constitute
+a LOOCV performance estimate.
 
-- Training: 137 original known yields; exactly one excluded outer y.
-- Peer cold refit includes nested cross-fitted training-only selection.
-- GeoC C4 PCA20 Local04D uses target-free 197-parcel X, the usual
-  24-neighbor local geographical Ridge, alpha 30, inverse-distance power 1.
-- Pooled RMSE, MAE, R2 and bias are reported for all 138 unique heldouts.
-- No B1, CT3-only or DBSCAN arm is presented as an extra contender.
-- A three-way paired performance difference is **exploratory**, not
-  independent confirmation: her champion recipes were previously
-  selected using the same 138 observed labels.
-- Actual package versions and a successful local smoke remain necessary.
+The full 138-fold RMSE/MAE/R2 cannot be claimed until all folds finish.
+Selection based on previously explored yields remains exploratory
+rather than independently confirmed.
 
-## 2026-10-18: use frozen historical PCA20, not a new PCA fit
+## If the script reports a failure
 
-The user retried with exactly 20 PCA components and the discrepancy
-remained **5.556**. Thus simply requesting fewer axes did not repair
-historical numerical parity; the earlier diagnosis was incomplete.
+The dependency check is now **only the teammate's original bundle and
+code**. GeoC's PCA parity failure 5.556 was caused by the earlier,
+unnecessary Local04D comparison and cannot arise from this script.
 
-We now load the *actual, saved* C4 all-deterministic PCA20 coordinates
-from `reports/checkpoint_04a/transductive_embeddings.csv`, using exactly
-the same loading, standardization and geographic distance normalization
-as the frozen Checkpoint 08 Local04D source. No PCA refit is performed
-in the comparison runner. The loader validates:
-
-- 197 unique parcel IDs and training/prediction role equality across
-  saved C4 X, original feature metadata and official target table
-- 138 finite training yields, 59 strictly missing prediction yields
-- Frozen Checkpoint04A manifest: 2,082 features and exactly 20 PCs
-- **Numerical predictions on 41 historical 97/41 held-out parcels**
-  must equal saved Local04D forecasts to `1e-7` t/ha or the job fails
-
-This is stricter about the final baseline behavior than accepting a
-different PCA basis with relaxed tolerances. The original
-`checkpoint10_pca.load_pca_data` implementation is left unchanged for
-its separate experiments; only the comparison bridge changes.
-Regression tests check frozen-X preservation and deliberate historical
-prediction corruption.
-
-After updating your branch, run:
-
-~~~powershell
-python tools/run_selected_champions_loo.py --check
-python tools/run_selected_champions_loo.py --smoke --jobs 1
-~~~
-
-If a **historical Local04D mismatch** is reported, do not run full
-LOOCV and share the exact value; the historic baseline has not been
-validated on your local data. The 5.556 reconstructed-PCA difference
-alone is not evidence that saved historical Local04D predictions are
-invalid.
-
+If a fold fails during her nested training, keep the traceback: do not
+change her hyperparameters or the 26 input features to silence it.
