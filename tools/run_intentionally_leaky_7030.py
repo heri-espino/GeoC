@@ -275,6 +275,38 @@ def summarize(folder: Path, *, expected_reps: int, models: tuple):
     agg = agg.sort_values(["model", "mean"]).reset_index(drop=True)
     agg.to_csv(folder/"summary_rmse.csv", index=False)
     paired.to_csv(folder/"all_split_metrics.csv", index=False)
+    agg.pivot(index="model", columns="scenario", values="mean").to_csv(
+        folder/"mean_rmse_by_model.csv"
+    )
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(figsize=(11, 5.5))
+    selections = [
+        "clean_real_test",
+        "clean_training_augmented_real_test",
+        "clean_model_synthetic_expanded_test",
+        "leaky_test_gaussian_training_real_test",
+        "leaky_test_gaussian_training_expanded_test",
+        "leaky_test_exact_copies_training_real_test",
+    ]
+    ordered = [(kind, scene) for kind in models for scene in selections]
+    values = [
+        results.loc[(results["model"] == kind) &
+                    (results["scenario"] == scene), "rmse_t_ha"].to_numpy()
+        for kind, scene in ordered
+    ]
+    ax.boxplot(values, tick_labels=[
+        kind + "\\n" + scene.replace("leaky_test_", "LEAK ").replace(
+            "clean_", "clean "
+        ).replace("_", " ") for kind, scene in ordered
+    ], showfliers=False)
+    ax.set_ylabel("Per-repetition RMSE (t/ha)")
+    ax.set_title("Intentional test contamination: invalid apparent RMSE changes")
+    ax.tick_params(axis="x", labelrotation=75, labelsize=7)
+    fig.tight_layout()
+    fig.savefig(folder/"rmse_distributions_leakage_comparison.png", dpi=160)
+    plt.close(fig)
     print("[INTENTIONAL LEAKAGE — NOT VALIDATION] 100x 70/30 descriptive scores")
     print(agg.to_string(index=False, float_format=lambda v: f"{v:.6f}"))
     print("IMPORTANT: fake-test rows are dependent children of true test parents;")
