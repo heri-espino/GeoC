@@ -45,10 +45,10 @@ def test_brownian_bridge_zero_noise_at_endpoints_and_variable_midpoint(monkeypat
     )
     left_x, left_y, right_x, right_y = result
     # First sample of each path is exact A, last in second cloud is exact B.
-    np.testing.assert_allclose(left_x[::5], a[None, :], atol=1e-12)
-    np.testing.assert_allclose(right_x[4::5], b[None, :], atol=1e-12)
-    np.testing.assert_allclose(left_y[::5], 2., atol=1e-12)
-    np.testing.assert_allclose(right_y[4::5], 5., atol=1e-12)
+    np.testing.assert_allclose(left_x[::5], np.broadcast_to(a, left_x[::5].shape), atol=1e-12)
+    np.testing.assert_allclose(right_x[4::5], np.broadcast_to(b, right_x[4::5].shape), atol=1e-12)
+    np.testing.assert_allclose(left_y[::5], np.full_like(left_y[::5], 2.), atol=1e-12)
+    np.testing.assert_allclose(right_y[4::5], np.full_like(right_y[4::5], 5.), atol=1e-12)
     # At midpoint the bridge has Var ~= sigma², after removing the mean line.
     midpoint = left_x[4::5] - (a+b)/2
     assert np.all(np.var(midpoint, axis=0) > 0.20)
