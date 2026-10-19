@@ -53,7 +53,7 @@ Sea E de tamaño 138 × M, donde cada columna es el error firmado
 de un predictor, e_ij = yhat_ij - y_i. Un ensamble convexo requiere
 w_j ≥ 0, suma de w_j = 1. Su MSE exacto es
 
-```math
+```{math}
 G = E^T E / 138,
 MSE(w) = w^T G w.
 ```
@@ -80,7 +80,7 @@ Reference26_DBSCAN
 
 Número exacto de combinaciones para pasos de 1%:
 
-```math
+```{math}
 C(100 + 5 - 1, 5 - 1) = C(104,4) = 4,598,126.
 ```
 
@@ -95,7 +95,7 @@ hay C(54,4) = 316,251 combinaciones para cinco modelos.
 Además de la búsqueda discreta, se calcula el óptimo continuo mediante
 **programación cuadrática**:
 
-```math
+```{math}
 min_{w >= 0, 1^T w = 1} w^T G w.
 ```
 
@@ -103,7 +103,7 @@ El óptimo no puede ser peor que el mejor punto de una malla discreta.
 Para evitar que cinco modelos casi idénticos reciban pesos
 arbitrariamente grandes por el sobreajuste, comparar
 
-```math
+```{math}
 min_{w >= 0, 1^T w = 1}
     w^T G w + gamma ||w - (1,0,0,0,0)||_2^2,
 ```
