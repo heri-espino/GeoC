@@ -905,3 +905,28 @@ maxT sign flip over 30 candidate corrections and optional
 Needs --check/--run on user's VM, then human review. Private
 reports/reference26_analog_tail_screen/ and 59 target outputs remain
 unchanged/ignored. In PR #33.
+
+2026-10-19 — User requested fresh LOOCV of TOP FIVE corrected models after
+Reference26 analog screen. Importantly those five already had 138 TRUE OOF
+corrections: RMSE 0.462418, 0.464956, 0.465506, 0.465538, 0.466518
+vs native Reference26 mean 0.468138. Thus simply recomputing them is
+not new validation. New branch experiment/reference26-top5-nested-loocv
+off experiment/reference26-analog-tail-correction adds
+tools/run_reference26_top5_nested.py and
+tests/test_reference26_top5_nested.py with
+docs/REFERENCE26_TOP5_NESTED_LOOCV.md.
+The nested selection algorithm uses 138 outer (137 original real training,
+1 heldout), four additional NATIVE Reference26 fits per outer fold on
+102/103 inner real labels (552 additional native fits), five fixed
+analog corrections using INNER-TRAIN y only, chooses among five plus
+unchanged Reference26 via fourfold 137-real inner OOF MSE with 1%
+minimum relative MSE improvement. Applies selection to already
+saved genuine outer Reference26 OOF predictions, comparing every fixed
+outer candidate with previous private saved results by ID/y and values.
+All fitting masks outer heldout AND inner val yields. The top-five
+candidate configurations were themselves picked AFTER looking at
+same earlier 138 OOF errors: thus this experiment is nested only
+CONDITIONALLY ON preselected candidates, not independent unbiased
+study-wide validation. Full VM evaluation pending; no promoted model,
+no modification of 59 official target forecasts. Private reports
+under reports/reference26_top5_nested/ are gitignored.
