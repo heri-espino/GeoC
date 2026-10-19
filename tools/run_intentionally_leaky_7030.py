@@ -296,11 +296,15 @@ def summarize(folder: Path, *, expected_reps: int, models: tuple):
                     (results["scenario"] == scene), "rmse_t_ha"].to_numpy()
         for kind, scene in ordered
     ]
-    ax.boxplot(values, tick_labels=[
+    short_labels = [
         kind + "\\n" + scene.replace("leaky_test_", "LEAK ").replace(
             "clean_", "clean "
         ).replace("_", " ") for kind, scene in ordered
-    ], showfliers=False)
+    ]
+    try:
+        ax.boxplot(values, tick_labels=short_labels, showfliers=False)
+    except TypeError:  # Matplotlib before 3.9
+        ax.boxplot(values, labels=short_labels, showfliers=False)
     ax.set_ylabel("Per-repetition RMSE (t/ha)")
     ax.set_title("Intentional test contamination: invalid apparent RMSE changes")
     ax.tick_params(axis="x", labelrotation=75, labelsize=7)
