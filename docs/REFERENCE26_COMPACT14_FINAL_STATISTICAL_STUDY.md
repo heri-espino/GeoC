@@ -248,3 +248,46 @@ No basta con sustituir la etiqueta y publicar
 - [PySAL: LISA, multiplicity and interpretation](https://pysal.org/esda/stable/user-guide/local_spatial_autocorrelation.html)
 - [Le Rest et al. (2014), Spatial leave-one-out](https://doi.org/10.1111/geb.12161)
 - [Roberts et al. (2017), Spatial blocking](https://doi.org/10.1111/ecog.02881)
+
+## 4. Galería opcional de predicciones de las 59 parcelas
+
+Para mostrar los tres resultados en la página **sin afirmar
+rendimientos reales desconocidos**, añadimos
+`tools/export_reference26_compact14_predictions59.py`.
+
+Una vez que `--train-final` haya generado los dos modelos y las
+59 predicciones originales desde cero:
+
+~~~powershell
+# Solo verificar: no publica datos.
+python tools/export_reference26_compact14_predictions59.py --check
+
+# Guardar la previsualización verificada bajo reports/ (privado).
+python tools/export_reference26_compact14_predictions59.py --stage
+
+# Solo después de revisar las 59 IDs y las reglas de divulgación:
+python tools/export_reference26_compact14_predictions59.py --publish
+~~~
+
+Este proceso compara las 59 predicciones del CSV original con
+un nuevo `predict_saved` usando cada `joblib`, sus hashes,
+la tabla de 197 filas y la matriz 197×197. Calcula de nuevo
+la mezcla con los pesos congelados y exige coincidencia
+numérica antes de producir un JSON que contiene los
+**59 IDs y las tres estimaciones**. No exporta rendimientos
+verdaderos de las parcelas desconocidas.
+
+`--publish` deposita la exportación en
+`../todoseboso/site/data/ensemble_predictions59.json` para
+la galería `site/ensemble_predictions59.js`. Como esto vuelve
+**públicas las 59 IDs y sus rendimientos estimados** al hacer
+push del sitio, necesita aprobación expresa del equipo
+y verificación de las bases del concurso. No lo ejecuta
+automáticamente el entrenamiento.
+
+Este mecanismo es una **galería de resultados calculados
+en Python**, no el motor para estimar nuevas parcelas en
+JavaScript. Eso último necesitará un desarrollo aparte con
+paridad numérica de ambos modelos o un servicio que cargue
+los dos artefactos.
+
