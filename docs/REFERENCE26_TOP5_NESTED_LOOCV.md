@@ -1,8 +1,9 @@
 # Top-five corrected Reference26: fixed LOOCV versus nested selection
 
-**Date:** 2026-10-19. **Status:** implemented on experiment branch;
-full *nested* workstation run PENDING. Do not promote or overwrite
-the official 59 predictions.
+**Date:** 2026-10-19. **Status:** nested full 138/138 LOOCV
+COMPLETED on the user's workstation; final 59 candidate export
+implemented separately and pending local execution. Do not overwrite
+the original model or its 59 predictions.
 
 ## The key distinction
 
