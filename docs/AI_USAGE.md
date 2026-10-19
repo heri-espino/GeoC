@@ -121,3 +121,14 @@ Los archivos `.ai_handoff` y `AGENTS.md` sirven para continuidad operativa entre
 | 2026-10-12 | ChatGPT (GitHub) | Publicación de métricas y cierre de Checkpoint 09 | Usuario proporcionó stdout de `--prepare`, `--smoke`, `--run`, `--summary` y pidió subir resultados y cerrar el trabajo | Publicadas versiones ligeras `reports/checkpoint_09/shared/development_summary.csv` y `decision.json`, más informe `docs/CHECKPOINT_09_FINDINGS.md` y estado de cierre | Comparación transcrita del stdout: Local04D RMSE 0.495741, LOO 3.0 0.498899, LOSO FAIL; métricas CSV redondeadas; no se publican observaciones por parcela ni se cambian las 59 predicciones |
 
 | 2026-10-18 | ChatGPT | Integración propuesta de los modelos de Nuria al benchmark GeoC LOOCV | Solicitud del usuario de incorporar Reference26/Compact14 del fork todoseboso | Rama aislada, contratos, runner, pruebas sintéticas y protocolo en docs/PEER_CHAMPIONS_LOOCV.md; sin entrenamientos ni datos privados | Pendiente de revisión humana y corrida local con bundle autorizado |
+
+## 2026-10-19 — AI-assisted LOOCV error concentration diagnostic
+
+An assistant inspected the existing private-report loaders and historical
+138-fold model provenance, authored the read-only script
+`tools/analyze_loocv_hard_parcels.py`, synthetic unit tests and
+`docs/LOOCV_HARD_PARCEL_DIAGNOSTIC.md` on a separate draft PR.
+The script computes model-specific cumulative RMSE and common top-ranked
+held-out parcels from existing LOOCV files. The assistant **could not run
+the real local private per-parcel files**, so it did not identify suspect
+parcels, delete labels, fit new models, or validate an RMSE gain.
