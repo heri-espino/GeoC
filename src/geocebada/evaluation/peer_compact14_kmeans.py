@@ -180,3 +180,86 @@ def selected_k(fitted):
         "k": gate["k"],
         "inner_scores": gate["inner_scores"],
     }
+
+
+def compact_only_oof(factory, tr, cv=None):
+    """Native compact raw out-of-fold predictions, without fitting Reference26."""
+    tr = np.asarray(tr, dtype=int)
+    cv = factory.cv(tr) if cv is None else cv
+    values = np.full(len(tr), np.nan)
+    for a, b in cv:
+        aa, bb = tr[a], tr[b]
+        values[b] = factory.compact.predict(factory.compact.fit(aa), bb)
+    if not np.isfinite(values).all():
+        raise RuntimeError("Nonfinite Compact14-only raw OOF predictions.")
+    return values
+
+
+def fit_compact_only(factory, tr):
+    """Same Compact14/R3 branch as ColdExperts.full_fit, without Reference26 fits.
+
+    This intentionally copies only the compact j=0 path from teammate's
+    original ColdExperts.full_fit. It must pass one-fold parity against the
+    previously saved original Compact14 predictions before a full run.
+    """
+    from src.indicator_neighborhoods import REDUCTIONS, ReducedCorrection
+
+    tr = np.asarray(tr, dtype=int)
+    compact = factory.compact.fit(tr)
+    try:
+        cv = factory.cv(tr)
+    except ValueError:
+        return {
+            "outer_experts": {
+                "raw": {"compact": compact},
+                "correctors": [None],
+                "strengths": [0.0],
+            },
+            "train_positions": tr,
+            "B1_weight": 0.0,
+        }
+
+    oof = compact_only_oof(factory, tr, cv)
+    delta = np.full(len(tr), np.nan)
+    for a, b in cv:
+        aa, bb = tr[a], tr[b]
+        try:
+            deep = compact_only_oof(factory, aa)
+        except ValueError:
+            delta[b] = 0.0
+            continue
+        complete = np.isfinite(
+            factory.frame.iloc[bb][REDUCTIONS["R3"]].to_numpy(float)
+        ).all(axis=1)
+        delta[b] = (
+            ReducedCorrection("R3")
+            .fit(factory.frame.iloc[aa], factory.y[aa] - deep)
+            .delta(factory.frame.iloc[bb]) * complete
+        )
+    if not np.isfinite(delta).all():
+        raise RuntimeError("Nonfinite Compact14-only nested R3 corrections.")
+    candidates = [
+        {
+            "strength": strength,
+            "rmse": float(np.sqrt(
+                np.mean((oof + strength * delta - factory.y[tr]) ** 2)
+            )),
+        }
+        for strength in (0.0, 0.5, 1.0)
+    ]
+    selected = min(
+        candidates,
+        key=lambda v: (round(v["rmse"], 12), v["strength"]),
+    )["strength"]
+    corrector = ReducedCorrection("R3").fit(
+        factory.frame.iloc[tr], factory.y[tr] - oof
+    )
+    return {
+        "outer_experts": {
+            "raw": {"compact": compact},
+            "correctors": [corrector],
+            "strengths": [selected],
+        },
+        "train_positions": tr,
+        "B1_weight": 0.0,
+    }
