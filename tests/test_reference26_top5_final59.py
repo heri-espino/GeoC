@@ -175,6 +175,26 @@ def test_nested_manifest_allows_only_code_sha_drift(monkeypatch):
         "top5": list(m.nested.TOP5),
     }
     assert m.validate_nested_provenance(expected, expected) == ()
+    # The nested runner writes tuple-valued TOP5 as a JSON list on disk.
+    # Reproduce the actual saved-manifest versus freshly built situation.
+    from_disk = __import__("json").loads(__import__("json").dumps({
+        **expected, "top5": m.nested.TOP5,
+    }))
+    freshly_computed = {**expected, "top5": m.nested.TOP5}
+    assert isinstance(from_disk["top5"], list)
+    assert isinstance(freshly_computed["top5"], tuple)
+    assert m.validate_nested_provenance(
+        from_disk, freshly_computed
+    ) == ()
+    mutated = dict(from_disk)
+    mutated["top5"] = [dict(value) for value in from_disk["top5"]]
+    mutated["top5"][0]["blend"] = 0.75
+    with pytest.raises(ValueError, match="top5"):
+        m.validate_nested_provenance(mutated, freshly_computed)
+    reverse_order = dict(from_disk)
+    reverse_order["top5"] = list(reversed(from_disk["top5"]))
+    with pytest.raises(ValueError, match="top5"):
+        m.validate_nested_provenance(reverse_order, freshly_computed)
     old = dict(expected)
     old["source_sha"] = "original-nested-run"
     old["screen_source_sha"] = "original-analog-screen"
