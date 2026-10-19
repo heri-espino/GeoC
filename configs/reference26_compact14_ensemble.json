@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "name": "Reference26_mean_plus_Compact14",
+  "selected_on": "same_138_leave_one_parcel_out_observed_y",
+  "status": "exploratory_fixed_weights_not_independent_validation",
+  "weights": {
+    "Reference26_mean": 0.7049462505599942,
+    "Compact14": 0.29505374944000595
+  },
+  "base_models": {
+    "Reference26_mean": {
+      "imputation": "train_fold_arithmetic_mean",
+      "neighbors": 24,
+      "ridge_alpha": 30,
+      "full_refit_required": true
+    },
+    "Compact14": {
+      "imputation": "original_native_median",
+      "reuse_original_train138_joblib": true
+    }
+  },
+  "holdout_protocol": {
+    "parcels": 138,
+    "train_labels_each_fold": 137,
+    "base_models_outer_fitted": true,
+    "ensemble_weights_outer_fitted": false
+  },
+  "target_units": "t/ha",
+  "warning": "Fixed-weight 138-LOOCV computes legitimate held-out base predictions, but weights were selected on these same 138 yields. Therefore the mixture RMSE is exploratory, not independent validation of weight selection.",
+  "provenance_document": "results/peer_models/REFERENCE26_MASSIVE_ENSEMBLE_138_2026-10-19.md"
+}
