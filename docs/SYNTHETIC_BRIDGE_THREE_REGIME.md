@@ -73,3 +73,32 @@ This creates private **predictions59_private.csv**, refuses to replace an existi
 ## Decision
 
 Compare against original Reference26 (138 RMSE ~0.468138 t/ha). Prioritize RMSE on 136 other parcels, fraction unaffected, severity of deterioration, and number of 59 targets entering the synthetic gate. Even a post-hoc improvement on these 138 folds is not independent evidence that the new model improves hidden-target accuracy. No promotion before review of the experiment and a separate validation strategy.
+
+
+## Private anchor selection and diagnostic visualization
+
+The real endpoint identifiers are **not embedded in the final Python
+source**. The runner reads the private, gitignored file
+`reports/loocv_hard_parcels/diagnostic_manifest_private.json` from
+the completed shared hard-case analysis (the key
+`two_highest_consensus_private`). If that file is absent, run
+`python tools/analyze_loocv_hard_parcels.py --run` using the
+previous analysis branch or supply `--anchor-file` pointing to a
+compatible private manifest. Identifiers and yields are never included
+in the public aggregate comparison tables.
+
+Visualize the real 197 X parcels plus both synthetic clouds in a
+two-dimensional PCA projection, alongside the theoretical noise
+variance curve:
+
+```powershell
+python tools/plot_synthetic_bridge.py --sigma 0.15
+```
+
+Private outputs (both gitignored):
+- `reports/synthetic_bridge_three_regime/bridge_cloud_pca_private.png`
+- `reports/synthetic_bridge_three_regime/bridge_expected_variance.png`
+
+A PCA view cannot validate that mixtures of soil/climate/phenology
+features correspond to physically possible fields; it helps detect
+obviously misplaced synthetic clouds.
