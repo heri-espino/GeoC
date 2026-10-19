@@ -66,6 +66,7 @@ def plot_cloud(z, root, y, anchors, *, sigma, paths, steps, seed, outfile):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--anchor-file", type=Path, default=experiment.ANCHOR_SOURCE)
     p.add_argument("--bundle", type=Path, default=experiment.native.BUNDLE)
     p.add_argument("--peer-repo", type=Path, default=experiment.native.PEER_REPO)
     p.add_argument("--config", type=Path, default=experiment.native.CONFIG)
