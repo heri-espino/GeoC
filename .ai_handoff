@@ -938,3 +938,19 @@ Use --plot for private signed-residual PCA, target X and Gaussian hard
 centers. All local reports under reports/global_synthetic_augmentation*/
 are gitignored. Real VM test/run not yet executed. No model promotion,
 59-target yield inspection, or website changes.
+
+
+2026-10-19 — REAL VM outcome for experiment/global-synthetic-augmentation
+(PR #31): full 138 x (137/1) CV completed; all 40 synthetic global
+Ridge/ExtraTrees variants were inferior to their same-learner no-augmentation
+controls and to original Reference26 mean. Actual aggregate RMSE:
+Reference26 mean 0.468138; plain Ridge 0.492732; plain ExtraTrees
+0.496662; best synthetic ExtraTrees repeat n256/full 0.506404;
+ExtraTrees gaussian_hard n256/m32 0.538480; Ridge gaussian_hard
+n256/m32 0.563545. Gaussian Ridge did improve descriptive hardest-2 RMSE
+≈2.065 -> 1.767889 but worsened other136 0.399583 -> 0.525634.
+Crucial distinction: these candidate models are *global Ridge and
+ExtraTrees*, NOT Reference26 with direct synthetic rows. The user's
+original 59 predictions are unchanged; no promotion. User-sent
+aggregate logs, no private results CSV committed. See updated
+docs/GLOBAL_SYNTHETIC_AUGMENTATION.md for full interpretation.
