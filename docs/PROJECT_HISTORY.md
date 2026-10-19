@@ -1652,3 +1652,23 @@ Added a canonical narrative in `docs/METODOLOGIA_Y_RESULTADOS.md` covering all C
 
 The user reported a 5.556 maximal numerical mismatch in checkpoint10_pca's historical 20-PC parity check during --check. Root cause in our bridge: unnecessarily requesting PCA160 then comparing its prefix with the frozen PCA20 reference. Corrected the shared bridge to request a 20-component fit, retaining the exact historical reference check. Added synthetic regression test to assert requested dimension. No changes to checkpoint10_pca, GeoC main, existing frozen models, or the 59 competition forecasts; not run locally.
 
+## 2026-10-19 — Synthetic Gaussian-bridge three-regime hypothesis (experimental)
+
+After finding that two anonymized, repeatedly difficult parcels contribute
+~27–28% of SSE across 13 full-138 LOOCV configurations, the user proposed
+augmenting the feature line segment between two real difficult observations
+with a Brownian-bridge process (noise vanishes at endpoints, peaks at midpoint),
+training two separate Ridge specialists on the first/second half of the
+synthetic bridge, and routing only sufficiently near-support parcels away
+from the existing Reference26 mean-imputation baseline. Implemented on
+separate draft PR #30: tools/run_synthetic_bridge_three_regime.py,
+tools/plot_synthetic_bridge.py, synthetic tests and methodology
+in docs/SYNTHETIC_BRIDGE_THREE_REGIME.md. The source reads the two anchor
+IDs from a PRIVATE local diagnostic manifest rather than publishing
+per-parcel yields. Existing actual 138-fold Reference26 LOOCV values are
+reused. Every heldout fold masks target y from all augmentation; when
+an anchor is excluded, both specialists are disabled. The gate uses only
+X and defaults to exact baseline outside synthetic support. Real VM results
+not yet available; no promotion, no changes to the 59 predictions, no claims
+of independently verified improvement. This intentionally probes a
+post-hoc hackathon hypothesis, not proof of missing-data manipulation.
