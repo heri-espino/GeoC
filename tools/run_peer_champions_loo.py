@@ -24,8 +24,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from geocebada.evaluation.checkpoint08_local import ID, atomic_json
-from geocebada.evaluation.checkpoint10_pca import FROZEN, inputs, load_pca_data, predict
+from geocebada.evaluation.checkpoint08_local import ID, atomic_json, predict_old
+from geocebada.evaluation.checkpoint10_pca import FROZEN, inputs
+from geocebada.evaluation.peer_frozen_local04d import load_frozen_local04d
 from geocebada.evaluation.peer_champions_loo import (
     BASELINE,
     MODELS,
@@ -82,11 +83,10 @@ def _load(peer: Path, bundle: Path):
     from src.current_champions import load_bundle, predict_saved, refit_fold
 
     frame, groups, distance, manifest = load_bundle(bundle, verify_saved_models=False)
-    # The frozen Local04D model uses a *20-component PCA fit*, not the
-    # first 20 axes of a separate 160-component decomposition. SVD sign
-    # conventions may differ between fits; the historical numerical parity
-    # guard in load_pca_data remains strict and is never bypassed.
-    baseline = load_pca_data(ROOT, MEMBERSHIPS, max_components=20)
+    # Use the exact stored Checkpoint 04A PCA20 basis, then prove that it
+    # reproduces 41 original Local04D held-out predictions. Never recompute
+    # an environment-dependent PCA or relax an output parity threshold.
+    baseline = load_frozen_local04d(ROOT, MEMBERSHIPS)
     ids = align_peer_targets(frame, baseline.y)
     if set(groups.index.astype(str)) != set(ids):
         raise ValueError("Peer group IDs do not match the 138 training parcels.")
@@ -104,6 +104,10 @@ def _spec(peer: Path, bundle: Path) -> dict:
         "peer_contracts": ROOT / "src/geocebada/evaluation/peer_champions_loo.py",
         "geoc_predictor": ROOT / "src/geocebada/evaluation/checkpoint04d1.py",
         "geoc_pca": ROOT / "src/geocebada/evaluation/checkpoint10_pca.py",
+        "geoc_original_loader": ROOT / "src/geocebada/evaluation/checkpoint08_local.py",
+        "geoc_reference_bridge": ROOT / "src/geocebada/evaluation/peer_frozen_local04d.py",
+        "historical_control_splits": ROOT / "reports/checkpoint_04b/pseudo_competition_splits.csv",
+        "historical_control_predictions": ROOT / "reports/checkpoint_06/parcel_oof_residuals.csv",
     })
     for key, path in paths.items():
         if not path.is_file():
@@ -113,7 +117,7 @@ def _spec(peer: Path, bundle: Path) -> dict:
         "training_labels_per_fit": 137, "folds": 138,
         "inner_cv": "4-fold shuffled KFold, relative indices, seed 20261018",
         "outer_label_masked": True, "seed": SEED, "models": list(MODELS),
-        "geoc_x": "197-parcel target-free transductive C4 PCA20",
+        "geoc_x": "original saved 197-parcel C4 PCA20, 41-prediction Local04D parity verified",
         "peer_features": "pre-exported 26-feature bundle; 138 observed X; no prior fitted models",
         "peer_repo": "https://github.com/heri-espino/todoseboso",
         "peer_commit": _git(peer, "rev-parse", "HEAD"),
@@ -293,7 +297,7 @@ def main() -> int:
             raise RuntimeError("Peer model used unexpected outer training indices.")
         peer_pred = predict_saved(pack, np.array([position]), masked, distance)
         geoc_train = [pid for pid in baseline.y.index.astype(str) if pid != held_id]
-        geoc_pred = float(predict(baseline, geoc_train, [held_id], components=20, **FROZEN)[0])
+        geoc_pred = float(predict_old(baseline, geoc_train, [held_id], FROZEN)[0])
         row = {ID: held_id, "observed": held_y, BASELINE: geoc_pred}
         for name in PEER_MODELS:
             row[name] = float(np.asarray(peer_pred[name], dtype=float).reshape(-1)[0])
