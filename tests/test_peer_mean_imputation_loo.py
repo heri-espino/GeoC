@@ -101,7 +101,7 @@ def test_all_original_preprocessors_switch_to_training_mean(monkeypatch):
     raw = pd.DataFrame({"x": [1., 1., 10., np.nan], "group": ["a", "b", "a", "b"]})
     y = np.asarray([2., 3., 4., 5.])
     with use_training_means():
-        for module_name, class_name, field, imputed in ATTRIBUTES:
+        for module_name, class_name, _field, imputed in ATTRIBUTES:
             cls = classes[class_name]
             mod = sys.modules[module_name]
             assert getattr(mod, class_name) is cls
