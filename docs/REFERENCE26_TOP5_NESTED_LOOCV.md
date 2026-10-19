@@ -153,3 +153,38 @@ The original 59 hidden target predictions, previous Reference26
 joblib and deployed website remain unchanged. Do **not** interpret
 the existence of 552 fits as 552 additional distinct real test
 parcels: only 138 real outer heldouts are used.
+
+## Resultados de la VM, ejecutados por el usuario — 2026-10-19
+
+**138/138 folds completados.** Se confirmó que los cinco modelos de
+corrección fija mantienen exactamente sus puntuaciones de LOOCV
+preexistentes. La **política con selección interna** logró:
+
+| Predictor | RMSE | MAE | Bias | R² CV |
+|---|---:|---:|---:|---:|
+| Reference26 mean sin corregir | 0.468138 | 0.333786 | 0.001466 | 0.695292 |
+| **NestedSelection (4fold interno)** | **0.462892** | **0.331956** | **-0.005062** | **0.702083** |
+| robust26 k3 .25 supported fijo | 0.462418 | 0.332019 | -0.004103 | 0.702693 |
+| PCA8 k3 .25 supported fijo | 0.464956 | 0.334091 | -0.000414 | 0.699421 |
+| PCA8 k8 .25 supported fijo | 0.465506 | 0.334439 | -0.004101 | 0.698709 |
+| robust26 k3 .10 supported fijo | 0.465538 | 0.332972 | -0.000762 | 0.698668 |
+| robust26 k3 .10 sin filtro fijo | 0.466518 | 0.335959 | -0.004757 | 0.697397 |
+
+La política eligió `robust26/k3/blend0.25/supported` en **128 folds**,
+`PCA8/k3/blend0.25/supported` en **5** y Reference26 original en
+**5**; nunca eligió los otros tres candidatos.
+
+La reducción observada de RMSE del selector contra la línea
+base es **0.005246 t/ha (≈1.12%)** y de MAE **0.001830 t/ha**.
+No obstante, las cinco recetas son seleccionadas a posteriori
+tras inspeccionar previamente las mismas 138 etiquetas; no es
+un test independiente del proceso histórico de selección.
+El resultado pertenece al protocolo condicional descrito arriba.
+
+**Siguiente paso implementado:** `tools/run_reference26_top5_final59.py`
+prepara la decisión final usando cuatro inner folds sobre las
+138 etiquetas reales y predice las 59 desconocidas con el
+modelo nativo Reference26 MEAN entrenado con 138. Ver
+`docs/REFERENCE26_FINAL59_SELECTED.md`. Los 59 resultados
+están pendientes de ejecución en la VM, sin promoción ni
+cambios en los joblibs originales.
