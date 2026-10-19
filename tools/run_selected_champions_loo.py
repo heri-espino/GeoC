@@ -1,222 +1,231 @@
 #!/usr/bin/env python3
-"""Paired LOOCV: GeoC Local04D versus teammate's TWO selected champion models.
+"""LOOCV for the two selected todoseboso models, on the original private bundle.
 
-No DBSCAN, no B1, no CatBoost. Call peer's original ColdExperts.full_fit,
-including its honest nested tuning, without the extra B1 ensemble-selection
-refits performed by the peer's refit_fold entrypoint.
+Uses *only* her ColdExperts.full_fit and predict_saved implementations.
+No GeoC PCA, Local04D, B1 training, DBSCAN, or external data reconstruction.
 
   python tools/run_selected_champions_loo.py --check
   python tools/run_selected_champions_loo.py --smoke
-  python tools/run_selected_champions_loo.py --run --jobs 4
+  python tools/run_selected_champions_loo.py --run --jobs 2
   python tools/run_selected_champions_loo.py --summary
-
-Each held-out parcel gets 137 labeled training examples. Independent outer
-folds can run concurrently on Windows (spawn). Model fits and caches stay local.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import os
+import subprocess
+import sys
+import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from pathlib import Path
 
-# Restrict numerical-library threads per independent outer process.
-for _name in (
-    "OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS",
-    "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS",
-):
-    os.environ[_name] = "1"
+import numpy as np
+import pandas as pd
+from sklearn.metrics import r2_score
+from sklearn.model_selection import KFold
+from threadpoolctl import threadpool_limits
 
-from concurrent.futures import ProcessPoolExecutor, as_completed  # noqa: E402
-from pathlib import Path  # noqa: E402
-
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-from run_peer_champions_loo import (  # noqa: E402
-    ROOT,
-    _hash,
-    _load,
-    _lock,
-    _spec,
-    _write_fold,
-)
-from sklearn.metrics import r2_score  # noqa: E402
-from threadpoolctl import threadpool_limits  # noqa: E402
-
-from geocebada.evaluation.checkpoint08_local import predict_old  # noqa: E402
-from geocebada.evaluation.peer_champions_loo import (  # noqa: E402
-    ID,
-    Y,
-    outer_record,
-    resolve_peer_bundle,
-)
-
+ROOT = Path(__file__).resolve().parents[1]
+BUNDLE = ROOT / "data_n/processed/current_champions/v1"
+PEER_REPO = ROOT.parent / "todoseboso"
 OUTPUT = ROOT / "reports/selected_champions_loo"
-LOCAL = "Local04D"
-SELECTED = ("Reference26", "Compact14")
-MODELS = (LOCAL, *SELECTED)
-_WORKER_DATA = None
+ID = "ID_POLIGONO"
+TARGET = "RENDIMIENTO_T_HA"
+MODELS = ("Reference26", "Compact14")
+SEED = 20261018
+
+_DATA = None
 
 
-def validate_selected(row: pd.DataFrame, held_id: str, held_y: float) -> None:
-    """Catch cached wrong-parcel results; never mix protocols or model columns."""
-    if len(row) != 1 or set(row.columns) != {ID, "observed", *MODELS}:
-        raise ValueError("Wrong three-model fold schema.")
-    found = row.iloc[0]
-    if str(found[ID]) != held_id or abs(float(found["observed"]) - held_y) > 1e-10:
-        raise ValueError("Wrong held-out ID/y in saved fold.")
-    if not np.isfinite(found[list(MODELS)].to_numpy(float)).all():
-        raise ValueError("Nonfinite three-model predictions.")
+def digest(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
 
 
-def fit_selected(frame, groups, distance, geology, record, cache):
-    """Fit only the two selected champions, retaining their original tuning.
+def load_inputs(bundle: Path, peer_repo: Path):
+    """Read the original validated 26-input bundle, with its saved models disabled."""
+    source = peer_repo / "src/current_champions.py"
+    if not source.is_file():
+        raise FileNotFoundError(f"Missing teammate's source: {source}")
+    if not (bundle / "manifest.json").is_file():
+        raise FileNotFoundError(f"Missing exported champion bundle: {bundle}")
+    if str(peer_repo.resolve()) not in sys.path:
+        sys.path.insert(0, str(peer_repo.resolve()))
+    from src.current_champions import ColdExperts, load_bundle, predict_saved
 
-    Calling peer.refit_fold would independently train four full champions
-    repeatedly to choose B1's blend coefficient. The original ColdExperts
-    full_fit is sufficient to refit Reference26 and Compact14 (plus the
-    common CT3 internals) without fitting B1.
-    """
-    from src.current_champions import ColdExperts
-
-    train = np.asarray(record["train_positions"], dtype=int)
-    held = np.asarray(record["validation_positions"], dtype=int)
-    inner = [
-        (
-            np.asarray(split["train_relative_positions"], dtype=int),
-            np.asarray(split["validation_relative_positions"], dtype=int),
-        )
-        for split in record["inner"]
-    ]
-    factory = ColdExperts(
-        frame, groups, distance, geology, "random", train, inner, cache,
+    frame, groups, distance, manifest = load_bundle(
+        bundle, verify_saved_models=False
     )
-    fitted = factory.full_fit(train)
-    if set(fitted["train_positions"]) != set(train):
-        raise RuntimeError("Peer fit has unexpected training positions.")
-    if set(train) & set(held):
-        raise RuntimeError("Outer held-out parcel leaked into fitted models.")
+    ids = frame[ID].astype(str).tolist()
+    if len(ids) != 138 or len(set(ids)) != 138:
+        raise ValueError("Expected 138 unique labeled parcel IDs.")
+    y = frame[TARGET].to_numpy(float)
+    if not np.isfinite(y).all():
+        raise ValueError("All 138 observed training yields must be finite.")
+    if set(groups.index.astype(str)) != set(ids):
+        raise ValueError("Saved groups and training IDs do not match.")
+    if np.shape(distance) != (138, 138) or not np.isfinite(distance).all():
+        raise ValueError("Saved geographical distance must be finite 138×138.")
+    if not set(MODELS).issubset(set(manifest["models"])):
+        raise ValueError("The private bundle does not include both champions.")
+    if len(manifest["features"]) != 26:
+        raise ValueError("Expected the original 26-feature shared bundle.")
+    if not set(manifest["features"]).issubset(frame.columns):
+        raise ValueError("One or more original model features are missing.")
+    return frame, groups, distance, manifest, ids, ColdExperts, predict_saved
+
+
+def fold_record(position: int, n: int = 138) -> tuple[np.ndarray, list]:
+    """137 training labels and four inner folds, never including the held-out row."""
+    if not 0 <= position < n:
+        raise ValueError("Invalid held-out position.")
+    train = np.delete(np.arange(n, dtype=int), position)
+    inner = [
+        (np.asarray(a, dtype=int), np.asarray(b, dtype=int))
+        for a, b in KFold(
+            n_splits=4, shuffle=True, random_state=SEED
+        ).split(train)
+    ]
+    if not all(len(set(train[a]) & {position}) == 0 for a, _ in inner):
+        raise AssertionError("Outer target entered the inner training folds.")
+    return train, inner
+
+
+def validate_saved(row: pd.DataFrame, parcel: str, observed: float) -> None:
+    if len(row) != 1 or set(row.columns) != {ID, "observed", *MODELS}:
+        raise ValueError("Saved fold has an unexpected schema.")
+    result = row.iloc[0]
+    if str(result[ID]) != parcel or abs(float(result["observed"]) - observed) > 1e-10:
+        raise ValueError("Saved fold does not match the held-out parcel and yield.")
+    if not np.isfinite(row[list(MODELS)].to_numpy(float)).all():
+        raise ValueError("Saved fold has nonfinite model predictions.")
+
+
+def write_csv(path: Path, frame: pd.DataFrame) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    staging = path.with_suffix(path.suffix + ".tmp")
+    frame.to_csv(staging, index=False, float_format="%.16g")
+    staging.replace(path)
+
+
+def run_spec(bundle: Path, peer_repo: Path) -> dict:
+    try:
+        peer_commit = subprocess.check_output(
+            ["git", "-C", str(peer_repo), "rev-parse", "HEAD"],
+            text=True, stderr=subprocess.DEVNULL,
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        peer_commit = "not_available"
     return {
-        "outer_experts": fitted,
-        "train_positions": train,
-        "validation_positions": held,
-        # Peer predict_saved always includes its B1 output; discard it.
-        "B1_weight": 0.0,
+        "protocol": "138x leave-one-parcel-out; 137 train, 1 test",
+        "models": list(MODELS),
+        "inner": f"4-fold shuffled KFold, seed={SEED}, 137 outer-train rows",
+        "peer_commit": peer_commit,
+        "peer_model_source_sha256": digest(peer_repo / "src/current_champions.py"),
+        "manifest_sha256": digest(bundle / "manifest.json"),
+        "runner_sha256": digest(Path(__file__).resolve()),
     }
 
 
-def _initialize_worker(peer_dir: str, bundle_dir: str) -> None:
-    """Load protected private assets exactly once in each worker process."""
-    global _WORKER_DATA
-    with threadpool_limits(limits=1):
-        _WORKER_DATA = _load(Path(peer_dir), Path(bundle_dir))
+def lock_output(folder: Path, spec: dict) -> None:
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / "run_spec.json"
+    if path.exists():
+        if json.loads(path.read_text(encoding="utf-8")) != spec:
+            raise ValueError("Code or bundle changed. Choose a new --output directory.")
+    else:
+        if list(folder.glob("fold_*.csv")):
+            raise ValueError("Untracked completed folds exist without a run specification.")
+        path.write_text(json.dumps(spec, indent=2) + "\n", encoding="utf-8")
 
 
-def _compute_one(position: int, output_dir: str) -> tuple[int, str]:
-    """Independent, target-masked cold fit; atomic CSV output for resuming."""
-    if _WORKER_DATA is None:
-        raise RuntimeError("Worker has not loaded input data.")
-    (
-        frame, groups, distance, manifest, ids, baseline,
-        _unused_refit, predict_saved,
-    ) = _WORKER_DATA
-    position = int(position)
+def initialize_worker(bundle: str, peer: str) -> None:
+    global _DATA
+    _DATA = load_inputs(Path(bundle), Path(peer))
+
+
+def fit_one(position: int, output_dir: str) -> tuple[int, str, float]:
+    """Fit her two models from scratch on the same 137 labels."""
+    if _DATA is None:
+        raise RuntimeError("Worker inputs were not initialized.")
+    frame, groups, distance, manifest, ids, ColdExperts, predict_saved = _DATA
     held_id = ids[position]
-    observed = float(frame.iloc[position][Y])
-    folder = Path(output_dir)
-    path = folder / f"fold_{position + 1:03}.csv"
+    observed = float(frame.iloc[position][TARGET])
+    out = Path(output_dir)
+    path = out / f"fold_{position + 1:03}.csv"
     if path.is_file():
-        validate_selected(pd.read_csv(path, dtype={ID: str}), held_id, observed)
-        return position + 1, "cached"
+        validate_saved(pd.read_csv(path, dtype={ID: str}), held_id, observed)
+        return position + 1, "cached", 0.
 
-    record = outer_record(position)
+    train, inner = fold_record(position)
     masked = frame.copy(deep=True)
-    masked.loc[masked.index[position], Y] = np.nan
-    train_positions = np.asarray(record["train_positions"], dtype=int)
-    if (
-        not np.isnan(float(masked.iloc[position][Y]))
-        or not np.isfinite(masked.iloc[train_positions][Y].to_numpy(float)).all()
-    ):
-        raise RuntimeError("Outer target masking did not isolate held-out label.")
-
+    masked.loc[masked.index[position], TARGET] = np.nan
+    if not np.isnan(float(masked.iloc[position][TARGET])):
+        raise AssertionError("The excluded yield was not masked.")
+    started = time.perf_counter()
     with threadpool_limits(limits=1):
-        fit = fit_selected(
-            masked, groups, distance, manifest["geology"], record,
-            folder / f"peer_cache/fold_{position + 1:03}",
+        factory = ColdExperts(
+            masked, groups, distance, manifest["geology"], "random",
+            train, inner, out / f"cache/fold_{position + 1:03}",
         )
-        peer_pred = predict_saved(
-            fit, np.asarray([position], dtype=int), masked, distance,
+        fit = factory.full_fit(train)
+        if set(fit["train_positions"]) != set(train):
+            raise RuntimeError("The model used unexpected training positions.")
+        # predict_saved includes B1 as a derived value; we save ONLY the two
+        # selected models. No B1 calibration or extra refit is performed.
+        pack = {
+            "outer_experts": fit,
+            "train_positions": train,
+            "validation_positions": np.array([position]),
+            "B1_weight": 0.,
+        }
+        predictions = predict_saved(
+            pack, np.array([position]), masked, distance
         )
-        known = [parcel for parcel in baseline.y.index.astype(str) if parcel != held_id]
-        local = float(
-            predict_old(
-                baseline, known, [held_id],
-                {"k": 24, "alpha": 30.0, "power": 1.0},
-            )[0]
-        )
-
-    result = pd.DataFrame([{
+    row = pd.DataFrame([{
         ID: held_id,
         "observed": observed,
-        LOCAL: local,
-        "Reference26": float(np.asarray(peer_pred["Reference26"]).reshape(-1)[0]),
-        "Compact14": float(np.asarray(peer_pred["Compact14"]).reshape(-1)[0]),
+        "Reference26": float(np.asarray(predictions["Reference26"]).item()),
+        "Compact14": float(np.asarray(predictions["Compact14"]).item()),
     }])
-    validate_selected(result, held_id, observed)
-    _write_fold(path, result)
-    return position + 1, "trained"
+    validate_saved(row, held_id, observed)
+    write_csv(path, row)
+    return position + 1, "trained", time.perf_counter() - started
 
 
-def _report(folder: Path, *, n: int, complete: bool) -> None:
-    paths = [folder / f"fold_{i:03}.csv" for i in range(1, n + 1)]
-    if any(not path.is_file() for path in paths):
-        raise ValueError(f"Missing one or more of the requested {n} saved folds.")
-    combined = pd.concat(
-        [pd.read_csv(path, dtype={ID: str}) for path in paths],
-        ignore_index=True,
+def summarize(folder: Path, *, count: int, final: bool) -> None:
+    paths = [folder / f"fold_{i:03}.csv" for i in range(1, count + 1)]
+    if any(not p.is_file() for p in paths):
+        raise ValueError(f"Need {count} completed held-out folds for this summary.")
+    frame = pd.concat(
+        [pd.read_csv(p, dtype={ID: str}) for p in paths], ignore_index=True
     )
-    if len(combined) != n or not combined[ID].is_unique:
-        raise ValueError("Held-out parcels repeated or missing from comparison.")
-    estimates = []
+    if len(frame) != count or frame[ID].duplicated().any():
+        raise ValueError("Repeated held-out parcel or incomplete saved folds.")
+    scores = []
     for model in MODELS:
-        residual = combined[model].to_numpy(float) - combined["observed"].to_numpy(float)
-        estimates.append({
+        actual = frame["observed"].to_numpy(float)
+        residual = frame[model].to_numpy(float) - actual
+        scores.append({
             "model": model,
-            "n_parcels": n,
-            "training_labels_per_fold": 137,
-            "rmse": float(np.sqrt(np.mean(residual**2))),
+            "held_out_parcels": count,
+            "train_labels_per_fold": 137,
+            "rmse": float(np.sqrt(np.mean(residual ** 2))),
             "mae": float(np.mean(np.abs(residual))),
             "mean_error": float(np.mean(residual)),
-            "r2": (
-                float(r2_score(combined["observed"], combined[model]))
-                if n >= 2 else np.nan
-            ),
+            "r2": float(r2_score(actual, frame[model])) if count >= 2 else np.nan,
         })
-    scores = pd.DataFrame(estimates)
-    label = "LOOCV" if complete else "SMOKE (exploratory only)"
-    print(f"\n[SELECTED {label}] Paired three-model results:\n"
-          + scores.to_string(index=False), flush=True)
-    _write_fold(folder / ("loo_predictions.csv" if complete else "smoke_predictions.csv"),
-                combined)
-    _write_fold(folder / ("loo_summary.csv" if complete else "smoke_summary.csv"),
-                scores)
-    if not complete:
-        print(
-            "[SELECTED SMOKE] This small sample cannot rank models or "
-            "estimate the 138-fold LOOCV RMSE.",
-            flush=True,
-        )
-
-
-def _provenance(peer_dir: Path, bundle: Path) -> dict:
-    spec = _spec(peer_dir, bundle)
-    spec.update({
-        "schema": 2,
-        "models": list(MODELS),
-        "selected_only": True,
-        "B1_ensemble_selection_refits_skipped": True,
-        "parallelism": "independent outer folds; single-thread numerical libraries",
-        "selected_runner_sha256": _hash(Path(__file__).resolve()),
-    })
-    return spec
+    name = "loo" if final else "smoke"
+    write_csv(folder / f"{name}_predictions.csv", frame)
+    write_csv(folder / f"{name}_summary.csv", pd.DataFrame(scores))
+    print(pd.DataFrame(scores).to_string(index=False), flush=True)
+    if not final:
+        print("[SMOKE] This is not the 138-fold RMSE.", flush=True)
 
 
 def main() -> int:
@@ -224,96 +233,74 @@ def main() -> int:
     action = parser.add_mutually_exclusive_group(required=True)
     for name in ("check", "smoke", "run", "summary"):
         action.add_argument(f"--{name}", action="store_true")
-    parser.add_argument("--peer-repo", type=Path, default=ROOT.parent / "todoseboso")
-    parser.add_argument("--bundle", type=Path, default=None)
+    parser.add_argument("--bundle", type=Path, default=BUNDLE)
+    parser.add_argument("--peer-repo", type=Path, default=PEER_REPO)
     parser.add_argument("--output", type=Path, default=OUTPUT)
-    parser.add_argument(
-        "--jobs", type=int, default=2,
-        help="Independent CPU processes for outer folds; start with 2 or 4.",
-    )
-    parser.add_argument(
-        "--smoke-folds", type=int, default=1,
-        help="Use 1–5 held-out parcels in the smoke (default 1).",
-    )
+    parser.add_argument("--jobs", type=int, default=2)
+    parser.add_argument("--smoke-folds", type=int, default=1)
     parser.add_argument("--from-fold", type=int, default=1)
     parser.add_argument("--through-fold", type=int, default=138)
     args = parser.parse_args()
-
     if not 1 <= args.jobs <= 8:
-        parser.error("Use --jobs between 1 and 8 to limit memory use.")
+        parser.error("--jobs must be between 1 and 8.")
     if not 1 <= args.smoke_folds <= 5:
         parser.error("--smoke-folds must be between 1 and 5.")
+    if args.smoke and (args.from_fold != 1 or args.through_fold != 138):
+        parser.error("Do not combine --smoke with --from-fold/--through-fold.")
 
-    folder = (args.output / "smoke" if args.smoke else args.output).resolve()
-    if args.summary:
-        if not (folder / "run_spec.json").is_file():
-            raise ValueError("Missing provenance manifest; full run not completed.")
-        _report(folder, n=138, complete=True)
-        return 0
-
-    peer_dir = args.peer_repo.resolve()
-    bundle = resolve_peer_bundle(ROOT, args.bundle, peer_dir)
-    # Load and validate the exact same IDs / known yields before spawning workers.
-    (
-        frame, _groups, _distance, _manifest, ids, _baseline, _refit, _predict,
-    ) = _load(peer_dir, bundle)
-    spec = _provenance(peer_dir, bundle)
+    bundle, peer = args.bundle.resolve(), args.peer_repo.resolve()
+    out = (args.output / "smoke" if args.smoke else args.output).resolve()
+    # Only teammate's original bundle and source. No GeoC PCA or yield files.
+    frame, _groups, _distance, _manifest, ids, _class, _predict = load_inputs(
+        bundle, peer
+    )
     print(
-        f"[SELECTED] Input bundle: {bundle}\n"
-        f"[SELECTED] 138 aligned parcels; 137 training labels per held-out fit.\n"
-        "[SELECTED] Models: Local04D, Reference26, Compact14 (no B1, no DBSCAN).",
+        f"[PEER] Bundle: {bundle}\n"
+        "[PEER] 138 labeled parcels; models: Reference26 and Compact14.",
         flush=True,
     )
     if args.check:
+        print("[CHECK] Both models' source, bundle and IDs validated.", flush=True)
         return 0
-
-    _lock(folder, spec)
+    lock_output(out, run_spec(bundle, peer))
+    if args.summary:
+        summarize(out, count=138, final=True)
+        return 0
     start = 1 if args.smoke else args.from_fold
     stop = args.smoke_folds if args.smoke else args.through_fold
     if not 1 <= start <= stop <= 138:
-        parser.error("Choose valid held-out fold bounds from 1 through 138.")
+        parser.error("Fold bounds must lie between 1 and 138.")
 
-    pending = []
+    todo = []
     for fold in range(start, stop + 1):
-        path = folder / f"fold_{fold:03}.csv"
+        path = out / f"fold_{fold:03}.csv"
         if path.is_file():
-            validate_selected(
+            validate_saved(
                 pd.read_csv(path, dtype={ID: str}),
                 ids[fold - 1],
-                float(frame.iloc[fold - 1][Y]),
+                float(frame.iloc[fold - 1][TARGET]),
             )
-            print(f"[SELECTED {fold}/{stop}] already saved", flush=True)
         else:
-            pending.append(fold - 1)
-
-    if pending:
-        print(
-            f"[SELECTED] Training {len(pending)} folds using "
-            f"{min(args.jobs, len(pending))} independent CPU process(es).",
-            flush=True,
-        )
+            todo.append(fold - 1)
+    if todo:
         with ProcessPoolExecutor(
-            max_workers=min(args.jobs, len(pending)),
-            initializer=_initialize_worker,
-            initargs=(str(peer_dir), str(bundle)),
-        ) as executor:
-            futures = {
-                executor.submit(_compute_one, position, str(folder)): position
-                for position in pending
+            max_workers=min(args.jobs, len(todo)),
+            initializer=initialize_worker,
+            initargs=(str(bundle), str(peer)),
+        ) as pool:
+            pending = {
+                pool.submit(fit_one, pos, str(out)): pos for pos in todo
             }
-            for future in as_completed(futures):
-                fold, status = future.result()
-                print(f"[SELECTED {fold}/{stop}] {status}", flush=True)
+            for future in as_completed(pending):
+                number, status, seconds = future.result()
+                print(f"[LOO {number:03d}/138] {status} ({seconds:.1f}s)", flush=True)
 
     if args.smoke:
-        _report(folder, n=args.smoke_folds, complete=False)
-    elif len(list(folder.glob("fold_*.csv"))) == 138:
-        _report(folder, n=138, complete=True)
+        summarize(out, count=args.smoke_folds, final=False)
+    elif start == 1 and stop == 138:
+        summarize(out, count=138, final=True)
     else:
-        print(
-            "[SELECTED] Partial paired experiment saved; rerun --run to resume.",
-            flush=True,
-        )
+        print("[LOO] Partial results saved. Full summary requires all 138.", flush=True)
     return 0
 
 
