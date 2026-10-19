@@ -105,3 +105,52 @@ def test_external_models_require_proof_and_exact_names(tmp_path):
     assert name == "CatBoost" and result.shape == (138, 3)
     with pytest.raises(ValueError, match="Invalid/conflicting"):
         module.load_extra(f"Reference26_mean={file}")
+
+
+def test_saved_local04d_long_format_filters_only_frozen_model(tmp_path):
+    module = runner()
+    from geocebada.evaluation.area_weighted_climate_comparison import BASE
+
+    anchor, local = predictions(module)
+    frozen = local.rename(columns={"Local04D": "predicted"}).assign(
+        model=BASE, outer_train=137, outer_heldout=1
+    )
+    other = frozen.assign(
+        model="GeoPCA20_PlusAreaWeightedClimate",
+        predicted=frozen["predicted"] + 5.0,
+    )
+    path = tmp_path / "loo_predictions.csv"
+    pd.concat([other, frozen], ignore_index=True).to_csv(path, index=False)
+    result = module.read_local(path, anchor)
+    assert len(result) == 138
+    assert set(result.columns) == {
+        "ID_POLIGONO", "observed", "Local04D",
+    }
+    np.testing.assert_allclose(
+        result["Local04D"].to_numpy(float),
+        local["Local04D"].to_numpy(float),
+    )
+
+
+def test_saved_mean_138_fold_loader(tmp_path):
+    module = runner()
+    anchor, _local = predictions(module)
+    mean = tmp_path / "mean"
+    (mean / "run_spec.json").parent.mkdir(parents=True)
+    (mean / "run_spec.json").write_text(
+        '{"imputation":"arithmetic mean, training-fold-only"}'
+    )
+    for i, row in enumerate(anchor.to_dict("records"), start=1):
+        fold = mean / f"fold_{i:03d}" / "k24_a30.csv"
+        fold.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame([{
+            "ID_POLIGONO": row["ID_POLIGONO"],
+            "observed": row["observed"],
+            "Reference26_k24_alpha30": row[module.ANCHOR],
+        }]).to_csv(fold, index=False)
+    recovered = module.load_mean(mean)
+    assert len(recovered) == 138
+    np.testing.assert_allclose(
+        recovered[module.ANCHOR],
+        anchor[module.ANCHOR],
+    )
