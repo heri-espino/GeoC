@@ -186,3 +186,7 @@ venv/
 
 # Private staging of recovered LOOCV scoreboards/provenance
 /reports/loocv_comprehensive_metrics/
+
+# Private full re-train on 138 parcel yields, OOF diagnostics and serialized models
+/reports/reference26_compact14_fresh138/
+/reports/reference26_compact14_fresh138_smoke/
