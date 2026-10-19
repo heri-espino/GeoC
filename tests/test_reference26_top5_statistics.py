@@ -77,7 +77,7 @@ def test_tail_grouping_is_disjoint_and_conditional(monkeypatch):
     z,y,p=artificial(m)
     rows=m.tails(y,{m.BASE:p,m.FIXED:p+.01,m.POLICY:p-.01})
     assert len(rows)==18
-    for (_,model),frame in rows.groupby(["definition","model"]):
+    for (_,_model),frame in rows.groupby(["definition","model"]):
         assert frame["n"].sum()==138
     assert rows["warning"].str.contains("Post-hoc").all()
 
