@@ -1,6 +1,6 @@
 # Experiment: direct analog and tail corrections to Reference26 mean
 
-**Date 2026-10-19 — experimental code implemented; private VM screening pending.**
+**Date 2026-10-19 — full authentic 138-fold VM screen completed; performance exploratory.**
 Branch: `experiment/reference26-analog-tail-correction`. No official
 prediction promotion; do not automatically merge or change Todoseboso.
 
@@ -34,7 +34,7 @@ Find k nearest real training X feature vectors to the heldout parcel.
 The neighbor response estimate is the inverse-distance weighted
 mean of **real allowed labels**:
 
-```math
+```text
 a_i = sum_{j in kNN(X_i; I_minus_i)}
           (w_ij y_j) / sum_j w_ij,
 w_ij = 1 / max(d(X_i,X_j), 1e-5).
@@ -42,7 +42,7 @@ w_ij = 1 / max(d(X_i,X_j), 1e-5).
 
 The corrected forecast is
 
-```math
+```text
 yhat_i = yhat_Reference26_LOO_i
       + clip(lambda * g_i *
          (a_i - yhat_Reference26_LOO_i), -delta, delta).
@@ -71,7 +71,7 @@ observed yields often overpredicted and high yields often underpredicted.
 Apply a **fixed, limited expansion** of the already-saved
 Reference26 prediction away from the *other 137 training-label mean*:
 
-```math
+```text
 yhat_i = yhat_ref_i + clip(
  gamma * sign(yhat_ref_i - mean(y_train)) *
  max(|yhat_ref_i - mean(y_train)| - t*sd(y_train), 0),
@@ -152,3 +152,43 @@ information comes from genuine neighbor yields in the fold rather than
 artificial pseudo-labels. Its limitation is that nearest X analogs may
 not imply similar agronomic yield and Reference26 may already have
 captured their useful information. Record a negative result if it fails.
+
+
+## Resultados de la ejecución real en VM — 2026-10-19
+
+El usuario ejecutó `--check`, `--smoke`, `--run` y `--summary`.
+Las 31 recetas utilizaron 138 predicciones auténticas de Reference26
+(137 etiquetas disponibles / 1 test por fold). Estas métricas provienen
+del log agregado aportado por el usuario; los archivos por parcela
+permanecen únicamente en la VM y nunca deben incluirse en Git.
+
+| Modelo | RMSE (t/ha) | MAE (t/ha) | RMSE 2 difíciles | RMSE otras 136 |
+|---|---:|---:|---:|---:|
+| **Reference26 mean, sin corrección** | 0.468138 | 0.333786 | 2.065000 | 0.399583 |
+| **robust26, 3 vecinos, blend 0.25, supported** | **0.462418** | **0.332019** | 2.063534 | **0.392880** |
+| PCA8, 3 vecinos, blend 0.25, supported | 0.464956 | 0.334091 | 2.050346 | 0.396914 |
+| PCA8, 8 vecinos, blend 0.25, supported | 0.465506 | 0.334439 | 2.062307 | 0.396657 |
+| robust26, 3 vecinos, blend 0.10, supported | 0.465538 | 0.332972 | 2.064380 | 0.396536 |
+
+Ganancia observada del primer candidato:
+**RMSE -0.005720 t/ha (-1.22% relativo)** y
+**MAE -0.001767 t/ha**. La corrección modificó las 138
+predicciones de test, mejoró el error cuadrático de 65 y empeoró
+el de 73, con cambio absoluto máximo de **0.108689 t/ha**.
+El RMSE de las dos parcelas históricas extremas casi no cambió;
+la mejora descriptiva está en las otras 136.
+
+**Límite clave:** se escogió la mejor de 31 recetas por los
+mismos 138 heldouts usados en varias exploraciones anteriores.
+La reducción es válida como desempeño calculado en estos folds
+con parámetros a posteriori, pero **NO es evidencia confirmatoria
+independiente** ni demuestra desempeño futuro en las 59 parcelas
+sin etiqueta. No alterar la salida final de 59 antes de evaluar
+estabilidad pareada y sensibilidad espacial/de una observación.
+Además, ningún resultado sugiere que `tail` por sí solo haya
+superado a Reference26 (p. ej. `tail__g0.1__t1` RMSE 0.468808).
+
+Un diagnóstico agregado y protegido de archivos privados se añadirá
+a `tools/audit_reference26_analog_gain.py`: bootstrap pareado,
+estabilidad al eliminar cada observación, corrección por la búsqueda
+entre recetas y sensibilidad por bloques de distancia geográfica.
