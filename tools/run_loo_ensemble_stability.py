@@ -35,7 +35,6 @@ from run_loo_ensemble_screen import (
     read_local,
 )
 
-
 WEIGHTS = (0., 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.75, 1.)
 DEFAULT_CANDIDATE = "Compact14"
 DEFAULT_WEIGHT = 0.30
