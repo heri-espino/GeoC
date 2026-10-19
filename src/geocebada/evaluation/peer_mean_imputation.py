@@ -31,7 +31,9 @@ ATTRIBUTES = (
 )
 
 
-def observed_means(frame: pd.DataFrame, columns: list[str]) -> tuple[pd.DataFrame, dict[str, float]]:
+def observed_means(
+    frame: pd.DataFrame, columns: list[str],
+) -> tuple[pd.DataFrame, dict[str, float]]:
     """Replace missing numeric X using only the supplied fitting rows."""
     x = frame
     filled = {}
