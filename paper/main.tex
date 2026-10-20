@@ -1,0 +1,32 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{lmodern,microtype,geometry,booktabs,tabularx,csquotes}
+\geometry{margin=2.3cm}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+\usepackage[backend=biber,style=authoryear,sorting=nyt,maxcitenames=2,maxbibnames=10]{biblatex}
+\addbibresource{references.bib}
+\setlength{\parskip}{0.22em}
+\title{\textbf{Estimación transductiva del rendimiento de cebada a escala parcelaria}\\[0.4em]\large Integración de información climática, expertos locales, agrupamiento geológico y corrección por análogos\\[0.5em]\normalsize Informe técnico del Reto AgroCebada FIRA 2026}
+\author{Equipo GeoCebada}
+\date{19 de octubre de 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+Se documenta un modelo para 197 parcelas de cebada, con 138 rendimientos conocidos y 59 ocultos. El sistema combina un modelo climático global, un experto geográfico local, una compuerta geológica y correcciones residuales. La variante seleccionada incorpora imputación por media y corrección conservadora por tres análogos. Su RMSE en 138 exclusiones auténticas fue 0.462418 toneladas por hectárea; el procedimiento alternativo con selección interna obtuvo 0.462892. Las comparaciones son exploratorias y no miden el error de las 59 parcelas sin etiquetas.
+\end{abstract}
+\section{Introducción}\input{sections/01_introduccion}
+\section{Justificación}\input{sections/02_justificacion}
+\section{Objetivos}\input{sections/03_objetivos}
+\section{Metodología}\input{sections/04_metodologia}
+\section{Resultados y discusión}\input{sections/05_resultados_discusion}
+\section{Uso de la ciencia de datos en la inclusión financiera del sector agropecuario}\input{sections/06_inclusion}
+\section{Conclusiones}\input{sections/07_conclusiones}
+\clearpage
+\nocite{*}
+\printbibliography[heading=bibintoc,title={Bibliografía}]
+\clearpage
+\appendix\section{Anexos}\input{appendix}
+\end{document}
